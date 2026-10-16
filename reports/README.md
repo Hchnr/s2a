@@ -7,3 +7,5 @@
 重建报告：`LD_LIBRARY_PATH='' .venv/bin/python scripts/run_experiment.py --seed 42 --stage report --plots`。它读取已有指标，不重新选择模型或增益。图在 `outputs/droid_episode0/figures/`，报告链接保留本地完整产物的位置。
 
 首轮仅有日志、几何和单 episode 局部模型内证据；增益调度/小网络、独立仿真与真机未执行。不能以日志 action 误差或局部模型的自洽宣称控制成功。
+
+跨数据集扩展见 `cross_dataset_franka.md` 和 `cross_dataset_franka.json`：RoboMIND-v1真实机器人日志与M1/A1仿真日志分别列出，不计作真机执行。完整逐帧样本、指纹和日志在 `outputs/cross_dataset_franka/`。

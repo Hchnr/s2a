@@ -331,6 +331,18 @@ def run_cross_dataset(config, out):
                 summary[metric] = {
                     key: max(e[metric][key] for e in completed) for key in ["position_max_m", "rotation_max_rad"]
                 }
+        for key, count_key in [
+            ("saved_action_pose_comparison", "valid_transitions"),
+            ("saved_master_joint_fk_target", "valid_transitions"),
+            ("nominal_fk_observation", "observations"),
+        ]:
+            scored = [e for e in completed if e.get(key) is not None]
+            if scored:
+                denominator = sum(e[count_key] for e in scored)
+                summary[key] = {
+                    field: float(np.sqrt(sum(e[key][field] ** 2 * e[count_key] for e in scored) / denominator))
+                    for field in ["position_rmse_m", "rotation_rmse_rad"]
+                }
         results.append({**summary, "episodes": episodes})
     result = {
         "code": fingerprint,
@@ -350,14 +362,12 @@ def run_cross_dataset(config, out):
     }
     write_json(out / "cross_dataset_metrics.json", result)
     render_cross_report(result, out)
-    write_json(
-        out / "artifact_hashes.json",
-        {
-            str(p.relative_to(out)): sha256(p)
-            for p in sorted(out.rglob("*"))
-            if p.is_file() and p.name != "artifact_hashes.json"
-        },
+    # Only artifacts of this run: active log files and archived runs are mutable/independent.
+    artifacts = [out / "cross_dataset_metrics.json", out / "report.md"]
+    artifacts.extend(
+        out / c["id"] / f"episode_{e['episode_index']}.npz" for c in results for e in c["episodes"] if e["executed"]
     )
+    write_json(out / "artifact_hashes.json", {str(path.relative_to(out)): sha256(path) for path in artifacts})
     return result
 
 
@@ -381,6 +391,24 @@ def render_cross_report(result, out):
         lines.append(
             f"| {cohort['id']} | {cohort['evidence_level']} | {cohort['executed_episodes']}/{cohort['selected_episodes']} | {cohort['geometry_passed_episodes']} | {cohort['valid_transitions']} | {pair('single_step')} | {pair('integrated')} | {pair('native_observation')} |"
         )
+    lines += [
+        "",
+        "## 独立保存的动作字段与运动学代理",
+        "",
+        "| Cohort | 对比对象 | 位置 RMSE m | 姿态 RMSE rad | puppet FK 观测位置/姿态 RMSE |",
+        "| --- | --- | ---: | ---: | --- |",
+    ]
+    for cohort in result["cohorts"]:
+        proxy = cohort.get("saved_master_joint_fk_target")
+        direct = cohort.get("saved_action_pose_comparison")
+        value = proxy or direct
+        if value:
+            fk = cohort.get("nominal_fk_observation")
+            fk_text = f"{fk['position_rmse_m']:.3g} m / {fk['rotation_rmse_rad']:.3g} rad" if fk else "不适用"
+            label = "recorded master joint target 的名义 FK" if proxy else "保存的 Cartesian action 字段"
+            lines.append(
+                f"| {cohort['id']} | {label} | {value['position_rmse_m']:.6g} | {value['rotation_rmse_rad']:.6g} | {fk_text} |"
+            )
     lines += [
         "",
         "容差为 1e-5 m / 1e-4 rad，同时检查候选 native pose 与下一原始观测；完整逐 episode 结果、masks、媒体时间及 action 字段差异见 JSON/NPZ。",

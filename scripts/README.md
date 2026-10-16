@@ -9,3 +9,5 @@
 样本 provenance、SHA256、代码版本、依赖版本、网格和 seed 随产物保存。实验合同及证据分级见 [计划](../plans/v0.0.1/001_state_to_action.md) 与 [记录](../plans/v0.0.1/record_20261016.md)。
 
 `LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_artifacts.py --seed 42` 检查保存的产物/源码指纹、test rollout 完整性及所有最终送出命令的范数/变化率界。完整性通过与控制性能验收分别报告。
+
+`run_cross_dataset.py --seed 42` 执行冻结的60条Panda跨数据集轨迹，使用各自TCP合同验证解析式，并单列原始Cartesian action或nominal master-joint FK差异。结果写 `outputs/cross_dataset_franka/`；只读原始数字列，不执行控制。RoboMIND-v1为真实日志，M1/A1为仿真日志。各自分类、指纹与未验证项随报告保存。

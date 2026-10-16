@@ -79,3 +79,11 @@ command = result["command"]  # 6D arm + 绝对 gripper，gripper_action_space="p
 canonical TCP 的局部 delta 在 SE(3) 上右乘积分，再完整转换到 flange；DROID `cartesian_velocity` 是归一化接口量，不能当作 m/s、rad/s。夹爪 slot 9 是绝对 opening 命令，与 arm PID 分离。历史控制器版本和 command/state 时刻仍未确认，编码器属于固定公开版本的 reference-interface。
 
 实验矩阵保留解析、线性、P/PI/PD/PID、增益调度、直接逆及残差模型。后三者需要验证同设备的多 episode 数据后进入 P4；独立仿真和真机属于 P4/P5，当前未执行。日志回放、局部模型自洽、独立仿真和真机证据分别记录。开发约定见 [AGENTS.md](AGENTS.md)。
+
+同型号跨数据集的解析验证入口：
+
+```bash
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_cross_dataset.py --seed 42
+```
+
+名单在 [cross_dataset_franka.json](configs/cross_dataset_franka.json) 冻结，分别评估 RoboMIND-v1 的30条真实Panda日志，以及 M1/A1 的20/10条仿真日志。各自使用原始TCP/方向约定与 source row provenance，不迁移DROID控制器参数。RoboMIND master joint 另经名义Panda FK作命令代理诊断；所有结果仍属于日志验证，未执行真机或独立仿真控制。设计见 [扩展计划](plans/v0.0.1/cross_dataset_franka_plan.md)，最终指标见 `reports/cross_dataset_franka.md`。
