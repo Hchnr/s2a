@@ -74,7 +74,7 @@ def main():
                     results.append(result)
                     continue
                 command = [
-                    str(Path("outputs/libero_env311/bin/python").resolve()),
+                    str(Path.cwd() / "outputs/libero_env311/bin/python"),
                     "scripts/run_libero_simulation.py",
                     "--config",
                     args.config,
