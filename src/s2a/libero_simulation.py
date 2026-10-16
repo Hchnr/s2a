@@ -211,6 +211,11 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
             p: importlib.metadata.version(p) for p in ("mujoco", "robosuite", "numpy", "scipy", "torch", "h5py")
         },
     }
+    replay = None
+    if stage == "prediction_replay":
+        trace = Path(config["historical_results"]).parent / "closed_loop" / f"trial{trial}" / "trace.json"
+        replay = json.loads(trace.read_text())["conversions"]
+        provenance["inputs_sha256"][str(trace)] = sha256(trace)
     if stage == "policy":
         import requests
 
@@ -241,6 +246,7 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
             dt,
             compensate=candidate == "compensated",
             inverse_weight=config["inverse_weight"],
+            max_command_rate=config.get("max_command_rate") if candidate == "compensated" else None,
         )
         write_json(
             dest / "controller.json", {**contract, "response": converter.response, "momentum": converter.momentum}
@@ -251,8 +257,11 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
             length = len(reference) + (config["oracle_extra_hold_steps"] if stage == "oracle" else 0)
         if stage == "probe":
             length = config["probe_steps"]
+        if replay is not None:
+            length = min(length, len(replay))
         generator = np.random.default_rng(config["seed"] + 1000)
         anchor = source_pose(obs) @ h
+        oracle_alignment = anchor @ inverse(absolute_poses[0])
         gripper_target = np.zeros(2)
         gripper = env.robots[0].gripper
 
@@ -278,6 +287,9 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
                     action = queue.pop(0)
                     anchor = anchor @ transform(action[:3], rot6d_to_matrix(action[3:9]))
                     desired_tcp, opening = anchor.copy(), float(np.clip(action[9], 0, 1))
+                elif replay is not None:
+                    desired_tcp = np.asarray(replay[step]["target_pose"]) @ h
+                    opening = float(np.clip(replay[step]["predicted"][9], 0, 1))
                 elif stage == "probe":
                     motion = generator.uniform(-1, 1, 6) * np.array(
                         [config["probe_translation_amplitude_m"]] * 3 + [config["probe_rotation_amplitude_rad"]] * 3
@@ -288,7 +300,10 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
                     desired_tcp, opening = desired @ h, 1.0
                 else:
                     index = min(step + 1, len(absolute_poses) - 1)
-                    desired_tcp, opening = absolute_poses[index], float(openings[index])
+                    desired_tcp = (
+                        (oracle_alignment @ absolute_poses[index]) if stage == "oracle" else absolute_poses[index]
+                    )
+                    opening = float(openings[index])
                 desired = desired_tcp @ inverse(h)
                 result = converter.convert(current, desired, twist)
                 desired_q = (0.079 * opening + 0.001) / 2
@@ -360,6 +375,7 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
             rotation_rmse_rad=float(np.sqrt(np.mean(np.sum(errors[:, 3:] ** 2, axis=1)))),
             aperture_rmse=float(np.sqrt(np.mean([(r["opening_target"] - r["opening_after"]) ** 2 for r in rows]))),
             saturation_fraction=float(np.mean([r["converter"]["saturated"] for r in rows])),
+            rate_limited_fraction=float(np.mean([r["converter"]["rate_limited"] for r in rows])),
             max_command_change=float(np.max(np.linalg.norm(np.diff(command, axis=0), axis=1))) if len(rows) > 1 else 0,
             actual_dt_range_s=[min(r["actual_dt"] for r in rows), max(r["actual_dt"] for r in rows)],
         )

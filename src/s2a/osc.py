@@ -50,7 +50,7 @@ class OSCStateToAction:
     original expert action is used by this converter.
     """
 
-    def __init__(self, interface, kp, kd, dt, *, compensate=False, inverse_weight=1.0):
+    def __init__(self, interface, kp, kd, dt, *, compensate=False, inverse_weight=1.0, max_command_rate=None):
         self.interface = interface
         self.kp, self.kd = finite(kp, (6,)), finite(kd, (6,))
         if np.any(self.kp <= 0) or np.any(self.kd <= 0):
@@ -58,6 +58,10 @@ class OSCStateToAction:
         if not np.isfinite(dt) or dt <= 0 or not 0 <= inverse_weight <= 1:
             raise ValueError("invalid planned dt or inverse weight")
         self.dt, self.compensate, self.inverse_weight = float(dt), bool(compensate), inverse_weight
+        if max_command_rate is not None and (not np.isfinite(max_command_rate) or max_command_rate <= 0):
+            raise ValueError("command rate must be positive")
+        self.max_command_rate = max_command_rate
+        self.previous_command = np.clip(np.zeros(6), interface.input_min, interface.input_max)
         self.response, self.momentum = np.empty(6), np.empty(6)
         for i, (p, d) in enumerate(zip(self.kp, self.kd, strict=True)):
             evolution = expm(np.array([[0.0, 1.0], [-p, -d]]) * self.dt)
@@ -78,6 +82,13 @@ class OSCStateToAction:
         if self.compensate:
             delta += self.inverse_weight * (inverse_delta - endpoint_error)
         command, saturated = self.interface.encode(delta)
+        rate_limited = False
+        if self.max_command_rate is not None:
+            change = self.max_command_rate * self.dt
+            sent = np.clip(command, self.previous_command - change, self.previous_command + change)
+            rate_limited = bool(np.any(np.abs(sent - command) > 1e-12))
+            command = sent
+        self.previous_command = command.copy()
         sent_delta = self.interface.decode(command)
         return {
             "command": command,
@@ -87,4 +98,5 @@ class OSCStateToAction:
             "sent_delta": sent_delta,
             "predicted_motion": self.response * sent_delta + self.momentum * velocity,
             "saturated": saturated,
+            "rate_limited": rate_limited,
         }

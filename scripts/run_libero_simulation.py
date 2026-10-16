@@ -10,7 +10,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/libero_simulation.json")
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument("--stage", choices=("probe", "native", "oracle", "policy"), required=True)
+    parser.add_argument("--stage", choices=("probe", "native", "oracle", "prediction_replay", "policy"), required=True)
     parser.add_argument("--candidate", choices=("baseline", "compensated"), required=True)
     parser.add_argument("--trial", type=int, choices=range(5), required=True)
     parser.add_argument("--max-steps", type=int)

@@ -40,3 +40,14 @@ def test_inverse_rejects_unobservable_interval_and_invalid_ranges():
         OSCStateToAction(interface(), np.ones(6), np.ones(6), 1e-5)
     with pytest.raises(ValueError, match="increasing"):
         OSCInterface(np.ones(6), -np.ones(6), -np.ones(6), np.ones(6))
+
+
+def test_command_rate_is_limited_after_inverse_and_affine_encoding():
+    converter = OSCStateToAction(
+        interface(), np.full(6, 150), np.full(6, 25), 0.05, compensate=True, max_command_rate=5
+    )
+    command = converter.convert(np.eye(4), advance(np.eye(4), [0.1, 0, 0, 0, 0, 0], 1), np.zeros(6))
+    assert command["rate_limited"]
+    np.testing.assert_allclose(command["command"][0], 0.25)
+    command = converter.convert(np.eye(4), advance(np.eye(4), [-0.1, 0, 0, 0, 0, 0], 1), np.zeros(6))
+    np.testing.assert_allclose(command["command"][0], 0)
