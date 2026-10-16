@@ -96,6 +96,11 @@ def main():
                 if not all(np.isfinite(trace[k]).all() for k in trace.files):
                     raise ValueError("non-finite trace archive")
             summary = {k: v for k, v in result.items() if k != "requests"}
+            valid_rows = [r for r in rows if r.get("tracking_valid", True)]
+            summary["aperture_rmse"] = float(
+                np.sqrt(np.mean([(r["opening_target"] - r["opening_after"]) ** 2 for r in valid_rows]))
+            )
+            summary["unscored_terminal_rows"] = len(rows) - len(valid_rows)
             summary.update(
                 request_count=len(result["requests"]),
                 code_commit=manifest["code"]["commit"],
@@ -197,6 +202,19 @@ def main():
                 )
                 if not paired["same_initial_canvas"]:
                     raise ValueError("paired initial camera images differ")
+                for key in ("src/s2a/osc.py", "src/s2a/libero_simulation.py", "configs/libero_simulation.json"):
+                    if manifests[0]["code"]["files_sha256"][key] != manifests[1]["code"]["files_sha256"][key]:
+                        raise ValueError(f"Paired core implementation/config changed: {key}")
+                first_predictions = [
+                    np.asarray(
+                        json.loads((dest / c / f"trial{trial}" / "response_0000.json").read_text())["outputs"][0][
+                            "content"
+                        ]["action"]
+                    )
+                    for c in values
+                ]
+                paired["initial_prediction_max_abs"] = float(np.max(abs(first_predictions[0] - first_predictions[1])))
+                paired["same_core_sources"] = True
             comparisons.append(paired)
     complete = len(cases) == sum(expected.values())
     if complete:
@@ -271,6 +289,7 @@ def main():
     for filename, key in (
         ("initial_prediction_diagnostics.json", "initial_prediction_diagnostics"),
         ("engineering_checks.json", "engineering_checks"),
+        ("serving_environment.json", "serving_environment"),
     ):
         path = output / filename
         if path.is_file():

@@ -2,7 +2,7 @@
   "complete": false,
   "executed_cases": 27,
   "expected_cases": 37,
-  "checked_output_files": 194,
+  "checked_output_files": 195,
   "checked_source_files": 8,
   "finite_traces": true,
   "physical_clock": true,
