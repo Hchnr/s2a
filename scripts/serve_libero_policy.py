@@ -38,7 +38,7 @@ def main():
             "--nnodes=1",
             "--nproc-per-node=1",
             "--master-addr=127.0.0.1",
-            "--master-port=29880",
+            f"--master-port={29880 + args.gpu}",
         ]
     command += [
         "-m",
