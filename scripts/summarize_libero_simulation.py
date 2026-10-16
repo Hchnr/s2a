@@ -268,6 +268,14 @@ def main():
         hashes[fingerprints.name] = sha256(fingerprints)
     elif complete:
         raise ValueError("Full checkpoint SHA256 ledger is required for a final report")
+    for filename, key in (
+        ("initial_prediction_diagnostics.json", "initial_prediction_diagnostics"),
+        ("engineering_checks.json", "engineering_checks"),
+    ):
+        path = output / filename
+        if path.is_file():
+            report[key] = json.loads(path.read_text())
+            hashes[filename] = sha256(path)
     write_json(output / "summary.json", report)
     lines = [
         "# LIBERO S2A 独立仿真对照",
@@ -298,6 +306,8 @@ def main():
         "5个历史episode属于训练可见数据，一个任务的回归试验不代表泛化。解析内环模型未包含接触、力矩限幅和完整非线性；状态跟踪改善与任务成功分别判断。原生expert正控如果未成功也如实计入，不排除样本。",
         "",
         "两候选的夹爪均沿用历史评测的aperture→原position actuator转换，本轮补偿仅作用于机械臂；native正控执行原始gripper action，不覆盖为aperture目标。补偿读取当前仿真control site的线速度/角速度，反馈没有额外估计噪声。历史baseline最初8步的发送命令/位置已与原记录逐项比对；长接触轨迹不要求浮点位级复现。",
+        "",
+        "policy采用与历史相同的同步仿真：模型推理期间物理时钟暂停，未模拟推理延迟，不代表实时部署性能。初始chunk的专家标签仅由独立离线诊断脚本读取，未进入正在运行的策略或用于重新调参。",
         "",
         "完整请求、物理前后状态、目标、原始/发送命令、控制器参数、视频与源码/数据指纹见 `outputs/libero_simulation/`。",
         "",

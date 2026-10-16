@@ -1143,5 +1143,145 @@
     "checkpoint_bytes": 32399035595,
     "inference_source_files": 334,
     "note": "All checkpoint bytes SHA256 captured; current file sizes checked, full per-file ledger in outputs."
+  },
+  "initial_prediction_diagnostics": {
+    "evidence": "Offline first chunk; same initial image as live evaluation, expert states used only as diagnostic labels.",
+    "checkpoint_iteration": "iter_000008800",
+    "source_hdf5_sha256": "e69528b0cf10dfc59b20698e12ec2affc03f3887309034d3eb74cac3ec929406",
+    "cases": [
+      {
+        "trial": 0,
+        "episode": 43,
+        "prediction_file_sha256": "10ba473a837b6a3d46d3335c75e48787b99a79adbc778713a9e4edbd26325cf6",
+        "frames": 16,
+        "translation_rmse_per_axis_m": 0.005095652058267818,
+        "rotation_geodesic_rmse_rad": 0.5538170594216413,
+        "first8_predicted_rotation_mean_rad": 0.5231375875915965,
+        "first8_expert_rotation_mean_rad": 0.006414611133887428,
+        "raw_opening_min": 0.6842209100723267,
+        "raw_opening_max": 1.4850096702575684,
+        "raw_opening_outside_fraction": 0.5625,
+        "opening_mae_before_clip": 0.17923414504166071,
+        "opening_mae_after_clip": 0.07208375429745142
+      },
+      {
+        "trial": 1,
+        "episode": 69,
+        "prediction_file_sha256": "a92478bfba9cf3f7fa132eb01d36aa0190ecc8c17a79023cd1db1784d6e5e7bf",
+        "frames": 16,
+        "translation_rmse_per_axis_m": 0.00434291098317341,
+        "rotation_geodesic_rmse_rad": 0.5640099499598615,
+        "first8_predicted_rotation_mean_rad": 0.5360466614897905,
+        "first8_expert_rotation_mean_rad": 0.003506395035043314,
+        "raw_opening_min": 0.6785842776298523,
+        "raw_opening_max": 1.4948914051055908,
+        "raw_opening_outside_fraction": 0.5625,
+        "opening_mae_before_clip": 0.17526650160357932,
+        "opening_mae_after_clip": 0.07132282584712488
+      },
+      {
+        "trial": 2,
+        "episode": 72,
+        "prediction_file_sha256": "9d21e67839042a1baa156cee530fe3c8e22d055bcae8153615a6cfad57ad7c1b",
+        "frames": 16,
+        "translation_rmse_per_axis_m": 0.0050398414889386645,
+        "rotation_geodesic_rmse_rad": 0.5468936844904204,
+        "first8_predicted_rotation_mean_rad": 0.5256783878656801,
+        "first8_expert_rotation_mean_rad": 0.004252728385346565,
+        "raw_opening_min": 0.6922335028648376,
+        "raw_opening_max": 1.5169695615768433,
+        "raw_opening_outside_fraction": 0.5625,
+        "opening_mae_before_clip": 0.17795244937851729,
+        "opening_mae_after_clip": 0.06278272306635678
+      },
+      {
+        "trial": 3,
+        "episode": 80,
+        "prediction_file_sha256": "e5a5490ac84ca5c64ced5c7223f45a69269d1ea9f3eca882faa859189a6ef0a8",
+        "frames": 16,
+        "translation_rmse_per_axis_m": 0.00508780045489038,
+        "rotation_geodesic_rmse_rad": 0.5404954512710133,
+        "first8_predicted_rotation_mean_rad": 0.5176360328485021,
+        "first8_expert_rotation_mean_rad": 0.007152513262938387,
+        "raw_opening_min": 0.7017157077789307,
+        "raw_opening_max": 1.5014909505844116,
+        "raw_opening_outside_fraction": 0.5625,
+        "opening_mae_before_clip": 0.17585864129648132,
+        "opening_mae_after_clip": 0.06695568028078003
+      },
+      {
+        "trial": 4,
+        "episode": 132,
+        "prediction_file_sha256": "4b9280a38f6089daf83652c01a56ecc390e90c2d497b53f0b005e95374333ac2",
+        "frames": 16,
+        "translation_rmse_per_axis_m": 0.005456172738695162,
+        "rotation_geodesic_rmse_rad": 0.550435594104365,
+        "first8_predicted_rotation_mean_rad": 0.5259969300412197,
+        "first8_expert_rotation_mean_rad": 0.006929232284415247,
+        "raw_opening_min": 0.6907937526702881,
+        "raw_opening_max": 1.4974287748336792,
+        "raw_opening_outside_fraction": 0.5625,
+        "opening_mae_before_clip": 0.17338958260681775,
+        "opening_mae_after_clip": 0.0657914566722169
+      }
+    ],
+    "mean": {
+      "frames": 16.0,
+      "translation_rmse_per_axis_m": 0.005004475544793087,
+      "rotation_geodesic_rmse_rad": 0.5511303478494602,
+      "first8_predicted_rotation_mean_rad": 0.5256991199673577,
+      "first8_expert_rotation_mean_rad": 0.005651096020326189,
+      "raw_opening_min": 0.6895096302032471,
+      "raw_opening_max": 1.4991580724716187,
+      "raw_opening_outside_fraction": 0.5625,
+      "opening_mae_before_clip": 0.1763402639854113,
+      "opening_mae_after_clip": 0.06778728803278601
+    },
+    "tuning_performed": false,
+    "held_out": false
+  },
+  "engineering_checks": {
+    "unit_tests": {
+      "passed": 33,
+      "integration_deselected": 1
+    },
+    "external_data_integration": {
+      "passed": 1,
+      "unit_deselected": 33
+    },
+    "original_droid_verifier": {
+      "artifact_hashes": 19,
+      "source_hashes": 23,
+      "test_rollouts": 70,
+      "passed": true
+    },
+    "ruff_check": true,
+    "ruff_format": true,
+    "wheel": {
+      "built": true,
+      "sha256": "52d3d0b04ee4842b77e89433a1d6254e3d4925305232f3114d26d486037cc983",
+      "isolated_import": true,
+      "optional_simulation_module_import": true,
+      "osc_forward_inverse_smoke": true,
+      "installed_source_sha256_matches": {
+        "src/s2a/artifacts.py": "4723e2b1602ee020184eff838ab4934c6868e53a7af5dded68cf547df7fa791a",
+        "src/s2a/identification.py": "2e151ee88de8872d93b6f7d6e548989fb3f82359971884354433d7213a745e1e",
+        "src/s2a/reporting.py": "e9161aa976fae48ba08920f6efbc00c130ccbc9c34c41af2fbb080bbd230680f",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689",
+        "src/s2a/libero_simulation.py": "4dd04993128980ab41a279fd13e31bffb42eede8307e9ec660bb033cf91f2fbc",
+        "src/s2a/__init__.py": "ca50dfd1d7e797f05795eff5eb815dd5e1193295018cbfe93704a58819bc49ba",
+        "src/s2a/geometry.py": "5b2817607553860bbed1cd199457d0fd863b6a090eab928409150ad1b1d4ef8a",
+        "src/s2a/data.py": "8e3429ce63456f816ca0f33cc461e2a3b0e82745a84f84d08ecbf204bff79380",
+        "src/s2a/interface.py": "fd70fb6a0b9c32ae58f7c87f0916fe0c8098988a2f2424685135dabc011e83ee",
+        "src/s2a/analytic.py": "629d68bc380c58c1bed134108f5a8eb66bae1aef8069520e329cb50d2ce37ad2",
+        "src/s2a/control.py": "20597530d57ddc1e42c4e04e1e3a4d31ce7f0a631611e698ff7b3144df7f02a4",
+        "src/s2a/trajectory.py": "f19c76f3b51f9334b7a056e10777272d80cdd17b0600220c2b94d2bba074b8de",
+        "src/s2a/runtime.py": "60d9c5fa1ff5d5efe9b380fd445b23f477074d886e8f012f452d95032da3cf94",
+        "src/s2a/study.py": "e238e6fbe06cc02841094f1b51d1fbc8eabdac4748f91b801a744dc1018048b6",
+        "src/s2a/rollout.py": "96b67143d2418ff07d5e00a27f4b64ecb99564b4781448ecc605a2eb96e5b2f4",
+        "src/s2a/cross_dataset.py": "db626f8a2de46ca2d2e8f3a8dab66965685bfd31320cca4c6b2ba9e1301455b5",
+        "src/s2a/kinematics.py": "5404d620cf03f195bd8a6861e4e690f81f3606e8fc0d52f2bead84404220d25c"
+      }
+    }
   }
 }
