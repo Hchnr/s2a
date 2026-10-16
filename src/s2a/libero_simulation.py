@@ -185,7 +185,14 @@ def controller_contract(env):
         k: np.asarray(getattr(controller, k))
         for k in ("input_min", "input_max", "output_min", "output_max", "kp", "kd")
     }
-    info.update(control_freq=env.env.control_freq, model_timestep=env.env.model_timestep)
+    info.update(
+        control_freq=env.env.control_freq,
+        model_timestep=env.env.model_timestep,
+        robot_model=type(env.robots[0].robot_model).__name__,
+        gripper_model=type(env.robots[0].gripper).__name__,
+        controller_site=controller.eef_name,
+        control_frame="MuJoCo world",
+    )
     return controller, info
 
 
@@ -382,12 +389,15 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
         requests=requests_log,
     )
     if rows:
-        errors = np.array([r["tracking_error_tcp"] for r in rows if r["tracking_valid"]])
+        scored_rows = [r for r in rows if r["tracking_valid"]]
+        errors = np.array([r["tracking_error_tcp"] for r in scored_rows])
         command = np.array([r["executed"][:6] for r in rows])
         result.update(
             position_rmse_m=float(np.sqrt(np.mean(np.sum(errors[:, :3] ** 2, axis=1)))),
             rotation_rmse_rad=float(np.sqrt(np.mean(np.sum(errors[:, 3:] ** 2, axis=1)))),
-            aperture_rmse=float(np.sqrt(np.mean([(r["opening_target"] - r["opening_after"]) ** 2 for r in rows]))),
+            aperture_rmse=float(
+                np.sqrt(np.mean([(r["opening_target"] - r["opening_after"]) ** 2 for r in scored_rows]))
+            ),
             saturation_fraction=float(np.mean([r["converter"]["saturated"] for r in rows])),
             rate_limited_fraction=float(np.mean([r["converter"]["rate_limited"] for r in rows])),
             max_command_change=float(np.max(np.linalg.norm(np.diff(command, axis=0), axis=1))) if len(rows) > 1 else 0,

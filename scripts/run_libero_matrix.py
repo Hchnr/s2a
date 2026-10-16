@@ -105,7 +105,7 @@ def main():
             except Exception as exc:
                 failures.append(dict(trial=futures[future], error=repr(exc)))
             write_json(output / f"matrix_{args.stage}.json", dict(results=results, failures=failures))
-            print(json.dumps(dict(completed_trials=len(results), failures=failures)), flush=True)
+            print(json.dumps(dict(completed_cases=len(results), failures=failures)), flush=True)
     if failures:
         raise RuntimeError(f"Failed trials: {failures}")
 

@@ -44,7 +44,8 @@ class OSCInterface:
 class OSCStateToAction:
     """Single-step endpoint tracker with an optional analytical inner-loop inverse.
 
-    Velocity is a current measured base-frame twist at the OSC control point.
+    Velocity is a current measured twist at the OSC control point, in the same
+    fixed frame as the poses (MuJoCo world for LIBERO).
     `desired` is the already generated next reference endpoint at t + dt.
     No future observation, physics state restore, controller gain change or
     original expert action is used by this converter.
