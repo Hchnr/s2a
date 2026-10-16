@@ -259,8 +259,10 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
         )
         reference, absolute_poses, openings, native = expert_reference(fixture, record, h)
         length = config["max_steps"] if max_steps is None else max_steps
-        if stage in ("oracle", "native"):
-            length = len(reference) + (config["oracle_extra_hold_steps"] if stage == "oracle" else 0)
+        if stage == "oracle":
+            length = len(reference) + config["oracle_extra_hold_steps"]
+        if stage == "native":
+            length = len(native)
         if stage == "probe":
             length = config["probe_steps"]
         if replay is not None:
@@ -328,6 +330,7 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
                     "desired_source": desired.tolist(),
                     "desired_tcp": desired_tcp.tolist(),
                     "after_source": after.tolist(),
+                    "tracking_valid": stage != "native" or step + 1 < len(absolute_poses),
                     "tracking_error_source": pose_error(desired, after).tolist(),
                     "tracking_error_tcp": pose_error(desired_tcp, after @ h).tolist(),
                     "actual_motion": pose_error(after, current).tolist(),
@@ -374,7 +377,7 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
         requests=requests_log,
     )
     if rows:
-        errors = np.array([r["tracking_error_tcp"] for r in rows])
+        errors = np.array([r["tracking_error_tcp"] for r in rows if r["tracking_valid"]])
         command = np.array([r["executed"][:6] for r in rows])
         result.update(
             position_rmse_m=float(np.sqrt(np.mean(np.sum(errors[:, :3] ** 2, axis=1)))),
