@@ -49,6 +49,7 @@ def simulate(
             "derivative",
             "command",
             "applied_command",
+            "raw_command",
             "raw_velocity",
             "velocity",
             "saturated",
@@ -67,21 +68,32 @@ def simulate(
 
         def apply(velocity):
             prior = interface.encode_velocity(velocity, measured, dt_command)
+            raw_u = (
+                model.inverse(velocity, history_observed, prior, inverse_lambda)
+                if feedforward_kind == "linear"
+                else prior
+            )
+            elapsed = dt_command if controller.state.previous_time is None else now - controller.state.previous_time
+            previous = commands[-1] if commands else np.zeros(6)
+            sent = interface.limit_rate(
+                raw_u,
+                previous,
+                elapsed,
+                controller.config.max_translation_acceleration * dt_command / interface.max_translation_delta,
+                controller.config.max_rotation_acceleration * dt_command / interface.max_rotation_delta,
+            )
             if feedforward_kind == "linear":
-                raw_u = model.inverse(velocity, history_observed, prior, inverse_lambda)
-                sent = interface.limit(raw_u)
-                # Difference due to FINAL downstream projection in physical response space.
+                # Difference due to ALL final downstream limits in physical response space.
                 delivered = velocity + model.B @ (sent - raw_u)
             else:
-                sent = prior
                 delivered = pose_error(interface.decode_target(sent, measured), measured) / dt_command
-            return delivered, sent
+            return delivered, {"sent": sent, "raw": raw_u}
 
         try:
             result = controller.update(measured, desired, ff, float(now), apply=apply)
         except ValueError as error:
             return {"valid": False, "reason": str(error), "completed_transitions": i}, None
-        command = result["command"]
+        command = result["command"]["sent"]
         input_queue.append(command.copy())
         applied_command = input_queue.pop(0)
         true_history = past_vector(applied_commands, motions, model.history)
@@ -107,6 +119,7 @@ def simulate(
             ("derivative", result["derivative"]),
             ("command", command),
             ("applied_command", applied_command),
+            ("raw_command", result["command"]["raw"]),
             ("raw_velocity", result["raw_velocity"]),
             ("velocity", motion),
             ("saturated", result["saturated"]),

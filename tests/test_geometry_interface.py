@@ -71,3 +71,13 @@ def test_physical_velocity_bridge_does_not_use_future_dt():
     for bad in [0, -1, np.nan]:
         with pytest.raises(ValueError):
             iface.encode_velocity(np.zeros(6), t, bad)
+
+
+def test_final_command_rate_bound_after_large_inverse_and_vector_projection():
+    interface = DroidReferenceInterface()
+    previous = np.array([0.5, 0, 0, 0, 0, 0.5])
+    command = interface.limit_rate([-100, 100, 0, 100, 0, -100], previous, 0.07, 2.0, 4.0)
+    assert np.linalg.norm(command[:3] - previous[:3]) <= 0.14 + 1e-14
+    assert np.linalg.norm(command[3:] - previous[3:]) <= 0.28 + 1e-14
+    assert np.linalg.norm(command[:3]) <= 1
+    assert np.linalg.norm(command[3:]) <= 1

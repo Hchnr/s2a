@@ -59,6 +59,16 @@ class StateToActionAdapter:
 
         def encode(velocity):
             arm = self.interface.encode_velocity(velocity, measured, self.dt_command)
+            state = self.pid.state
+            elapsed = self.dt_command if state.previous_time is None else timestamp - state.previous_time
+            previous = np.zeros(6) if state.last_result is None else state.last_result["command"][:6]
+            arm = self.interface.limit_rate(
+                arm,
+                previous,
+                elapsed,
+                self.pid.config.max_translation_acceleration * self.dt_command / self.interface.max_translation_delta,
+                self.pid.config.max_rotation_acceleration * self.dt_command / self.interface.max_rotation_delta,
+            )
             # Equivalent sent increment accounts for downstream vector saturation.
             sent_target = self.interface.decode_target(arm, measured)
             delivered = pose_error(sent_target, measured) / self.dt_command

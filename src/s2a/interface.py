@@ -47,6 +47,24 @@ class DroidReferenceInterface:
             command[..., part] /= np.maximum(1, np.linalg.norm(command[..., part], axis=-1, keepdims=True))
         return command
 
+    def limit_rate(self, command, previous, elapsed, translation_rate, rotation_rate):
+        """Final dimensionless command rate bound, after every inverse/encoder.
+
+        Separate 3D norm limits preserve the unit-ball command constraint.
+        """
+        if (
+            not np.isfinite([elapsed, translation_rate, rotation_rate]).all()
+            or min(elapsed, translation_rate, rotation_rate) <= 0
+        ):
+            raise ValueError("command-rate interval and limits must be positive")
+        sent, previous = self.limit(command), self.limit(finite(previous, (6,)))
+        change = sent - previous
+        for part, rate in [(slice(0, 3), translation_rate), (slice(3, 6), rotation_rate)]:
+            norm = np.linalg.norm(change[part])
+            if norm > rate * elapsed:
+                change[part] *= rate * elapsed / norm
+        return previous + change
+
     def decode_target(self, command, measured):
         command, measured = self.limit(command), validate_transform(measured)
         rotation = Rotation.from_euler("xyz", command[..., 3:] * self.max_rotation_delta).as_matrix()

@@ -1,7 +1,9 @@
 # 实验报告
 
-这里保存需要版本管理的结论、方法对照、精简指标及必要图表。当前没有算法实验结果。
+这里保存 Git 内的精简报告、指标摘要和完成状态，完整产物位于 `outputs/`。
 
-每份报告标明数据/代码版本、机器人与控制配置、划分、已执行方法、状态误差、命令误差及结论的证据范围。完整采样数据、模型参数、日志和大文件放在 Git 忽略的 `outputs/` 下，并由报告引用。
+本轮报告为 `droid_episode0_20261016.md`，摘要为 `droid_episode0_20261016.json`；对应 [实施记录](../plans/v0.0.1/record_20261016.md) 和 [结论](../plans/v0.0.1/conclusion_20261016.md)。所有实验均标明代码/数据指纹、控制接口、划分与证据范围。
 
-首轮计划见 [001_state_to_action.md](../plans/v0.0.1/001_state_to_action.md)，配置见 [droid_episode0.json](../configs/droid_episode0.json)。
+重建报告：`LD_LIBRARY_PATH='' .venv/bin/python scripts/run_experiment.py --seed 42 --stage report --plots`。它读取已有指标，不重新选择模型或增益。图在 `outputs/droid_episode0/figures/`，报告链接保留本地完整产物的位置。
+
+首轮仅有日志、几何和单 episode 局部模型内证据；增益调度/小网络、独立仿真与真机未执行。不能以日志 action 误差或局部模型的自洽宣称控制成功。
