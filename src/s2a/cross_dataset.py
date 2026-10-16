@@ -24,9 +24,10 @@ from s2a.geometry import (
     transform,
     validate_transform,
 )
+from s2a.kinematics import URDFChain
 
 NATIVE_COLUMNS = {
-    "robomind_v1": ["source.puppet_end_effector", "source.master_joint_position"],
+    "robomind_v1": ["source.puppet_end_effector", "source.master_joint_position", "observation.state"],
     "interndata_m1": [
         "states.effector.position",
         "states.effector.orientation",
@@ -187,7 +188,7 @@ def read_arrays(path, columns, episode):
     return {key: np.asarray(table[key].to_pylist()) for key in columns}
 
 
-def evaluate_episode(cohort, selection, inputs, out, tolerances):
+def evaluate_episode(cohort, selection, inputs, out, tolerances, nominal_model=None):
     root, adapter = Path(cohort["root"]), cohort["native_adapter"]
     ep = selection["episode_index"]
     metadata = inputs.add(root / selection["metadata_path"])
@@ -232,6 +233,18 @@ def evaluate_episode(cohort, selection, inputs, out, tolerances):
         if commanded is not None
         else "only master joint targets; no verified Cartesian command label"
     )
+    if adapter == "robomind_v1" and nominal_model is not None:
+        nominal_observed = nominal_model.forward(native["observation.state"][:, :7])
+        nominal_target = nominal_model.forward(native["source.master_joint_position"][:, :7])
+        metrics["nominal_fk_observation"] = error_summary(nominal_observed, observed)
+        metrics["saved_master_joint_fk_target"] = error_summary(
+            arrays["candidate_native_pose"], nominal_target[indices]
+        )
+        metrics["command_semantics"] = (
+            "recorded master joint targets mapped by nominal Panda FK; historical target/controller mapping unverified"
+        )
+        arrays["nominal_master_joint_target_pose"] = nominal_target
+        arrays["nominal_puppet_joint_observed_pose"] = nominal_observed
     gripper = json.loads(actual["eef_gripper_source"])
     gripper_valid = rows["action_dim_mask"][:, 9].astype(bool)
     metrics["gripper"] = {
@@ -271,6 +284,14 @@ def run_cross_dataset(config, out):
     inputs = Inputs()
     inputs.add(config["publisher_source"])
     inputs.add(config["native_quaternion_source"])
+    for snapshot in config.get("primary_source_snapshots", {}).values():
+        require(sha256(inputs.add(snapshot["path"])) == snapshot["sha256"], "primary source snapshot changed")
+    model_config = config.get("nominal_panda_model")
+    nominal_model = None
+    if model_config is not None:
+        model_path = inputs.add(model_config["path"])
+        nominal_model = URDFChain(model_path, model_config["base_link"], model_config["target_link"])
+        require(len(nominal_model.joint_names) == 7, "nominal Panda must have seven arm joints")
     fingerprint = code_fingerprint()
     results = []
     for cohort in config["cohorts"]:
@@ -279,7 +300,9 @@ def run_cross_dataset(config, out):
         episodes = []
         for selection in cohort["episodes"]:
             try:
-                metrics = evaluate_episode(cohort, selection, inputs, target, config["geometry_tolerances"])
+                metrics = evaluate_episode(
+                    cohort, selection, inputs, target, config["geometry_tolerances"], nominal_model
+                )
                 metrics["executed"] = True
             except (ValueError, KeyError, FileNotFoundError) as error:
                 metrics = {
@@ -373,13 +396,14 @@ def render_cross_report(result, out):
         "- 所有 cohort：没有真实硬件执行；序列号、历史控制配置及物理反馈时间未确认。",
         "- 不以媒体 fps 代替物理 dt，未跨数据集转移 DROID PID/B/C/归一化 velocity 接口。",
         "- M1 的夹爪缺少标定反馈，保留无效 mask，不生成夹爪命令。",
-        "- RoboMIND-v1 的夹爪 target 为下一观测，未当作独立绝对命令；原生 master joint 不能直接当 Cartesian action。",
+        "- RoboMIND-v1 的夹爪 target 为下一观测，未当作独立绝对命令；原生 master joint 只通过名义 Panda URDF 做 FK 诊断，不冒充已确认的 Cartesian action；另报 puppet FK 与原始 EEF 一致性。",
         "- A1 对应分支为仿真日志；与真实机器人日志分开，未据此声称真机或独立仿真通过。",
         "- RoboMIND2.0 涉及 Panda/FR3 和名义 FK，不作为已确认同型号比较。",
         "",
         "## 依据",
         "",
-        "- 型号来源：[RoboMIND 官方项目](https://x-humanoid-robomind.github.io/)、[A1 官方项目](https://internrobotics.github.io/interndata-a1.github.io/)。M1 仅有本地发布标签，历史精确型号仍未验证。",
+        "- 型号来源：[RoboMIND 官方项目](https://x-humanoid-robomind.github.io/)、[A1 官方项目](https://internrobotics.github.io/interndata-a1.github.io/)。M1/A1 是 Panda/Franka 仿真分支；真实机器人日志来自 RoboMIND-v1。",
+        "- M1 官方数据卡明确为仿真：[InternData-M1](https://huggingface.co/datasets/InternRobotics/InternData-M1/blob/main/README.md)。M1/A1 均未计入真实机器人日志。",
         "- 原始 native pose 约定：外部只读 eef_state_sources.py:89、:119、interndata_mobile_pose_probe.py:11，SHA256 存入 manifest；S2A 不导入发布器。",
         "- 运行：LD_LIBRARY_PATH='' .venv/bin/python scripts/run_cross_dataset.py --seed 42。",
         "",

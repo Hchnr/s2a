@@ -13,17 +13,20 @@
     "RoboMIND-v1": {
       "robot_model_evidence": "https://x-humanoid-robomind.github.io/",
       "arm": "Franka Emika Panda",
-      "hardware_instance_match": false
+      "hardware_instance_match": false,
+      "data_origin": "real_robot_log"
     },
     "InternData-M1": {
-      "robot_model_evidence": "published embodiment_name=franka_panda__parallel_gripper; exact historical model unverified",
-      "arm": "Panda release label",
-      "hardware_instance_match": false
+      "robot_model_evidence": "https://huggingface.co/datasets/InternRobotics/InternData-M1/blob/main/README.md",
+      "arm": "Franka/Panda simulation model",
+      "hardware_instance_match": false,
+      "data_origin": "simulation_log"
     },
     "InternData-A1": {
       "robot_model_evidence": "https://internrobotics.github.io/interndata-a1.github.io/",
       "arm": "Franka Emika Panda simulation branch",
-      "hardware_instance_match": false
+      "hardware_instance_match": false,
+      "data_origin": "simulation_log"
     }
   },
   "cohorts": [
@@ -324,7 +327,7 @@
       "root": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/InternData-M1/eef",
       "contract": "meta/eef_tools/franka.json",
       "native_adapter": "interndata_m1",
-      "evidence_level": "real_robot_log_release_label",
+      "evidence_level": "simulation_log",
       "candidate_episode_count": 213734,
       "episodes": [
         {
@@ -911,5 +914,23 @@
         }
       ]
     }
-  ]
+  ],
+  "nominal_panda_model": {
+    "path": "/share/project/eai_pwm/datasets/RoboTwin2.0/embodiments/franka-panda/panda.urdf",
+    "base_link": "panda_link0",
+    "target_link": "panda_link8",
+    "scope": "nominal Panda FK of recorded master joint targets; not recovered Cartesian controller commands or unique IK"
+  },
+  "primary_source_snapshots": {
+    "InternData-M1": {
+      "url": "https://huggingface.co/datasets/InternRobotics/InternData-M1/blob/main/README.md",
+      "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/cross_dataset_franka/references/InternData-M1.md",
+      "sha256": "f9163a53ab61c9b0dd17085d18ceecc25c6155465d9a0e2fb6f5f5549777bbe4"
+    },
+    "InternData-A1": {
+      "url": "https://huggingface.co/datasets/InternRobotics/InternData-A1/blob/main/README.md",
+      "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/cross_dataset_franka/references/InternData-A1.md",
+      "sha256": "b68eac0c143c47da0a8c916c14307a368265c6faa83c0df3b68388a880475ddf"
+    }
+  }
 }

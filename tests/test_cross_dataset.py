@@ -61,3 +61,20 @@ def test_cumulative_geometry_resets_across_invalid_observation_and_excludes_term
     assert metrics["integrated"]["position_max_m"] < 1e-15
     assert metrics["native_observation"]["position_max_m"] < 1e-15
     assert_allclose(arrays["candidate_native_pose"][:, 0, 3], [0.1, 0.3])
+
+
+def test_nominal_urdf_chain_respects_axis_origin_and_fixed_tool(tmp_path):
+    from s2a.kinematics import URDFChain
+
+    path = tmp_path / "arm.urdf"
+    path.write_text("""<robot name="test"><joint name="hinge" type="revolute">
+        <parent link="base"/><child link="wrist"/><origin xyz="0 0 1"/><axis xyz="0 0 1"/>
+        </joint><joint name="tool" type="fixed"><parent link="wrist"/><child link="tip"/>
+        <origin xyz=".1 0 0"/><axis xyz="0 0 0"/></joint></robot>""")
+    chain = URDFChain(path, "base", "tip")
+    result = chain.forward([[0.0], [np.pi / 2]])
+    assert chain.joint_names == ["hinge"]
+    assert_allclose(result[:, :3, 3], [[0.1, 0, 1], [0, 0.1, 1]], atol=1e-15)
+    assert_allclose(result[1, :3, :3] @ [1, 0, 0], [0, 1, 0], atol=1e-15)
+    with pytest.raises(ValueError, match="missing"):
+        URDFChain(path, "base", "unknown")
