@@ -20,11 +20,26 @@
     "require_pose_dim_mask": true
   },
   "split_intervals_half_open": {
-    "fit": [30, 210],
-    "gap_1": [210, 220],
-    "validation": [220, 260],
-    "gap_2": [260, 270],
-    "test": [270, 330]
+    "fit": [
+      30,
+      210
+    ],
+    "gap_1": [
+      210,
+      220
+    ],
+    "validation": [
+      220,
+      260
+    ],
+    "gap_2": [
+      260,
+      270
+    ],
+    "test": [
+      270,
+      330
+    ]
   },
   "controller": {
     "family": "droid_franka",
@@ -32,5 +47,36 @@
     "historical_version": null,
     "deployment_config_verified": false
   },
-  "output_dir": "outputs/droid_episode0"
+  "output_dir": "outputs/droid_episode0",
+  "files": {
+    "r2_metadata": "meta/episodes/chunk-000/file-000.parquet",
+    "r1_metadata": "meta/episodes/chunk-000/file-000.parquet",
+    "r2_numeric": "data/chunk-000/file-000.parquet",
+    "r1_numeric": "data/chunk-000/file-000.parquet",
+    "processing": "processing/chunk-000/file-000.jsonl",
+    "receipt": "_receipts/data/chunk-000/file-000.json"
+  },
+  "reference_interface": {
+    "commit": "33ae6a67274f36d2e29525b86f23a56616ef43a7",
+    "files": {
+      "droid/franka/robot.py": {
+        "url": "https://raw.githubusercontent.com/droid-dataset/droid/33ae6a67274f36d2e29525b86f23a56616ef43a7/droid/franka/robot.py",
+        "sha256": "25f2edf095b13f590371a4c53c8fbf0b8948d5c08b42600542a579917442ec38"
+      },
+      "droid/robot_ik/robot_ik_solver.py": {
+        "url": "https://raw.githubusercontent.com/droid-dataset/droid/33ae6a67274f36d2e29525b86f23a56616ef43a7/droid/robot_ik/robot_ik_solver.py",
+        "sha256": "c32df1ea7e8c56fc32b8560c0a057892c505d1a05fa0a850540b50b6e964c57d"
+      },
+      "droid/misc/transformations.py": {
+        "url": "https://raw.githubusercontent.com/droid-dataset/droid/33ae6a67274f36d2e29525b86f23a56616ef43a7/droid/misc/transformations.py",
+        "sha256": "125b51eaa7014e0663d0405f2057939332d8b8e5caf8b74ba2783e8ae03b48fa"
+      }
+    },
+    "status": "reference_only_historical_match_unverified",
+    "parameters": {
+      "max_translation_delta": 0.075,
+      "max_rotation_delta": 0.15,
+      "gripper_action_space": "position"
+    }
+  }
 }
