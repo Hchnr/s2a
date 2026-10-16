@@ -1,0 +1,29 @@
+{
+  "unit_tests": {
+    "passed": 23,
+    "integration_deselected": 1
+  },
+  "external_integration": {
+    "passed": 1,
+    "unit_deselected": 23
+  },
+  "ruff_check": "passed",
+  "ruff_format_check": "passed",
+  "wheel_build": "passed",
+  "wheel_installed_runtime_smoke": "passed",
+  "code_commit": "b82b0b619dcc8725182aecf6b6d59d065eb27eb1",
+  "test_rollouts_valid": 70,
+  "final_command_norm_rate_constraints": "passed",
+  "max_test_translation_rotation_command_rate": [
+    1.892805773333328,
+    3.7856115466666553
+  ],
+  "translation_rotation_command_rate_limits": [
+    1.8928057733333268,
+    3.7856115466666536
+  ],
+  "source_hashes_verified": 23,
+  "artifact_hashes_verified": 19,
+  "wheel_sha256": "ac9ef00a6a030a6dc04200c0f4c2bd27e7d82d13112eaab5503a399f5e6374f3",
+  "report_regeneration_identical_files": 17
+}

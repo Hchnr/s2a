@@ -1,6 +1,6 @@
 # AGENTS.md — S2A
 
-先读 `README.md` 和 `plans/001_state_to_action.md`。本仓库研究：世界模型输出期望 state/delta_state，经 S2A 反解 action，再通过固定控制器和机器人得到期望状态。
+先读 `README.md` 和 `plans/v0.0.1/001_state_to_action.md`。本仓库研究：世界模型输出期望 state/delta_state，经 S2A 反解 action，再通过固定控制器和机器人得到期望状态。
 
 - 后续实现、测试、配置、报告及实验产物都在 `/share/project/eai_pwm/home/hcr/repos/s2a` 下维护；命令从本仓库执行。
 - `src/s2a/` 放可复用算法，`scripts/` 放实验入口，`tests/` 放测试，`configs/` 放显式配置，`plans/` 与 `reports/` 保留在 Git 范围内，生成产物写 `outputs/`。

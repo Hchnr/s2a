@@ -20,11 +20,26 @@
     "require_pose_dim_mask": true
   },
   "split_intervals_half_open": {
-    "fit": [30, 210],
-    "gap_1": [210, 220],
-    "validation": [220, 260],
-    "gap_2": [260, 270],
-    "test": [270, 330]
+    "fit": [
+      30,
+      210
+    ],
+    "gap_1": [
+      210,
+      220
+    ],
+    "validation": [
+      220,
+      260
+    ],
+    "gap_2": [
+      260,
+      270
+    ],
+    "test": [
+      270,
+      330
+    ]
   },
   "controller": {
     "family": "droid_franka",
@@ -32,5 +47,145 @@
     "historical_version": null,
     "deployment_config_verified": false
   },
-  "output_dir": "outputs/droid_episode0"
+  "output_dir": "outputs/droid_episode0",
+  "files": {
+    "r2_metadata": "meta/episodes/chunk-000/file-000.parquet",
+    "r1_metadata": "meta/episodes/chunk-000/file-000.parquet",
+    "r2_numeric": "data/chunk-000/file-000.parquet",
+    "r1_numeric": "data/chunk-000/file-000.parquet",
+    "processing": "processing/chunk-000/file-000.jsonl",
+    "receipt": "_receipts/data/chunk-000/file-000.json"
+  },
+  "reference_interface": {
+    "commit": "33ae6a67274f36d2e29525b86f23a56616ef43a7",
+    "files": {
+      "droid/franka/robot.py": {
+        "url": "https://raw.githubusercontent.com/droid-dataset/droid/33ae6a67274f36d2e29525b86f23a56616ef43a7/droid/franka/robot.py",
+        "sha256": "25f2edf095b13f590371a4c53c8fbf0b8948d5c08b42600542a579917442ec38"
+      },
+      "droid/robot_ik/robot_ik_solver.py": {
+        "url": "https://raw.githubusercontent.com/droid-dataset/droid/33ae6a67274f36d2e29525b86f23a56616ef43a7/droid/robot_ik/robot_ik_solver.py",
+        "sha256": "c32df1ea7e8c56fc32b8560c0a057892c505d1a05fa0a850540b50b6e964c57d"
+      },
+      "droid/misc/transformations.py": {
+        "url": "https://raw.githubusercontent.com/droid-dataset/droid/33ae6a67274f36d2e29525b86f23a56616ef43a7/droid/misc/transformations.py",
+        "sha256": "125b51eaa7014e0663d0405f2057939332d8b8e5caf8b74ba2783e8ae03b48fa"
+      }
+    },
+    "status": "reference_only_historical_match_unverified",
+    "parameters": {
+      "max_translation_delta": 0.075,
+      "max_rotation_delta": 0.15,
+      "gripper_action_space": "position"
+    }
+  },
+  "identification": {
+    "structures": [
+      "diagonal",
+      "full"
+    ],
+    "history_steps": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "lag_steps": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "ridge_grid": [
+      1.0,
+      0.01,
+      0.0001
+    ],
+    "inverse_regularization": 0.1,
+    "warmup_transitions": 8,
+    "max_B_condition": 10000,
+    "moving_translation_m_s": 0.01,
+    "moving_rotation_rad_s": 0.03
+  },
+  "rollout": {
+    "methods": [
+      "FF",
+      "P",
+      "PI",
+      "PD",
+      "PID"
+    ],
+    "feedforward_kinds": [
+      "analytic",
+      "linear"
+    ],
+    "kp_grid": [
+      0.5,
+      2.0,
+      5.0
+    ],
+    "ki_grid": [
+      0.2,
+      1.0
+    ],
+    "kd_grid": [
+      0.02,
+      0.1
+    ],
+    "warmup_transitions": 8,
+    "scenarios": [
+      "nominal",
+      "initial_offset",
+      "response_gain",
+      "delay",
+      "constant_disturbance",
+      "observation_noise",
+      "stationary"
+    ],
+    "initial_offset": [
+      0.01,
+      -0.01,
+      0.01,
+      0.03,
+      -0.02,
+      0.01
+    ],
+    "response_gain": 0.7,
+    "extra_delay_steps": 1,
+    "constant_disturbance": [
+      0.003,
+      -0.002,
+      0.001,
+      0.01,
+      -0.005,
+      0.005
+    ],
+    "observation_noise_std": [
+      0.0005,
+      0.0005,
+      0.0005,
+      0.002,
+      0.002,
+      0.002
+    ],
+    "position_scale_m": 0.01,
+    "rotation_scale_rad": 0.05,
+    "stationary_steps": 80,
+    "settle_position_m": 0.002,
+    "settle_rotation_rad": 0.01,
+    "pid_limits": {
+      "tau_d": 0.1,
+      "integral_limit": 0.2,
+      "max_translation_speed": 0.25,
+      "max_rotation_speed": 1.0,
+      "max_translation_acceleration": 2.0,
+      "max_rotation_acceleration": 8.0,
+      "max_feedback_gap": 0.25,
+      "max_observation_age": 0.15,
+      "derivative_on_measurement": true,
+      "pi_margin": 0.05
+    }
+  }
 }
