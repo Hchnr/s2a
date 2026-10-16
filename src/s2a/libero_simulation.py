@@ -26,7 +26,12 @@ from s2a.osc import OSCInterface, OSCStateToAction
 def configure_simulator(config, output):
     config_dir = output / "libero_config"
     config_dir.mkdir(parents=True, exist_ok=True)
-    (config_dir / "config.yaml").write_bytes(Path(config["libero_config"]).read_bytes())
+    data = Path(config["libero_config"]).read_bytes()
+    target = config_dir / "config.yaml"
+    if not target.exists() or target.read_bytes() != data:
+        temporary = config_dir / f"config.{os.getpid()}.yaml"
+        temporary.write_bytes(data)
+        temporary.replace(target)
     os.environ.update(
         LIBERO_CONFIG_PATH=str(config_dir),
         MUJOCO_GL="osmesa",
@@ -196,6 +201,7 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
     """Execute actual MuJoCo steps; save pre/post state, target and sent action."""
     import imageio.v2 as imageio
 
+    config = {**config, "server_url": config.get("server_urls", [config["server_url"]] * 5)[trial]}
     fixture = json.loads(Path(config["fixture"]).read_text())
     record = fixture["episodes"][trial]
     if record["episode"] != config["episodes"][trial]:

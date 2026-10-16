@@ -15,10 +15,14 @@ def main():
     parser.add_argument("--config", default="configs/libero_simulation.json")
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--gpu", type=int, default=0)
+    parser.add_argument("--port", type=int)
     parser.add_argument("--max-wait-seconds", type=float, default=3600)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     config, output = load_config(args.config)
+    port = args.port if args.port is not None else 8180 + args.gpu
+    serving_dir = output / ("serving" if port == 8180 else f"serving_{port}")
+    suffix = "" if port == 8180 else f"_{port}"
     if args.seed != config["seed"]:
         raise ValueError("seed differs from frozen experiment")
     repo = Path(config["cosmos_repo"])
@@ -42,11 +46,11 @@ def main():
         "--checkpoint-path",
         str(iteration / "model"),
         "--output-dir",
-        str(output / "serving"),
+        str(serving_dir),
         "--host",
         "127.0.0.1",
         "--port",
-        "8180",
+        str(port),
         "--attention-backend",
         "sdpa",
         "--no-compile",
@@ -74,7 +78,7 @@ def main():
         idle = memory < 500 and utilization == 0
         idle_since = (idle_since or time.monotonic()) if idle else None
         waiting = dict(stage="waiting_for_unused_gpu", gpu=args.gpu, memory_used_mib=memory, utilization=utilization)
-        write_json(output / "server_status.json", waiting)
+        write_json(output / f"server_status{suffix}.json", waiting)
         if idle_since is not None and time.monotonic() - idle_since >= 10:
             break
         if time.monotonic() - started > args.max_wait_seconds:
@@ -89,13 +93,13 @@ def main():
         "cosmos_commit": subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip(),
         "gpu": args.gpu,
     }
-    write_json(output / "server_launch.json", snapshot)
-    with (output / "serving.log").open("w") as log:
+    write_json(output / f"server_launch{suffix}.json", snapshot)
+    with (output / f"serving{suffix}.log").open("w") as log:
         process = subprocess.Popen(command, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-        write_json(output / "server_process.json", {**snapshot, "pid": process.pid})
-        write_json(output / "server_status.json", dict(stage="loading", pid=process.pid, gpu=args.gpu))
+        write_json(output / f"server_process{suffix}.json", {**snapshot, "pid": process.pid})
+        write_json(output / f"server_status{suffix}.json", dict(stage="loading", pid=process.pid, gpu=args.gpu))
         code = process.wait()
-    write_json(output / "server_status.json", dict(stage="exited", pid=process.pid, exit_code=code))
+    write_json(output / f"server_status{suffix}.json", dict(stage="exited", pid=process.pid, exit_code=code))
     print(json.dumps(dict(exit_code=code)), flush=True)
     raise SystemExit(code)
 

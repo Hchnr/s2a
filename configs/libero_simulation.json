@@ -12,6 +12,7 @@
   "historical_iteration_unavailable": "iter_000005600",
   "historical_results": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/outputs/action128_eval_20261014/summary.json",
   "server_url": "http://127.0.0.1:8180",
+  "server_urls": ["http://127.0.0.1:8180", "http://127.0.0.1:8181", "http://127.0.0.1:8182", "http://127.0.0.1:8183", "http://127.0.0.1:8184"],
   "task_suite": "libero_goal",
   "task_id": 8,
   "task_text": "put the bowl on the plate",
