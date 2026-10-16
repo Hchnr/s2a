@@ -51,3 +51,11 @@ def test_command_rate_is_limited_after_inverse_and_affine_encoding():
     np.testing.assert_allclose(command["command"][0], 0.25)
     command = converter.convert(np.eye(4), advance(np.eye(4), [-0.1, 0, 0, 0, 0, 0], 1), np.zeros(6))
     np.testing.assert_allclose(command["command"][0], 0)
+
+
+def test_large_rotation_preserves_baseline_and_does_not_abort_rollout():
+    target = advance(np.eye(4), [0, 0, 0, 0, 0, np.pi - 0.01], 1)
+    converter = OSCStateToAction(interface(), np.full(6, 150), np.full(6, 25), 0.05, compensate=True)
+    result = converter.convert(np.eye(4), target, np.zeros(6))
+    assert not result["rotation_inverse_enabled"]
+    np.testing.assert_allclose(result["command"], [0, 0, 0, 0, 0, 1])

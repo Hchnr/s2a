@@ -75,9 +75,12 @@ class OSCStateToAction:
             raise ValueError("OSC conversion requires individual poses")
         velocity = finite(measured_velocity, (6,))
         endpoint_error = pose_error(desired, measured)
-        if np.linalg.norm(endpoint_error[3:]) >= np.pi - 0.05:
-            raise ValueError("orientation endpoint too close to pi")
+        rotation_inverse_enabled = bool(np.linalg.norm(endpoint_error[3:]) <= 0.25)
         inverse_delta = (endpoint_error - self.momentum * velocity) / self.response
+        # The inner orientation spring uses sin(angle), whereas the inverse
+        # linearization uses angle. Preserve the baseline for large rotations.
+        if not rotation_inverse_enabled:
+            inverse_delta[3:] = endpoint_error[3:]
         delta = endpoint_error.copy()
         if self.compensate:
             delta += self.inverse_weight * (inverse_delta - endpoint_error)
@@ -99,4 +102,5 @@ class OSCStateToAction:
             "predicted_motion": self.response * sent_delta + self.momentum * velocity,
             "saturated": saturated,
             "rate_limited": rate_limited,
+            "rotation_inverse_enabled": rotation_inverse_enabled,
         }
