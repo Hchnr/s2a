@@ -215,6 +215,20 @@ def main():
                 ]
                 paired["initial_prediction_max_abs"] = float(np.max(abs(first_predictions[0] - first_predictions[1])))
                 paired["same_core_sources"] = True
+                horizon = config["execution_horizon"]
+                np.testing.assert_allclose(
+                    [r["desired_tcp"] for r in traces["baseline"][:horizon]],
+                    [r["desired_tcp"] for r in traces["compensated"][:horizon]],
+                    atol=1e-12,
+                )
+                paired["same_initial_chunk_targets"] = True
+                paired["initial_chunk_tracking"] = {}
+                for c, rows in traces.items():
+                    errors = np.asarray([r["tracking_error_tcp"] for r in rows[:horizon]])
+                    paired["initial_chunk_tracking"][c] = dict(
+                        position_rmse_m=float(np.sqrt(np.mean(np.sum(errors[:, :3] ** 2, axis=1)))),
+                        rotation_rmse_rad=float(np.sqrt(np.mean(np.sum(errors[:, 3:] ** 2, axis=1)))),
+                    )
             comparisons.append(paired)
     complete = len(cases) == sum(expected.values())
     if complete:

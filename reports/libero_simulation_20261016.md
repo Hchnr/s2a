@@ -1,6 +1,6 @@
 # LIBERO S2A 独立仿真对照
 
-完成状态：27/37；进行中，未执行项不计为通过。
+完成状态：32/37；进行中，未执行项不计为通过。
 
 Checkpoint：`iter_000008800`，同一warm-start run；历史5600权重已清理，旧0/5不能直接作为新权重的baseline。
 
@@ -15,6 +15,7 @@ Checkpoint：`iter_000008800`，同一warm-start run；历史5600权重已清理
 | oracle | compensated | 5 | 1/5 | 0.004447 | 0.007593 | 0.062653 |
 | prediction_replay | baseline | 5 | 0/5 | 0.039077 | 1.902458 | 0.122909 |
 | prediction_replay | compensated | 5 | 0/5 | 0.126066 | 1.807854 | 0.113670 |
+| policy | baseline | 5 | 0/5 | 0.041538 | 1.890796 | 0.114244 |
 
 baseline沿用TCP局部delta积分、TCP→source转换、OSC affine inverse及原夹爪position目标。新增补偿使用固定内环PD响应的二阶解析近似、当前实测速度、0.5逆权重及最终每轴5/s命令变化率限制；旋转误差超过0.25rad时关闭旋转逆近似。原OSC增益、物理模型和夹爪控制路径不变。
 

@@ -1,8 +1,8 @@
 {
   "complete": false,
-  "executed_cases": 27,
+  "executed_cases": 32,
   "expected_cases": 37,
-  "checked_output_files": 195,
+  "checked_output_files": 2105,
   "checked_source_files": 8,
   "finite_traces": true,
   "physical_clock": true,
