@@ -51,6 +51,9 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/run_experiment.py --config configs/d
 # 可单独运行 extract / analytic / calibrate；报告重绘不重新拟合或打开 test
 LD_LIBRARY_PATH='' .venv/bin/python scripts/run_experiment.py --seed 42 --stage report --plots
 
+# 产物/实验源码指纹与 70 个 test rollout 最终命令约束（不重新拟合）
+LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_artifacts.py --seed 42
+
 # 显式读取外部发布数据的集成测试
 LD_LIBRARY_PATH='' .venv/bin/python -m pytest tests -m integration --data-config configs/droid_episode0.json
 ```
