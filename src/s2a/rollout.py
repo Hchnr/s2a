@@ -34,7 +34,9 @@ def simulate(
     state = reference.sample(times[0])[0]
     initial = np.array(settings["initial_offset"]) if scenario in {"initial_offset", "stationary"} else np.zeros(6)
     state = advance(state, initial, 1.0)
-    queue = [np.zeros(6) for _ in range(model.lag + (settings["extra_delay_steps"] if scenario == "delay" else 0))]
+    queue = [np.zeros(6) for _ in range(model.lag)]
+    input_queue = [np.zeros(6) for _ in range(settings["extra_delay_steps"] if scenario == "delay" else 0)]
+    applied_commands = []
     commands, motions, observed_motions = [], [], []
     previous_measured = None
     trace = {
@@ -46,6 +48,7 @@ def simulate(
             "integral",
             "derivative",
             "command",
+            "applied_command",
             "raw_velocity",
             "velocity",
             "saturated",
@@ -79,8 +82,10 @@ def simulate(
         except ValueError as error:
             return {"valid": False, "reason": str(error), "completed_transitions": i}, None
         command = result["command"]
-        true_history = past_vector(commands, motions, model.history)
-        prediction = model.predict(command, true_history)
+        input_queue.append(command.copy())
+        applied_command = input_queue.pop(0)
+        true_history = past_vector(applied_commands, motions, model.history)
+        prediction = model.predict(applied_command, true_history)
         queue.append(prediction)
         motion = queue.pop(0)
         if scenario == "response_gain":
@@ -101,12 +106,14 @@ def simulate(
             ("integral", result["integral"]),
             ("derivative", result["derivative"]),
             ("command", command),
+            ("applied_command", applied_command),
             ("raw_velocity", result["raw_velocity"]),
             ("velocity", motion),
             ("saturated", result["saturated"]),
         ]:
             trace[key].append(np.array(value).copy())
         commands.append(command.copy())
+        applied_commands.append(applied_command.copy())
         motions.append(motion.copy())
         previous_measured = measured.copy()
         state = advance(state, motion, float(times[i + 1] - now))
@@ -229,7 +236,10 @@ def compare_controllers(config, arrays, model, params, out):
                     {"gains": gains, "validation_objective": objective, "validation_scenarios": validation}
                 )
             usable = [v for v in candidates if v["validation_objective"] is not None]
-            best = min(usable, key=lambda v: v["validation_objective"]) if usable else candidates[0]
+            best = dict(min(usable, key=lambda v: v["validation_objective"]) if usable else candidates[0])
+            best["selection_status"] = (
+                "selected_on_validation" if usable else "no_valid_gain_candidate_fixed_diagnostic"
+            )
             selected[feedforward][method] = best
             search[feedforward][method] = candidates
     # Freeze every choice before opening the test comparison.
@@ -253,6 +263,7 @@ def compare_controllers(config, arrays, model, params, out):
                     trace_arrays[f"{feedforward}__{method}__{scenario}__{key}"] = value
             results[feedforward][method] = {
                 "gains": best["gains"],
+                "selection_status": best["selection_status"],
                 "validation": best["validation_scenarios"],
                 "test": test,
             }
@@ -291,7 +302,8 @@ def compare_controllers(config, arrays, model, params, out):
                 }
             acceptance[feedforward][method] = {
                 "scenarios": comparisons,
-                "all_perturbations_passed": all(v["passed"] for k, v in comparisons.items() if k != "nominal"),
+                "all_perturbations_passed": values["selection_status"] == "selected_on_validation"
+                and all(v["passed"] for k, v in comparisons.items() if k != "nominal"),
             }
     result = {
         "evidence_level": "local_identified_model_only",

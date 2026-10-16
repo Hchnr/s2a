@@ -134,6 +134,8 @@ def extract(config, out):
         "receipt": r2 / files["receipt"],
         "processing": r2 / files["processing"],
     }
+    require(selection["include_endpoint_observation"], "endpoint observation is required")
+    require(selection["history_frames"] >= 0, "negative history length")
     ep, ep1 = selection["episode_index"], selection["original_episode_index"]
     meta = episode_metadata(paths["r2_metadata"], ep, META_COLUMNS)
     orig_meta = episode_metadata(paths["r1_metadata"], ep1, ["episode_id", "length"])
@@ -171,6 +173,10 @@ def extract(config, out):
     order = np.argsort(rows["frame_index"])
     rows = {key: value[order] for key, value in rows.items()}
     original = align_original(rows, original)
+    require(
+        np.array_equal(rows["frame_index"], np.arange(len(rows["frame_index"]))),
+        "supported episodes must have consecutive zero-based frames",
+    )
     mask = pose_transition_mask(rows)
     require(len(mask) == meta["length"] == orig_meta["length"], "episode length mismatch")
     start, end = selection["frame_start_inclusive"], selection["frame_end_exclusive"]
@@ -185,6 +191,12 @@ def extract(config, out):
     dt = rows["transition_dt"][:-1]
     require(np.allclose(dt, np.diff(rows["source_physical_timestamp"]), atol=1e-9, rtol=0), "physical dt mismatch")
     require((dt > 0).all(), "nonpositive physical clock")
+    clock = (
+        rows["robot_timestamp_seconds"]
+        - rows["robot_timestamp_seconds"][0]
+        + (rows["robot_timestamp_nanos"] - rows["robot_timestamp_nanos"][0]) * 1e-9
+    )
+    require(np.allclose(clock, rows["source_physical_timestamp"], atol=1e-8, rtol=0), "robot clock provenance mismatch")
     require(rows["transition_dt"][-1] == 0 and not rows["physical_time_valid"][-1], "invalid terminal time contract")
     g_cmd = np.max(np.abs(rows["action"][:, 9] - (1 - original["action.gripper_position"])))
     g_state = np.max(np.abs(rows["observation.state"][:, 9] - (1 - original["observation.state.gripper_position"])))

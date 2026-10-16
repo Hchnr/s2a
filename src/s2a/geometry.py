@@ -49,9 +49,9 @@ def validate_transform(value):
         raise ValueError("expected homogeneous transform")
     r = t[..., :3, :3]
     if not (
-        np.allclose(t[..., 3, :], [0, 0, 0, 1], atol=1e-8)
-        and np.allclose(r.swapaxes(-1, -2) @ r, np.eye(3), atol=1e-7)
-        and np.allclose(np.linalg.det(r), 1, atol=1e-7)
+        np.allclose(t[..., 3, :], [0, 0, 0, 1], atol=1e-8, rtol=0)
+        and np.allclose(r.swapaxes(-1, -2) @ r, np.eye(3), atol=1e-7, rtol=0)
+        and np.allclose(np.linalg.det(r), 1, atol=1e-7, rtol=0)
     ):
         raise ValueError("invalid SE(3) transform")
     return t
@@ -81,7 +81,7 @@ def transform_to_euler_pose(t):
 
 
 def pose_error(desired, measured):
-    """Base-frame translation and principal SO(3) log; reject pi ambiguity."""
+    """Base-frame translation and principal SO(3) log; PID guards pi ambiguity."""
     desired, measured = validate_transform(desired), validate_transform(measured)
     r = desired[..., :3, :3] @ measured[..., :3, :3].swapaxes(-1, -2)
     w = Rotation.from_matrix(r).as_rotvec()

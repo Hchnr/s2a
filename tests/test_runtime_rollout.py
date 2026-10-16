@@ -102,3 +102,33 @@ def test_noise_scenario_is_seeded_and_uses_no_future_observation():
     b, tb = simulate(model, DroidReferenceInterface(), ref, times, **kwargs)
     assert a == b
     assert_allclose(ta["command"], tb["command"], atol=0)
+
+
+def test_extra_command_delay_preserves_autonomous_response_dynamics():
+    settings = json.loads((REPO / "configs/droid_episode0.json").read_text())["rollout"]
+    settings["extra_delay_steps"] = 1
+    times = np.arange(13) * 0.07
+    ref = ReferenceTrajectory(
+        np.array([0.0, times[-1]]), np.array([np.eye(4), advance(np.eye(4), [0.01, 0, 0, 0, 0, 0], 1)])
+    )
+    model = LinearResponse(
+        np.eye(6), np.c_[np.zeros((6, 6)), np.eye(6) * 0.5], np.zeros(6), 0, 1, "diagonal", 0.1, np.ones(6), {}
+    )
+    value, trace = simulate(
+        model,
+        DroidReferenceInterface(),
+        ref,
+        times,
+        gains={"kp": (0.0,) * 6, "ki": (0.0,) * 6, "kd": (0.0,) * 6},
+        dt_command=0.07,
+        inverse_lambda=0.1,
+        feedforward_kind="analytic",
+        scenario="delay",
+        settings=settings,
+        seed=42,
+    )
+    assert value["valid"]
+    assert_allclose(trace["velocity"][0], 0)
+    assert_allclose(trace["velocity"][1], trace["command"][0])
+    assert_allclose(trace["velocity"][2], trace["command"][1] + 0.5 * trace["velocity"][1])
+    assert_allclose(trace["applied_command"][1:], trace["command"][:-1])

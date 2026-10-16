@@ -83,6 +83,8 @@ class PosePID:
     def update(self, measured, desired, feedforward, timestamp, *, now=None, apply=None):
         c, s = self.config, self.state
         measured, desired = validate_transform(measured), validate_transform(desired)
+        if measured.shape != (4, 4) or desired.shape != (4, 4):
+            raise ValueError("PID requires a single measured/desired pose")
         ff = finite(feedforward, (6,))
         now = timestamp if now is None else now
         if not np.isfinite([timestamp, now]).all() or now < timestamp:

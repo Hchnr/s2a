@@ -36,14 +36,14 @@ def write_json(path, value):
 def code_fingerprint():
     paths = sorted(
         p
-        for group in ["src", "scripts", "configs"]
+        for group in ["src", "scripts", "configs", "tests"]
         for p in (REPO / group).rglob("*")
         if p.is_file() and p.suffix in {".py", ".json"}
     )
     return {
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip(),
         "dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=REPO, text=True)),
-        "files_sha256": {str(p.relative_to(REPO)): sha256(p) for p in paths},
+        "files_sha256": {str(p.relative_to(REPO)): sha256(p) for p in paths + [REPO / "pyproject.toml"]},
         "python": platform.python_version(),
         "dependencies": {p: importlib.metadata.version(p) for p in ["numpy", "scipy", "pyarrow"]},
     }

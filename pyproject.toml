@@ -16,13 +16,14 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.9", "build>=1.2"]
+report = ["matplotlib>=3.8"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-m 'not integration'"
+addopts = "-m 'not integration' --basetemp=outputs/pytest"
 pythonpath = ["src"]
 markers = [
   "integration: requires explicitly configured external data or simulator",
