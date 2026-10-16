@@ -13,3 +13,5 @@ LD_LIBRARY_PATH='' .venv/bin/python -m pytest tests -m integration --data-config
 该测试重新抽取只读 episode，验证物理时钟、来源、masks、夹爪、几何与 R1 flange 交叉一致性。缺少配置、源文件或契约不符会失败。完整 P2/P3 实验由 `scripts/run_experiment.py --seed 42 --stage all --plots` 执行，结果不等同于单元测试或真机控制通过。
 
 跨数据集新增测试覆盖 native wxyz 四元数、M1 effector→link8固定方向与TCP力臂、native source row非零起点/乱序join、invalid观测边界的独立积分，以及URDF轴/原点/fixed joint（允许无效或零axis）的名义FK。真实60条跨数据集检查由 `scripts/run_cross_dataset.py --seed 42` 执行，证据分类和报告独立于pytest软件通过数。
+
+LIBERO扩展的5项OSC单元测试覆盖：非零初速度下固定PD响应的独立前向积分、历史affine inverse/clipping一致性、不可辨识短周期拒绝、最终发送命令变化率，以及大角度回退。独立MuJoCo的37项真实控制执行通过 `run_libero_matrix.py` 组织，`summarize_libero_simulation.py --seed 42` 复核状态误差/时钟/接口约束/成对输入和指纹，不计入pytest软件测试数。原生expert末行有效命令会执行，缺失的未来观测标签不进入pose/opening评分。

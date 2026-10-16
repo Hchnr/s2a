@@ -1,5 +1,5 @@
 {
-  "complete": false,
+  "complete": true,
   "checkpoint": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k/checkpoints/iter_000008800/model",
   "config": {
     "seed": 42,
@@ -135,6 +135,16 @@
       "mean_rotation_rmse_rad": 1.8907957820350212,
       "mean_aperture_rmse": 0.11424392538800159,
       "mean_saturation_fraction": 0.75
+    },
+    {
+      "stage": "policy",
+      "candidate": "compensated",
+      "completed": 5,
+      "successes": 0,
+      "mean_position_rmse_m": 0.045877919753646294,
+      "mean_rotation_rmse_rad": 1.8973410013488263,
+      "mean_aperture_rmse": 0.13173558197061955,
+      "mean_saturation_fraction": 0.8581999999999999
     }
   ],
   "cases": [
@@ -334,7 +344,7 @@
       "success": false,
       "error": null,
       "steps": 90,
-      "elapsed_s": 19.932472535874695,
+      "elapsed_s": 19.749707471113652,
       "position_rmse_m": 0.01709915865280618,
       "rotation_rmse_rad": 0.011651001024719552,
       "aperture_rmse": 0.11583729525243208,
@@ -347,12 +357,12 @@
       ],
       "unscored_terminal_rows": 1,
       "request_count": 0,
-      "code_commit": "1ef54e2b84da73e26e0692ad74375d3a15c9c023",
+      "code_commit": "b2e9e0d5e6c0856314635609b9d19085c72961bc",
       "code_dirty": false,
       "core_sources_sha256": {
         "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
-        "src/s2a/libero_simulation.py": "308248a782f595da83f1f4d71e2446ed832df45dba68a8282bd5612d61e4876b",
-        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+        "src/s2a/libero_simulation.py": "04cc6d3afa039210d3237eb02d2c3ab3df407dc3eaa286933a370ea13db4ba7f",
+        "src/s2a/osc.py": "47e15863869b044291daac1c1ead1f9c117f30f55137ea5d01bbbd950b82cf59"
       }
     },
     {
@@ -1164,6 +1174,161 @@
         "src/s2a/libero_simulation.py": "4dd04993128980ab41a279fd13e31bffb42eede8307e9ec660bb033cf91f2fbc",
         "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
       }
+    },
+    {
+      "stage": "policy",
+      "candidate": "compensated",
+      "trial": 0,
+      "episode": 43,
+      "seed": 42,
+      "initial_state_sha256": "2d144de0be01ede1da21f63c648e4a75e6ea9e16dadf3569ca342a6f9ba2c33f",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 1606.1498459919821,
+      "position_rmse_m": 0.04584812355833615,
+      "rotation_rmse_rad": 1.8537608736059348,
+      "aperture_rmse": 0.14546791928547206,
+      "saturation_fraction": 0.869,
+      "rate_limited_fraction": 0.997,
+      "max_command_change": 0.6123724356957945,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "unscored_terminal_rows": 0,
+      "request_count": 125,
+      "code_commit": "560c90510d6a4e7fac050afa333e97105c78f71f",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "4dd04993128980ab41a279fd13e31bffb42eede8307e9ec660bb033cf91f2fbc",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "policy",
+      "candidate": "compensated",
+      "trial": 1,
+      "episode": 69,
+      "seed": 43,
+      "initial_state_sha256": "785298fe650c5c0c342f08e087502b015c17b5fb0f7b23e8fedd9bbaf61eba65",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 1600.5545780411921,
+      "position_rmse_m": 0.04821771862808956,
+      "rotation_rmse_rad": 1.9037388576130643,
+      "aperture_rmse": 0.18317497340560368,
+      "saturation_fraction": 0.871,
+      "rate_limited_fraction": 0.992,
+      "max_command_change": 0.6123724356957945,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "unscored_terminal_rows": 0,
+      "request_count": 125,
+      "code_commit": "560c90510d6a4e7fac050afa333e97105c78f71f",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "4dd04993128980ab41a279fd13e31bffb42eede8307e9ec660bb033cf91f2fbc",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "policy",
+      "candidate": "compensated",
+      "trial": 2,
+      "episode": 72,
+      "seed": 44,
+      "initial_state_sha256": "e9c63a6c081079b8a7defe79cc57502e9884949bf2ce97729a584e7e81a9d1aa",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 1619.0326644370798,
+      "position_rmse_m": 0.023379192006950253,
+      "rotation_rmse_rad": 1.9443007544772373,
+      "aperture_rmse": 0.11228026792328329,
+      "saturation_fraction": 0.834,
+      "rate_limited_fraction": 0.999,
+      "max_command_change": 0.6123724356957945,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "unscored_terminal_rows": 0,
+      "request_count": 125,
+      "code_commit": "560c90510d6a4e7fac050afa333e97105c78f71f",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "4dd04993128980ab41a279fd13e31bffb42eede8307e9ec660bb033cf91f2fbc",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "policy",
+      "candidate": "compensated",
+      "trial": 3,
+      "episode": 80,
+      "seed": 45,
+      "initial_state_sha256": "8a9101785902761b65da5d2be8a2633c88af41fb2d6f710b4ec00a606f4e976a",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 1624.5293090881314,
+      "position_rmse_m": 0.05780267072333815,
+      "rotation_rmse_rad": 1.9059788495429368,
+      "aperture_rmse": 0.11523546268842356,
+      "saturation_fraction": 0.837,
+      "rate_limited_fraction": 0.998,
+      "max_command_change": 0.6123724356957945,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "unscored_terminal_rows": 0,
+      "request_count": 125,
+      "code_commit": "560c90510d6a4e7fac050afa333e97105c78f71f",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "4dd04993128980ab41a279fd13e31bffb42eede8307e9ec660bb033cf91f2fbc",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "policy",
+      "candidate": "compensated",
+      "trial": 4,
+      "episode": 132,
+      "seed": 46,
+      "initial_state_sha256": "8c4ae412e216181c736f16a73ef8cd3bb8ecbd32e8ae49836e7f8b40eec0516c",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 1621.6233833930455,
+      "position_rmse_m": 0.05414189385151735,
+      "rotation_rmse_rad": 1.8789256715049572,
+      "aperture_rmse": 0.10251928655031514,
+      "saturation_fraction": 0.88,
+      "rate_limited_fraction": 0.991,
+      "max_command_change": 0.6123724356957945,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "unscored_terminal_rows": 0,
+      "request_count": 125,
+      "code_commit": "560c90510d6a4e7fac050afa333e97105c78f71f",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "4dd04993128980ab41a279fd13e31bffb42eede8307e9ec660bb033cf91f2fbc",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
     }
   ],
   "common_prefix_comparisons": [
@@ -1309,6 +1474,141 @@
         "position_rmse_m": 0.0838628329655889,
         "rotation_rmse_rad": 1.7411331294478638
       }
+    },
+    {
+      "stage": "policy",
+      "trial": 0,
+      "common_steps": 1000,
+      "baseline": {
+        "position_rmse_m": 0.05572431202175205,
+        "rotation_rmse_rad": 1.8346709156839869
+      },
+      "compensated": {
+        "position_rmse_m": 0.04584812355833615,
+        "rotation_rmse_rad": 1.8537608736059348
+      },
+      "same_initial_canvas": true,
+      "initial_prediction_max_abs": 0.0,
+      "same_core_sources": true,
+      "same_initial_chunk_targets": true,
+      "initial_chunk_tracking": {
+        "baseline": {
+          "position_rmse_m": 0.03334822024384879,
+          "rotation_rmse_rad": 1.118959553643646
+        },
+        "compensated": {
+          "position_rmse_m": 0.024601931769290708,
+          "rotation_rmse_rad": 1.196191682233491
+        }
+      }
+    },
+    {
+      "stage": "policy",
+      "trial": 1,
+      "common_steps": 1000,
+      "baseline": {
+        "position_rmse_m": 0.03249955474376731,
+        "rotation_rmse_rad": 1.92777777054073
+      },
+      "compensated": {
+        "position_rmse_m": 0.04821771862808956,
+        "rotation_rmse_rad": 1.9037388576130643
+      },
+      "same_initial_canvas": true,
+      "initial_prediction_max_abs": 0.0,
+      "same_core_sources": true,
+      "same_initial_chunk_targets": true,
+      "initial_chunk_tracking": {
+        "baseline": {
+          "position_rmse_m": 0.03635388374527206,
+          "rotation_rmse_rad": 1.1129162737675553
+        },
+        "compensated": {
+          "position_rmse_m": 0.02227204100241082,
+          "rotation_rmse_rad": 1.1813717227628908
+        }
+      }
+    },
+    {
+      "stage": "policy",
+      "trial": 2,
+      "common_steps": 1000,
+      "baseline": {
+        "position_rmse_m": 0.04396704161570408,
+        "rotation_rmse_rad": 1.8987129967008445
+      },
+      "compensated": {
+        "position_rmse_m": 0.023379192006950253,
+        "rotation_rmse_rad": 1.9443007544772373
+      },
+      "same_initial_canvas": true,
+      "initial_prediction_max_abs": 0.0,
+      "same_core_sources": true,
+      "same_initial_chunk_targets": true,
+      "initial_chunk_tracking": {
+        "baseline": {
+          "position_rmse_m": 0.03360886218241697,
+          "rotation_rmse_rad": 1.089257742941169
+        },
+        "compensated": {
+          "position_rmse_m": 0.017278558001006163,
+          "rotation_rmse_rad": 1.1590347167122077
+        }
+      }
+    },
+    {
+      "stage": "policy",
+      "trial": 3,
+      "common_steps": 1000,
+      "baseline": {
+        "position_rmse_m": 0.03018777240882451,
+        "rotation_rmse_rad": 1.9291403522997912
+      },
+      "compensated": {
+        "position_rmse_m": 0.05780267072333815,
+        "rotation_rmse_rad": 1.9059788495429368
+      },
+      "same_initial_canvas": true,
+      "initial_prediction_max_abs": 0.0,
+      "same_core_sources": true,
+      "same_initial_chunk_targets": true,
+      "initial_chunk_tracking": {
+        "baseline": {
+          "position_rmse_m": 0.035418148999859025,
+          "rotation_rmse_rad": 1.0639020002714044
+        },
+        "compensated": {
+          "position_rmse_m": 0.01871804942132039,
+          "rotation_rmse_rad": 1.1317987902241389
+        }
+      }
+    },
+    {
+      "stage": "policy",
+      "trial": 4,
+      "common_steps": 1000,
+      "baseline": {
+        "position_rmse_m": 0.04530950731317808,
+        "rotation_rmse_rad": 1.8636768749497534
+      },
+      "compensated": {
+        "position_rmse_m": 0.05414189385151735,
+        "rotation_rmse_rad": 1.8789256715049572
+      },
+      "same_initial_canvas": true,
+      "initial_prediction_max_abs": 0.0,
+      "same_core_sources": true,
+      "same_initial_chunk_targets": true,
+      "initial_chunk_tracking": {
+        "baseline": {
+          "position_rmse_m": 0.03467524464897357,
+          "rotation_rmse_rad": 1.1048659503441605
+        },
+        "compensated": {
+          "position_rmse_m": 0.026352652936602397,
+          "rotation_rmse_rad": 1.1823471671948806
+        }
+      }
     }
   ],
   "source_data_sha256": {
@@ -1324,7 +1624,7 @@
   "hardware_executed": false,
   "physics": "MuJoCo 2.3.7 / robosuite 1.4.1 / original LIBERO controller",
   "evidence": {
-    "probe": "independent small-motion simulation; relative motion requests identical, current pose differs by branch",
+    "probe": "small-motion calibration/qualification probe used to choose conservative settings, not a held-out test; relative motion requests identical",
     "oracle": "expert observed delta integrated from actual initial TCP; same fixed desired trajectory; not model prediction",
     "prediction_replay": "historical iter5600 saved model targets, same fixed trajectory; no fresh image-conditioned model calls",
     "policy": "frozen iter8800 checkpoint, fresh branch images, same initial states and sampling; subsequent predictions may diverge"
@@ -1451,7 +1751,7 @@
     "ruff_format": true,
     "wheel": {
       "built": true,
-      "sha256": "52d3d0b04ee4842b77e89433a1d6254e3d4925305232f3114d26d486037cc983",
+      "sha256": "280f2958a0304f58de12f9542a9fdc9864051319cdfdd616820751a39cddc519",
       "isolated_import": true,
       "optional_simulation_module_import": true,
       "osc_forward_inverse_smoke": true,
@@ -1459,8 +1759,8 @@
         "src/s2a/artifacts.py": "4723e2b1602ee020184eff838ab4934c6868e53a7af5dded68cf547df7fa791a",
         "src/s2a/identification.py": "2e151ee88de8872d93b6f7d6e548989fb3f82359971884354433d7213a745e1e",
         "src/s2a/reporting.py": "e9161aa976fae48ba08920f6efbc00c130ccbc9c34c41af2fbb080bbd230680f",
-        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689",
-        "src/s2a/libero_simulation.py": "4dd04993128980ab41a279fd13e31bffb42eede8307e9ec660bb033cf91f2fbc",
+        "src/s2a/osc.py": "47e15863869b044291daac1c1ead1f9c117f30f55137ea5d01bbbd950b82cf59",
+        "src/s2a/libero_simulation.py": "04cc6d3afa039210d3237eb02d2c3ab3df407dc3eaa286933a370ea13db4ba7f",
         "src/s2a/__init__.py": "ca50dfd1d7e797f05795eff5eb815dd5e1193295018cbfe93704a58819bc49ba",
         "src/s2a/geometry.py": "5b2817607553860bbed1cd199457d0fd863b6a090eab928409150ad1b1d4ef8a",
         "src/s2a/data.py": "8e3429ce63456f816ca0f33cc461e2a3b0e82745a84f84d08ecbf204bff79380",
@@ -1474,6 +1774,11 @@
         "src/s2a/cross_dataset.py": "db626f8a2de46ca2d2e8f3a8dab66965685bfd31320cca4c6b2ba9e1301455b5",
         "src/s2a/kinematics.py": "5404d620cf03f195bd8a6861e4e690f81f3606e8fc0d52f2bead84404220d25c"
       }
+    },
+    "native_terminal_scoring_rerun": {
+      "commands_bitwise_unchanged": true,
+      "tracking_errors_bitwise_unchanged": true,
+      "missing_aperture_endpoint_excluded": true
     }
   },
   "serving_environment": {
@@ -1499,5 +1804,10 @@
       "6, GPU-7f176867-170c-b508-5c89-1cd819ad3b8e, NVIDIA H100 80GB HBM3, 535.183.06",
       "7, GPU-cebc8060-3ec8-9455-2af2-e4584d0c34ce, NVIDIA H100 80GB HBM3, 535.183.06"
     ]
+  },
+  "performance_decision": {
+    "task_success_improvement_observed": false,
+    "promote_compensation": false,
+    "reason": "No task-success improvement observed; retain baseline."
   }
 }

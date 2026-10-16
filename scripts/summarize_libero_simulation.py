@@ -215,7 +215,7 @@ def main():
                 ]
                 paired["initial_prediction_max_abs"] = float(np.max(abs(first_predictions[0] - first_predictions[1])))
                 paired["same_core_sources"] = True
-                horizon = config["execution_horizon"]
+                horizon = min(config["execution_horizon"], *(len(rows) for rows in traces.values()))
                 np.testing.assert_allclose(
                     [r["desired_tcp"] for r in traces["baseline"][:horizon]],
                     [r["desired_tcp"] for r in traces["compensated"][:horizon]],
@@ -278,7 +278,7 @@ def main():
         hardware_executed=False,
         physics="MuJoCo 2.3.7 / robosuite 1.4.1 / original LIBERO controller",
         evidence={
-            "probe": "independent small-motion simulation; relative motion requests identical, current pose differs by branch",
+            "probe": "small-motion calibration/qualification probe used to choose conservative settings, not a held-out test; relative motion requests identical",
             "oracle": "expert observed delta integrated from actual initial TCP; same fixed desired trajectory; not model prediction",
             "prediction_replay": "historical iter5600 saved model targets, same fixed trajectory; no fresh image-conditioned model calls",
             "policy": "frozen iter8800 checkpoint, fresh branch images, same initial states and sampling; subsequent predictions may diverge",
@@ -338,11 +338,55 @@ def main():
         "",
         "5个历史episode属于训练可见数据，一个任务的回归试验不代表泛化。解析内环模型未包含接触、力矩限幅和完整非线性；状态跟踪改善与任务成功分别判断。原生expert正控如果未成功也如实计入，不排除样本。",
         "",
+        "实际仿真机器人为MountedPanda（Franka Panda固定底座）+ PandaGripper；控制点gripper0_grip_site，观测、速度与OSC物理增量统一在MuJoCo world frame。probe用于选择保守参数，是标定/资格检查，不作为留出测试。",
+        "",
         "两候选的夹爪均沿用历史评测的aperture→原position actuator转换，本轮补偿仅作用于机械臂；native正控执行原始gripper action，不覆盖为aperture目标。补偿读取当前仿真control site的线速度/角速度，反馈没有额外估计噪声。历史baseline最初8步的发送命令/位置已与原记录逐项比对；长接触轨迹不要求浮点位级复现。",
         "",
         "policy采用与历史相同的同步仿真：模型推理期间物理时钟暂停，未模拟推理延迟，不代表实时部署性能。初始chunk的专家标签仅由独立离线诊断脚本读取，未进入正在运行的策略或用于重新调参。",
         "",
         "完整请求、物理前后状态、目标、原始/发送命令、控制器参数、视频与源码/数据指纹见 `outputs/libero_simulation/`。",
+        "",
+    ]
+    if complete:
+        policy = {c["candidate"]: c for c in cohorts if c["stage"] == "policy"}
+        before, after = policy["baseline"], policy["compensated"]
+        improved = after["successes"] > before["successes"]
+        report["performance_decision"] = dict(
+            task_success_improvement_observed=improved,
+            promote_compensation=False,
+            reason=(
+                "No task-success improvement observed; retain baseline."
+                if not improved
+                else "Single-task regression evidence requires further review before promotion."
+            ),
+        )
+        change = 100 * (after["mean_position_rmse_m"] / before["mean_position_rmse_m"] - 1)
+        oracle = {c["candidate"]: c for c in cohorts if c["stage"] == "oracle"}
+        oracle_before, oracle_after = oracle["baseline"], oracle["compensated"]
+        pair_checks = [p for p in comparisons if p["stage"] == "policy"]
+        prediction_difference = max(p["initial_prediction_max_abs"] for p in pair_checks)
+        outcome = "未观察到本补偿对任务执行的改善" if not improved else "观察到任务成功数增加，仍需更多回归验证"
+        lines += [
+            f"当前结论：模型实时闭环baseline成功{before['successes']}/{before['completed']}，补偿{after['successes']}/{after['completed']}；位置误差{before['mean_position_rmse_m'] * 1000:.2f}→{after['mean_position_rmse_m'] * 1000:.2f}mm（{change:+.1f}%），{outcome}。oracle位置误差{oracle_before['mean_position_rmse_m'] * 1000:.2f}→{oracle_after['mean_position_rmse_m'] * 1000:.2f}mm，任务成功{oracle_before['successes']}/{oracle_before['completed']}→{oracle_after['successes']}/{oracle_after['completed']}；不能由几何或局部跟踪改善推断操作成功。",
+            "",
+            f"{len(pair_checks)}对policy核心源码/配置、初始图像及首chunk目标已核对一致，首次{config['action_chunk_size']}步模型预测最大绝对差为{prediction_difference:.6g}。两分支之后按各自真实图像重新预测，未复用另一分支的未来观测。",
+            "",
+        ]
+    if "initial_prediction_diagnostics" in report:
+        stats = report["initial_prediction_diagnostics"]["mean"]
+        lines += [
+            f"初始预测离线诊断：前8步预测旋转均值{stats['first8_predicted_rotation_mean_rad']:.6f}rad，专家{stats['first8_expert_rotation_mean_rad']:.6f}rad；首16步旋转误差{stats['rotation_geodesic_rmse_rad']:.6f}rad，原始opening越界比例{stats['raw_opening_outside_fraction']:.2%}。这提示目标质量存在问题，尚不能单独归因所有失败；夹爪响应/接触和正控未全通过也是限制。未用该诊断重新调参。",
+            "",
+        ]
+    if complete:
+        lines += [
+            "曲线：[PNG](../outputs/libero_simulation/figures/control_tracking.png) / [PDF](../outputs/libero_simulation/figures/control_tracking.pdf)。",
+            "",
+        ]
+    historical = Path(config["historical_results"])
+    implementation = historical.parent / "transfer/implementation/run_action128_libero_eval.py"
+    lines += [
+        f"历史定位：[1000步评测结果]({historical}:1)，[动作转换与执行实现]({implementation}:153)；10000步扩展的取消记录位于同级 `action128_eval_20261014_10000steps/cancelled.json`。完整checkpoint路径见本报告JSON及 `configs/libero_simulation.json`。",
         "",
     ]
     (output / "report.md").write_text("\n".join(lines))
@@ -365,6 +409,10 @@ def main():
             compensated_sent_rate=True,
             paired_fixed_references=True,
             performance_accepted=None,
+            task_success_improvement_observed=report.get("performance_decision", {}).get(
+                "task_success_improvement_observed"
+            ),
+            promote_compensation=False,
             note="Integrity checks are separate from task success and tracking improvement.",
         ),
     )
