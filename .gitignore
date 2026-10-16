@@ -1,0 +1,41 @@
+# Local environments and Python tooling
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+/build/
+/dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.ipynb_checkpoints/
+
+# Generated experiments, local datasets and model weights
+/outputs/
+/data/
+/datasets/
+/checkpoints/
+/weights/
+/runs/
+/tmp/
+*.log
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Local credentials and editor files
+.env
+.env.*
+!.env.example
+/credentials/
+.DS_Store
+*.swp
+*.swo
+
+# Keep plans/, configs/, reports/, source and tests versionable.

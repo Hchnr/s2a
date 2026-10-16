@@ -1,0 +1,36 @@
+{
+  "experiment_name": "droid_episode0",
+  "seed": 42,
+  "sources": {
+    "catalog": "/share/project/liyue/data/parquet-data/action128-full-20261015/Cosmos3-DROID-eef/Cosmos3-DROID-eef.parquet",
+    "action128_root": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/Cosmos3-DROID/eef",
+    "original_root": "/share/mixed/projset/eai_pwm/datasets/action_processed_r1/Cosmos3-DROID/success",
+    "action_domain": "franka_panda__parallel_gripper/eef20/observed_local_delta/droid_robotiq2f85_closed_pad_observed_eef10_to_action128_v1",
+    "source_episode_id": "AUTOLab/success/2023-07-07/Fri_Jul__7_09:42:23_2023"
+  },
+  "selection": {
+    "episode_index": 0,
+    "original_episode_index": 0,
+    "frame_start_inclusive": 30,
+    "frame_end_exclusive": 330,
+    "include_endpoint_observation": true,
+    "history_frames": 3,
+    "require_training_eligible": true,
+    "require_physical_time_valid_for_pose": true,
+    "require_pose_dim_mask": true
+  },
+  "split_intervals_half_open": {
+    "fit": [30, 210],
+    "gap_1": [210, 220],
+    "validation": [220, 260],
+    "gap_2": [260, 270],
+    "test": [270, 330]
+  },
+  "controller": {
+    "family": "droid_franka",
+    "robot_serial": null,
+    "historical_version": null,
+    "deployment_config_verified": false
+  },
+  "output_dir": "outputs/droid_episode0"
+}
