@@ -78,5 +78,114 @@
       "max_rotation_delta": 0.15,
       "gripper_action_space": "position"
     }
+  },
+  "identification": {
+    "structures": [
+      "diagonal",
+      "full"
+    ],
+    "history_steps": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "lag_steps": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "ridge_grid": [
+      1.0,
+      0.01,
+      0.0001
+    ],
+    "inverse_regularization": 0.1,
+    "warmup_transitions": 8,
+    "max_B_condition": 10000,
+    "moving_translation_m_s": 0.01,
+    "moving_rotation_rad_s": 0.03
+  },
+  "rollout": {
+    "methods": [
+      "FF",
+      "P",
+      "PI",
+      "PD",
+      "PID"
+    ],
+    "feedforward_kinds": [
+      "analytic",
+      "linear"
+    ],
+    "kp_grid": [
+      0.5,
+      2.0,
+      5.0
+    ],
+    "ki_grid": [
+      0.2,
+      1.0
+    ],
+    "kd_grid": [
+      0.02,
+      0.1
+    ],
+    "warmup_transitions": 8,
+    "scenarios": [
+      "nominal",
+      "initial_offset",
+      "response_gain",
+      "delay",
+      "constant_disturbance",
+      "observation_noise",
+      "stationary"
+    ],
+    "initial_offset": [
+      0.01,
+      -0.01,
+      0.01,
+      0.03,
+      -0.02,
+      0.01
+    ],
+    "response_gain": 0.7,
+    "extra_delay_steps": 1,
+    "constant_disturbance": [
+      0.003,
+      -0.002,
+      0.001,
+      0.01,
+      -0.005,
+      0.005
+    ],
+    "observation_noise_std": [
+      0.0005,
+      0.0005,
+      0.0005,
+      0.002,
+      0.002,
+      0.002
+    ],
+    "position_scale_m": 0.01,
+    "rotation_scale_rad": 0.05,
+    "stationary_steps": 80,
+    "settle_position_m": 0.002,
+    "settle_rotation_rad": 0.01,
+    "pid_limits": {
+      "tau_d": 0.1,
+      "integral_limit": 0.2,
+      "max_translation_speed": 0.25,
+      "max_rotation_speed": 1.0,
+      "max_translation_acceleration": 2.0,
+      "max_rotation_acceleration": 8.0,
+      "max_feedback_gap": 0.25,
+      "max_observation_age": 0.15,
+      "derivative_on_measurement": true,
+      "pi_margin": 0.05
+    }
   }
 }
