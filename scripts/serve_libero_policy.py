@@ -75,9 +75,23 @@ def main():
             ["nvidia-smi", "--query-gpu=memory.used,utilization.gpu", "--format=csv,noheader,nounits"], text=True
         ).splitlines()
         memory, utilization = map(int, rows[args.gpu].split(","))
-        idle = memory < 500 and utilization == 0
+        processes = subprocess.check_output(["ps", "-eo", "comm=,args="], text=True).splitlines()
+        training = any(
+            line.lstrip().startswith("python")
+            and any(
+                name in line for name in ("cosmos_framework.scripts.train", "run_native_e2e.py", "run_fresh_e2e.py")
+            )
+            for line in processes
+        )
+        idle = memory < 500 and utilization == 0 and not training
         idle_since = (idle_since or time.monotonic()) if idle else None
-        waiting = dict(stage="waiting_for_unused_gpu", gpu=args.gpu, memory_used_mib=memory, utilization=utilization)
+        waiting = dict(
+            stage="waiting_for_unused_gpu",
+            gpu=args.gpu,
+            memory_used_mib=memory,
+            utilization=utilization,
+            active_training=training,
+        )
         write_json(output / f"server_status{suffix}.json", waiting)
         if idle_since is not None and time.monotonic() - idle_since >= 10:
             break
