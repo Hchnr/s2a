@@ -666,6 +666,13 @@
         "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
         "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
         "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      },
+      "historical_reproduction": {
+        "first8_command_max_abs": 2.220446049250313e-16,
+        "first8_target_composition_max_abs": 2.7755575615628914e-16,
+        "first8_position_max_norm_m": 1.734723475976807e-18,
+        "full_position_max_norm_m": 0.11697714197070096,
+        "note": "Initial action/state parity verified; long contact rollouts may diverge under roundoff."
       }
     },
     {
@@ -696,6 +703,13 @@
         "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
         "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
         "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      },
+      "historical_reproduction": {
+        "first8_command_max_abs": 4.440892098500626e-15,
+        "first8_target_composition_max_abs": 3.3306690738754696e-16,
+        "first8_position_max_norm_m": 2.3263411494723067e-16,
+        "full_position_max_norm_m": 0.0633361380617911,
+        "note": "Initial action/state parity verified; long contact rollouts may diverge under roundoff."
       }
     },
     {
@@ -726,6 +740,13 @@
         "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
         "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
         "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      },
+      "historical_reproduction": {
+        "first8_command_max_abs": 4.440892098500626e-15,
+        "first8_target_composition_max_abs": 3.3306690738754696e-16,
+        "first8_position_max_norm_m": 2.625399534362271e-16,
+        "full_position_max_norm_m": 3.637383086383575e-09,
+        "note": "Initial action/state parity verified; long contact rollouts may diverge under roundoff."
       }
     },
     {
@@ -756,6 +777,13 @@
         "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
         "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
         "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      },
+      "historical_reproduction": {
+        "first8_command_max_abs": 6.661338147750939e-16,
+        "first8_target_composition_max_abs": 2.220446049250313e-16,
+        "first8_position_max_norm_m": 3.642919299551295e-17,
+        "full_position_max_norm_m": 0.014524453157420781,
+        "note": "Initial action/state parity verified; long contact rollouts may diverge under roundoff."
       }
     },
     {
@@ -786,6 +814,13 @@
         "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
         "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
         "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      },
+      "historical_reproduction": {
+        "first8_command_max_abs": 1.887379141862766e-15,
+        "first8_target_composition_max_abs": 3.3306690738754696e-16,
+        "first8_position_max_norm_m": 2.380556418436547e-16,
+        "full_position_max_norm_m": 0.020591157705536028,
+        "note": "Initial action/state parity verified; long contact rollouts may diverge under roundoff."
       }
     },
     {
@@ -1101,5 +1136,12 @@
     "oracle": "expert observed delta integrated from actual initial TCP; same fixed desired trajectory; not model prediction",
     "prediction_replay": "historical iter5600 saved model targets, same fixed trajectory; no fresh image-conditioned model calls",
     "policy": "frozen iter8800 checkpoint, fresh branch images, same initial states and sampling; subsequent predictions may diverge"
+  },
+  "checkpoint_fingerprint": {
+    "sha256": "9ed1f3fdb3529e00aedba54337255da2a24fe36f72d9533c2f5532564078d3ea",
+    "checkpoint_files": 163,
+    "checkpoint_bytes": 32399035595,
+    "inference_source_files": 334,
+    "note": "All checkpoint bytes SHA256 captured; current file sizes checked, full per-file ledger in outputs."
   }
 }

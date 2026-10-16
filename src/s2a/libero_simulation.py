@@ -37,7 +37,9 @@ def configure_simulator(config, output):
         MUJOCO_GL="osmesa",
         PYOPENGL_PLATFORM="osmesa",
         NUMBA_CACHE_DIR=str(output / "numba_cache"),
+        MPLCONFIGDIR=str(output / "matplotlib"),
     )
+    sys.dont_write_bytecode = True
     sys.path.insert(0, config["libero_root"])
     # Resolve only the missing system OSMesa library. Python still starts with
     # LD_LIBRARY_PATH='' as required in this NGC environment.

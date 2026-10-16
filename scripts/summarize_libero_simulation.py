@@ -6,9 +6,10 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 from s2a.artifacts import REPO, load_config, sha256, write_json
-from s2a.geometry import pose_error, validate_transform
+from s2a.geometry import inverse, pose_error, rot6d_to_matrix, transform, validate_transform
 
 
 def main():
@@ -105,6 +106,39 @@ def main():
                     if k in ("src/s2a/osc.py", "src/s2a/libero_simulation.py", "configs/libero_simulation.json")
                 },
             )
+            if stage == "prediction_replay" and result["candidate"] == "baseline":
+                old_path = (
+                    Path(config["historical_results"]).parent / "closed_loop" / f"trial{result['trial']}" / "trace.json"
+                )
+                old = json.loads(old_path.read_text())
+                old_command = np.asarray([r["executed"] for r in old["conversions"]])[:, :6]
+                position = np.asarray([r["after_source"] for r in rows])[:, :3, 3]
+                old_position = np.asarray([r["robot0_eef_pos"] for r in old["observations"][1:]])
+                observation = old["observations"][0]
+                target = (
+                    transform(
+                        observation["robot0_eef_pos"], Rotation.from_quat(observation["robot0_eef_quat"]).as_matrix()
+                    )
+                    @ h
+                )
+                composition_error = 0.0
+                for row in old["conversions"][:8]:
+                    action = np.asarray(row["predicted"])
+                    target = target @ transform(action[:3], rot6d_to_matrix(action[3:9]))
+                    composition_error = max(
+                        composition_error, float(np.max(abs(target @ inverse(h) - row["target_pose"])))
+                    )
+                if composition_error > 1e-10:
+                    raise ValueError("TCP target integration differs from historical adapter")
+                np.testing.assert_allclose(command[:8], old_command[:8], atol=1e-10, rtol=0)
+                np.testing.assert_allclose(position[:8], old_position[:8], atol=1e-10, rtol=0)
+                summary["historical_reproduction"] = dict(
+                    first8_command_max_abs=float(np.max(abs(command[:8] - old_command[:8]))),
+                    first8_target_composition_max_abs=composition_error,
+                    first8_position_max_norm_m=float(np.max(np.linalg.norm(position[:8] - old_position[:8], axis=1))),
+                    full_position_max_norm_m=float(np.max(np.linalg.norm(position - old_position, axis=1))),
+                    note="Initial action/state parity verified; long contact rollouts may diverge under roundoff.",
+                )
             if stage == "policy":
                 expected_checkpoint = (
                     Path(config["checkpoint_run"]) / "checkpoints" / config["checkpoint_iteration"] / "model"
@@ -218,6 +252,22 @@ def main():
             "policy": "frozen iter8800 checkpoint, fresh branch images, same initial states and sampling; subsequent predictions may diverge",
         },
     )
+    fingerprints = output / "checkpoint_fingerprints.json"
+    if fingerprints.is_file():
+        checkpoint = json.loads(fingerprints.read_text())
+        for path, entry in checkpoint["checkpoint_files"].items():
+            if Path(path).stat().st_size != entry["bytes"]:
+                raise ValueError("checkpoint file size changed after full SHA256 capture")
+        report["checkpoint_fingerprint"] = dict(
+            sha256=sha256(fingerprints),
+            checkpoint_files=len(checkpoint["checkpoint_files"]),
+            checkpoint_bytes=checkpoint["total_checkpoint_bytes"],
+            inference_source_files=len(checkpoint["cosmos_sources_sha256"]),
+            note="All checkpoint bytes SHA256 captured; current file sizes checked, full per-file ledger in outputs.",
+        )
+        hashes[fingerprints.name] = sha256(fingerprints)
+    elif complete:
+        raise ValueError("Full checkpoint SHA256 ledger is required for a final report")
     write_json(output / "summary.json", report)
     lines = [
         "# LIBERO S2A 独立仿真对照",
@@ -246,6 +296,8 @@ def main():
         "表中是各episode完整执行期的RMSE均值；成功提前停止可改变样本长度。JSON另存两候选相同步数前缀指标，oracle/固定预测逐点核对相同目标。policy误差衡量各自模型目标的跟踪，不能把下降单独解释为模型预测更正确。",
         "",
         "5个历史episode属于训练可见数据，一个任务的回归试验不代表泛化。解析内环模型未包含接触、力矩限幅和完整非线性；状态跟踪改善与任务成功分别判断。原生expert正控如果未成功也如实计入，不排除样本。",
+        "",
+        "两候选的夹爪均沿用历史评测的aperture→原position actuator转换，本轮补偿仅作用于机械臂；native正控执行原始gripper action，不覆盖为aperture目标。补偿读取当前仿真control site的线速度/角速度，反馈没有额外估计噪声。历史baseline最初8步的发送命令/位置已与原记录逐项比对；长接触轨迹不要求浮点位级复现。",
         "",
         "完整请求、物理前后状态、目标、原始/发送命令、控制器参数、视频与源码/数据指纹见 `outputs/libero_simulation/`。",
         "",
