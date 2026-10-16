@@ -94,3 +94,27 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_artifacts.py --seed 42
 ```
 
 完整产物位于 `outputs/droid_episode0/`；Git 内保留 [报告](../../reports/droid_episode0_20261016.md)、[精简指标](../../reports/droid_episode0_20261016.json)、[验证摘要](../../reports/validation_20261016.json)。本轮未执行项是已确认的证据边界，不是测试通过项。
+
+## 补充：同型号跨数据集验证
+
+用户追问后已执行扩展，详细结果见 [跨数据集报告](../../reports/cross_dataset_franka.md) 与 [验证摘要](../../reports/cross_dataset_franka_validation.json)。真机执行仍为0；DROID所用机器人型号是Franka Emika Panda + Robotiq 2F85。当前基础转换是零训练解析式：
+
+```text
+T_BC_desired_next = T_BC_now @ Delta_T_C
+T_BF_desired_next = T_BC_desired_next @ inverse(H_FC)
+```
+
+完整chunk从锚点连续积分，反馈不反复重设目标；DROID参考接口用position差、复合旋转的EulerXYZ差及固定缩放编码，并独立映射夹爪。线性逆/PID属于另外的候选补偿，原有性能未达完整验收的结论不变。
+
+扩展实验commit `f3f7214`（启动clean，seed42）：名单在2bc696a冻结，未因结果替换。RoboMIND-v1的Panda日志30条共4251转移，M1/A1仿真日志20/10条共15070转移；全部60条通过几何检查。官方M1数据卡已确认其为仿真，纠正了盘点时的临时分类，未计入真实机器人结果。
+
+| 真实机器人日志 cohort | episode / 转移 | 单步最大 m / rad | 累计最大 m / rad | 候选下一状态 vs master-target名义FK 的RMSE m / rad |
+| --- | --- | --- | --- | --- |
+| RoboMIND-v1 Robotiq工具 | 20 / 2428 | 6.01e-8 / 5.70e-8 | 1.19e-7 / 4.46e-8 | .030775 / .060538 |
+| RoboMIND-v1 Panda工具 | 10 / 1823 | 7.19e-8 / 5.43e-8 | 1.21e-7 / 3.24e-7 | .021538 / .045045 |
+
+同机械臂型号的解析表示转换可跨数据集成立；几何1e-8量级只反映float32日志表示一致性，不是历史TCP标定精度，也不是机器人控制精度。RoboMIND的puppet关节经名义Panda FK与原始EEF观测RMSE约2.1–2.2e-8m，支持当前运动学约定；master joint target的FK仍只是目标代理，历史teleoperation/controller映射未确认。
+
+M1保存的Cartesian action字段与下一观测候选之差为 .002872m/.004434rad；A1该差异接近数值舍入，不据此认定控制器逆已解决。RoboMIND的夹爪是derived-next-observation，M1夹爪为masked，A1是native absolute target，分别保留。没有把DROID的.075/.15缩放、物理dt、前向模型或PID增益转移过去。
+
+新增验证后：28项独立软件测试通过，1项DROID外部集成通过；新wheel构建/安装后的cross-dataset与FK smoke通过；62个本次产物hash、29个实验源码hash核对通过，154个输入文件hash随运行保存。60条逐episode数值结果重跑一致；原DROID的70个模型内rollout与指纹仍通过。没有执行新的硬件或独立仿真控制，闭环泛化仍待验证。
