@@ -9,3 +9,5 @@
 首轮仅有日志、几何和单 episode 局部模型内证据；增益调度/小网络、独立仿真与真机未执行。不能以日志 action 误差或局部模型的自洽宣称控制成功。
 
 跨数据集扩展见 `cross_dataset_franka.md` 和 `cross_dataset_franka.json`：RoboMIND-v1真实机器人日志与M1/A1仿真日志分别列出，不计作真机执行。完整逐帧样本、指纹和日志在 `outputs/cross_dataset_franka/`。
+
+后续独立物理仿真见 `libero_simulation_20261016.md` / `.json` 及对应validation文件。分别列出原生expert、oracle状态参考、旧5600模型预测固定参考，以及新8800模型实时图像闭环；执行状态以报告完成计数为准。它不改变首轮DROID日志/模型内实验的证据等级，也不构成真机验证。重建入口为 `scripts/summarize_libero_simulation.py --seed 42`。

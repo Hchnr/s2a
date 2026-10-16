@@ -1,0 +1,1105 @@
+{
+  "complete": false,
+  "checkpoint": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k/checkpoints/iter_000008800/model",
+  "config": {
+    "seed": 42,
+    "output_dir": "outputs/libero_simulation",
+    "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+    "libero_root": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/LIBERO",
+    "libero_config": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/config/config.yaml",
+    "osmesa_library": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/systemlibs/usr/lib/x86_64-linux-gnu/libOSMesa.so.8.0.0",
+    "fixture": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_bowl_plate_eval5/episodes.json",
+    "tool_contract": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef/meta/eef_tool_contract.json",
+    "checkpoint_run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+    "checkpoint_iteration": "iter_000008800",
+    "historical_iteration_unavailable": "iter_000005600",
+    "historical_results": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/outputs/action128_eval_20261014/summary.json",
+    "server_url": "http://127.0.0.1:8180",
+    "server_urls": [
+      "http://127.0.0.1:8180",
+      "http://127.0.0.1:8181",
+      "http://127.0.0.1:8182",
+      "http://127.0.0.1:8183",
+      "http://127.0.0.1:8184"
+    ],
+    "task_suite": "libero_goal",
+    "task_id": 8,
+    "task_text": "put the bowl on the plate",
+    "trials": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "episodes": [
+      43,
+      69,
+      72,
+      80,
+      132
+    ],
+    "max_steps": 1000,
+    "control_fps": 20,
+    "action_chunk_size": 16,
+    "execution_horizon": 8,
+    "sampling_steps": 35,
+    "guidance": 1.5,
+    "shift": 5.0,
+    "render_resolution": 256,
+    "action_domain": "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1",
+    "inverse_weight": 0.5,
+    "max_command_rate": 5.0,
+    "oracle_extra_hold_steps": 40,
+    "probe_steps": 120,
+    "probe_translation_amplitude_m": 0.002,
+    "probe_rotation_amplitude_rad": 0.01
+  },
+  "cohorts": [
+    {
+      "stage": "probe",
+      "candidate": "baseline",
+      "completed": 1,
+      "successes": 0,
+      "mean_position_rmse_m": 0.0018451539258785583,
+      "mean_rotation_rmse_rad": 0.008918706742127008,
+      "mean_aperture_rmse": 0.015370333661296217,
+      "mean_saturation_fraction": 0.0
+    },
+    {
+      "stage": "probe",
+      "candidate": "compensated",
+      "completed": 1,
+      "successes": 0,
+      "mean_position_rmse_m": 0.0015764485550557596,
+      "mean_rotation_rmse_rad": 0.006084380137542052,
+      "mean_aperture_rmse": 0.015216198925289852,
+      "mean_saturation_fraction": 0.0
+    },
+    {
+      "stage": "native",
+      "candidate": "baseline",
+      "completed": 5,
+      "successes": 4,
+      "mean_position_rmse_m": 0.012000207903814352,
+      "mean_rotation_rmse_rad": 0.011077602172525524,
+      "mean_aperture_rmse": 0.07351735804587914,
+      "mean_saturation_fraction": 0.0
+    },
+    {
+      "stage": "oracle",
+      "candidate": "baseline",
+      "completed": 5,
+      "successes": 1,
+      "mean_position_rmse_m": 0.02621039648006527,
+      "mean_rotation_rmse_rad": 0.03140579078525813,
+      "mean_aperture_rmse": 0.07731164090212009,
+      "mean_saturation_fraction": 0.011006788366684103
+    },
+    {
+      "stage": "oracle",
+      "candidate": "compensated",
+      "completed": 5,
+      "successes": 1,
+      "mean_position_rmse_m": 0.004446771771797415,
+      "mean_rotation_rmse_rad": 0.007593318661868019,
+      "mean_aperture_rmse": 0.06265321522705926,
+      "mean_saturation_fraction": 0.08158065111609772
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "baseline",
+      "completed": 5,
+      "successes": 0,
+      "mean_position_rmse_m": 0.03907733244211308,
+      "mean_rotation_rmse_rad": 1.9024581795210007,
+      "mean_aperture_rmse": 0.12290856245432875,
+      "mean_saturation_fraction": 0.6962
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "compensated",
+      "completed": 5,
+      "successes": 0,
+      "mean_position_rmse_m": 0.126065668361458,
+      "mean_rotation_rmse_rad": 1.8078543902230717,
+      "mean_aperture_rmse": 0.11367041300960992,
+      "mean_saturation_fraction": 0.9857999999999999
+    }
+  ],
+  "cases": [
+    {
+      "stage": "probe",
+      "candidate": "baseline",
+      "trial": 0,
+      "episode": 43,
+      "seed": 42,
+      "initial_state_sha256": "2d144de0be01ede1da21f63c648e4a75e6ea9e16dadf3569ca342a6f9ba2c33f",
+      "success": false,
+      "error": null,
+      "steps": 120,
+      "elapsed_s": 28.158818972995505,
+      "position_rmse_m": 0.0018451539258785583,
+      "rotation_rmse_rad": 0.008918706742127008,
+      "aperture_rmse": 0.015370333661296217,
+      "saturation_fraction": 0.0,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.09694667351988966,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "probe",
+      "candidate": "compensated",
+      "trial": 0,
+      "episode": 43,
+      "seed": 42,
+      "initial_state_sha256": "2d144de0be01ede1da21f63c648e4a75e6ea9e16dadf3569ca342a6f9ba2c33f",
+      "success": false,
+      "error": null,
+      "steps": 120,
+      "elapsed_s": 27.392356095835567,
+      "position_rmse_m": 0.0015764485550557596,
+      "rotation_rmse_rad": 0.006084380137542052,
+      "aperture_rmse": 0.015216198925289852,
+      "saturation_fraction": 0.0,
+      "rate_limited_fraction": 0.4,
+      "max_command_change": 0.49646194573389063,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "native",
+      "candidate": "baseline",
+      "trial": 0,
+      "episode": 43,
+      "seed": 42,
+      "initial_state_sha256": "2d144de0be01ede1da21f63c648e4a75e6ea9e16dadf3569ca342a6f9ba2c33f",
+      "success": true,
+      "error": null,
+      "steps": 76,
+      "elapsed_s": 18.04444146808237,
+      "position_rmse_m": 0.011212216071943318,
+      "rotation_rmse_rad": 0.016737059971509628,
+      "aperture_rmse": 0.056347382495741304,
+      "saturation_fraction": 0.0,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.3417449874973908,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "e760b3766ae3158c778ac88feb08e33683d6f370",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "native",
+      "candidate": "baseline",
+      "trial": 1,
+      "episode": 69,
+      "seed": 43,
+      "initial_state_sha256": "785298fe650c5c0c342f08e087502b015c17b5fb0f7b23e8fedd9bbaf61eba65",
+      "success": true,
+      "error": null,
+      "steps": 81,
+      "elapsed_s": 18.497689184034243,
+      "position_rmse_m": 0.011366005044652122,
+      "rotation_rmse_rad": 0.011487186996968076,
+      "aperture_rmse": 0.05873308206894693,
+      "saturation_fraction": 0.0,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.25729125182428214,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "native",
+      "candidate": "baseline",
+      "trial": 2,
+      "episode": 72,
+      "seed": 44,
+      "initial_state_sha256": "e9c63a6c081079b8a7defe79cc57502e9884949bf2ce97729a584e7e81a9d1aa",
+      "success": true,
+      "error": null,
+      "steps": 76,
+      "elapsed_s": 17.87118641496636,
+      "position_rmse_m": 0.009680740152978548,
+      "rotation_rmse_rad": 0.007729214933827672,
+      "aperture_rmse": 0.07744963245199149,
+      "saturation_fraction": 0.0,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.3438079728480385,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "native",
+      "candidate": "baseline",
+      "trial": 3,
+      "episode": 80,
+      "seed": 45,
+      "initial_state_sha256": "8a9101785902761b65da5d2be8a2633c88af41fb2d6f710b4ec00a606f4e976a",
+      "success": true,
+      "error": null,
+      "steps": 74,
+      "elapsed_s": 16.987231482984498,
+      "position_rmse_m": 0.01064291959669159,
+      "rotation_rmse_rad": 0.007783547935602685,
+      "aperture_rmse": 0.059864732967209844,
+      "saturation_fraction": 0.0,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.2965119288993139,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "native",
+      "candidate": "baseline",
+      "trial": 4,
+      "episode": 132,
+      "seed": 46,
+      "initial_state_sha256": "8c4ae412e216181c736f16a73ef8cd3bb8ecbd32e8ae49836e7f8b40eec0516c",
+      "success": false,
+      "error": null,
+      "steps": 90,
+      "elapsed_s": 19.932472535874695,
+      "position_rmse_m": 0.01709915865280618,
+      "rotation_rmse_rad": 0.011651001024719552,
+      "aperture_rmse": 0.11519196024550614,
+      "saturation_fraction": 0.0,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.3061502857241514,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "1ef54e2b84da73e26e0692ad74375d3a15c9c023",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "308248a782f595da83f1f4d71e2446ed832df45dba68a8282bd5612d61e4876b",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "oracle",
+      "candidate": "baseline",
+      "trial": 0,
+      "episode": 43,
+      "seed": 42,
+      "initial_state_sha256": "2d144de0be01ede1da21f63c648e4a75e6ea9e16dadf3569ca342a6f9ba2c33f",
+      "success": false,
+      "error": null,
+      "steps": 126,
+      "elapsed_s": 29.598497197963297,
+      "position_rmse_m": 0.026299444644367398,
+      "rotation_rmse_rad": 0.035653224964932916,
+      "aperture_rmse": 0.06781029866265982,
+      "saturation_fraction": 0.015873015873015872,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.21585598112550958,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "58e6e06ed9a464a19b7b437ffcbb6f6bcb67a32f",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "oracle",
+      "candidate": "baseline",
+      "trial": 1,
+      "episode": 69,
+      "seed": 43,
+      "initial_state_sha256": "785298fe650c5c0c342f08e087502b015c17b5fb0f7b23e8fedd9bbaf61eba65",
+      "success": false,
+      "error": null,
+      "steps": 131,
+      "elapsed_s": 28.539915119064972,
+      "position_rmse_m": 0.022972656057485583,
+      "rotation_rmse_rad": 0.029819968136652657,
+      "aperture_rmse": 0.093126045559623,
+      "saturation_fraction": 0.022900763358778626,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.24708000838824798,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "oracle",
+      "candidate": "baseline",
+      "trial": 2,
+      "episode": 72,
+      "seed": 44,
+      "initial_state_sha256": "e9c63a6c081079b8a7defe79cc57502e9884949bf2ce97729a584e7e81a9d1aa",
+      "success": false,
+      "error": null,
+      "steps": 129,
+      "elapsed_s": 28.656417711172253,
+      "position_rmse_m": 0.025254952446646453,
+      "rotation_rmse_rad": 0.03377220364693447,
+      "aperture_rmse": 0.08998195674856693,
+      "saturation_fraction": 0.0,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.16576467248843277,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "oracle",
+      "candidate": "baseline",
+      "trial": 3,
+      "episode": 80,
+      "seed": 45,
+      "initial_state_sha256": "8a9101785902761b65da5d2be8a2633c88af41fb2d6f710b4ec00a606f4e976a",
+      "success": false,
+      "error": null,
+      "steps": 123,
+      "elapsed_s": 26.76947347004898,
+      "position_rmse_m": 0.02461406008818779,
+      "rotation_rmse_rad": 0.024164450791051575,
+      "aperture_rmse": 0.06270430256817337,
+      "saturation_fraction": 0.016260162601626018,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.16703202490711336,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "oracle",
+      "candidate": "baseline",
+      "trial": 4,
+      "episode": 132,
+      "seed": 46,
+      "initial_state_sha256": "8c4ae412e216181c736f16a73ef8cd3bb8ecbd32e8ae49836e7f8b40eec0516c",
+      "success": true,
+      "error": null,
+      "steps": 69,
+      "elapsed_s": 16.184461959870532,
+      "position_rmse_m": 0.031910869163639125,
+      "rotation_rmse_rad": 0.03361910638671904,
+      "aperture_rmse": 0.07293560097157722,
+      "saturation_fraction": 0.0,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 0.18755310027237332,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "oracle",
+      "candidate": "compensated",
+      "trial": 0,
+      "episode": 43,
+      "seed": 42,
+      "initial_state_sha256": "2d144de0be01ede1da21f63c648e4a75e6ea9e16dadf3569ca342a6f9ba2c33f",
+      "success": false,
+      "error": null,
+      "steps": 126,
+      "elapsed_s": 30.055675345938653,
+      "position_rmse_m": 0.0052926606644428855,
+      "rotation_rmse_rad": 0.009508914845563638,
+      "aperture_rmse": 0.06706831320444832,
+      "saturation_fraction": 0.14285714285714285,
+      "rate_limited_fraction": 0.1111111111111111,
+      "max_command_change": 0.34637062372112115,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "58e6e06ed9a464a19b7b437ffcbb6f6bcb67a32f",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "oracle",
+      "candidate": "compensated",
+      "trial": 1,
+      "episode": 69,
+      "seed": 43,
+      "initial_state_sha256": "785298fe650c5c0c342f08e087502b015c17b5fb0f7b23e8fedd9bbaf61eba65",
+      "success": false,
+      "error": null,
+      "steps": 131,
+      "elapsed_s": 28.980335065163672,
+      "position_rmse_m": 0.003561897040312513,
+      "rotation_rmse_rad": 0.006374966351381549,
+      "aperture_rmse": 0.055166308950238815,
+      "saturation_fraction": 0.04580152671755725,
+      "rate_limited_fraction": 0.061068702290076333,
+      "max_command_change": 0.3685342119082633,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": true,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "oracle",
+      "candidate": "compensated",
+      "trial": 2,
+      "episode": 72,
+      "seed": 44,
+      "initial_state_sha256": "e9c63a6c081079b8a7defe79cc57502e9884949bf2ce97729a584e7e81a9d1aa",
+      "success": false,
+      "error": null,
+      "steps": 129,
+      "elapsed_s": 28.32886242400855,
+      "position_rmse_m": 0.004341448252827207,
+      "rotation_rmse_rad": 0.008231637803828835,
+      "aperture_rmse": 0.06004022520355229,
+      "saturation_fraction": 0.046511627906976744,
+      "rate_limited_fraction": 0.06201550387596899,
+      "max_command_change": 0.3628204487250257,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": true,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "oracle",
+      "candidate": "compensated",
+      "trial": 3,
+      "episode": 80,
+      "seed": 45,
+      "initial_state_sha256": "8a9101785902761b65da5d2be8a2633c88af41fb2d6f710b4ec00a606f4e976a",
+      "success": false,
+      "error": null,
+      "steps": 123,
+      "elapsed_s": 27.21550124208443,
+      "position_rmse_m": 0.004053730555443154,
+      "rotation_rmse_rad": 0.0063824749297947255,
+      "aperture_rmse": 0.0614660455791807,
+      "saturation_fraction": 0.06504065040650407,
+      "rate_limited_fraction": 0.016260162601626018,
+      "max_command_change": 0.3069776694554499,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "oracle",
+      "candidate": "compensated",
+      "trial": 4,
+      "episode": 132,
+      "seed": 46,
+      "initial_state_sha256": "8c4ae412e216181c736f16a73ef8cd3bb8ecbd32e8ae49836e7f8b40eec0516c",
+      "success": true,
+      "error": null,
+      "steps": 65,
+      "elapsed_s": 15.23280581110157,
+      "position_rmse_m": 0.004984122345961312,
+      "rotation_rmse_rad": 0.007468599378771347,
+      "aperture_rmse": 0.06952518319787616,
+      "saturation_fraction": 0.1076923076923077,
+      "rate_limited_fraction": 0.07692307692307693,
+      "max_command_change": 0.3557481818355779,
+      "actual_dt_range_s": [
+        0.04999999999999449,
+        0.050000000000000044
+      ],
+      "request_count": 0,
+      "code_commit": "fa7838c0b81ee621566f849025b8d6147793900b",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "e0df828f69c329bcedde735a62787124e5daf324cbe7a6006bfe7fee4248d2c0"
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "baseline",
+      "trial": 0,
+      "episode": 43,
+      "seed": 42,
+      "initial_state_sha256": "2d144de0be01ede1da21f63c648e4a75e6ea9e16dadf3569ca342a6f9ba2c33f",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 189.56053826096468,
+      "position_rmse_m": 0.04421560532298999,
+      "rotation_rmse_rad": 1.905779532808399,
+      "aperture_rmse": 0.10256160513528277,
+      "saturation_fraction": 0.756,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 3.6401995081400162,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "request_count": 0,
+      "code_commit": "e760b3766ae3158c778ac88feb08e33683d6f370",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "baseline",
+      "trial": 1,
+      "episode": 69,
+      "seed": 43,
+      "initial_state_sha256": "785298fe650c5c0c342f08e087502b015c17b5fb0f7b23e8fedd9bbaf61eba65",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 182.38678429601714,
+      "position_rmse_m": 0.030748378498790085,
+      "rotation_rmse_rad": 1.9212176826536047,
+      "aperture_rmse": 0.1757284007158591,
+      "saturation_fraction": 0.756,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 3.4755092770659566,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "request_count": 0,
+      "code_commit": "e760b3766ae3158c778ac88feb08e33683d6f370",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "baseline",
+      "trial": 2,
+      "episode": 72,
+      "seed": 44,
+      "initial_state_sha256": "e9c63a6c081079b8a7defe79cc57502e9884949bf2ce97729a584e7e81a9d1aa",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 190.77350603812374,
+      "position_rmse_m": 0.0410013098437842,
+      "rotation_rmse_rad": 1.9110223632504335,
+      "aperture_rmse": 0.1153035706493072,
+      "saturation_fraction": 0.667,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 3.54702008164094,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "request_count": 0,
+      "code_commit": "e760b3766ae3158c778ac88feb08e33683d6f370",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "baseline",
+      "trial": 3,
+      "episode": 80,
+      "seed": 45,
+      "initial_state_sha256": "8a9101785902761b65da5d2be8a2633c88af41fb2d6f710b4ec00a606f4e976a",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 190.93513410305604,
+      "position_rmse_m": 0.03508703392548481,
+      "rotation_rmse_rad": 1.8863992220315235,
+      "aperture_rmse": 0.1098563747609569,
+      "saturation_fraction": 0.646,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 3.484447602305054,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "request_count": 0,
+      "code_commit": "e760b3766ae3158c778ac88feb08e33683d6f370",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "baseline",
+      "trial": 4,
+      "episode": 132,
+      "seed": 46,
+      "initial_state_sha256": "8c4ae412e216181c736f16a73ef8cd3bb8ecbd32e8ae49836e7f8b40eec0516c",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 188.46997397206724,
+      "position_rmse_m": 0.04433433461951633,
+      "rotation_rmse_rad": 1.8878720968610432,
+      "aperture_rmse": 0.1110928610102377,
+      "saturation_fraction": 0.656,
+      "rate_limited_fraction": 0.0,
+      "max_command_change": 3.494863270878767,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "request_count": 0,
+      "code_commit": "e760b3766ae3158c778ac88feb08e33683d6f370",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "b757fe606e209d577855b93fdfe5ca2265dc31dc09e9f5e1a74322e997907adf",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "compensated",
+      "trial": 0,
+      "episode": 43,
+      "seed": 42,
+      "initial_state_sha256": "2d144de0be01ede1da21f63c648e4a75e6ea9e16dadf3569ca342a6f9ba2c33f",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 185.09890163620003,
+      "position_rmse_m": 0.06080017493413693,
+      "rotation_rmse_rad": 1.8560505916531844,
+      "aperture_rmse": 0.10248945242696388,
+      "saturation_fraction": 0.983,
+      "rate_limited_fraction": 0.998,
+      "max_command_change": 0.6123724356957945,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "request_count": 0,
+      "code_commit": "1ef54e2b84da73e26e0692ad74375d3a15c9c023",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "308248a782f595da83f1f4d71e2446ed832df45dba68a8282bd5612d61e4876b",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "compensated",
+      "trial": 1,
+      "episode": 69,
+      "seed": 43,
+      "initial_state_sha256": "785298fe650c5c0c342f08e087502b015c17b5fb0f7b23e8fedd9bbaf61eba65",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 190.54891855595633,
+      "position_rmse_m": 0.2302869664387298,
+      "rotation_rmse_rad": 1.7805413087225401,
+      "aperture_rmse": 0.11154769666021941,
+      "saturation_fraction": 0.994,
+      "rate_limited_fraction": 0.994,
+      "max_command_change": 0.6123724356957945,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "request_count": 0,
+      "code_commit": "1ef54e2b84da73e26e0692ad74375d3a15c9c023",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "308248a782f595da83f1f4d71e2446ed832df45dba68a8282bd5612d61e4876b",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "compensated",
+      "trial": 2,
+      "episode": 72,
+      "seed": 44,
+      "initial_state_sha256": "e9c63a6c081079b8a7defe79cc57502e9884949bf2ce97729a584e7e81a9d1aa",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 187.300999840023,
+      "position_rmse_m": 0.11030560224595727,
+      "rotation_rmse_rad": 1.8521428116867114,
+      "aperture_rmse": 0.12643003036881542,
+      "saturation_fraction": 0.989,
+      "rate_limited_fraction": 1.0,
+      "max_command_change": 0.6123724356957945,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "request_count": 0,
+      "code_commit": "1ef54e2b84da73e26e0692ad74375d3a15c9c023",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "308248a782f595da83f1f4d71e2446ed832df45dba68a8282bd5612d61e4876b",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "compensated",
+      "trial": 3,
+      "episode": 80,
+      "seed": 45,
+      "initial_state_sha256": "8a9101785902761b65da5d2be8a2633c88af41fb2d6f710b4ec00a606f4e976a",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 187.86573849106207,
+      "position_rmse_m": 0.14507276522287701,
+      "rotation_rmse_rad": 1.8094041096050582,
+      "aperture_rmse": 0.11534977192131081,
+      "saturation_fraction": 0.984,
+      "rate_limited_fraction": 1.0,
+      "max_command_change": 0.6123724356957945,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "request_count": 0,
+      "code_commit": "1ef54e2b84da73e26e0692ad74375d3a15c9c023",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "308248a782f595da83f1f4d71e2446ed832df45dba68a8282bd5612d61e4876b",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "candidate": "compensated",
+      "trial": 4,
+      "episode": 132,
+      "seed": 46,
+      "initial_state_sha256": "8c4ae412e216181c736f16a73ef8cd3bb8ecbd32e8ae49836e7f8b40eec0516c",
+      "success": false,
+      "error": null,
+      "steps": 1000,
+      "elapsed_s": 188.00384902907535,
+      "position_rmse_m": 0.0838628329655889,
+      "rotation_rmse_rad": 1.7411331294478638,
+      "aperture_rmse": 0.11253511367074007,
+      "saturation_fraction": 0.979,
+      "rate_limited_fraction": 1.0,
+      "max_command_change": 0.6123724356957945,
+      "actual_dt_range_s": [
+        0.04999999999997229,
+        0.05000000000006111
+      ],
+      "request_count": 0,
+      "code_commit": "1ef54e2b84da73e26e0692ad74375d3a15c9c023",
+      "code_dirty": false,
+      "core_sources_sha256": {
+        "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+        "src/s2a/libero_simulation.py": "308248a782f595da83f1f4d71e2446ed832df45dba68a8282bd5612d61e4876b",
+        "src/s2a/osc.py": "9fccf308a44c7f408357095342d7b6a517f60981091cbad8ab25d754f3c90689"
+      }
+    }
+  ],
+  "common_prefix_comparisons": [
+    {
+      "stage": "probe",
+      "trial": 0,
+      "common_steps": 120,
+      "baseline": {
+        "position_rmse_m": 0.0018451539258785583,
+        "rotation_rmse_rad": 0.008918706742127008
+      },
+      "compensated": {
+        "position_rmse_m": 0.0015764485550557596,
+        "rotation_rmse_rad": 0.006084380137542052
+      }
+    },
+    {
+      "stage": "oracle",
+      "trial": 0,
+      "common_steps": 126,
+      "baseline": {
+        "position_rmse_m": 0.026299444644367398,
+        "rotation_rmse_rad": 0.035653224964932916
+      },
+      "compensated": {
+        "position_rmse_m": 0.0052926606644428855,
+        "rotation_rmse_rad": 0.009508914845563638
+      }
+    },
+    {
+      "stage": "oracle",
+      "trial": 1,
+      "common_steps": 131,
+      "baseline": {
+        "position_rmse_m": 0.022972656057485583,
+        "rotation_rmse_rad": 0.029819968136652657
+      },
+      "compensated": {
+        "position_rmse_m": 0.003561897040312513,
+        "rotation_rmse_rad": 0.006374966351381549
+      }
+    },
+    {
+      "stage": "oracle",
+      "trial": 2,
+      "common_steps": 129,
+      "baseline": {
+        "position_rmse_m": 0.025254952446646453,
+        "rotation_rmse_rad": 0.03377220364693447
+      },
+      "compensated": {
+        "position_rmse_m": 0.004341448252827207,
+        "rotation_rmse_rad": 0.008231637803828835
+      }
+    },
+    {
+      "stage": "oracle",
+      "trial": 3,
+      "common_steps": 123,
+      "baseline": {
+        "position_rmse_m": 0.02461406008818779,
+        "rotation_rmse_rad": 0.024164450791051575
+      },
+      "compensated": {
+        "position_rmse_m": 0.004053730555443154,
+        "rotation_rmse_rad": 0.0063824749297947255
+      }
+    },
+    {
+      "stage": "oracle",
+      "trial": 4,
+      "common_steps": 65,
+      "baseline": {
+        "position_rmse_m": 0.032150384368046396,
+        "rotation_rmse_rad": 0.03413172065703166
+      },
+      "compensated": {
+        "position_rmse_m": 0.004984122345961312,
+        "rotation_rmse_rad": 0.007468599378771347
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "trial": 0,
+      "common_steps": 1000,
+      "baseline": {
+        "position_rmse_m": 0.04421560532298999,
+        "rotation_rmse_rad": 1.905779532808399
+      },
+      "compensated": {
+        "position_rmse_m": 0.06080017493413693,
+        "rotation_rmse_rad": 1.8560505916531844
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "trial": 1,
+      "common_steps": 1000,
+      "baseline": {
+        "position_rmse_m": 0.030748378498790085,
+        "rotation_rmse_rad": 1.9212176826536047
+      },
+      "compensated": {
+        "position_rmse_m": 0.2302869664387298,
+        "rotation_rmse_rad": 1.7805413087225401
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "trial": 2,
+      "common_steps": 1000,
+      "baseline": {
+        "position_rmse_m": 0.0410013098437842,
+        "rotation_rmse_rad": 1.9110223632504335
+      },
+      "compensated": {
+        "position_rmse_m": 0.11030560224595727,
+        "rotation_rmse_rad": 1.8521428116867114
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "trial": 3,
+      "common_steps": 1000,
+      "baseline": {
+        "position_rmse_m": 0.03508703392548481,
+        "rotation_rmse_rad": 1.8863992220315235
+      },
+      "compensated": {
+        "position_rmse_m": 0.14507276522287701,
+        "rotation_rmse_rad": 1.8094041096050582
+      }
+    },
+    {
+      "stage": "prediction_replay",
+      "trial": 4,
+      "common_steps": 1000,
+      "baseline": {
+        "position_rmse_m": 0.04433433461951633,
+        "rotation_rmse_rad": 1.8878720968610432
+      },
+      "compensated": {
+        "position_rmse_m": 0.0838628329655889,
+        "rotation_rmse_rad": 1.7411331294478638
+      }
+    }
+  ],
+  "source_data_sha256": {
+    "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_bowl_plate_eval5/episodes.json": "a77f1693407bb9462e17cb411bbbc842b8519bc7df7f6ada93ddb7994a2212c7",
+    "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef/meta/eef_tool_contract.json": "6fcaed3fe499aacb15d03170d002b1c897091481a0022db5f2922c06320a3a0c",
+    "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/data/put_the_bowl_on_the_plate_demo.hdf5": "e69528b0cf10dfc59b20698e12ec2affc03f3887309034d3eb74cac3ec929406",
+    "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/outputs/action128_eval_20261014/closed_loop/trial0/trace.json": "d5de2c252a7bf9b6a978cc2b6c50b3ba9867cedb8e6d1b4fe2837b349e2a7623",
+    "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/outputs/action128_eval_20261014/closed_loop/trial1/trace.json": "e0633cc64c469ff0d09189b7a5054ca5f117fad6143f89fe00db402a9c6933fd",
+    "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/outputs/action128_eval_20261014/closed_loop/trial2/trace.json": "d1a807353d1c9d702c5716563fc9524c0183772b02ed119290a59dbf4204fa6e",
+    "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/outputs/action128_eval_20261014/closed_loop/trial3/trace.json": "34d16a7512b0ab41a2c5e22e33b01fc3085ed17a2b28bd2e1e25c93b45d13947",
+    "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/outputs/action128_eval_20261014/closed_loop/trial4/trace.json": "1af5998a66c060b0a233e4f23c6908f84d7dc72e720b049c2779c60d874e6144"
+  },
+  "hardware_executed": false,
+  "physics": "MuJoCo 2.3.7 / robosuite 1.4.1 / original LIBERO controller",
+  "evidence": {
+    "probe": "independent small-motion simulation; relative motion requests identical, current pose differs by branch",
+    "oracle": "expert observed delta integrated from actual initial TCP; same fixed desired trajectory; not model prediction",
+    "prediction_replay": "historical iter5600 saved model targets, same fixed trajectory; no fresh image-conditioned model calls",
+    "policy": "frozen iter8800 checkpoint, fresh branch images, same initial states and sampling; subsequent predictions may diverge"
+  }
+}

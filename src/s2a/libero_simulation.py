@@ -212,11 +212,13 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
     provenance = {
         "config": config,
         "code": code_fingerprint(),
-        "inputs_sha256": {p: sha256(p) for p in (config["fixture"], config["tool_contract"], fixture["source_hdf5"])},
+        "inputs_sha256": {p: sha256(p) for p in (config["fixture"], config["tool_contract"])},
         "runtime": {
             p: importlib.metadata.version(p) for p in ("mujoco", "robosuite", "numpy", "scipy", "torch", "h5py")
         },
     }
+    if stage in ("oracle", "native"):
+        provenance["inputs_sha256"][fixture["source_hdf5"]] = sha256(fixture["source_hdf5"])
     replay = None
     if stage == "prediction_replay":
         trace = Path(config["historical_results"]).parent / "closed_loop" / f"trial{trial}" / "trace.json"
@@ -257,7 +259,8 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
         write_json(
             dest / "controller.json", {**contract, "response": converter.response, "momentum": converter.momentum}
         )
-        reference, absolute_poses, openings, native = expert_reference(fixture, record, h)
+        if stage in ("oracle", "native"):
+            reference, absolute_poses, openings, native = expert_reference(fixture, record, h)
         length = config["max_steps"] if max_steps is None else max_steps
         if stage == "oracle":
             length = len(reference) + config["oracle_extra_hold_steps"]
@@ -269,7 +272,7 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
             length = min(length, len(replay))
         generator = np.random.default_rng(config["seed"] + 1000)
         anchor = source_pose(obs) @ h
-        oracle_alignment = anchor @ inverse(absolute_poses[0])
+        oracle_alignment = anchor @ inverse(absolute_poses[0]) if stage == "oracle" else None
         gripper_target = np.zeros(2)
         gripper = env.robots[0].gripper
 

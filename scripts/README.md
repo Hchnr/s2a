@@ -11,3 +11,7 @@
 `LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_artifacts.py --seed 42` 检查保存的产物/源码指纹、test rollout 完整性及所有最终送出命令的范数/变化率界。完整性通过与控制性能验收分别报告。
 
 `run_cross_dataset.py --seed 42` 执行冻结的60条Panda跨数据集轨迹，使用各自TCP合同验证解析式，并单列原始Cartesian action或nominal master-joint FK差异。结果写 `outputs/cross_dataset_franka/`；只读原始数字列，不执行控制。RoboMIND-v1为真实日志，M1/A1为仿真日志。各自分类、指纹与未验证项随报告保存。
+
+`run_libero_simulation.py` 是独立MuJoCo单trial入口；`run_libero_matrix.py` 组织 `qualification`、`prediction_replay` 或 `policy` 成对矩阵。仿真子进程固定用S2A的 `outputs/libero_env311`，每步实际调用环境前向控制，并保存当前状态、已生成目标、执行命令及执行后状态。`serve_libero_policy.py` 等待空闲GPU和其他训练结束，从S2A工作目录只读加载固定Cosmos权重；5个副本分别指定 `--gpu 0` 至 `--gpu 4`，端口和rendezvous互相独立。启动器是前台监控进程，服务PID保存在outputs中，仅清理本轮拥有的进程。
+
+`summarize_libero_simulation.py --seed 42` 独立核查37项实际仿真的物理时钟、state error、最终命令幅值/变化率、固定参考成对一致性和源码/输入/产物指纹。`--allow-incomplete` 只生成明确标记未完成的阶段报告，不将缺失项计为通过。完整性校验与任务成功率分开判断。所有命令前使用 `LD_LIBRARY_PATH=''`。

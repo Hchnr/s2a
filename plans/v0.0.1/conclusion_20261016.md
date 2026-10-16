@@ -118,3 +118,9 @@ T_BF_desired_next = T_BC_desired_next @ inverse(H_FC)
 M1保存的Cartesian action字段与下一观测候选之差为 .002872m/.004434rad；A1该差异接近数值舍入，不据此认定控制器逆已解决。RoboMIND的夹爪是derived-next-observation，M1夹爪为masked，A1是native absolute target，分别保留。没有把DROID的.075/.15缩放、物理dt、前向模型或PID增益转移过去。
 
 新增验证后：28项独立软件测试通过，1项DROID外部集成通过；新wheel构建/安装后的cross-dataset与FK smoke通过；62个本次产物hash、29个实验源码hash核对通过，154个输入文件hash随运行保存。60条逐episode数值结果重跑一致；原DROID的70个模型内rollout与指纹仍通过。没有执行新的硬件或独立仿真控制，闭环泛化仍待验证。
+
+## 后续 LIBERO 独立仿真（进行中）
+
+已从日志/局部模型推进到MuJoCo2.3.7、robosuite1.4.1的真实前向仿真控制，新增OSC内环响应解析反解与保守限幅，未执行真机。已完成27/37项，8800 checkpoint的10项实时模型闭环仍等待其他训练完全释放GPU。当前结果和完整性核验见 `reports/libero_simulation_20261016.md` 与对应JSON。
+
+初步结果：原生expert正控4/5；oracle两组均1/5，但位置跟踪平均26.21mm→4.45mm；旧5600模型固定预测两组均0/5，位置误差39.08mm→126.07mm，补偿恶化。不能由oracle改善宣称模型任务成功或当前补偿已有效。历史5600 checkpoint已清理，新评测固定同run8800，两候选必须重新做相同条件对照；历史0/5不作为新权重的直接baseline。
