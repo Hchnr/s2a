@@ -40,10 +40,12 @@ def main():
     dest = root / "figures"
     dest.mkdir(exist_ok=True)
     fig, axes = plt.subplots(2, 3, figsize=(14, 8))
+    z_values = []
     for column, case in enumerate(("oracle_response", "wam_affine", "wam_response")):
         rows = trace(root, case)
         actual = np.asarray([r["after_source"] for r in rows])[:, :3, 3]
         desired = np.asarray([r["desired_source"] for r in rows])[:, :3, 3]
+        z_values.extend([actual[:, 2], desired[:, 2]])
         t = np.arange(len(rows)) / c["control_fps"]
         bowl, plate = np.asarray(rows[0]["bowl_position"]), np.asarray(rows[0]["plate_position"])
         ax = axes[0, column]
@@ -59,6 +61,9 @@ def main():
         axes[1, column].axhline(bowl[2], color="grey", ls=":", label="bowl initial center z")
         axes[1, column].set(xlabel="physical simulation time [s]", ylabel="world z [m]")
         axes[1, column].legend(fontsize=7)
+    lower, upper = min(float(v.min()) for v in z_values), max(float(v.max()) for v in z_values)
+    for ax in axes[1]:
+        ax.set_ylim(lower - 0.02, upper + 0.02)
     fig.suptitle("Fixed trial 0: shared-path oracle and live WAM; HTTP pauses physics")
     save(fig, dest, "effect_paths")
     fig, axes = plt.subplots(1, 2, figsize=(13, 4))

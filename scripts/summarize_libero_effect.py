@@ -480,6 +480,18 @@ def main():
         diagnostic = verify_quasistatic(c, out, Path(cc["output_dir"]))
         summary["quasistatic_cases"] = diagnostic
         summary["quasistatic_physics_steps"] = sum(r["physical_steps"] for r in diagnostic)
+        runtime = out / "runtime_simulator.json"
+        if runtime.is_file():
+            summary["runtime_simulator"] = json.loads(runtime.read_text())
+            artifacts[str(runtime)] = sha256(runtime)
+        repeated = out / "fingerprint_midpoint/checkpoint_fingerprints.json"
+        if repeated.is_file():
+            require(
+                json.loads(repeated.read_text()) == json.loads((out / "checkpoint_fingerprints.json").read_text()),
+                "checkpoint or external source fingerprints changed during evaluation",
+            )
+            summary["midpoint_checkpoint_fingerprints_equal"] = True
+            artifacts[str(repeated)] = sha256(repeated)
         archive = out / "archives/quasistatic_horizon1000"
         archived = [json.loads(p.read_text()) for p in archive.glob("quasistatic/*/trial*/result.json")]
         summary["archived_truncated_cases"] = len(archived)
