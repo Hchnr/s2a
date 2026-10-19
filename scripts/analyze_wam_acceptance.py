@@ -75,6 +75,10 @@ def physics_diagnostics(paths, source):
             continue
         task = int(result["record"].split("_")[0].removeprefix("task"))
         steps = [json.loads(line) for line in path.with_name("steps.jsonl").read_text().splitlines()]
+        success_flags = np.asarray([r["success"] for r in steps], dtype=bool)
+        edges = np.diff(np.r_[False, success_flags, False].astype(int))
+        lengths = np.flatnonzero(edges == -1) - np.flatnonzero(edges == 1)
+        successful_steps = np.flatnonzero(success_flags)
         item = dict(
             record=result["record"],
             sampling_seed=result["sampling_seed"],
@@ -83,6 +87,9 @@ def physics_diagnostics(paths, source):
             task_object_progress=result["object_progress"][objects[task]],
             success=result["success"],
             terminal_success=result["terminal_success"],
+            success_control_steps=int(success_flags.sum()),
+            longest_success_run_steps=int(lengths.max(initial=0)),
+            first_success_step=int(successful_steps[0]) if len(successful_steps) else None,
             tracking_applicable=source != "native",
         )
         if source != "native":

@@ -107,6 +107,25 @@ def main():
             [label, *task_rates, f"{matrix['success']}/{matrix['terminal_success']}（n={matrix['completed']}）"]
         )
     parts.append(table(["参考/协议", "bowl→plate", "wine→rack", "cream→bowl", "合计曾成功/末端成功"], rows))
+    positives = [
+        [
+            label,
+            f"{d['record']}/s{d['sampling_seed']}",
+            d["success_control_steps"],
+            d["longest_success_run_steps"],
+            f"{(d['first_success_step'] + 1) / c['control_fps']:.2f}",
+            int(d["terminal_success"]),
+        ]
+        for label, matrix in comparisons[2:]
+        for d in matrix["diagnostics"]
+        if d["success"]
+    ]
+    if positives:
+        parts += [
+            "### WAM曾满足成功谓词的用例",
+            "曾成功按原生谓词如实计数，同时报告20Hz控制端点中满足谓词的步数；瞬时命中不等于稳定放置。该诊断不改变原成功定义、末端判据或600步预算。首次时刻从本条评测起算。",
+            table(["checkpoint/协议", "初态/seed", "成功控制步", "最长连续成功步", "首次时刻s", "末端成功"], positives),
+        ]
     parts += [
         "## 参考跟踪与执行范围",
         "下表为各用例RMSE/MAE的最小–最大值，非把整条轨迹峰值称为RMSE，也不是不同长度实验的简单平均。任务结果即使失败也保留全部600步。",
