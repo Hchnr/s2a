@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+import xml.etree.ElementTree as ET
 from collections import defaultdict
 from pathlib import Path
 
@@ -55,6 +56,7 @@ def main():
     parser.add_argument("--config", default="configs/libero_wam_effect_20261019.json")
     parser.add_argument("--component-config", default="configs/libero_wam_components_20261019.json")
     parser.add_argument("--seed", type=int, required=True)
+    parser.add_argument("--stage", action="append", choices=["controls", "wam", "components"])
     args = parser.parse_args()
     c = json.loads(Path(args.config).read_text())
     cc = json.loads(Path(args.component_config).read_text())
@@ -65,6 +67,12 @@ def main():
     h = np.asarray(json.loads(Path(c["tool_contract"]).read_text())["source_from_tcp"])
     hi, dt, horizon = np.linalg.inv(h), 1 / c["control_fps"], c["execution_horizon"]
     bounds = json.loads((out / "contact_bounds/bounds.json").read_text())
+    gripper_xml = []
+    for record in fixture["episodes"]:
+        xml = ET.fromstring(record["model_xml"])
+        subtree = next(n for n in xml.iter("body") if n.get("name") == "gripper0_right_gripper")
+        gripper_xml.append(hashlib.sha256(ET.tostring(subtree)).hexdigest())
+    require(len(set(gripper_xml)) == 1, "geometry bound cannot be shared across different grippers")
     specification = yaml.safe_load((Path(c["checkpoint_run"]) / "config.yaml").read_text())
     specification = specification["model"]["config"]["action128_spec"]
     spec = specification["transforms"][specification["registry"]["domains"].index(c["action_domain"])]
@@ -83,6 +91,8 @@ def main():
         (c, "wam", [r for r in c["effect_cases"] if r["source"] == "wam"]),
         (cc, "components", cc["component_cases"]),
     ):
+        if args.stage and stage not in args.stage:
+            continue
         root = Path(config["output_dir"])
         matrix = json.loads((root / f"matrix_{stage}.json").read_text())
         require(matrix["complete"], "matrix failed")
@@ -146,12 +156,28 @@ def main():
                     response = json.loads(path.read_text())
                     require(response["status"] == "success", "WAM request failed")
                     content = response["outputs"][0]["content"]
+                    checkpoint = Path(c["checkpoint_run"]) / "checkpoints" / c["checkpoint_iteration"] / "model"
+                    require(
+                        Path(content["action128"]["checkpoint_path"]).resolve() == checkpoint.resolve(),
+                        "checkpoint differs",
+                    )
                     audit = audit_action_response(content, spec, domain=c["action_domain"], fps=c["control_fps"])
                     require(audit["denormalization_max_abs"] < 1e-6, "physical action scaling differs")
                     contracts.append(audit)
                     close(content["action"], actions)
                     request = json.loads((dest / f"request_{number:04d}.json").read_text())
                     require(request["model_mode"] == "wam" and request["seed"] == c["seed"], "model mode/seed differs")
+                    for request_key, config_key in (
+                        ("num_steps", "sampling_steps"),
+                        ("guidance", "guidance"),
+                        ("shift", "shift"),
+                        ("action_chunk_size", "action_chunk_size"),
+                        ("fps", "control_fps"),
+                        ("prompt", "task_text"),
+                    ):
+                        require(
+                            request[request_key] == config[config_key], f"inference parameter differs: {request_key}"
+                        )
                     pixels = np.asarray(Image.open(dest / f"input_{number:04d}.png").convert("RGB"))
                     require(
                         hashlib.sha256(pixels.tobytes()).hexdigest() == chunk["observation_sha256"], "camera changed"
@@ -253,7 +279,7 @@ def main():
             )
         )
     summary = dict(
-        complete=True,
+        complete=args.stage is None,
         integrity_passed=True,
         seed=c["seed"],
         verification_code=code_fingerprint(),
@@ -262,17 +288,21 @@ def main():
         model_responses=len(contracts),
         groups=grouped,
         cases=results,
-        worst_denormalization_error=max(r["denormalization_max_abs"] for r in contracts),
+        worst_denormalization_error=max((r["denormalization_max_abs"] for r in contracts), default=None),
         primary_artifacts_sha256=artifacts,
         checked_revision_files=len(revisions),
         inputs_sha256=inputs,
         collision_bounds=bounds,
+        fixture_gripper_xml_sha256=gripper_xml[0],
         inference_latency_excluded=True,
         hardware_executed=False,
         limits="Frozen checkpoint, one task and five known scenes. Privileged interventions are not pure WAM successes. A positive ideal finger separation concerns the prescribed endpoint path, not all possible robot motions.",
     )
-    write_json(out / "summary.json", summary)
-    write_json("reports/libero_wam_effect_20261019.json", summary)
+    if args.stage:
+        write_json(out / ("verification_" + "_".join(args.stage) + ".json"), summary)
+    else:
+        write_json(out / "summary.json", summary)
+        write_json("reports/libero_wam_effect_20261019.json", summary)
     print(json.dumps({k: summary[k] for k in ("formal_cases", "formal_physics_steps", "model_responses", "groups")}))
 
 
