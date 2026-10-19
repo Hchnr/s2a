@@ -1,5 +1,6 @@
 """Frozen multi-task physics evaluation and independent executor qualification."""
 
+import importlib.metadata
 import json
 import time
 from pathlib import Path
@@ -56,6 +57,10 @@ def run_case(config, root, record, *, source, sampling_seed, checkpoint=None, pr
         sampling_steps=config["sampling_steps"],
         guidance=config["guidance"],
         shift=config["shift"],
+        control_fps=config["control_fps"],
+        inverse_weight=config["inverse_weight"],
+        max_command_rate=config["max_command_rate"],
+        opening_hysteresis=config["opening_hysteresis"],
     )
     label = checkpoint or source
     if probe:
@@ -70,6 +75,9 @@ def run_case(config, root, record, *, source, sampling_seed, checkpoint=None, pr
         probe=probe,
         inference_latency_excluded=True,
         fixed_reference_converter=True,
+        runtime_versions={
+            p: importlib.metadata.version(p) for p in ("mujoco", "robosuite", "numpy", "scipy", "torch", "h5py")
+        },
     )
     if source == "wam":
         import requests
@@ -255,6 +263,11 @@ def run_case(config, root, record, *, source, sampling_seed, checkpoint=None, pr
                 for name in rows[0]["objects"]
             },
         )
+        result["tracking_applicable"] = source != "native"
+        if source == "native":
+            result["step_motion_position_rms_m"] = result.pop("position_rmse_m")
+            result["step_motion_rotation_rms_rad"] = result.pop("rotation_rmse_rad")
+            result["opening_step_mae"] = result.pop("opening_mae")
     write_json(dest / "result.json", result)
     if error:
         raise RuntimeError(error)

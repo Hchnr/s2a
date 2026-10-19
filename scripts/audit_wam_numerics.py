@@ -7,10 +7,39 @@ from dataclasses import fields
 from pathlib import Path
 
 import numpy as np
+import yaml
 
 from s2a.artifacts import code_fingerprint, load_config, write_json
 from s2a.libero_simulation import canvas
 from s2a.wam_runtime import load_service
+
+
+def original_backend_forward(model, packed, source):
+    """Use saved training padding/attention settings on the same frozen weights."""
+    net = model.net
+    language = net.language_model.model
+    fixed = source["fixed_sequence_length"]
+    updates = [
+        (net.config, "fixed_sequence_length_enabled", fixed["enabled"]),
+        (net.config, "fixed_und_tokens", fixed["und_tokens"]),
+        (net.config, "fixed_gen_tokens", fixed["gen_tokens"]),
+        (net.config, "fixed_action_tokens", fixed["action_tokens"]),
+        (language, "small_action_backend", source["action_tower_attention_backend"]),
+        (language, "small_action_und_short_tokens", source["action_tower_und_short_tokens"]),
+        (
+            language,
+            "small_action_fixed_lengths",
+            (fixed["und_tokens"], fixed["gen_tokens"] - fixed["action_tokens"], fixed["action_tokens"]),
+        ),
+    ]
+    originals = [(obj, key, getattr(obj, key)) for obj, key, _ in updates]
+    try:
+        for obj, key, value in updates:
+            setattr(obj, key, value)
+        return model.denoise(data_batch_packed=copy.deepcopy(packed))
+    finally:
+        for obj, key, value in originals:
+            setattr(obj, key, value)
 
 
 def main():
@@ -20,11 +49,14 @@ def main():
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--horizon", type=int, choices=(16, 40), default=16)
     parser.add_argument("--published-caption", action="store_true")
+    parser.add_argument("--training-backend", action="store_true")
     args = parser.parse_args()
     config, root = load_config(args.config)
     if args.seed != config["seed"]:
         raise ValueError("seed differs")
     tag = args.checkpoint + (f"_h{args.horizon}_published" if args.published_caption else "")
+    if args.training_backend:
+        tag += "_training_backend"
     output = root / "numerics" / tag
     output.mkdir(parents=True, exist_ok=False)
     service = load_service(config, args.checkpoint, output)
@@ -40,6 +72,7 @@ def main():
     from cosmos_framework.utils import misc
 
     model = service.model
+    saved_config = yaml.safe_load(Path(service.info["config_file"]).read_text())["model"]["config"]
     cases = json.loads((root / "samples/manifest.json").read_text())["cases"]
     phase = "approach" if args.published_caption else "closing_proxy"
     selected = [next(x for x in cases if x["task_index"] == i and x["phase"] == phase) for i in range(3)]
@@ -79,8 +112,9 @@ def main():
             write_json(directory / "initial_noise.json", audit)
             with np.load(sample["arrays_path"]) as data:
                 frame = sample["anchor_frame"]
+                cameras = {r: data[r] for r in ("auxiliary_0", "left_wrist")}
                 images = [
-                    canvas([data[r][j] for r in ("auxiliary_0", "left_wrist")])
+                    canvas([cameras[r][j] for r in ("auxiliary_0", "left_wrist")])
                     for j in range(frame, frame + horizon + 1)
                 ]
                 physical = torch.tensor(data["actions"][frame : frame + horizon], dtype=torch.float32)
@@ -177,6 +211,18 @@ def main():
                     train_inactive_input_max_abs=float(noised.xt_tokens_action[0][:, 10:].abs().max()),
                     velocity_active_max_abs=float((inferred - trained)[active].abs().max()),
                 )
+                if args.training_backend:
+                    backend = original_backend_forward(model, packed, saved_config)
+                    backend_loss, backend_losses = model._compute_losses(backend, packed, noised, timestep, False)
+                    difference = backend["preds_action"][0].float() - trained.float()
+                    row["saved_training_backend"] = dict(
+                        attention=saved_config["action_tower_attention_backend"],
+                        fixed_sequence_length=saved_config["fixed_sequence_length"],
+                        total_loss=float(backend_loss),
+                        action_loss=float(backend_losses["flow_matching_loss_action"]),
+                        active_velocity_max_abs=float(difference[active].abs().max()),
+                        active_velocity_rmse=float(difference[active].square().mean().sqrt()),
+                    )
                 # A paired counterfactual changes only inactive network input slots.
                 perturbed = flat[0].clone()
                 perturbed[offset:].reshape(horizon, 128)[:, 10:] = initial_action[:, 10:] * sigma

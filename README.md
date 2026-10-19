@@ -158,3 +158,37 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_audit.py --seed 42
 每个新矩阵拒绝覆盖已有目录；`--resume`仅复用配置一致、无错误且预算完整的结果。未完成目录先归档再重跑，任务失败的完整结果同样保留。`--allow-incomplete`的报告明确标记未完成，不能作为完整验收通过。
 
 新模型服务沿用 `serve_libero_policy.py`，显式传入 `--config configs/libero_policy_20261019.json --gpu 0 --port 8280 --seed 42`，其余4个副本依次对应GPU1..4/端口8281..8284；执行命令为 `run_libero_matrix.py --config configs/libero_policy_20261019.json --stage policy --seed 42`。检查模型输出合同用 `audit_libero_predictions.py --policy-config configs/libero_policy_20261019.json --seed 42`。同步推理期间暂停物理时钟，不将该评测当作真实延迟下的实时控制证明。
+
+### WAM checkpoint 四层验收（2026-10-19 v2）
+
+本轮以冻结 WAM 权重为被测对象，分别验证训练/推理数值合同、直接 state 预测、S2A执行资格和无推理延迟的多任务闭环。方案、保守决策与完成状态见 [实施记录](plans/v0.0.1/record_20261019v2.md) 和 [结论](plans/v0.0.1/conclusion_20261019v2.md)。
+
+`configs/wam_checkpoint_acceptance_20261019v2.json` 保留原服务协议，`configs/wam_checkpoint_masked_20261019v2.json` 定义显式mask对照：无效Action128维度在初始噪声、网络输入和velocity中始终为零，匹配训练合同。`src/s2a/wam_runtime.py`只在独立模型进程中加载相关依赖，不更改外部Cosmos代码或任何学习参数。6200基线采用实际warm-start父权重及当前run的归一化合同，不能解释为旧TCP协议的原生成绩。
+
+所有命令从本仓库执行，产物写入`outputs/wam_checkpoint_acceptance_20261019v2`。已经存在的完整或失败证据均拒绝覆盖；运行前检查目录和服务，重跑使用新输出目录或显式归档。
+
+```bash
+# 固定离线episode与多阶段输入；下载并校验新任务的官方数据
+LD_LIBRARY_PATH='' .venv/bin/python scripts/prepare_wam_acceptance.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/fetch_libero_acceptance_assets.py --seed 42
+# 固定6个独立物理初态；执行专家command与真实state正控、独立运动参考
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_wam_simulation.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py --seed 42 --stage native
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py --seed 42 --stage oracle
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py --seed 42 --stage probe
+# 对应冻结服务就绪后，每个checkpoint分别运行；一个HTTP服务只接收一个请求
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_state_matrix.py \
+  --config configs/wam_checkpoint_masked_20261019v2.json --seed 42 --checkpoint 8800_masked
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py \
+  --config configs/wam_checkpoint_masked_20261019v2.json --seed 42 --stage wam --checkpoint 8800_masked
+# 无GPU的来源与标签检查，以及明确标注是否完整的汇总
+LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_wam_training_history.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_wam_state_labels.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/analyze_wam_acceptance.py --seed 42 --partial
+# 仅在全部预注册矩阵预算完成且完整性校验通过后生成最终汇总
+LD_LIBRARY_PATH='' .venv/bin/python scripts/analyze_wam_acceptance.py --seed 42
+```
+
+模型服务`serve_wam_acceptance.py`和数值审计`audit_wam_numerics.py`使用外部Cosmos的Python解释器，仅只读加载模型实现；`PYTHONPATH`显式包含外部Cosmos根目录和本仓库`src`，并设置`LD_LIBRARY_PATH=''`、`PYTHONDONTWRITEBYTECODE=1`、独立的`CUDA_VISIBLE_DEVICES`及`MASTER_PORT`。编译缓存通过`TORCHINDUCTOR_CACHE_DIR`放在本仓库`outputs`。服务参数为`--seed 42 --checkpoint 8800 --port 8594 --active-slot-mask --exact-published-caption`；数值审计参数为`--seed 42 --horizon 40 --published-caption`，`--training-backend`额外复算保存的attention和固定padding配置，需要独占GPU显存。`audit_wam_caption_contract.py`在同一外部解释器中只做CPU输入准备核验。
+
+在线只输入当前图像和简短任务指令，physics在推理期间暂停；成功以LIBERO原生谓词判定，分别报告曾成功、末端成功和抓取接触/高度/位移等连续进度。完整caption属于离线特权诊断。Study-heldout仅表示本次实验整episode隔离，当前没有证据可将其称为预训练未见数据。

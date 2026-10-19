@@ -23,6 +23,7 @@ def main():
     parser.add_argument("--sampling-seed", type=int)
     parser.add_argument("--probe", type=int)
     parser.add_argument("--workers", type=int, default=6)
+    parser.add_argument("--job-indices", help="disjoint indices into the frozen initial-state/seed matrix")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--wait-for-state", action="store_true", help="serialize work on a single-request GPU server")
     args = parser.parse_args()
@@ -70,6 +71,11 @@ def main():
     jobs = [(record, seed, None) for record in records for seed in c["sampling_seeds"]]
     if args.stage == "probe":
         jobs = [(records[0], c["seed"], i) for i in range(len(probes))]
+    if args.job_indices:
+        indices = [int(value) for value in args.job_indices.split(",")]
+        if len(indices) != len(set(indices)) or any(i < 0 or i >= len(jobs) for i in indices):
+            raise ValueError("invalid or duplicate job index")
+        jobs = [jobs[i] for i in indices]
     env = dict(
         os.environ,
         LD_LIBRARY_PATH="",
@@ -89,6 +95,31 @@ def main():
             result = json.loads((directory / "result.json").read_text())
             if result["error"] or result["steps"] != result["expected_steps"]:
                 raise ValueError("failed evidence must be archived before a retry")
+            manifest = json.loads((directory / "manifest.json").read_text())
+            expected = dict(
+                seed=seed,
+                task_id=record["task_id"],
+                task_text=record["task"],
+                max_steps=c["online_max_steps"],
+                action_chunk_size=c["online_chunk_size"],
+                execution_horizon=c["online_execution_horizon"],
+                **{
+                    k: c[k]
+                    for k in (
+                        "sampling_steps",
+                        "guidance",
+                        "shift",
+                        "control_fps",
+                        "inverse_weight",
+                        "max_command_rate",
+                        "opening_hysteresis",
+                    )
+                },
+            )
+            if any(manifest["config"].get(k) != value for k, value in expected.items()):
+                raise ValueError("cannot resume a changed policy/controller protocol")
+            if manifest["record"]["initial_state_sha256"] != record["initial_state_sha256"]:
+                raise ValueError("cannot resume a changed initial state")
             return dict(directory=str(directory), exit_code=0, resumed=True)
         log = out / "simulation" / f"{label}_{record['name']}_s{seed}.log"
         if log.exists():
@@ -122,8 +153,9 @@ def main():
     workers = 1 if args.stage == "wam" else args.workers
     with ThreadPoolExecutor(max_workers=workers) as pool:
         results = list(pool.map(execute, jobs))
+    suffix = f"_jobs{args.job_indices.replace(',', '-')}" if args.job_indices else ""
     write_json(
-        out / "simulation" / f"matrix_{args.checkpoint or args.stage}.json",
+        out / "simulation" / f"matrix_{args.checkpoint or args.stage}{suffix}.json",
         dict(cases=results, complete=all(x["exit_code"] == 0 for x in results)),
     )
     if any(x["exit_code"] for x in results):
