@@ -33,6 +33,8 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_followup.py --seed 
 LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_followup.py --seed 42
 ```
 
+WAM 效果专项按用户要求暂停物理等待推理，取消本轮参考过期判断；该协议用于判断效果，不评价推理性能。`configs/libero_wam_effect_20261019.json` 冻结共享 Action128 解码的 oracle/真实 WAM 对照，`configs/libero_wam_components_20261019.json` 冻结有特权的分量干预。完整请求、原始/有效参考、物理时钟、状态摘要与实际发送命令均保留。复现入口见 [scripts](scripts/README.md)，本专项运行结果追加于本轮记录及结论。
+
 ```text
 src/s2a/geometry.py        column-rot6d、SE(3)、TCP/flange、SO(3) 误差
 src/s2a/data.py            provenance join、物理时钟、masks、样本与指纹
