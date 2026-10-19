@@ -168,6 +168,7 @@ def main():
     specification = specification["model"]["config"]["action128_spec"]
     spec = specification["transforms"][specification["registry"]["domains"].index(c["action_domain"])]
     inputs, revisions, artifacts, contracts, results = {}, {}, {}, [], []
+    contact_support_checks = 0
     core = [
         "src/s2a/libero_effect.py",
         "src/s2a/action_reference.py",
@@ -336,6 +337,18 @@ def main():
                     target[:3, 3] - actual[:3, 3], Rotation.from_matrix(target[:3, :3] @ actual[:3, :3].T).as_rotvec()
                 ]
                 close(row["error"], error)
+                if row["contacts"]["finger_bowl"]:
+                    observed_bound = separation_bound(
+                        np.repeat(actual[None], 2, axis=0),
+                        row["bowl_position"],
+                        bounds["bowl_radius_m"],
+                        bounds["collision_geometries"],
+                    )
+                    require(
+                        observed_bound["endpoint_lower_bound_m"] <= 1e-9,
+                        "collision envelope excludes an observed physical contact",
+                    )
+                    contact_support_checks += 1
                 errors.append(error)
             errors = np.asarray(errors)
             close(result["position_rmse_m"], np.sqrt(np.mean(np.sum(errors[:, :3] ** 2, axis=1))))
@@ -387,6 +400,9 @@ def main():
             for path in dest.glob("*"):
                 if path.is_file() and path.suffix in (".json", ".jsonl", ".png"):
                     artifacts[str(path)] = sha256(path)
+    require(
+        not args.case or {r["case"]["name"] for r in results} == set(args.case), "unknown or unverified selected case"
+    )
     groups = defaultdict(list)
     for row in results:
         groups[row["case"]["name"]].append(row)
@@ -429,6 +445,7 @@ def main():
         collision_bounds=bounds,
         conservative_workspace_bound=workspace,
         fixture_gripper_xml_sha256=gripper_xml[0],
+        actual_contact_support_checks=contact_support_checks,
         inference_latency_excluded=True,
         hardware_executed=False,
         limits="Frozen checkpoint, one task and five known scenes. Privileged interventions are not pure WAM successes. A positive ideal finger separation concerns the prescribed endpoint path, not all possible robot motions.",
