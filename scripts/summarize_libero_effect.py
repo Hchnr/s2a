@@ -51,6 +51,88 @@ def integrate(anchor, actions):
     return np.asarray(result)
 
 
+def verify_quasistatic(config, root):
+    matrix = json.loads((root / "matrix_quasistatic.json").read_text())
+    expected = {(source, trial) for source in ("oracle_response", "wam_affine") for trial in config["trials"]}
+    require(matrix["complete"] and len(matrix["cases"]) == len(expected), "quasistatic matrix incomplete")
+    require({(r["source"], r["trial"]) for r in matrix["cases"]} == expected, "quasistatic cases differ")
+    results = []
+    for item in matrix["cases"]:
+        require(item["exit_code"] == 0, "quasistatic process failed")
+        dest = root / "quasistatic" / item["source"] / f"trial{item['trial']}"
+        manifest = json.loads((dest / "manifest.json").read_text())
+        for path, digest in manifest["inputs_sha256"].items():
+            require(sha256(path) == digest, "frozen reference input changed")
+        name = "scripts/run_libero_endpoint_diagnostic.py"
+        executed = subprocess.check_output(["git", "show", f"{manifest['code']['commit']}:{name}"])
+        require(
+            hashlib.sha256(executed).hexdigest() == manifest["code"]["files_sha256"][name], "quasistatic source differs"
+        )
+        source = root / "sync" / item["source"] / f"trial{item['trial']}" / "steps.jsonl"
+        original = [json.loads(line) for line in source.read_text().splitlines()][: config["oracle_steps"]]
+        references = json.loads((dest / "references.json").read_text())
+        rows = [json.loads(line) for line in (dest / "steps.jsonl").read_text().splitlines()]
+        result = json.loads((dest / "result.json").read_text())
+        require(result["error"] is None and len(rows) == result["physical_steps"], "quasistatic budget failed")
+        require(
+            len(references) == len(original) == result["references"] == config["oracle_steps"],
+            "reference budget failed",
+        )
+        grouped, previous = defaultdict(list), np.zeros(6)
+        for step, row in enumerate(rows):
+            index = row["reference_index"]
+            require(row["step"] == step and 0 <= index < len(references), "quasistatic sequence failed")
+            close(row["actual_dt"], 1 / config["control_fps"])
+            close(row["simulation_time"] - rows[0]["simulation_time"], step / config["control_fps"])
+            close(references[index]["pose"], original[index]["desired_source"])
+            close(references[index]["opening"], original[index]["opening_target"])
+            close(row["desired_source"], references[index]["pose"])
+            close(row["opening_target"], references[index]["opening"])
+            if step:
+                close(row["measured_source"], rows[step - 1]["after_source"])
+            command = np.asarray(row["command"])
+            require(np.max(abs(command)) <= 1 + 1e-9, "quasistatic command bound failed")
+            require(
+                np.max(abs(command[:6] - previous)) <= config["max_command_rate"] / config["control_fps"] + 1e-9,
+                "quasistatic command rate failed",
+            )
+            previous = command[:6]
+            target, actual = np.asarray(row["desired_source"]), np.asarray(row["after_source"])
+            error = np.r_[
+                target[:3, 3] - actual[:3, 3], Rotation.from_matrix(target[:3, :3] @ actual[:3, :3].T).as_rotvec()
+            ]
+            close(row["error"], error)
+            p = config["endpoint_diagnostic"]
+            reached = (
+                np.linalg.norm(error[:3]) <= p["position_tolerance_m"]
+                and np.linalg.norm(error[3:]) <= p["rotation_tolerance_rad"]
+            )
+            require(row["reached"] == reached, "endpoint reach criterion differs")
+            grouped[index].append(row)
+        require(set(grouped) == set(range(len(references))), "endpoint skipped")
+        endpoints = []
+        for group in grouped.values():
+            require([r["substep"] for r in group] == list(range(len(group))), "substep sequence differs")
+            require(not any(r["reached"] for r in group[:-1]), "reference held after convergence")
+            require(
+                group[-1]["reached"] or len(group) == config["endpoint_diagnostic"]["max_substeps"],
+                "early reference termination",
+            )
+            endpoints.append(group[-1])
+        e = np.asarray([r["error"] for r in endpoints])
+        close(result["endpoint_position_rmse_m"], np.sqrt(np.mean(np.sum(e[:, :3] ** 2, axis=1))))
+        close(result["endpoint_rotation_rmse_rad"], np.sqrt(np.mean(np.sum(e[:, 3:] ** 2, axis=1))))
+        require(result["reached_endpoints"] == sum(r["reached"] for r in endpoints), "reached count differs")
+        require(
+            result["success"] == any(r["success"] for r in rows) and result["terminal_success"] == rows[-1]["success"],
+            "quasistatic task result differs",
+        )
+        result["directory"] = str(dest)
+        result["evidence"] = manifest["evidence"]
+        results.append(result)
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/libero_wam_effect_20261019.json")
@@ -301,6 +383,9 @@ def main():
     if args.stage:
         write_json(out / ("verification_" + "_".join(args.stage) + ".json"), summary)
     else:
+        diagnostic = verify_quasistatic(c, out)
+        summary["quasistatic_cases"] = diagnostic
+        summary["quasistatic_physics_steps"] = sum(r["physical_steps"] for r in diagnostic)
         write_json(out / "summary.json", summary)
         write_json("reports/libero_wam_effect_20261019.json", summary)
     print(json.dumps({k: summary[k] for k in ("formal_cases", "formal_physics_steps", "model_responses", "groups")}))
