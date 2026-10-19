@@ -3,6 +3,7 @@
 import argparse
 import json
 from collections import defaultdict
+from pathlib import Path
 
 import numpy as np
 
@@ -56,6 +57,14 @@ def summarize(rows, field="metrics"):
     return result
 
 
+def tcp_position_errors(path, steps):
+    manifest = json.loads(path.with_name("manifest.json").read_text())
+    h = np.asarray(json.loads(Path(manifest["config"]["tool_contract"]).read_text())["source_from_tcp"])
+    target = np.asarray([r["desired_source"] for r in steps]) @ h
+    actual = np.asarray([r["after_source"] for r in steps]) @ h
+    return np.linalg.norm(target[:, :3, 3] - actual[:, :3, 3], axis=1)
+
+
 def physics_diagnostics(paths, source):
     """Separate reference tracking and task-object progress from task predicates."""
     objects = {0: "akita_black_bowl_1", 1: "wine_bottle_1", 2: "cream_cheese_1"}
@@ -79,9 +88,14 @@ def physics_diagnostics(paths, source):
         if source != "native":
             errors = np.asarray([r["error"] for r in steps])
             position, rotation = np.linalg.norm(errors[:, :3], axis=1), np.linalg.norm(errors[:, 3:], axis=1)
+            tcp_position = tcp_position_errors(path, steps)
             opening = np.asarray([r["opening_target"] for r in steps])
             item.update(
                 position_rmse_m=float(np.sqrt(np.mean(position**2))),
+                position_error_point="controller source (grip_site position / right_hand axes)",
+                position_rmse_tcp_m=float(np.sqrt(np.mean(tcp_position**2))),
+                position_max_tcp_m=float(tcp_position.max()),
+                tcp_position_within_10mm_fraction=float(np.mean(tcp_position <= 0.01)),
                 rotation_rmse_rad=float(np.sqrt(np.mean(rotation**2))),
                 position_max_m=float(position.max()),
                 rotation_max_rad=float(rotation.max()),
@@ -238,6 +252,7 @@ def main():
             raise ValueError("incomplete executor probe")
         steps = [json.loads(line) for line in (path.parent / "steps.jsonl").read_text().splitlines()]
         errors = np.asarray([r["error"] for r in steps])
+        tcp_errors = tcp_position_errors(path, steps)
         probes.append(
             dict(
                 name=path.parent.parent.name,
@@ -246,6 +261,8 @@ def main():
                 position_max_m=float(np.linalg.norm(errors[:, :3], axis=1).max()),
                 rotation_p95_rad=float(np.quantile(np.linalg.norm(errors[:, 3:], axis=1), 0.95)),
                 rotation_max_rad=float(np.linalg.norm(errors[:, 3:], axis=1).max()),
+                position_rmse_tcp_m=float(np.sqrt(np.mean(tcp_errors**2))),
+                position_max_tcp_m=float(tcp_errors.max()),
             )
         )
     complete = all_complete and simulation_complete and len(probes) == 6
@@ -269,6 +286,7 @@ def main():
             "Native-command error fields in early artifacts describe step motion, not reference tracking.",
             "Constant velocity extrapolates observed pose motion; both causal baselines hold the current gripper opening.",
             "Opening state MAE uses the physical [0,1] projection; raw range violations and their magnitude are reported separately over all generated endpoints.",
+            "Original physics position errors refer to the controller source point; canonical TCP tracking is recomputed explicitly with the frozen tool transform. SO(3) error magnitude is unchanged by this fixed right transform.",
         ],
     )
     out = root / ("summary_partial.json" if args.partial else "summary.json")
