@@ -10,9 +10,11 @@ S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接
 
 主要评价 `F_C(s_now, G_C(...))` 的状态跟踪误差；历史 action 误差仅作诊断。必须区分 measured state、desired state、observed delta 和 controller command。
 
+2026-10-19 v2四层验收已完成：2688次离线预测、90条物理仿真/51480步。确认并在S2A评测服务修正了推理无效Action128槽加噪与训练置零的差异；最新8800在原生H40窗口下曾成功1/12、末端成功1/12，成功任务为bowl→plate，约5秒成功后保持至30秒结束。H16下8400为2/12曾成功、1/12末端，8800为0/12；正确state经冻结S2A为12/12。完整结果见[四层验收报告](reports/wam_checkpoint_acceptance_20261019v2.md)、[state报告](reports/wam_state_acceptance_20261019v2.md)和[最终结论](plans/v0.0.1/conclusion_20261019v2.md)。这是固定WAM/固定S2A、不计推理延迟的独立仿真证据；修正尚未合入外部Cosmos生产代码，未执行真机实验。
+
 已实现 DROID 单 episode 的只读抽取、几何转换、参考接口编码、局部响应辨识、在线有状态 PID adapter 和模型内扰动对照。初轮使用真实未来状态形成 oracle 参考。后续新增 LIBERO 独立 MuJoCo 仿真和固定 Cosmos checkpoint 的成对评测，执行状态见 [仿真报告](reports/libero_simulation_20261016.md)。完整设计见 [实施计划](plans/v0.0.1/001_state_to_action.md)，过程见 [实施记录](plans/v0.0.1/record_20261016.md)，完成状态及限制见 [结论](plans/v0.0.1/conclusion_20261016.md)。
 
-2026-10-19 扩展修复了恢复仿真状态后的OSC缓存同步，区分HDF5动作后观测与当前R1/R2发布观测，并加入开度方向保持、释放锁存、输入延迟/噪声及终态保持对照。最新状态见 [控制审计报告](reports/libero_control_audit_20261019.md)、[本轮记录](plans/v0.0.1/record_20261019.md) 和 [本轮结论](plans/v0.0.1/conclusion_20261019.md)。候选的实验收益与部署资格分别判断，所有结果均无真机执行。
+2026-10-19 扩展修复了恢复仿真状态后的OSC缓存同步，区分HDF5动作后观测与当前R1/R2发布观测，并加入开度方向保持、释放锁存、输入延迟/噪声及终态保持对照。该阶段状态见 [控制审计报告](reports/libero_control_audit_20261019.md)、[本轮记录](plans/v0.0.1/record_20261019.md) 和 [本轮结论](plans/v0.0.1/conclusion_20261019.md)。候选的实验收益与部署资格分别判断，所有结果均无真机执行。
 
 继续实施新增catalog所指当前发布帧的配对预测诊断，以及观测时间驱动的异步参考接入。`TimedReference`保留采集时的world锚点和时间轴；`AsyncReferenceBuffer`拒绝过期/乱序结果、跳过已过去的endpoint，空窗固定保持。新仿真逐步刷新当前端点反馈，只在需要请求模型时采集相机；物理控制与HTTP推理并行，实际墙钟超时单列记录。接口可执行、目标正确、任务成功和实时部署分别验证。
 
