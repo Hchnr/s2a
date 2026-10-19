@@ -18,13 +18,13 @@ LIBERO有效槽为前10维，其余118维应保持零。原生H40/2秒、3任务
 
 ## S2A本地实现
 
-[`install_active_slot_mask`](../src/s2a/wam_runtime.py:12)显式接收维度mask，并在三个位置执行：
+[`src/s2a/wam_runtime.py:12`](../src/s2a/wam_runtime.py#L12)中的`install_active_slot_mask`显式接收维度mask，并在三个位置执行：
 
 1. 按原形状、原seed生成全部噪声，再把无效槽清零，保留有效槽随机数与随机数消费顺序。
 2. 每次denoise前确保输入的无效action槽为零。
 3. 将输出velocity的无效槽清零，使后续solver更新不会重新引入这些槽。
 
-没有改变网络参数、归一化参数、采样步数、guidance或shift。服务入口[`serve_wam_acceptance.py`](../scripts/serve_wam_acceptance.py:73)拒绝非LIBERO十槽合同；该限制是这次实验的明确边界。
+没有改变网络参数、归一化参数、采样步数、guidance或shift。服务入口[`scripts/serve_wam_acceptance.py:74`](../scripts/serve_wam_acceptance.py#L74)拒绝非LIBERO十槽合同；该限制是这次实验的明确边界。
 
 不是caption修复：192/192个实际输入的最终caption字节和首帧像素与发布输入一致，`exact-published-caption`在这些样本上没有改变输入。早期嵌套JSON假设已撤回，见[协议勘误](../plans/v0.0.1/wam_protocol_errata_20261019v2.md)。
 

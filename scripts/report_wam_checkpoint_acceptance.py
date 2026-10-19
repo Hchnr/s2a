@@ -74,7 +74,7 @@ def main():
         "修正后模型学到了部分有用的状态变化，但并未全面通过state质量验收。最新8800在本实验episode留出、task-only、H40窗口的池化位置RMSE为64.213mm、开度MAE为0.1079，优于保持state的122.395mm/0.2484；朝向RMSE为0.5159rad，差于保持基线的0.2832rad。不能把原服务缺陷等同于权重损坏，也不能把单条示范的state误差等同于任务失败。",
         "真实成功state经同一Action128接口和冻结S2A为12/12成功，证明该执行链路在这些参考附近可用；大角度/快速参考及任意绝对开度曲线仍有限制。下面同时报告真实任务谓词、参考跟踪和物体进度，避免将全部闭环失败唯一归因于WAM或S2A。",
         "## 固定协议与证据边界",
-        "三个任务：bowl→plate、wine bottle→rack、cream cheese→bowl。每任务两个独立物理初态，各用采样seed42/43；合计六个独立初态、12次运行，不能当作12个独立场景。初态在评测前固定，排除此前S2A调参用的bowl示范。离线12个episode整条划分成diagnostic/study-heldout，但全部属于训练catalog；历史逐样本消费未知，本次留出不能解释为预训练未见。",
+        "三个任务：bowl→plate、wine bottle→rack、cream cheese→bowl。每任务两个独立物理初态，各用采样seed42/43；每条运行的每次请求重复使用对应seed。合计六个独立初态、12次运行，不能当作12个独立场景。初态在评测前固定，排除此前S2A调参用的bowl示范。离线12个episode整条划分成diagnostic/study-heldout，但全部属于训练catalog；历史逐样本消费未知，本次留出不能解释为预训练未见。",
         "每条任务600控制步/30物理秒，20Hz；35采样步、guidance1.5、shift5。每次仅给当前相机图像和task-only文本，生成16步并执行前8步再观测；推理期间physics暂停，保存的前后state哈希一致。H40补充只改变生成长度为40，仍执行前8步；它仅评估最新8800，不用于与其他checkpoint的H16公平排名。",
         "S2A为固定OSC响应的解析补偿：inverse_weight=0.5、command_rate=5/s，较大朝向误差回退到基线控制；不利用任务标签规划/修正参考。夹爪OpeningIntent按参考变化方向和0.02滞环维持开/关意图，不是任意绝对开度的理想伺服。机器人为独立LIBERO/MuJoCo中的MountedPanda/PandaGripper；没有真机实验，也没有宣称实时性能。",
         "位置误差统一报告canonical TCP；原始日志还保留controller source点误差，二者通过冻结工具变换关联。朝向用SO(3)测地角，开度范围0–1。专家command没有desired-state轨迹，因此不报告其tracking RMSE。",
