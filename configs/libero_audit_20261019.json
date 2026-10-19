@@ -143,6 +143,24 @@
       "gripper": "intent",
       "initial_gripper": "open",
       "refresh_controller": true
+    },
+    {
+      "name": "affine_latch",
+      "arm": "affine",
+      "gripper": "latch",
+      "initial_gripper": "open",
+      "refresh_controller": true
+    },
+    {
+      "name": "response_latch",
+      "arm": "response",
+      "gripper": "latch",
+      "initial_gripper": "open",
+      "refresh_controller": true
     }
-  ]
+  ],
+  "opening_latch": {
+    "close_below": 0.8,
+    "release_above": 0.9
+  }
 }

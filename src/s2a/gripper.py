@@ -46,3 +46,27 @@ def opening_position_target(opening):
     opening = OpeningIntent._opening(opening)
     internal = (0.079 * opening + 0.001) / 0.04 - 1
     return np.array([internal, -internal])
+
+
+class OpeningLatch:
+    """Experimental full-open release latch for a parallel gripper.
+
+    A reference below `close_below` requests closing. A closing grasp is held
+    until a near-open reference exceeds `release_above`; small aperture changes
+    during contact cannot silently release it. Partial-open release is outside
+    this candidate's contract. Thresholds are explicit, not universal gains.
+    """
+
+    def __init__(self, *, close_below=0.8, release_above=0.9):
+        if not np.isfinite([close_below, release_above]).all() or not 0 <= close_below < release_above <= 1:
+            raise ValueError("invalid opening latch thresholds")
+        self.close_below, self.release_above = close_below, release_above
+        self.direction = -1.0
+
+    def update(self, desired_opening):
+        opening = OpeningIntent._opening(desired_opening)
+        if opening < self.close_below:
+            self.direction = 1.0
+        elif opening > self.release_above:
+            self.direction = -1.0
+        return self.direction

@@ -15,7 +15,7 @@ from scipy.spatial.transform import Rotation
 
 from s2a.artifacts import code_fingerprint, sha256, write_json
 from s2a.geometry import pose_error, transform
-from s2a.gripper import OpeningIntent, opening_position_target
+from s2a.gripper import OpeningIntent, OpeningLatch, opening_position_target
 from s2a.libero_simulation import aperture, controller_contract, make_environment, measured_twist, source_pose
 from s2a.osc import OSCInterface, OSCStateToAction
 
@@ -82,7 +82,11 @@ def run_audit_case(config, output, case, trial):
     try:
         controller, contract = controller_contract(env)
         initial = source_pose(obs)
-        initial_cache_error = pose_error(initial, transform(controller.ee_pos, controller.ee_ori_mat))
+        site_pose = transform(
+            env.sim.data.get_site_xpos(controller.eef_name),
+            env.sim.data.get_site_xmat(controller.eef_name).reshape(3, 3),
+        )
+        initial_cache_error = pose_error(site_pose, transform(controller.ee_pos, controller.ee_ori_mat))
         if case.get("refresh_controller", True):
             controller.update(force=True)
         gripper = env.robots[0].gripper
@@ -116,6 +120,7 @@ def run_audit_case(config, output, case, trial):
             max_command_rate=config["max_command_rate"] if case["arm"] == "response" else None,
         )
         intent = OpeningIntent(aperture(obs), band=config["opening_hysteresis"])
+        latch = OpeningLatch(**config["opening_latch"])
         position_target = np.zeros(2)
         if case["gripper"] == "position":
 
@@ -138,6 +143,8 @@ def run_audit_case(config, output, case, trial):
                     grip_command = float(native[index, 6])
                 elif case["gripper"] == "intent":
                     grip_command = intent.update(float(openings[index]))
+                elif case["gripper"] == "latch":
+                    grip_command = latch.update(float(openings[index]))
                 elif case["gripper"] == "position":
                     position_target[:] = opening_position_target(float(openings[index]))
                     grip_command = 0.0
