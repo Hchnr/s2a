@@ -1,0 +1,119 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/libero_published_terminal_20261019",
+  "simulation": {
+    "seed": 42,
+    "output_dir": "outputs/libero_simulation",
+    "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+    "libero_root": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/LIBERO",
+    "libero_config": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/config/config.yaml",
+    "osmesa_library": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/systemlibs/usr/lib/x86_64-linux-gnu/libOSMesa.so.8.0.0",
+    "fixture": "outputs/libero_published_20261019/fixture.json",
+    "tool_contract": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef/meta/eef_tool_contract.json",
+    "checkpoint_run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+    "checkpoint_iteration": "iter_000008800",
+    "historical_iteration_unavailable": "iter_000005600",
+    "historical_results": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/outputs/action128_eval_20261014/summary.json",
+    "server_url": "http://127.0.0.1:8180",
+    "server_urls": [
+      "http://127.0.0.1:8180",
+      "http://127.0.0.1:8181",
+      "http://127.0.0.1:8182",
+      "http://127.0.0.1:8183",
+      "http://127.0.0.1:8184"
+    ],
+    "task_suite": "libero_goal",
+    "task_id": 8,
+    "task_text": "put the bowl on the plate",
+    "trials": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "episodes": [
+      43,
+      69,
+      72,
+      80,
+      132
+    ],
+    "max_steps": 1000,
+    "control_fps": 20,
+    "action_chunk_size": 16,
+    "execution_horizon": 8,
+    "sampling_steps": 35,
+    "guidance": 1.5,
+    "shift": 5.0,
+    "render_resolution": 256,
+    "action_domain": "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1",
+    "inverse_weight": 0.5,
+    "max_command_rate": 5.0,
+    "oracle_extra_hold_steps": 40,
+    "probe_steps": 120,
+    "probe_translation_amplitude_m": 0.002,
+    "probe_rotation_amplitude_rad": 0.01
+  },
+  "trials": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13
+  ],
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "extra_hold_steps": 40,
+  "cases": [
+    {
+      "name": "affine_intent",
+      "arm": "affine",
+      "gripper": "intent",
+      "initial_gripper": "measured",
+      "refresh_controller": true
+    },
+    {
+      "name": "response_intent",
+      "arm": "response",
+      "gripper": "intent",
+      "initial_gripper": "measured",
+      "refresh_controller": true
+    }
+  ],
+  "opening_latch": {
+    "close_below": 0.8,
+    "release_above": 0.9
+  },
+  "selected_demos": [
+    "demo_27",
+    "demo_7",
+    "demo_9",
+    "demo_15",
+    "demo_0",
+    "demo_49",
+    "demo_37",
+    "demo_12",
+    "demo_33",
+    "demo_47",
+    "demo_38",
+    "demo_13",
+    "demo_18",
+    "demo_43"
+  ],
+  "selection": "All 14 command-content matches; published R2 state oracle from the fixed HDF5 initial scenes; diagnostic, no held-out claim",
+  "source_hdf5": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/data/put_the_bowl_on_the_plate_demo.hdf5",
+  "reference_source": "published_r2",
+  "published_bridge": "outputs/libero_audit_20261019/provenance/published_bridge.json",
+  "stop_on_success": false
+}

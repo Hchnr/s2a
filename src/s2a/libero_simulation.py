@@ -20,6 +20,7 @@ from scipy.spatial.transform import Rotation
 
 from s2a.artifacts import code_fingerprint, sha256, write_json
 from s2a.geometry import inverse, pose_error, rot6d_to_matrix, transform
+from s2a.gripper import OpeningIntent, opening_position_target
 from s2a.osc import OSCInterface, OSCStateToAction
 
 
@@ -68,6 +69,7 @@ def make_environment(config, output, record, trial):
         camera_heights=config["render_resolution"],
         camera_widths=config["render_resolution"],
         render_gpu_device_id=-1,
+        use_camera_obs=config.get("camera_observations", True),
     )
     env.seed(config["seed"] + trial)
     env.reset()
@@ -87,6 +89,11 @@ def make_environment(config, output, record, trial):
         env.close()
         raise ValueError("fixture initial state hash mismatch")
     obs = env.set_init_state(initial)
+    # MuJoCo state restore does not invalidate robosuite's cached controller
+    # feedback. Keep the historical protocol opt-in reproducible; new runs
+    # explicitly enable refresh before the first goal is formed.
+    if config.get("refresh_controller_after_restore", False):
+        env.robots[0].controller.update(force=True)
     return env, obs
 
 
@@ -284,12 +291,16 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
         oracle_alignment = anchor @ inverse(absolute_poses[0]) if stage == "oracle" else None
         gripper_target = np.zeros(2)
         gripper = env.robots[0].gripper
+        gripper_mode = config.get("gripper_mode_by_candidate", {}).get(candidate, "position")
+        if gripper_mode not in ("position", "intent"):
+            raise ValueError("unknown gripper conversion mode")
+        gripper_intent = OpeningIntent(aperture(obs), band=config.get("opening_hysteresis", 0.02))
 
         def position_action(_action):
             gripper.current_action = gripper_target.copy()
             return gripper.current_action
 
-        if stage != "native":
+        if stage != "native" and gripper_mode == "position":
             gripper.format_action = position_action
         writer = imageio.get_writer(dest / "rollout.mp4", fps=config["control_fps"])
         queue = []
@@ -326,10 +337,9 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
                     opening = float(openings[index])
                 desired = desired_tcp @ inverse(h)
                 result = converter.convert(current, desired, twist)
-                desired_q = (0.079 * opening + 0.001) / 2
-                internal = 2 * desired_q / 0.04 - 1
-                gripper_target[:] = [internal, -internal]
-                executed = np.r_[result["command"], 0.0] if stage != "native" else native[step]
+                gripper_target[:] = opening_position_target(opening)
+                grip_command = gripper_intent.update(opening) if gripper_mode == "intent" else 0.0
+                executed = np.r_[result["command"], grip_command] if stage != "native" else native[step]
                 before_time = float(env.sim.data.time)
                 next_obs, _, done, info = env.step(executed)
                 actual_dt = float(env.sim.data.time) - before_time
@@ -348,7 +358,14 @@ def run_trial(config, output, *, stage, candidate, trial, max_steps=None):
                     "actual_motion": pose_error(after, current).tolist(),
                     "opening_target": opening,
                     "opening_after": aperture(next_obs),
-                    "gripper_actuator_target": gripper_target.tolist() if stage != "native" else None,
+                    "gripper_actuator_target": (
+                        gripper_target.tolist() if stage != "native" and gripper_mode == "position" else None
+                    ),
+                    "actual_gripper_control": env.sim.data.ctrl[
+                        env.robots[0]._ref_joint_gripper_actuator_indexes
+                    ].tolist(),
+                    "gripper_mode": "native" if stage == "native" else gripper_mode,
+                    "gripper_internal": gripper.current_action.tolist(),
                     "executed": executed.tolist(),
                     "converter": {k: v.tolist() if isinstance(v, np.ndarray) else v for k, v in result.items()},
                 }

@@ -15,3 +15,5 @@
 `run_libero_simulation.py` 是独立MuJoCo单trial入口；`run_libero_matrix.py` 组织 `qualification`、`prediction_replay` 或 `policy` 成对矩阵。仿真子进程固定用S2A的 `outputs/libero_env311`，每步实际调用环境前向控制，并保存当前状态、已生成目标、执行命令及执行后状态。`serve_libero_policy.py` 等待空闲GPU和其他训练结束，从S2A工作目录只读加载固定Cosmos权重；5个副本分别指定 `--gpu 0` 至 `--gpu 4`，端口和rendezvous互相独立。启动器是前台监控进程，服务PID保存在outputs中，仅清理本轮拥有的进程。
 
 `summarize_libero_simulation.py --seed 42` 独立核查37项实际仿真的物理时钟、state error、最终命令幅值/变化率、固定参考成对一致性和源码/输入/产物指纹。`--allow-incomplete` 只生成明确标记未完成的阶段报告，不将缺失项计为通过。完整性校验与任务成功率分开判断。所有命令前使用 `LD_LIBRARY_PATH=''`。
+
+2026-10-19入口：`run_libero_audit.py`按显式config执行case×episode物理矩阵，支持严格`--resume`；`prepare_libero_holdout.py`和`prepare_libero_published.py`生成事先冻结的fixture。`audit_libero_provenance.py`分别在h5py解释器export与PyArrow解释器verify，按整段命令内容核对来源，再分别评价HDF5/R1/R2观测。`audit_libero_predictions.py`独立核对所有已完成模型响应的单位/归一化/mask/时钟；`summarize_libero_audit.py`核对当前矩阵、执行状态、真实前向误差和代码/输入/输出指纹；`plot_libero_audit.py`生成可导出的PNG/PDF。具体命令和证据边界见根README与 `plans/v0.0.1/record_20261019.md`。

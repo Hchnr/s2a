@@ -1,0 +1,581 @@
+{
+  "seed": 42,
+  "code": {
+    "commit": "a72681bedbc905331343e07d6d8da9772bd09b9d",
+    "dirty": true,
+    "files_sha256": {
+      "configs/cross_dataset_franka.json": "c80e4e7f36dfc494cc7df8dbc34c4df0b11fc9dc9cf260a9d99716af83697d4a",
+      "configs/droid_episode0.json": "7c7c90697c120f26acd353269ebec078a075bf2f35f41345310710231566a9c4",
+      "configs/libero_audit_20261019.json": "2558648adb4fed5b293d87476eaafe959fc30a4639e488cfcb7a91920696d48d",
+      "configs/libero_holdout_20261019.json": "eea0f411c169ba628c0191348e174145cf8c599e9f065da754ee21500cecf5b2",
+      "configs/libero_policy_20261019.json": "e7e047e734c1c26d51c6761e9962b32c4d81f71313c7ca6c39a03c4c72ccb319",
+      "configs/libero_provenance_20261019.json": "b75a1005253f3f09a2b5190f57dc175ae41f537c380546cb9dfa21e18a44e87b",
+      "configs/libero_simulation.json": "5bf7f9e8dc2b6411a1e65d357b67063334e4101a76ddf63049030d504c57efcf",
+      "configs/libero_stress_20261019.json": "001883bc683390553832890eeb536b8077a172fca5635405b368e0fa204b839c",
+      "configs/libero_terminal_20261019.json": "aa75bf9b305ed081e24a93a7140eff1ac107439bb99dbde3ceb84ec99beafa84",
+      "scripts/audit_libero_predictions.py": "6fdf869d64f9aa45e7af992ebf3b50b325781723269f96688545623e0bca44c3",
+      "scripts/audit_libero_provenance.py": "547654e94099e442ca9306b70dd80b1d22859003d837235a53bb6d4ae5eb0e86",
+      "scripts/diagnose_libero_predictions.py": "dba8103a69c7c6a2833d7037436882b682b946e99a54f8c388afe00b03bacc29",
+      "scripts/fingerprint_libero_checkpoint.py": "e44fdc416cde7fbae5ffde63241d972db46656a816d984f840b0d82ae147075f",
+      "scripts/plot_libero_audit.py": "df34bfa0a2dda5d52912ba7cb776291081a5cbf6fdf1f8df902cce7b3645c269",
+      "scripts/prepare_libero_holdout.py": "3ec29ffe216792db62ef871988cde6d713071e321cbcd8371a3e543c58192f2b",
+      "scripts/run_cross_dataset.py": "aa4c0dff5a74d5e8e846efe2be14d5e909c7b34a7c4cf4926711f26cc0a70035",
+      "scripts/run_experiment.py": "7bb8b28604fb5e78cb4ee7b0df648eb352e7b25a5c8f6808c3206257874809c1",
+      "scripts/run_libero_audit.py": "5ecdddd8d44e0d06029d3301165543884066fa6d193bc851f2de38a377b0496b",
+      "scripts/run_libero_matrix.py": "d700b1c48962ebad9ad4d58a28802476c621a748618a8ab79a86e2588e27b999",
+      "scripts/run_libero_simulation.py": "e685bec31dcc878054b70eb521d0a2753ec9c4d01fa5b69012e996a715a88b48",
+      "scripts/serve_libero_policy.py": "40081884fe767dda40a5e324614798313abc4d8dfd6cdd77de38b683091ead2f",
+      "scripts/summarize_libero_audit.py": "702f1ab9d1d9d3227b5667269abae73edd950ccdb99691c9fda77411e3e5fe08",
+      "scripts/summarize_libero_simulation.py": "6334ef2a609845e82be6a0c1765378aef3608839c39956ea6a965389fb7e6d72",
+      "scripts/verify_artifacts.py": "63af7f9a3c6db3b5873fcc0b2b740b680691be4640aa8e37b28bf5e31b0538ef",
+      "src/s2a/__init__.py": "ca50dfd1d7e797f05795eff5eb815dd5e1193295018cbfe93704a58819bc49ba",
+      "src/s2a/analytic.py": "629d68bc380c58c1bed134108f5a8eb66bae1aef8069520e329cb50d2ce37ad2",
+      "src/s2a/artifacts.py": "4723e2b1602ee020184eff838ab4934c6868e53a7af5dded68cf547df7fa791a",
+      "src/s2a/control.py": "20597530d57ddc1e42c4e04e1e3a4d31ce7f0a631611e698ff7b3144df7f02a4",
+      "src/s2a/cross_dataset.py": "db626f8a2de46ca2d2e8f3a8dab66965685bfd31320cca4c6b2ba9e1301455b5",
+      "src/s2a/data.py": "8e3429ce63456f816ca0f33cc461e2a3b0e82745a84f84d08ecbf204bff79380",
+      "src/s2a/geometry.py": "5b2817607553860bbed1cd199457d0fd863b6a090eab928409150ad1b1d4ef8a",
+      "src/s2a/gripper.py": "2d04b1024f80fc3df88c1e36854da8a9e1d34ca7b14cbd1aadd6cd6921b27951",
+      "src/s2a/identification.py": "2e151ee88de8872d93b6f7d6e548989fb3f82359971884354433d7213a745e1e",
+      "src/s2a/interface.py": "fd70fb6a0b9c32ae58f7c87f0916fe0c8098988a2f2424685135dabc011e83ee",
+      "src/s2a/kinematics.py": "5404d620cf03f195bd8a6861e4e690f81f3606e8fc0d52f2bead84404220d25c",
+      "src/s2a/libero_audit.py": "bca3cadc50c4a3fa6e4c28fad98994b1e7d78947e6900b9d46d242e83441a980",
+      "src/s2a/libero_simulation.py": "bcf9ee5199ddb856a57b8b06a63858c14dc9898c6784a14174d50efba9a4cd85",
+      "src/s2a/osc.py": "47e15863869b044291daac1c1ead1f9c117f30f55137ea5d01bbbd950b82cf59",
+      "src/s2a/perturbations.py": "a4bff8765512e80952a6b935d548c2b4d07105909376d5cb938152b5cdcc392b",
+      "src/s2a/prediction_audit.py": "d698fb2a422226c8d00e1cca122f7e951463c251e3ebbc1ea945a4fe1ebfac30",
+      "src/s2a/reporting.py": "e9161aa976fae48ba08920f6efbc00c130ccbc9c34c41af2fbb080bbd230680f",
+      "src/s2a/rollout.py": "96b67143d2418ff07d5e00a27f4b64ecb99564b4781448ecc605a2eb96e5b2f4",
+      "src/s2a/runtime.py": "60d9c5fa1ff5d5efe9b380fd445b23f477074d886e8f012f452d95032da3cf94",
+      "src/s2a/study.py": "e238e6fbe06cc02841094f1b51d1fbc8eabdac4748f91b801a744dc1018048b6",
+      "src/s2a/trajectory.py": "f19c76f3b51f9334b7a056e10777272d80cdd17b0600220c2b94d2bba074b8de",
+      "tests/conftest.py": "25536d4f1c8d6f1e573d771da4fa2ca3dce44d38ec9e3c411492546af39b4bec",
+      "tests/test_control_trajectory.py": "6b7a9c8e6b0bdd5a5e5f2adad456fa1918834a997ec7d5096b2430b3ce8bcca1",
+      "tests/test_cross_dataset.py": "8646266bbdc164149333e8aa921d1be6aeeb25bea870104cdc033b7eca1aa6cc",
+      "tests/test_data.py": "fa0603d3409255ac6fb3b087e6e1f4980547b176f575dae3ae311599b09eb1d6",
+      "tests/test_external_data.py": "c44285f4e8a32a7c4661ee1f837e6b061e5b1fbd6562fcd9d302322d5727ce6b",
+      "tests/test_geometry_interface.py": "815ee38544f6ad9f5e6f78072719d3879526f563dc2223c3aaadd46cc0594e81",
+      "tests/test_gripper.py": "223f47300ba37bef350978b29f167bbef4c07e809bbb5fa9d2af686a2d9feaf9",
+      "tests/test_identification.py": "a180cfbb392014884d5b15e4cdd51e13742b3ee4b1ed58234fe90b693d71359b",
+      "tests/test_libero_audit.py": "a405456e94de386e205ef30eee773ca15914b566336d672debc81ba016dd2a10",
+      "tests/test_osc.py": "10f8c34a29974645e835c3b8be2433e6265d40bb265c6b20cc00a2fd81bebf1c",
+      "tests/test_perturbations.py": "43b7f4d1ea11cfbed89f9be13a7a0a355ddd5dff2374352b6e90c75063744a3e",
+      "tests/test_prediction_audit.py": "f406d1372a8f26987da91f55ae63b71c166add18d3df1e334972a7a4e659a24c",
+      "tests/test_runtime_rollout.py": "e4f15a499710841cc798da46d16254cfab5244b5fe24aef9488ebd004e0059d9",
+      "pyproject.toml": "108d6dcaed18c2931672f1d0a31ed5858fe14012dca29eb9c314e4e3bd2791d6"
+    },
+    "python": "3.12.3",
+    "dependencies": {
+      "numpy": "2.1.0",
+      "scipy": "1.17.1",
+      "pyarrow": "23.0.1"
+    }
+  },
+  "inputs_sha256": {
+    "/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid/meta/episodes/chunk-000/file-000.parquet": "19c444df959fe4de2c2b436c6f5944ebeceaa2718e042ef71adb5d2909607ef2",
+    "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef/meta/episodes/chunk-000/file-000.parquet": "0ca787d2aa325360ed9a8d9bebc28f23a9958f272f8633d97ac9fb4207dcefce",
+    "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_audit_20261019/provenance/native_bridge.json": "e93039adf27e074ef7f8dd83c2b3912e2cc2be28727239f8e76fa884ffae6fa3",
+    "/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid/data/chunk-000/file-002.parquet": "03737ac84165987e7fc906575abafb738860d6ac674b83c0fcd13cb14092968a",
+    "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef/meta/eef_tool_contract.json": "6fcaed3fe499aacb15d03170d002b1c897091481a0022db5f2922c06320a3a0c",
+    "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef/data/chunk-000/file-002.parquet": "e272c70f96c8336ab1b712798391da19fb8cf1cb83fb84fc74de0a6434d1ed35"
+  },
+  "source_hdf5_sha256": "e69528b0cf10dfc59b20698e12ec2affc03f3887309034d3eb74cac3ec929406",
+  "current_same_task_r1_episodes": 49,
+  "cases": [
+    {
+      "demo": "demo_27",
+      "frames": 87,
+      "raw_native_float32_sha256": "30db12de8d9ffbe180d7111f998fe03f76c3f250671a36568b7e9bcabab0583b",
+      "r1_episode": 422,
+      "projection_max_abs": 2.9740258145061205e-08,
+      "current_r2": [
+        {
+          "episode_index": 887,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:422\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 887,
+          "valid_states": 87,
+          "valid_transitions": 86,
+          "state_position_max_m": 0.01769218102553523,
+          "state_rotation_max_rad": 0.06729117353159253,
+          "action_translation_max_m": 0.00433693999690491,
+          "action_rotation_max_rad": 0.005049247039098714,
+          "gripper_endpoint_max_abs": 0.12321662821660728,
+          "r1_to_r2_state_max_m": 5.9421036433504195e-08,
+          "r1_to_r2_state_max_rad": 1.519954225908873e-08,
+          "r1_to_r2_action_max_m": 4.83378479858075e-10,
+          "r1_to_r2_action_max_rad": 7.114911488631678e-10,
+          "r1_to_r2_gripper_max_abs": 2.9802322387695312e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_7",
+      "frames": 92,
+      "raw_native_float32_sha256": "cb7c012b72b4fa6baecc698b9976fc7d8a5961f3ade6c512f39c00e92cef47c4",
+      "r1_episode": 448,
+      "projection_max_abs": 3.0382914295579155e-08,
+      "current_r2": [
+        {
+          "episode_index": 911,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:448\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 911,
+          "valid_states": 92,
+          "valid_transitions": 91,
+          "state_position_max_m": 0.018484392792252977,
+          "state_rotation_max_rad": 0.042538517215287654,
+          "action_translation_max_m": 0.008332564701869003,
+          "action_rotation_max_rad": 0.010130350442740134,
+          "gripper_endpoint_max_abs": 0.21886352866162395,
+          "r1_to_r2_state_max_m": 5.948372236742848e-08,
+          "r1_to_r2_state_max_rad": 1.015391935720445e-08,
+          "r1_to_r2_action_max_m": 4.651705691368515e-10,
+          "r1_to_r2_action_max_rad": 9.67297670400428e-10,
+          "r1_to_r2_gripper_max_abs": 2.867058856992344e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_9",
+      "frames": 90,
+      "raw_native_float32_sha256": "338c260437d8a35259f95b9c885778f34771351fefb947797861e87c0c511377",
+      "r1_episode": 451,
+      "projection_max_abs": 2.9234871190553235e-08,
+      "current_r2": [
+        {
+          "episode_index": 914,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:451\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 914,
+          "valid_states": 90,
+          "valid_transitions": 89,
+          "state_position_max_m": 0.015531006561087642,
+          "state_rotation_max_rad": 0.01705689947587249,
+          "action_translation_max_m": 0.0028215459534627423,
+          "action_rotation_max_rad": 0.00457628155262036,
+          "gripper_endpoint_max_abs": 0.1274311330109002,
+          "r1_to_r2_state_max_m": 5.9373941208216015e-08,
+          "r1_to_r2_state_max_rad": 2.1623162514142884e-08,
+          "r1_to_r2_action_max_m": 5.799661441037155e-10,
+          "r1_to_r2_action_max_rad": 7.208369841336996e-10,
+          "r1_to_r2_gripper_max_abs": 2.791609943209039e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_15",
+      "frames": 84,
+      "raw_native_float32_sha256": "86554e3ae0b22491b4080155c20f5184e52094454c1c1456064b6a36a79ce1f2",
+      "r1_episode": 459,
+      "projection_max_abs": 2.973257817728836e-08,
+      "current_r2": [
+        {
+          "episode_index": 922,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:459\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 922,
+          "valid_states": 84,
+          "valid_transitions": 83,
+          "state_position_max_m": 0.013974160788986533,
+          "state_rotation_max_rad": 0.015822257162449144,
+          "action_translation_max_m": 0.0030273417901021922,
+          "action_rotation_max_rad": 0.004984102262538141,
+          "gripper_endpoint_max_abs": 0.1292595078822707,
+          "r1_to_r2_state_max_m": 5.76021894285357e-08,
+          "r1_to_r2_state_max_rad": 1.1694481517895975e-08,
+          "r1_to_r2_action_max_m": 5.791500543755267e-10,
+          "r1_to_r2_action_max_rad": 6.886874396754639e-10,
+          "r1_to_r2_gripper_max_abs": 2.96137000477259e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_0",
+      "frames": 90,
+      "raw_native_float32_sha256": "029ddbcf0834acd81d71167e67653a2947772d16efccbc7ad395080414d17c77",
+      "r1_episode": 511,
+      "projection_max_abs": 3.0382914295579155e-08,
+      "current_r2": [
+        {
+          "episode_index": 973,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:511\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 973,
+          "valid_states": 90,
+          "valid_transitions": 89,
+          "state_position_max_m": 0.01973336462702487,
+          "state_rotation_max_rad": 0.0611437057625993,
+          "action_translation_max_m": 0.004584027851100974,
+          "action_rotation_max_rad": 0.005951747989053614,
+          "gripper_endpoint_max_abs": 0.12684923490473166,
+          "r1_to_r2_state_max_m": 5.943281061150418e-08,
+          "r1_to_r2_state_max_rad": 1.3010193824935096e-08,
+          "r1_to_r2_action_max_m": 5.677532171154301e-10,
+          "r1_to_r2_action_max_rad": 9.020461331410542e-10,
+          "r1_to_r2_gripper_max_abs": 2.9047833138839962e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_49",
+      "frames": 89,
+      "raw_native_float32_sha256": "c99091ae36f1bfa277546bfd474846ddb517bc48050f114cdad8682a984b44bf",
+      "r1_episode": 726,
+      "projection_max_abs": 2.9811055068940107e-08,
+      "current_r2": [
+        {
+          "episode_index": 1182,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:726\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 1182,
+          "valid_states": 89,
+          "valid_transitions": 88,
+          "state_position_max_m": 0.017591437360651094,
+          "state_rotation_max_rad": 0.03723742195698424,
+          "action_translation_max_m": 0.0044021982393839315,
+          "action_rotation_max_rad": 0.007333865124080465,
+          "gripper_endpoint_max_abs": 0.12581591129196723,
+          "r1_to_r2_state_max_m": 5.950653755592105e-08,
+          "r1_to_r2_state_max_rad": 2.2919880855232045e-08,
+          "r1_to_r2_action_max_m": 5.128907528483666e-10,
+          "r1_to_r2_action_max_rad": 7.01186831159286e-10,
+          "r1_to_r2_gripper_max_abs": 2.942507781877879e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_37",
+      "frames": 96,
+      "raw_native_float32_sha256": "7b7d99e540c458dc2c46cc9f2a3187a26a45efd216bb28fd33911419673e7417",
+      "r1_episode": 679,
+      "projection_max_abs": 2.9580265681339313e-08,
+      "current_r2": [
+        {
+          "episode_index": 1135,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:679\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 1135,
+          "valid_states": 96,
+          "valid_transitions": 95,
+          "state_position_max_m": 0.018120673162448645,
+          "state_rotation_max_rad": 0.05458627970328352,
+          "action_translation_max_m": 0.00535889984504572,
+          "action_rotation_max_rad": 0.00691730794360289,
+          "gripper_endpoint_max_abs": 0.12883725733256912,
+          "r1_to_r2_state_max_m": 5.927354731851586e-08,
+          "r1_to_r2_state_max_rad": 2.176892472637213e-08,
+          "r1_to_r2_action_max_m": 4.692492284762973e-10,
+          "r1_to_r2_action_max_rad": 1.1293948010558626e-09,
+          "r1_to_r2_gripper_max_abs": 2.9047833249862265e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_12",
+      "frames": 88,
+      "raw_native_float32_sha256": "e0401025c4ee723f16340947c0cc6f5e99e8285f662ed71338e64eeca9346b3d",
+      "r1_episode": 532,
+      "projection_max_abs": 2.9562363113022627e-08,
+      "current_r2": [
+        {
+          "episode_index": 994,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:532\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 994,
+          "valid_states": 88,
+          "valid_transitions": 87,
+          "state_position_max_m": 0.015034280344699768,
+          "state_rotation_max_rad": 0.05055859721517986,
+          "action_translation_max_m": 0.004005608394720335,
+          "action_rotation_max_rad": 0.008539484701706665,
+          "gripper_endpoint_max_abs": 0.12927809122181505,
+          "r1_to_r2_state_max_m": 5.867187939121865e-08,
+          "r1_to_r2_state_max_rad": 1.6752724511623834e-08,
+          "r1_to_r2_action_max_m": 5.05549716188018e-10,
+          "r1_to_r2_action_max_rad": 8.017206384775495e-10,
+          "r1_to_r2_gripper_max_abs": 2.9047833249862265e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_33",
+      "frames": 86,
+      "raw_native_float32_sha256": "7b08a8bbfae375066cdd7f84e61c823554e5ab3343888ddfc416a36df1f66fbf",
+      "r1_episode": 750,
+      "projection_max_abs": 2.8950827513085642e-08,
+      "current_r2": [
+        {
+          "episode_index": 1203,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:750\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 1203,
+          "valid_states": 86,
+          "valid_transitions": 85,
+          "state_position_max_m": 0.014029310750672076,
+          "state_rotation_max_rad": 0.020689393926396023,
+          "action_translation_max_m": 0.002925512748641129,
+          "action_rotation_max_rad": 0.004948487398046007,
+          "gripper_endpoint_max_abs": 0.12926474092443158,
+          "r1_to_r2_state_max_m": 5.741018235140365e-08,
+          "r1_to_r2_state_max_rad": 1.51407695731697e-08,
+          "r1_to_r2_action_max_m": 5.299976990853942e-10,
+          "r1_to_r2_action_max_rad": 8.523144756946954e-10,
+          "r1_to_r2_gripper_max_abs": 2.867058868094574e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_26",
+      "frames": 96,
+      "raw_native_float32_sha256": "fdcdba84e5892236cc28d1c5e4cd212de714cd48bda53b712f28434abe2248eb",
+      "r1_episode": null,
+      "projection_max_abs": null,
+      "current_r2": [],
+      "geometry": [],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_47",
+      "frames": 93,
+      "raw_native_float32_sha256": "45d6f0523c8cb3dd64a5fe8974535e9cf2ab3e8f229dc3801c3fb74a6c2f05cc",
+      "r1_episode": 718,
+      "projection_max_abs": 2.9652267863333748e-08,
+      "current_r2": [
+        {
+          "episode_index": 1174,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:718\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 1174,
+          "valid_states": 93,
+          "valid_transitions": 92,
+          "state_position_max_m": 0.017521850531588144,
+          "state_rotation_max_rad": 0.01067078613483481,
+          "action_translation_max_m": 0.005676272340810794,
+          "action_rotation_max_rad": 0.006671582107576987,
+          "gripper_endpoint_max_abs": 0.14020304996373364,
+          "r1_to_r2_state_max_m": 5.9071033157801603e-08,
+          "r1_to_r2_state_max_rad": 1.0969111301655507e-08,
+          "r1_to_r2_action_max_m": 5.485122986238943e-10,
+          "r1_to_r2_action_max_rad": 3.6645454193052563e-10,
+          "r1_to_r2_gripper_max_abs": 2.942507781877879e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_38",
+      "frames": 106,
+      "raw_native_float32_sha256": "4af3e0f245225447578908be88c7b1078aee842fa63ec978247ac5b468bcfcd5",
+      "r1_episode": 646,
+      "projection_max_abs": 2.995397674343536e-08,
+      "current_r2": [
+        {
+          "episode_index": 1102,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:646\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 1102,
+          "valid_states": 106,
+          "valid_transitions": 105,
+          "state_position_max_m": 0.013969853673137776,
+          "state_rotation_max_rad": 0.0404623152487104,
+          "action_translation_max_m": 0.002326847573910524,
+          "action_rotation_max_rad": 0.005541915257341937,
+          "gripper_endpoint_max_abs": 0.12637820687982015,
+          "r1_to_r2_state_max_m": 5.9405191329655435e-08,
+          "r1_to_r2_state_max_rad": 1.115263443746549e-08,
+          "r1_to_r2_action_max_m": 5.017044723305855e-10,
+          "r1_to_r2_action_max_rad": 7.52592673386267e-10,
+          "r1_to_r2_gripper_max_abs": 2.9802322387695312e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_13",
+      "frames": 98,
+      "raw_native_float32_sha256": "d632375252851a3ba7a809b0a2aa4dea08e987c587e725ddb625a797a855e706",
+      "r1_episode": 563,
+      "projection_max_abs": 2.963340617334609e-08,
+      "current_r2": [
+        {
+          "episode_index": 1025,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:563\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 1025,
+          "valid_states": 98,
+          "valid_transitions": 97,
+          "state_position_max_m": 0.022002156448960464,
+          "state_rotation_max_rad": 0.09220742468095726,
+          "action_translation_max_m": 0.007229071257265218,
+          "action_rotation_max_rad": 0.008683396591091994,
+          "gripper_endpoint_max_abs": 0.12416186277812136,
+          "r1_to_r2_state_max_m": 5.866527556628524e-08,
+          "r1_to_r2_state_max_rad": 1.8894886059594487e-08,
+          "r1_to_r2_action_max_m": 4.86170244387162e-10,
+          "r1_to_r2_action_max_rad": 8.159920611663458e-10,
+          "r1_to_r2_gripper_max_abs": 2.9802322387695312e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_18",
+      "frames": 93,
+      "raw_native_float32_sha256": "8a7f91a888ef8c053433a512e2ff940c7aac94b634149ddd5f5d465108ce9185",
+      "r1_episode": 466,
+      "projection_max_abs": 2.9712913796053897e-08,
+      "current_r2": [
+        {
+          "episode_index": 929,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:466\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 929,
+          "valid_states": 93,
+          "valid_transitions": 92,
+          "state_position_max_m": 0.0180110364450638,
+          "state_rotation_max_rad": 0.10907431358028505,
+          "action_translation_max_m": 0.007439316756857749,
+          "action_rotation_max_rad": 0.007971275067260046,
+          "gripper_endpoint_max_abs": 0.12927123308987776,
+          "r1_to_r2_state_max_m": 5.901727589166533e-08,
+          "r1_to_r2_state_max_rad": 2.0654274085768993e-08,
+          "r1_to_r2_action_max_m": 5.50994082174483e-10,
+          "r1_to_r2_action_max_rad": 1.2808978883023697e-09,
+          "r1_to_r2_gripper_max_abs": 2.7538854863173867e-08
+        }
+      ],
+      "training_consumption_verified": false
+    },
+    {
+      "demo": "demo_43",
+      "frames": 126,
+      "raw_native_float32_sha256": "58b55a2a76d57a3de240eaab9087c4bc38dbcc47438c28a72d0c10657155bd09",
+      "r1_episode": 537,
+      "projection_max_abs": 2.9758631558962634e-08,
+      "current_r2": [
+        {
+          "episode_index": 999,
+          "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:537\"}",
+          "training_eligible": true,
+          "data_role": "training",
+          "data_path": "data/chunk-000/file-002.parquet"
+        }
+      ],
+      "geometry": [
+        {
+          "r2_episode": 999,
+          "valid_states": 126,
+          "valid_transitions": 125,
+          "state_position_max_m": 0.016040106343338138,
+          "state_rotation_max_rad": 0.07212359555293146,
+          "action_translation_max_m": 0.004152870220163902,
+          "action_rotation_max_rad": 0.004595082794590331,
+          "gripper_endpoint_max_abs": 0.13057916250642349,
+          "r1_to_r2_state_max_m": 5.8496560093949754e-08,
+          "r1_to_r2_state_max_rad": 1.1274262993563056e-08,
+          "r1_to_r2_action_max_m": 5.737352935740435e-10,
+          "r1_to_r2_action_max_rad": 8.351574097849446e-10,
+          "r1_to_r2_gripper_max_abs": 2.942507781877879e-08
+        }
+      ],
+      "training_consumption_verified": false
+    }
+  ],
+  "matched": 14,
+  "notes": [
+    "R1 native_control is a 10D rot6d/opening projection, not the raw seven controller slots",
+    "Current training_eligible metadata does not prove the frozen run consumed an episode",
+    "Missing same-task match is unknown, not evidence of model holdout",
+    "Historical fixture integers are not current release episode IDs"
+  ],
+  "r1_r2_geometry_verified": true,
+  "hdf5_observation_identity_verified": false
+}

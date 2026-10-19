@@ -1,0 +1,22 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/libero_audit_20261019/provenance",
+  "fixture": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_bowl_plate_eval5/episodes.json",
+  "tool_contract": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef/meta/eef_tool_contract.json",
+  "additional_demos": [
+    "demo_49",
+    "demo_37",
+    "demo_12",
+    "demo_33",
+    "demo_26",
+    "demo_47",
+    "demo_38",
+    "demo_13",
+    "demo_18",
+    "demo_43"
+  ],
+  "r1_root": "/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid",
+  "r2_root": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef",
+  "task": "put the bowl on the plate",
+  "max_native_projection_error": 1e-06
+}

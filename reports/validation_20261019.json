@@ -1,0 +1,49 @@
+{
+  "seed": 42,
+  "complete": true,
+  "physics_cases": 481,
+  "expected_physics_cases": 481,
+  "checked_primary_artifacts": 5704,
+  "unit_tests": {
+    "passed": 40,
+    "integration_deselected": 1
+  },
+  "external_data_integration": {
+    "passed": 1,
+    "other_tests_deselected": 40
+  },
+  "ruff_lint": true,
+  "ruff_format": true,
+  "git_diff_check": true,
+  "previous_droid": {
+    "artifact_hashes": 19,
+    "source_hashes": 23,
+    "model_rollouts": 70,
+    "passed": true
+  },
+  "wheel": {
+    "passed": true,
+    "installed_source_files": 21,
+    "sha256": "ca6348e4d06d59a8d5a3c1f37bf3b2804a888043536beec05cd8491e861a9e8b"
+  },
+  "model_contract": {
+    "responses": 1250,
+    "denormalization_max_abs": 6.457219828281957e-10,
+    "raw_opening_outside_fraction": 0.53715
+  },
+  "checkpoint": {
+    "files": 163,
+    "bytes": 32399035595,
+    "same_as_previous": true
+  },
+  "task_success_improvement_observed": false,
+  "promote_response_inverse": false,
+  "promote_latch": false,
+  "hardware_executed": false,
+  "services_stopped": 5,
+  "notes": [
+    "Integrity and software checks do not imply controller effectiveness.",
+    "One initial simulator startup failure and exploratory runs are archived.",
+    "Source R1/R2 geometry passed; HDF5 observation identity was rejected."
+  ]
+}
