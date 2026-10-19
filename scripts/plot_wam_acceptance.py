@@ -16,17 +16,20 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/wam_checkpoint_acceptance_20261019v2.json")
     parser.add_argument("--seed", type=int, required=True)
+    parser.add_argument(
+        "--state-only", action="store_true", help="export only fully completed state matrices while physics continues"
+    )
     args = parser.parse_args()
     c, root = load_config(args.config)
     if args.seed != c["seed"]:
         raise ValueError("seed differs")
-    source = root / "summary.json"
+    source = root / ("summary_partial.json" if args.state_only else "summary.json")
     summary = json.loads(source.read_text())
     native_source = root / "native_horizon40/summary.json"
-    native = json.loads(native_source.read_text())
-    if not summary["complete"] or not native["complete"]:
+    native = None if args.state_only else json.loads(native_source.read_text())
+    if not summary["state_complete"] or (not args.state_only and (not summary["complete"] or not native["complete"])):
         raise ValueError("figures require complete matched matrices")
-    out = root / "figures"
+    out = root / ("state_figures" if args.state_only else "figures")
     out.mkdir(exist_ok=False)
     plt.rcParams.update({"font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
     names = ["warm6200_masked", "8400_masked", "8600_masked", "8800_masked"]
@@ -78,6 +81,17 @@ def main():
     for suffix in ("png", "pdf"):
         figure.savefig(out / f"state_errors.{suffix}", dpi=180)
     plt.close(figure)
+    if args.state_only:
+        write_json(
+            out / "manifest.json",
+            dict(
+                state_complete=True,
+                physics_complete=summary["complete"],
+                summary_sha256=sha256(source),
+                artifacts={p.name: sha256(p) for p in out.iterdir() if p.suffix in (".png", ".pdf")},
+            ),
+        )
+        return
 
     figure, axes = plt.subplots(1, 3, figsize=(12, 4), constrained_layout=True)
     for task_index, ax in enumerate(axes):

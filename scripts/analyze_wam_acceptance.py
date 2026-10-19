@@ -268,12 +268,29 @@ def main():
     complete = all_complete and simulation_complete and len(probes) == 6
     if not args.partial and not complete:
         raise ValueError("evidence matrix is incomplete; use --partial for an explicitly provisional snapshot")
+    sample_by_name = {sample["name"]: sample for sample in samples}
+    labels = json.loads((root / "state_label_audit/result.json").read_text())["rows"]
+    label_groups = defaultdict(list)
+    for row in labels:
+        sample = sample_by_name[row["sample"]]
+        label_groups[(sample["split"], row["horizon"])].append(
+            dict(
+                episode=row["episode"],
+                anchor_frame=sample["anchor_frame"],
+                baselines={"clipped_label": row["clipped_target_state_error"]},
+            )
+        )
     report = dict(
         complete=complete,
+        state_complete=all_complete,
         checkpoint_matrices=matrices,
         state=summaries,
         state_by_phase_task=detail,
         paired_serving_effects=paired,
+        clipped_label_reconstruction=[
+            dict(split=key[0], horizon=key[1], metrics=summarize(rows, "clipped_label"))
+            for key, rows in label_groups.items()
+        ],
         physics=physics,
         probes=probes,
         fingerprints=fingerprints,
