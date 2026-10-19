@@ -222,6 +222,7 @@ def main():
             require(result["error"] is None and len(rows) == result["steps"] == budget, "physics budget incomplete")
             require(len(chunks) == result["chunks"] == (budget + horizon - 1) // horizon, "prediction count differs")
             expected_targets, expected_openings = [], []
+            used_rotation_angles, used_raw_openings = [], []
             for number, chunk in enumerate(chunks):
                 step = number * horizon
                 require(chunk["sequence"] == number and chunk["step"] == step, "chunk sequence differs")
@@ -238,6 +239,10 @@ def main():
                 actions = np.asarray(chunk["actions"])
                 require(actions.shape == (config["action_chunk_size"], 128), "model horizon differs")
                 raw_targets = integrate(chunk["anchor_tcp"], actions[:horizon])
+                previous_tcp = np.concatenate([np.asarray(chunk["anchor_tcp"])[None], raw_targets[:-1]])
+                relative_rotation = previous_tcp[:, :3, :3].swapaxes(-1, -2) @ raw_targets[:, :3, :3]
+                used_rotation_angles.extend(Rotation.from_matrix(relative_rotation).magnitude())
+                used_raw_openings.extend(actions[:horizon, 9])
                 opening = np.clip(actions[:horizon, 9], 0, 1)
                 if stage != "controls":
                     path = dest / f"response_{number:04d}.json"
@@ -348,6 +353,10 @@ def main():
                 desired_source_min_z_m=float(np.min(desired_points[:, 2])),
                 outside_conservative_workspace_endpoints=int(np.sum(excess[1:] > 1e-9)),
                 max_workspace_radius_excess_m=float(np.max(excess)),
+                raw_local_rotation_mean_executed_rad=float(np.mean(used_rotation_angles[:budget])),
+                raw_opening_outside_executed_fraction=float(
+                    np.mean((np.asarray(used_raw_openings[:budget]) < 0) | (np.asarray(used_raw_openings[:budget]) > 1))
+                ),
             )
             results.append(result)
             for path in dest.glob("*"):
@@ -368,6 +377,12 @@ def main():
                 rotation_rmse_rad=float(np.mean([r["rotation_rmse_rad"] for r in rows])),
                 finger_contact_steps=sum(r["finger_contact_steps"] for r in rows),
                 ideal_finger_bowl_gap_min_mm=1000 * min(r["ideal_finger_bowl_separation_lower_bound_m"] for r in rows),
+                raw_local_rotation_mean_executed_rad=float(
+                    np.mean([r["raw_local_rotation_mean_executed_rad"] for r in rows])
+                ),
+                raw_opening_outside_executed_fraction=float(
+                    np.mean([r["raw_opening_outside_executed_fraction"] for r in rows])
+                ),
             )
         )
     summary = dict(
