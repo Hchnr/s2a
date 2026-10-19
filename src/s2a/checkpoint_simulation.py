@@ -37,7 +37,7 @@ def object_progress(env):
     return dict(success=bool(env.check_success()), objects=objects)
 
 
-def run_case(config, root, record, *, source, sampling_seed, checkpoint=None, probe=None):
+def run_case(config, root, record, *, source, sampling_seed, checkpoint=None, probe=None, server_port=None):
     if source not in ("native", "oracle", "wam", "probe"):
         raise ValueError("unknown source")
     template = json.loads(Path(config["policy_template"]).read_text())
@@ -48,6 +48,7 @@ def run_case(config, root, record, *, source, sampling_seed, checkpoint=None, pr
         task_text=record["task"],
         camera_observations=False,
         record_video=False,
+        return_video=False,
         refresh_controller_after_restore=True,
         action_chunk_size=config["online_chunk_size"],
         execution_horizon=config["online_execution_horizon"],
@@ -74,7 +75,7 @@ def run_case(config, root, record, *, source, sampling_seed, checkpoint=None, pr
         import requests
 
         ck = next(x for x in config["checkpoints"] if x["name"] == checkpoint)
-        c["server_url"] = f"http://127.0.0.1:{ck['port']}"
+        c["server_url"] = f"http://127.0.0.1:{server_port or ck['port']}"
         with requests.Session() as session:
             session.trust_env = False
             response = session.get(c["server_url"] + "/info", timeout=15)

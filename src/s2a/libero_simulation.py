@@ -166,6 +166,7 @@ def generate_from_canvas(config, pixels, dest, number):
                 task_title=config["task_text"],
                 selected_roles=["auxiliary_0", "left_wrist"],
                 camera_layout=[["auxiliary_0", "top", 640, 480], ["left_wrist", "bottom", 640, 480]],
+                return_video=config.get("return_video", True),
             )
         },
     )

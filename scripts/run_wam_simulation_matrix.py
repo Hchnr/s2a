@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import subprocess
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -17,11 +18,13 @@ def main():
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--stage", choices=("native", "oracle", "wam", "probe"), required=True)
     parser.add_argument("--checkpoint")
+    parser.add_argument("--server-port", type=int, help="separate replica of the same verified frozen weights")
     parser.add_argument("--record")
     parser.add_argument("--sampling-seed", type=int)
     parser.add_argument("--probe", type=int)
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--wait-for-state", action="store_true", help="serialize work on a single-request GPU server")
     args = parser.parse_args()
     c, out = load_config(args.config)
     if args.seed != c["seed"]:
@@ -41,11 +44,29 @@ def main():
             sampling_seed=args.sampling_seed,
             checkpoint=args.checkpoint,
             probe=probes[args.probe] if args.probe is not None else None,
+            server_port=args.server_port,
         )
         print(json.dumps(result), flush=True)
         return
     if args.stage == "wam" and args.checkpoint is None:
         raise ValueError("select one endpoint per matrix worker")
+    if args.wait_for_state:
+        if args.stage != "wam":
+            raise ValueError("only WAM jobs wait for the shared model endpoint")
+        completion = out / "state_queries" / args.checkpoint / "complete.json"
+        while not completion.exists():
+            print(json.dumps(dict(waiting_for=str(completion))), flush=True)
+            time.sleep(30)
+        expected = (
+            len(c["tasks"])
+            * c["offline_episodes_per_task"]
+            * 4
+            * len(c["offline_horizons"])
+            * len(c["offline_prompt_modes"])
+            * len(c["sampling_seeds"])
+        )
+        if json.loads(completion.read_text())["cases"] != expected:
+            raise ValueError("offline matrix did not complete")
     jobs = [(record, seed, None) for record in records for seed in c["sampling_seeds"]]
     if args.stage == "probe":
         jobs = [(records[0], c["seed"], i) for i in range(len(probes))]
@@ -88,6 +109,8 @@ def main():
         ]
         if args.checkpoint:
             command += ["--checkpoint", args.checkpoint]
+        if args.server_port:
+            command += ["--server-port", str(args.server_port)]
         if probe is not None:
             command += ["--probe", str(probe)]
         with log.open("w") as stream:
