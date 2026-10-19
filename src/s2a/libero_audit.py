@@ -51,31 +51,49 @@ def contact_counts(env):
 
 
 def run_audit_case(config, output, case, trial):
-    import h5py
-
     sim_config = {**config["simulation"], "camera_observations": False}
     fixture = json.loads(Path(sim_config["fixture"]).read_text())
     record = fixture["episodes"][trial]
     dest = output / case["name"] / f"trial{trial}"
     dest.mkdir(parents=True, exist_ok=False)
-    with h5py.File(fixture["source_hdf5"]) as source:
-        demo = source["data"][record["demo"]]
-        native = demo["actions"][:]
-        states = demo["states"][:]
-        grip_labels = demo["obs/gripper_states"][:]
-        poses, openings = post_action_reference(demo["obs/ee_pos"][:], demo["obs/ee_ori"][:], grip_labels)
-    if len(native) != len(poses):
-        raise ValueError("one post-action reference is required per native action")
+    input_paths = [sim_config["fixture"]]
+    if config.get("reference_source") == "saved_policy":
+        if case["arm"] == "native" or case["gripper"] == "native":
+            raise ValueError("expert commands cannot label saved model references")
+        path = Path(config["saved_policy_root"]) / "policy/baseline" / f"trial{trial}" / "trace_steps.jsonl"
+        saved = [json.loads(line) for line in path.read_text().splitlines()]
+        poses = np.asarray([row["desired_source"] for row in saved])
+        openings = np.asarray([row["opening_target"] for row in saved])
+        if len(poses) != config["reference_steps"]:
+            raise ValueError("saved model reference is incomplete")
+        native, states, grip_labels = None, None, None
+        input_paths.append(str(path))
+    else:
+        import h5py
+
+        with h5py.File(fixture["source_hdf5"]) as source:
+            demo = source["data"][record["demo"]]
+            native = demo["actions"][:]
+            states = demo["states"][:]
+            grip_labels = demo["obs/gripper_states"][:]
+            poses, openings = post_action_reference(demo["obs/ee_pos"][:], demo["obs/ee_ori"][:], grip_labels)
+        if len(native) != len(poses):
+            raise ValueError("one post-action reference is required per native action")
+        input_paths.append(fixture["source_hdf5"])
     manifest = dict(
         config=config,
         case=case,
         trial=trial,
         code=code_fingerprint(),
-        input_sha256={p: sha256(p) for p in (sim_config["fixture"], fixture["source_hdf5"])},
+        input_sha256={p: sha256(p) for p in input_paths},
         reference="obs[t] is AFTER actions[t]; states[t] is BEFORE actions[t]",
         evidence="Independent MuJoCo; oracle state references; native commands only in explicit ceiling diagnostics",
         runtime={p: importlib.metadata.version(p) for p in ("mujoco", "robosuite", "numpy", "scipy")},
     )
+    if config.get("reference_source") == "saved_policy":
+        manifest["reference"] = (
+            "Exogenous saved model references; actual simulator feedback; not a live-image model policy"
+        )
     if config.get("reference_source") == "published_r2":
         bridge_path = config["published_bridge"]
         bridge = json.loads(Path(bridge_path).read_text())["trajectories"][record["demo"]]
@@ -109,7 +127,9 @@ def run_audit_case(config, output, case, trial):
         elif case["initial_gripper"] != "zero":
             raise ValueError("unknown initial gripper state")
         joint_indices = np.asarray(env.robots[0]._ref_gripper_joint_pos_indexes)
-        shift_error = np.max(np.abs(states[1:, 1 + joint_indices] - grip_labels[:-1]))
+        shift_error = (
+            float(np.max(np.abs(states[1:, 1 + joint_indices] - grip_labels[:-1]))) if states is not None else None
+        )
         write_json(
             dest / "initialization.json",
             dict(
@@ -118,8 +138,8 @@ def run_audit_case(config, output, case, trial):
                 initial_gripper_internal=gripper.current_action,
                 initial_opening=aperture(obs),
                 initial_source=initial,
-                stored_obs0_source=poses[0],
-                states_tplus1_vs_obs_t_gripper_max_abs=float(shift_error),
+                first_reference_source=poses[0],
+                states_tplus1_vs_obs_t_gripper_max_abs=shift_error,
             ),
         )
         converter = OSCStateToAction(
@@ -137,7 +157,11 @@ def run_audit_case(config, output, case, trial):
         delay = ActuatorDelay(
             case.get("delay_steps", 0),
             dimensions=9 if case["gripper"] == "position" else 7,
-            initial_command=(np.r_[np.zeros(7), gripper.current_action] if case["gripper"] == "position" else None),
+            initial_command=(
+                np.r_[np.zeros(7), np.broadcast_to(gripper.current_action, (2,))]
+                if case["gripper"] == "position"
+                else None
+            ),
         )
         noise = np.random.default_rng(config["seed"] + trial)
         pose_std = np.array([case.get("position_noise_std_m", 0)] * 3 + [case.get("rotation_noise_std_rad", 0)] * 3)
@@ -151,7 +175,7 @@ def run_audit_case(config, output, case, trial):
                 return gripper.current_action
 
             gripper.format_action = position_action
-        length = len(native) + (
+        length = len(poses) + (
             config["extra_hold_steps"] if case["arm"] != "native" else config.get("native_extra_hold_steps", 0)
         )
         with (dest / "steps.jsonl").open("w") as stream:

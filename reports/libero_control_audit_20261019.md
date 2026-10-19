@@ -53,14 +53,29 @@
 
 | 条件 | 成功 | 平均位置RMSE mm | 平均旋转RMSE rad |
 | --- | ---: | ---: | ---: |
+| native_measured | 10/10 | 5.045 | 0.016961 |
+| affine_position | 2/10 | 23.622 | 0.036957 |
+| affine_intent | 10/10 | 23.594 | 0.036863 |
+| response_position | 0/10 | 3.934 | 0.008782 |
+| response_intent | 9/10 | 3.944 | 0.008782 |
+| affine_latch | 9/10 | 23.591 | 0.036895 |
+| response_latch | 9/10 | 4.054 | 0.008838 |
 
 | 条件 | 最终成功 | 末1秒成功比例均值 |
 | --- | ---: | ---: |
+| native_measured | 10/10 | 1.000 |
+| affine_position | 2/10 | 0.200 |
+| affine_intent | 10/10 | 1.000 |
+| response_position | 0/10 | 0.000 |
+| response_intent | 9/10 | 0.900 |
+| affine_latch | 6/10 | 0.540 |
+| response_latch | 3/10 | 0.300 |
 
 ## 8800实时图像闭环
 
 | 条件 | 成功 | 平均位置RMSE mm | 平均旋转RMSE rad |
 | --- | ---: | ---: | ---: |
+| baseline | 0/5 | 37.093 | 1.899606 |
 
 oracle使用obs[t]作为actions[t]执行后的目标，保持原world frame；native正控与native-gripper诊断使用专家命令，其余候选不读取专家命令。
 

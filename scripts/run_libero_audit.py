@@ -46,7 +46,12 @@ def main():
             manifest = json.loads((dest / "manifest.json").read_text())
             result = json.loads((dest / "result.json").read_text())
             fixture = json.loads(Path(config["simulation"]["fixture"]).read_text())
-            length = fixture["episodes"][trial]["action_rows"] + (
+            reference_length = (
+                config["reference_steps"]
+                if config.get("reference_source") == "saved_policy"
+                else fixture["episodes"][trial]["action_rows"]
+            )
+            length = reference_length + (
                 config.get("native_extra_hold_steps", 0) if case["arm"] == "native" else config["extra_hold_steps"]
             )
             if (

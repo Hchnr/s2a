@@ -930,10 +930,18 @@
     ]
   },
   "policy": {
-    "cases": 0,
+    "cases": 5,
     "expected_cases": 10,
     "complete": false,
-    "groups": [],
+    "groups": [
+      {
+        "name": "baseline",
+        "episodes": 5,
+        "successes": 0,
+        "position_rmse_mm": 37.093417311351445,
+        "rotation_rmse_rad": 1.8996061779265818
+      }
+    ],
     "paired": []
   },
   "stress": {
@@ -1147,9 +1155,506 @@
     "matched_prefix": []
   },
   "terminal": {
-    "cases": 4,
-    "groups": [],
-    "complete": false
+    "config": "configs/libero_terminal_20261019.json",
+    "cases": 70,
+    "groups": [
+      {
+        "name": "native_measured",
+        "episodes": 10,
+        "successes": 10,
+        "terminal_successes": 10,
+        "final_second_success_fraction": 1.0,
+        "position_rmse_mm": 5.044994701209725,
+        "rotation_rmse_rad": 0.016960504017188106,
+        "opening_rmse": 0.11882522387187203,
+        "failed_trials": []
+      },
+      {
+        "name": "affine_position",
+        "episodes": 10,
+        "successes": 2,
+        "terminal_successes": 2,
+        "final_second_success_fraction": 0.2,
+        "position_rmse_mm": 23.622415266271563,
+        "rotation_rmse_rad": 0.03695676836935695,
+        "opening_rmse": 0.061851051937719295,
+        "failed_trials": [
+          1,
+          0,
+          2,
+          4,
+          5,
+          6,
+          8,
+          9
+        ]
+      },
+      {
+        "name": "affine_intent",
+        "episodes": 10,
+        "successes": 10,
+        "terminal_successes": 10,
+        "final_second_success_fraction": 1.0,
+        "position_rmse_mm": 23.593912204818444,
+        "rotation_rmse_rad": 0.036863299043375056,
+        "opening_rmse": 0.1643149618777459,
+        "failed_trials": []
+      },
+      {
+        "name": "response_position",
+        "episodes": 10,
+        "successes": 0,
+        "terminal_successes": 0,
+        "final_second_success_fraction": 0.0,
+        "position_rmse_mm": 3.9341555494243594,
+        "rotation_rmse_rad": 0.0087819571964036,
+        "opening_rmse": 0.06014171035251011,
+        "failed_trials": [
+          0,
+          1,
+          3,
+          2,
+          4,
+          6,
+          5,
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "name": "response_intent",
+        "episodes": 10,
+        "successes": 9,
+        "terminal_successes": 9,
+        "final_second_success_fraction": 0.9,
+        "position_rmse_mm": 3.944167947925365,
+        "rotation_rmse_rad": 0.008782355779350997,
+        "opening_rmse": 0.1638731076619565,
+        "failed_trials": [
+          4
+        ]
+      },
+      {
+        "name": "affine_latch",
+        "episodes": 10,
+        "successes": 9,
+        "terminal_successes": 6,
+        "final_second_success_fraction": 0.5399999999999999,
+        "position_rmse_mm": 23.591204141029532,
+        "rotation_rmse_rad": 0.03689524894199344,
+        "opening_rmse": 0.3081598187679721,
+        "failed_trials": [
+          8
+        ]
+      },
+      {
+        "name": "response_latch",
+        "episodes": 10,
+        "successes": 9,
+        "terminal_successes": 3,
+        "final_second_success_fraction": 0.3,
+        "position_rmse_mm": 4.054312695693299,
+        "rotation_rmse_rad": 0.008837832245302723,
+        "opening_rmse": 0.3122586463434569,
+        "failed_trials": [
+          2
+        ]
+      }
+    ],
+    "matched_prefix": [
+      {
+        "gripper": "position",
+        "trial": 0,
+        "common_steps": 129,
+        "affine": {
+          "position_rmse_mm": 24.012429742086635,
+          "rotation_rmse_rad": 0.03563450325553001
+        },
+        "response": {
+          "position_rmse_mm": 5.28945114745786,
+          "rotation_rmse_rad": 0.015175240028135886
+        }
+      },
+      {
+        "gripper": "position",
+        "trial": 1,
+        "common_steps": 136,
+        "affine": {
+          "position_rmse_mm": 21.52804585560953,
+          "rotation_rmse_rad": 0.034883983962524866
+        },
+        "response": {
+          "position_rmse_mm": 3.511744791496501,
+          "rotation_rmse_rad": 0.009083743623593652
+        }
+      },
+      {
+        "gripper": "position",
+        "trial": 2,
+        "common_steps": 128,
+        "affine": {
+          "position_rmse_mm": 22.408720851266924,
+          "rotation_rmse_rad": 0.022223104995168677
+        },
+        "response": {
+          "position_rmse_mm": 3.8555711879795775,
+          "rotation_rmse_rad": 0.0065668109680218955
+        }
+      },
+      {
+        "gripper": "position",
+        "trial": 3,
+        "common_steps": 126,
+        "affine": {
+          "position_rmse_mm": 24.49425254804083,
+          "rotation_rmse_rad": 0.04167709927907845
+        },
+        "response": {
+          "position_rmse_mm": 4.251740582545852,
+          "rotation_rmse_rad": 0.009467495353291673
+        }
+      },
+      {
+        "gripper": "position",
+        "trial": 4,
+        "common_steps": 136,
+        "affine": {
+          "position_rmse_mm": 22.961512110780745,
+          "rotation_rmse_rad": 0.029153637734312305
+        },
+        "response": {
+          "position_rmse_mm": 3.447638775142601,
+          "rotation_rmse_rad": 0.006147127821153184
+        }
+      },
+      {
+        "gripper": "position",
+        "trial": 5,
+        "common_steps": 133,
+        "affine": {
+          "position_rmse_mm": 24.16455865608526,
+          "rotation_rmse_rad": 0.021041086517832923
+        },
+        "response": {
+          "position_rmse_mm": 3.7830421573186825,
+          "rotation_rmse_rad": 0.005460778476275557
+        }
+      },
+      {
+        "gripper": "position",
+        "trial": 6,
+        "common_steps": 146,
+        "affine": {
+          "position_rmse_mm": 23.823000105452255,
+          "rotation_rmse_rad": 0.04681474761143878
+        },
+        "response": {
+          "position_rmse_mm": 3.6894840390122923,
+          "rotation_rmse_rad": 0.008105200486812104
+        }
+      },
+      {
+        "gripper": "position",
+        "trial": 7,
+        "common_steps": 138,
+        "affine": {
+          "position_rmse_mm": 23.661420114900096,
+          "rotation_rmse_rad": 0.0321948422788232
+        },
+        "response": {
+          "position_rmse_mm": 4.23688408226064,
+          "rotation_rmse_rad": 0.010885407697622827
+        }
+      },
+      {
+        "gripper": "position",
+        "trial": 8,
+        "common_steps": 133,
+        "affine": {
+          "position_rmse_mm": 29.225381929674942,
+          "rotation_rmse_rad": 0.07383005573758272
+        },
+        "response": {
+          "position_rmse_mm": 4.417853273283078,
+          "rotation_rmse_rad": 0.010804372242437786
+        }
+      },
+      {
+        "gripper": "position",
+        "trial": 9,
+        "common_steps": 166,
+        "affine": {
+          "position_rmse_mm": 19.944830748818458,
+          "rotation_rmse_rad": 0.03211462232127756
+        },
+        "response": {
+          "position_rmse_mm": 2.8581454577465055,
+          "rotation_rmse_rad": 0.006123395266691443
+        }
+      },
+      {
+        "gripper": "intent",
+        "trial": 0,
+        "common_steps": 129,
+        "affine": {
+          "position_rmse_mm": 24.027797609878622,
+          "rotation_rmse_rad": 0.03564974540154209
+        },
+        "response": {
+          "position_rmse_mm": 5.3031090907775384,
+          "rotation_rmse_rad": 0.015208747510615598
+        }
+      },
+      {
+        "gripper": "intent",
+        "trial": 1,
+        "common_steps": 136,
+        "affine": {
+          "position_rmse_mm": 21.502031883155368,
+          "rotation_rmse_rad": 0.034832615725713986
+        },
+        "response": {
+          "position_rmse_mm": 3.52651938655529,
+          "rotation_rmse_rad": 0.009098614232994705
+        }
+      },
+      {
+        "gripper": "intent",
+        "trial": 2,
+        "common_steps": 128,
+        "affine": {
+          "position_rmse_mm": 22.40793526256099,
+          "rotation_rmse_rad": 0.022226325057125337
+        },
+        "response": {
+          "position_rmse_mm": 3.86941665440442,
+          "rotation_rmse_rad": 0.006452110918679777
+        }
+      },
+      {
+        "gripper": "intent",
+        "trial": 3,
+        "common_steps": 126,
+        "affine": {
+          "position_rmse_mm": 24.49235034461637,
+          "rotation_rmse_rad": 0.04163250131882781
+        },
+        "response": {
+          "position_rmse_mm": 4.294549438809535,
+          "rotation_rmse_rad": 0.00952287058440804
+        }
+      },
+      {
+        "gripper": "intent",
+        "trial": 4,
+        "common_steps": 136,
+        "affine": {
+          "position_rmse_mm": 22.978588722842307,
+          "rotation_rmse_rad": 0.029134842718764237
+        },
+        "response": {
+          "position_rmse_mm": 3.449334722814672,
+          "rotation_rmse_rad": 0.006147077818598966
+        }
+      },
+      {
+        "gripper": "intent",
+        "trial": 5,
+        "common_steps": 133,
+        "affine": {
+          "position_rmse_mm": 24.164715552509012,
+          "rotation_rmse_rad": 0.021027859504693346
+        },
+        "response": {
+          "position_rmse_mm": 3.8110840351556696,
+          "rotation_rmse_rad": 0.005463918436204919
+        }
+      },
+      {
+        "gripper": "intent",
+        "trial": 6,
+        "common_steps": 146,
+        "affine": {
+          "position_rmse_mm": 23.75193937352677,
+          "rotation_rmse_rad": 0.046832484909130195
+        },
+        "response": {
+          "position_rmse_mm": 3.6827857441674605,
+          "rotation_rmse_rad": 0.008066929603612737
+        }
+      },
+      {
+        "gripper": "intent",
+        "trial": 7,
+        "common_steps": 138,
+        "affine": {
+          "position_rmse_mm": 23.634709329135084,
+          "rotation_rmse_rad": 0.03209562580697022
+        },
+        "response": {
+          "position_rmse_mm": 4.218960673132957,
+          "rotation_rmse_rad": 0.010940059308258625
+        }
+      },
+      {
+        "gripper": "intent",
+        "trial": 8,
+        "common_steps": 133,
+        "affine": {
+          "position_rmse_mm": 29.08168363953398,
+          "rotation_rmse_rad": 0.07310955083874252
+        },
+        "response": {
+          "position_rmse_mm": 4.431378266620636,
+          "rotation_rmse_rad": 0.010792182265160995
+        }
+      },
+      {
+        "gripper": "intent",
+        "trial": 9,
+        "common_steps": 166,
+        "affine": {
+          "position_rmse_mm": 19.89737033042596,
+          "rotation_rmse_rad": 0.03209143915224082
+        },
+        "response": {
+          "position_rmse_mm": 2.8545414668154696,
+          "rotation_rmse_rad": 0.00613104711497561
+        }
+      },
+      {
+        "gripper": "latch",
+        "trial": 0,
+        "common_steps": 129,
+        "affine": {
+          "position_rmse_mm": 24.0206822973705,
+          "rotation_rmse_rad": 0.03564275647231901
+        },
+        "response": {
+          "position_rmse_mm": 5.386292342735439,
+          "rotation_rmse_rad": 0.015362882643035747
+        }
+      },
+      {
+        "gripper": "latch",
+        "trial": 1,
+        "common_steps": 136,
+        "affine": {
+          "position_rmse_mm": 21.504525694177108,
+          "rotation_rmse_rad": 0.03482537862920555
+        },
+        "response": {
+          "position_rmse_mm": 3.5169267544826455,
+          "rotation_rmse_rad": 0.009071914664805633
+        }
+      },
+      {
+        "gripper": "latch",
+        "trial": 2,
+        "common_steps": 128,
+        "affine": {
+          "position_rmse_mm": 22.40577976916643,
+          "rotation_rmse_rad": 0.02226628113399084
+        },
+        "response": {
+          "position_rmse_mm": 3.8556381525134986,
+          "rotation_rmse_rad": 0.006567044053631934
+        }
+      },
+      {
+        "gripper": "latch",
+        "trial": 3,
+        "common_steps": 126,
+        "affine": {
+          "position_rmse_mm": 24.467389432745197,
+          "rotation_rmse_rad": 0.041674705102951154
+        },
+        "response": {
+          "position_rmse_mm": 4.400587384070837,
+          "rotation_rmse_rad": 0.009623994661838843
+        }
+      },
+      {
+        "gripper": "latch",
+        "trial": 4,
+        "common_steps": 136,
+        "affine": {
+          "position_rmse_mm": 22.970073613136254,
+          "rotation_rmse_rad": 0.029084033575572002
+        },
+        "response": {
+          "position_rmse_mm": 3.8990418371623212,
+          "rotation_rmse_rad": 0.006204978529671212
+        }
+      },
+      {
+        "gripper": "latch",
+        "trial": 5,
+        "common_steps": 133,
+        "affine": {
+          "position_rmse_mm": 24.226033088498614,
+          "rotation_rmse_rad": 0.020941227672353166
+        },
+        "response": {
+          "position_rmse_mm": 3.986492605944898,
+          "rotation_rmse_rad": 0.005437291813873512
+        }
+      },
+      {
+        "gripper": "latch",
+        "trial": 6,
+        "common_steps": 146,
+        "affine": {
+          "position_rmse_mm": 23.828323228650024,
+          "rotation_rmse_rad": 0.04673916428550112
+        },
+        "response": {
+          "position_rmse_mm": 3.7162817160610166,
+          "rotation_rmse_rad": 0.007989957321202458
+        }
+      },
+      {
+        "gripper": "latch",
+        "trial": 7,
+        "common_steps": 138,
+        "affine": {
+          "position_rmse_mm": 23.584554973463685,
+          "rotation_rmse_rad": 0.03272848025791514
+        },
+        "response": {
+          "position_rmse_mm": 4.225479727018343,
+          "rotation_rmse_rad": 0.011099066469367312
+        }
+      },
+      {
+        "gripper": "latch",
+        "trial": 8,
+        "common_steps": 133,
+        "affine": {
+          "position_rmse_mm": 29.072326347742425,
+          "rotation_rmse_rad": 0.07304213351898825
+        },
+        "response": {
+          "position_rmse_mm": 4.728359107879718,
+          "rotation_rmse_rad": 0.01096305596289989
+        }
+      },
+      {
+        "gripper": "latch",
+        "trial": 9,
+        "common_steps": 166,
+        "affine": {
+          "position_rmse_mm": 19.83235296534509,
+          "rotation_rmse_rad": 0.03200832877113818
+        },
+        "response": {
+          "position_rmse_mm": 2.8280273290642732,
+          "rotation_rmse_rad": 0.006058136332700713
+        }
+      }
+    ],
+    "complete": true
   },
   "complete": false,
   "integrity_passed": null,
