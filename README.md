@@ -33,6 +33,8 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_followup.py --seed 
 LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_followup.py --seed 42
 ```
 
+WAM 效果专项已完成55项完整物理实验/50739步：不计推理延迟，两种纯WAM转换均0/5，共享解码正控均5/5；独立几何证据确认当前生成参考与任务不符，不能只归因为缺少转换。详见 [效果报告](reports/libero_wam_effect_20261019.md)。本专项暂停物理等待推理、不使用参考过期判断，用于判断效果。`configs/libero_wam_effect_20261019.json` 冻结共享 Action128 解码的 oracle/真实 WAM 对照，`configs/libero_wam_components_20261019.json` 冻结有特权的分量干预。完整请求、原始/有效参考、物理时钟、状态摘要与实际发送命令均保留。复现入口见 [scripts](scripts/README.md)，本专项运行结果追加于本轮记录及结论。
+
 ```text
 src/s2a/geometry.py        column-rot6d、SE(3)、TCP/flange、SO(3) 误差
 src/s2a/data.py            provenance join、物理时钟、masks、样本与指纹

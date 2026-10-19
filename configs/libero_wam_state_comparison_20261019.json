@@ -1,0 +1,15 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/libero_wam_state_comparison_20261019",
+  "alignment": "outputs/libero_followup_20261019/alignment/matched_targets.json",
+  "query_root": "outputs/libero_followup_20261019/training_image_queries",
+  "policy_config": "configs/libero_wam_effect_20261019.json",
+  "horizons": [16, 40],
+  "trials": [0, 1, 2, 3, 4],
+  "notes": [
+    "Reuses saved predictions on exact published frame-zero camera inputs; no new model inference.",
+    "Ground truth is observation.state read directly from current R2 Parquet, never expert actions.",
+    "Only robot TCP pose and normalized opening are compared, not object or video states.",
+    "Five known initial contexts, seed42 only; diagnostic rather than held-out generalization."
+  ]
+}
