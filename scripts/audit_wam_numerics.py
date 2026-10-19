@@ -95,6 +95,7 @@ def main():
                 request_path = next((root / "state_queries/8800").glob("*_h16_task_only_s42/request.json"))
             request = json.loads(request_path.read_text())
             request.update(vision_path=str(Path(sample["image_path"]).absolute()), prompt=sample["task"])
+            request["extra"]["action128"]["task_title"] = sample["task"]
             request.update(action_chunk_size=horizon, num_frames=horizon + 1)
             prepared, raw_batch = service.prepare(OmniSampleOverrides.model_validate(request), directory)
             if args.published_caption:

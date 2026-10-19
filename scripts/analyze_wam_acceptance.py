@@ -39,6 +39,49 @@ def summarize(rows, field="metrics"):
     return result
 
 
+def physics_diagnostics(paths, source):
+    """Separate reference tracking and task-object progress from task predicates."""
+    objects = {0: "akita_black_bowl_1", 1: "wine_bottle_1", 2: "cream_cheese_1"}
+    rows = []
+    for path in paths:
+        result = json.loads(path.read_text())
+        if result["error"] or result["steps"] != result["expected_steps"]:
+            continue
+        task = int(result["record"].split("_")[0].removeprefix("task"))
+        steps = [json.loads(line) for line in path.with_name("steps.jsonl").read_text().splitlines()]
+        item = dict(
+            record=result["record"],
+            sampling_seed=result["sampling_seed"],
+            task_index=task,
+            task_object=objects[task],
+            task_object_progress=result["object_progress"][objects[task]],
+            success=result["success"],
+            terminal_success=result["terminal_success"],
+            tracking_applicable=source != "native",
+        )
+        if source != "native":
+            errors = np.asarray([r["error"] for r in steps])
+            position, rotation = np.linalg.norm(errors[:, :3], axis=1), np.linalg.norm(errors[:, 3:], axis=1)
+            opening = np.asarray([r["opening_target"] for r in steps])
+            item.update(
+                position_rmse_m=float(np.sqrt(np.mean(position**2))),
+                rotation_rmse_rad=float(np.sqrt(np.mean(rotation**2))),
+                position_max_m=float(position.max()),
+                rotation_max_rad=float(rotation.max()),
+                # These compare achieved tracking with the frozen tolerance,
+                # not a claim that every arbitrary reference lies in the probe domain.
+                position_within_10mm_fraction=float(np.mean(position <= 0.01)),
+                rotation_within_005rad_fraction=float(np.mean(rotation <= 0.05)),
+                opening_target_min=float(opening.min()),
+                opening_target_max=float(opening.max()),
+                opening_mae=float(np.mean([abs(r["opening_after"] - r["opening_target"]) for r in steps])),
+                saturated_steps=sum(r["saturated"] for r in steps),
+                rate_limited_steps=sum(r["rate_limited"] for r in steps),
+            )
+        rows.append(item)
+    return rows
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/wam_checkpoint_acceptance_20261019v2.json")
@@ -61,6 +104,7 @@ def main():
     }
     names = ["8400", "8600", "8800", "warm6200_masked", "8400_masked", "8600_masked", "8800_masked"]
     matrices, groups, fine_groups, fingerprints = [], defaultdict(list), defaultdict(list), {}
+    by_name = {}
     all_complete = True
     for name in names:
         directory = root / "state_queries" / name
@@ -85,6 +129,7 @@ def main():
             key = (name, row["split"], row["prompt_mode"], row["horizon"])
             groups[key].append(row)
             fine_groups[key + (row["task"], row["phase"])].append(row)
+            by_name[(name, row["name"])] = row
     summaries = []
     for key, rows in groups.items():
         summaries.append(
@@ -113,6 +158,28 @@ def main():
                 constant_velocity=summarize(rows, "constant_velocity"),
             )
         )
+    paired = []
+    for checkpoint in ("8400", "8600", "8800"):
+        pairs = defaultdict(list)
+        for (name, case), stock in by_name.items():
+            if name == checkpoint and (checkpoint + "_masked", case) in by_name:
+                masked = by_name[(checkpoint + "_masked", case)]
+                pairs[(stock["split"], stock["prompt_mode"], stock["horizon"])].append((stock, masked))
+        for key, values in pairs.items():
+            before, after = summarize([v[0] for v in values]), summarize([v[1] for v in values])
+            paired.append(
+                dict(
+                    checkpoint=checkpoint,
+                    split=key[0],
+                    prompt_mode=key[1],
+                    horizon=key[2],
+                    stock=before,
+                    masked=after,
+                    masked_minus_stock={
+                        k: after[k] - before[k] for k in ("position_rmse_m", "rotation_rmse_rad", "opening_mae")
+                    },
+                )
+            )
     physics = {}
     simulation_complete = True
     fixtures = json.loads((root / "simulation/fixtures.json").read_text())["records"]
@@ -134,6 +201,7 @@ def main():
             success=sum(r["success"] for r in valid),
             terminal_success=sum(r["terminal_success"] for r in valid),
             cases=rows,
+            diagnostics=physics_diagnostics(paths, name),
         )
         if complete:
             fingerprints.update({str(p): sha256(p) for p in paths})
@@ -162,6 +230,7 @@ def main():
         checkpoint_matrices=matrices,
         state=summaries,
         state_by_phase_task=detail,
+        paired_serving_effects=paired,
         physics=physics,
         probes=probes,
         fingerprints=fingerprints,
@@ -171,6 +240,8 @@ def main():
             "Six independent physics initial states, each evaluated under two sampling seeds.",
             "Published captions are privileged offline diagnosis; online uses task-only instructions.",
             "Missing and infrastructure-failed cases are never counted as task failures.",
+            "Native-command error fields in early artifacts describe step motion, not reference tracking.",
+            "Constant velocity extrapolates observed pose motion; both causal baselines hold the current gripper opening.",
         ],
     )
     out = root / ("summary_partial.json" if args.partial else "summary.json")
