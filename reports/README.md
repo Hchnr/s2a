@@ -13,3 +13,7 @@
 后续独立物理仿真见 `libero_simulation_20261016.md` / `.json` 及对应validation文件。分别列出原生expert、oracle状态参考、旧5600模型预测固定参考，以及新8800模型实时图像闭环；执行状态以报告完成计数为准。它不改变首轮DROID日志/模型内实验的证据等级，也不构成真机验证。重建入口为 `scripts/summarize_libero_simulation.py --seed 42`。
 
 2026-10-19控制合同审计见 `libero_control_audit_20261019.md/.json`。它区分HDF5 oracle、发布R2参考、保存模型参考和实时模型策略，另列延迟/噪声、首次成功及完整轨迹终态；数据来源核查与软件/打包验证摘要分别保存。所有生成trace、环境、原始预测、视频和图写在outputs，Git只保留精简报告。
+
+## 最新继续阶段
+
+`libero_followup_20261019.md/json`：catalog与发布修订、同源图像WAM目标、当前端点测量及35项异步物理验证；完整性与任务成功分别记录。软件与打包摘要为 `validation_followup_20261019.json`，完整产物/图/归档索引在 `outputs/libero_followup_20261019/`。

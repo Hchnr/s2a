@@ -1,0 +1,74 @@
+{
+  "seed": 42,
+  "complete": true,
+  "formal_physics_cases": 35,
+  "formal_physics_steps": 14000,
+  "primary_artifact_hashes": 359,
+  "checked_input_files": 26,
+  "checked_executed_revision_files": 25,
+  "unit_tests": {
+    "passed": 45,
+    "integration_deselected": 1
+  },
+  "external_data_integration": {
+    "passed": 1,
+    "other_tests_deselected": 45
+  },
+  "ruff_lint": true,
+  "ruff_format": true,
+  "git_diff_check": true,
+  "wheel": {
+    "passed": true,
+    "installed_source_files": 25,
+    "sha256": "c97a76a66248dfc1a8ac62b2f7dfc145433a560807e8406fbae2034422bf4198"
+  },
+  "previous_droid": {
+    "passed": true,
+    "artifact_hashes": 19,
+    "source_hashes": 23,
+    "model_rollouts": 70
+  },
+  "camera_parity": {
+    "comparisons": 30,
+    "max_abs": 0
+  },
+  "training_image_queries": 10,
+  "model_contract": {
+    "responses": 35,
+    "denormalization_max_abs": 9.575945019574261e-10
+  },
+  "checkpoint": {
+    "files": 163,
+    "bytes": 32399035595,
+    "cosmos_sources": 334,
+    "same_as_previous": true
+  },
+  "live_wam": {
+    "trials": 5,
+    "successes": 0,
+    "accepted_references": 0,
+    "expired_during_control": 20,
+    "not_admitted_after_shutdown": 5,
+    "mean_arrival_age_s": 11.66948289728025,
+    "reference_validity_s": 0.4
+  },
+  "historical_training_input_bytes_verified": false,
+  "training_consumption_verified": false,
+  "real_time_qualified": false,
+  "hardware_executed": false,
+  "services_stopped": 1,
+  "owned_gpu_released": true,
+  "archived_complete_physics_cases": 36,
+  "failed_starts_before_physics": 35,
+  "evidence_sha256": {
+    "outputs/libero_followup_20261019/unit_tests_final.log": "557b5c15e17cb912820d1aafa11f45528077d01ff67ec5cc647c4c133000903d",
+    "outputs/libero_followup_20261019/integration_final.log": "16beae31127fbe19b863e28b631cfac04ec09a61309c963e88445996d4e5919d",
+    "outputs/libero_followup_20261019/ruff_lint_final.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "outputs/libero_followup_20261019/ruff_format_final.log": "253ee69cbcd5ea357340793e3de69d89df4b98d4298d8b3ab4056dcfbcf0cbdb",
+    "outputs/libero_followup_20261019/wheel_smoke.json": "472cfe81bf10e8c9503fd2eca06e5956ecf7d66731130fdfe5f8e8d0e25f9691",
+    "outputs/libero_followup_20261019/checkpoint_fingerprints.json": "83b17c6e1c1f46a6a3c352787831bdbebb80e130b37bba4bf62a8fa823009df5",
+    "outputs/libero_followup_20261019/summary.json": "1a2e3a4ceb028164d363cf6b21dd985690763344674d54501fd52e8fd46f7446",
+    "outputs/libero_followup_20261019/archive_index.json": "a5db51045f8f94f74e2e4fe376b6e1ec36fee7f2cdd8dd75331337c5d7ba8518",
+    "outputs/libero_followup_20261019/owned_service_cleanup.json": "199f2cc27cd482518f8025de0c0f69666d42fd24a57d24a4e60dd4795c4b5665"
+  }
+}
