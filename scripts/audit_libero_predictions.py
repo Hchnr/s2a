@@ -18,11 +18,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/libero_audit_20261019.json")
     parser.add_argument("--seed", type=int, required=True)
+    parser.add_argument("--policy-config")
     args = parser.parse_args()
     config, output = load_config(args.config)
     if args.seed != config["seed"]:
         raise ValueError("seed differs from frozen config")
     sim = config["simulation"]
+    if args.policy_config:
+        sim, output = load_config(args.policy_config)
     previous = Path(sim["output_dir"])
     fixture = json.loads(Path(sim["fixture"]).read_text())
     h = np.asarray(json.loads(Path(sim["tool_contract"]).read_text())["source_from_tcp"])
@@ -49,7 +52,12 @@ def main():
         if row["denormalization_max_abs"] > 1e-6:
             raise ValueError(f"denormalization contract failed: {path}")
         rows.append(row)
-    if len(rows) != 2 * len(sim["trials"]) * (sim["max_steps"] // sim["execution_horizon"]):
+    expected_responses = sum(
+        len(json.loads((previous / "policy" / candidate / f"trial{trial}" / "result.json").read_text())["requests"])
+        for candidate in ("baseline", "compensated")
+        for trial in sim["trials"]
+    )
+    if len(rows) != expected_responses:
         raise ValueError("saved live-policy output matrix is incomplete")
     inputs[fixture["source_hdf5"]] = sha256(fixture["source_hdf5"])
     inputs[sim["tool_contract"]] = sha256(sim["tool_contract"])

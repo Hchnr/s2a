@@ -79,6 +79,7 @@ def run_audit_case(config, output, case, trial):
     write_json(dest / "manifest.json", manifest)
     env, obs = make_environment(sim_config, output, record, trial)
     rows, error, success = [], None, False
+    ever_success, first_success_step = False, None
     started = time.monotonic()
     try:
         controller, contract = controller_contract(env)
@@ -140,7 +141,9 @@ def run_audit_case(config, output, case, trial):
                 return gripper.current_action
 
             gripper.format_action = position_action
-        length = len(native) + (config["extra_hold_steps"] if case["arm"] != "native" else 0)
+        length = len(native) + (
+            config["extra_hold_steps"] if case["arm"] != "native" else config.get("native_extra_hold_steps", 0)
+        )
         with (dest / "steps.jsonl").open("w") as stream:
             for step in range(length):
                 index = min(step, len(poses) - 1)
@@ -149,7 +152,7 @@ def run_audit_case(config, output, case, trial):
                 feedback_velocity = measured_twist(env) + noise.normal(size=6) * velocity_std
                 converted = converter.convert(feedback, poses[index], feedback_velocity)
                 if case["arm"] == "native":
-                    arm = native[index, :6]
+                    arm = native[index, :6] if step < len(native) else np.zeros(6)
                 else:
                     arm = converted["command"]
                 if case["gripper"] == "native":
@@ -174,6 +177,9 @@ def run_audit_case(config, output, case, trial):
                 obs, _, _, _ = env.step(command)
                 after = source_pose(obs)
                 success = bool(env.check_success())
+                if success and first_success_step is None:
+                    first_success_step = step
+                ever_success |= success
                 row = dict(
                     step=step,
                     reference_index=index,
@@ -200,7 +206,7 @@ def run_audit_case(config, output, case, trial):
                 )
                 rows.append(row)
                 stream.write(json.dumps(row, default=lambda x: x.tolist(), allow_nan=False) + "\n")
-                if success:
+                if success and config.get("stop_on_success", True):
                     break
     except Exception as exc:
         error = repr(exc)
@@ -211,7 +217,9 @@ def run_audit_case(config, output, case, trial):
         trial=trial,
         episode=record["episode"],
         steps=len(rows),
-        success=success,
+        success=ever_success,
+        terminal_success=success,
+        first_success_step=first_success_step,
         error=error,
         elapsed_s=time.monotonic() - started,
         seed=config["seed"] + trial,
@@ -225,6 +233,7 @@ def run_audit_case(config, output, case, trial):
             max_bowl_lift_m=float(max(r["bowl_position"][2] for r in rows) - rows[0]["bowl_position"][2]),
             finger_contact_steps=sum(r["contacts"]["finger_bowl"] > 0 for r in rows),
             plate_contact_steps=sum(r["contacts"]["bowl_plate"] > 0 for r in rows),
+            final_second_success_fraction=float(np.mean([r["success"] for r in rows[-20:]])),
         )
     write_json(dest / "result.json", result)
     if error:
