@@ -39,7 +39,7 @@ def main():
     def save(figure, name):
         figure.tight_layout()
         for suffix in ("png", "pdf"):
-            figure.savefig(figures / f"{name}.{suffix}", dpi=160)
+            figure.savefig(figures / f"{name}.{suffix}", dpi=160, bbox_inches="tight")
         plt.close(figure)
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 3.7))

@@ -11,7 +11,7 @@ import numpy as np
 import yaml
 from PIL import Image
 
-from s2a.artifacts import load_config, sha256, write_json
+from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
 from s2a.async_reference import TimedReference
 from s2a.geometry import inverse, pose_error
 from s2a.prediction_audit import audit_action_response
@@ -312,6 +312,30 @@ def main():
                 },
             )
         )
+    archive_index = {}
+    for name in ("startup_wrong_interpreter", "timing_every_step", "cached_feedback", "camera_cached_comparison"):
+        root = out / name
+        if root.exists():
+            files = {
+                str(path): sha256(path)
+                for path in root.rglob("*")
+                if path.is_file()
+                and path.suffix in {".json", ".jsonl", ".png", ".log"}
+                and not {"matplotlib", "numba_cache", "libero_config"}.intersection(path.parts)
+            }
+            archived_results = [json.loads(path.read_text()) for path in root.rglob("result.json")]
+            archive_index[name] = dict(
+                completed_physics_cases=len(archived_results),
+                completed_physics_steps=sum(r["steps"] for r in archived_results),
+                primary_files_sha256=files,
+                request_path_remap=(
+                    {str(out / "async/live_affine"): str(root / "live_affine")}
+                    if name == "timing_every_step"
+                    else {str(out / "async"): str(root / "async")}
+                ),
+                note="Submitted request paths remain historical; resolve within this archive using the prefix map.",
+            )
+    write_json(out / "archive_index.json", archive_index)
     for pattern in (
         "alignment/*",
         "training_image_queries/**/*.json",
@@ -321,6 +345,11 @@ def main():
         "async/*/trial*/*.jsonl",
         "async/*/trial*/*.png",
         "matrix_*.json",
+        "figures/*",
+        "checkpoint_fingerprints.json",
+        "wheel_smoke.json",
+        "owned_service_cleanup.json",
+        "archive_index.json",
     ):
         for path in out.glob(pattern):
             if path.is_file():
@@ -329,6 +358,7 @@ def main():
         seed=c["seed"],
         complete=True,
         integrity_passed=True,
+        verification_code=code_fingerprint(),
         formal_physics_cases=len(results),
         formal_physics_steps=sum(r["steps"] for r in results),
         groups=grouped,
@@ -344,6 +374,10 @@ def main():
         hardware_executed=False,
         historical_training_bytes_verified=False,
         task_success_qualification=False,
+        archived_physics={
+            name: {k: value[k] for k in ("completed_physics_cases", "completed_physics_steps")}
+            for name, value in archive_index.items()
+        },
     )
     write_json(out / "summary.json", summary)
     report = Path("reports/libero_followup_20261019.json")
