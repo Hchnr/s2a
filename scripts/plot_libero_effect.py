@@ -48,6 +48,7 @@ def main():
         z_values.extend([actual[:, 2], desired[:, 2]])
         t = np.arange(len(rows)) / c["control_fps"]
         bowl, plate = np.asarray(rows[0]["bowl_position"]), np.asarray(rows[0]["plate_position"])
+        z_values.append(np.asarray([bowl[2]]))
         ax = axes[0, column]
         ax.plot(desired[:, 0], desired[:, 1], "--", lw=1, label="desired source")
         ax.plot(actual[:, 0], actual[:, 1], lw=1, label="physical source")
