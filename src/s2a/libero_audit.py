@@ -14,10 +14,11 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from s2a.artifacts import code_fingerprint, sha256, write_json
-from s2a.geometry import pose_error, transform
+from s2a.geometry import advance, pose_error, transform
 from s2a.gripper import OpeningIntent, OpeningLatch, opening_position_target
 from s2a.libero_simulation import aperture, controller_contract, make_environment, measured_twist, source_pose
 from s2a.osc import OSCInterface, OSCStateToAction
+from s2a.perturbations import ActuatorDelay
 
 
 def post_action_reference(positions, rotation_vectors, gripper_positions):
@@ -122,6 +123,16 @@ def run_audit_case(config, output, case, trial):
         intent = OpeningIntent(aperture(obs), band=config["opening_hysteresis"])
         latch = OpeningLatch(**config["opening_latch"])
         position_target = np.zeros(2)
+        delay = ActuatorDelay(
+            case.get("delay_steps", 0),
+            dimensions=9 if case["gripper"] == "position" else 7,
+            initial_command=(np.r_[np.zeros(7), gripper.current_action] if case["gripper"] == "position" else None),
+        )
+        noise = np.random.default_rng(config["seed"] + trial)
+        pose_std = np.array([case.get("position_noise_std_m", 0)] * 3 + [case.get("rotation_noise_std_rad", 0)] * 3)
+        velocity_std = np.array(
+            [case.get("linear_velocity_noise_std_m_s", 0)] * 3 + [case.get("angular_velocity_noise_std_rad_s", 0)] * 3
+        )
         if case["gripper"] == "position":
 
             def position_action(_):
@@ -134,7 +145,9 @@ def run_audit_case(config, output, case, trial):
             for step in range(length):
                 index = min(step, len(poses) - 1)
                 current = source_pose(obs)
-                converted = converter.convert(current, poses[index], measured_twist(env))
+                feedback = advance(current, noise.normal(size=6) * pose_std, 1)
+                feedback_velocity = measured_twist(env) + noise.normal(size=6) * velocity_std
+                converted = converter.convert(feedback, poses[index], feedback_velocity)
                 if case["arm"] == "native":
                     arm = native[index, :6]
                 else:
@@ -150,7 +163,13 @@ def run_audit_case(config, output, case, trial):
                     grip_command = 0.0
                 else:
                     raise ValueError("unknown gripper mode")
-                command = np.r_[arm, grip_command]
+                issued = np.r_[arm, grip_command]
+                issued_position_target = position_target.copy() if case["gripper"] == "position" else None
+                if case["gripper"] == "position":
+                    delayed = delay.update(np.r_[issued, position_target])
+                    command, position_target[:] = delayed[:7], delayed[7:]
+                else:
+                    command = delay.update(issued)
                 before_time = float(env.sim.data.time)
                 obs, _, _, _ = env.step(command)
                 after = source_pose(obs)
@@ -161,6 +180,9 @@ def run_audit_case(config, output, case, trial):
                     time_before=before_time,
                     actual_dt=float(env.sim.data.time) - before_time,
                     measured_source=current,
+                    feedback_source=feedback,
+                    issued=issued,
+                    issued_position_target=issued_position_target,
                     desired_source=poses[index],
                     after_source=after,
                     error=pose_error(poses[index], after),
