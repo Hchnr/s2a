@@ -111,7 +111,9 @@ def main():
         recomputed = trajectory_diagnostics(
             predicted, np.asarray([r["action"] for r in rows]), np.asarray([r["action_dim_mask"] for r in rows])
         )
-        require(recomputed == case["diagnostics"], "prediction diagnostics changed")
+        require(recomputed.keys() == case["diagnostics"].keys(), "prediction diagnostic fields changed")
+        for key, value in recomputed.items():
+            np.testing.assert_allclose(value, case["diagnostics"][key], atol=1e-12, rtol=1e-12)
         require(case["canvas_training_parity_max_abs"] == 0, "training canvas parity failed")
     results, live_pairing = [], []
     for stage in ("synthetic", "live"):
