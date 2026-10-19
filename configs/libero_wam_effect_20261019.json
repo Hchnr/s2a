@@ -1,0 +1,101 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/libero_wam_effect_20261019",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "libero_root": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/LIBERO",
+  "libero_config": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/config/config.yaml",
+  "osmesa_library": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/systemlibs/usr/lib/x86_64-linux-gnu/libOSMesa.so.8.0.0",
+  "fixture": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_bowl_plate_eval5/episodes.json",
+  "tool_contract": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef/meta/eef_tool_contract.json",
+  "checkpoint_run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+  "checkpoint_iteration": "iter_000008800",
+  "historical_iteration_unavailable": "iter_000005600",
+  "historical_results": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/outputs/action128_eval_20261014/summary.json",
+  "server_url": "http://127.0.0.1:8480",
+  "server_urls": [
+    "http://127.0.0.1:8480",
+    "http://127.0.0.1:8481",
+    "http://127.0.0.1:8482",
+    "http://127.0.0.1:8483",
+    "http://127.0.0.1:8484"
+  ],
+  "task_suite": "libero_goal",
+  "task_id": 8,
+  "task_text": "put the bowl on the plate",
+  "trials": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "episodes": [
+    43,
+    69,
+    72,
+    80,
+    132
+  ],
+  "max_steps": 1000,
+  "control_fps": 20,
+  "action_chunk_size": 16,
+  "execution_horizon": 8,
+  "sampling_steps": 35,
+  "guidance": 1.5,
+  "shift": 5.0,
+  "render_resolution": 256,
+  "action_domain": "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1",
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "oracle_extra_hold_steps": 40,
+  "probe_steps": 120,
+  "probe_translation_amplitude_m": 0.002,
+  "probe_rotation_amplitude_rad": 0.01,
+  "refresh_controller_after_restore": true,
+  "gripper_mode_by_candidate": {
+    "baseline": "position",
+    "compensated": "intent"
+  },
+  "opening_hysteresis": 0.02,
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "published_bridge": "outputs/libero_audit_20261019/provenance/published_bridge.json",
+  "oracle_steps": 300,
+  "pause_physics_during_inference": true,
+  "expire_model_references": false,
+  "initial_gripper": "measured",
+  "camera_observations": false,
+  "record_video": false,
+  "effect_cases": [
+    {
+      "name": "oracle_affine",
+      "source": "oracle",
+      "arm": "affine"
+    },
+    {
+      "name": "oracle_response",
+      "source": "oracle",
+      "arm": "response"
+    },
+    {
+      "name": "wam_affine",
+      "source": "wam",
+      "arm": "affine"
+    },
+    {
+      "name": "wam_response",
+      "source": "wam",
+      "arm": "response"
+    }
+  ],
+  "endpoint_diagnostic": {
+    "position_tolerance_m": 0.002,
+    "rotation_tolerance_rad": 0.02,
+    "max_substeps": 12
+  },
+  "notes": [
+    "Known five scenes; diagnostics, not unseen-task generalization.",
+    "WAM calls block physics; all predicted first eight steps are executed without wall-clock expiry.",
+    "Oracle enters the same physical Action128 delta decoder; expert control actions are not candidate inputs.",
+    "Frozen weights, inference and controller gains; no performance-threshold tuning."
+  ]
+}
