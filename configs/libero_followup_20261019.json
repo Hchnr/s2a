@@ -1,0 +1,29 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/libero_followup_20261019",
+  "policy_config": "configs/libero_policy_20261019.json",
+  "provenance_config": "configs/libero_provenance_20261019.json",
+  "source_identity": "outputs/libero_audit_20261019/provenance/source_identity.json",
+  "native_bridge": "outputs/libero_audit_20261019/provenance/native_bridge.json",
+  "published_bridge": "outputs/libero_audit_20261019/provenance/published_bridge.json",
+  "training_catalog": "/share/project/liyue/data/parquet-data/action128-full-20261012/libero-eef/libero-eef.parquet",
+  "training_horizons": [16, 40],
+  "training_frame_index": 0,
+  "trials": [0, 1, 2, 3, 4],
+  "server_port": 8380,
+  "server_gpu": 0,
+  "async_max_age_s": 0.4,
+  "async_steps": 1000,
+  "synthetic_min_steps": 300,
+  "synthetic_delays_s": [0.0, 0.1, 11.2],
+  "synthetic_request_interval_steps": 4,
+  "synthetic_arms": ["affine", "response"],
+  "notes": [
+    "Known five scenes are diagnostics, not unseen model evaluation.",
+    "Training-image queries use exact published camera frames and R2 action labels; no simulated policy success is inferred.",
+    "The 40-action diagnostic matches the catalog's two-second horizon; the original live policy remains at 16 actions.",
+    "Synthetic oracle forecasts and real WAM asynchronous execution are reported separately.",
+    "Physical simulation continues during live HTTP inference. References retain capture-time world anchors and expire after 0.4 seconds.",
+    "No world-model retraining, controller gain tuning or hardware execution."
+  ]
+}
