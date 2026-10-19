@@ -127,7 +127,55 @@ def validate_matrix(config_path):
                     )
                 )
             paired.append(dict(gripper=grip, trial=trial, common_steps=n, affine=metrics[0], response=metrics[1]))
-    return dict(config=config_path, cases=len(checked), groups=groups, matched_prefix=paired), hashes
+    return dict(
+        config=config_path,
+        cases=len(checked),
+        groups=groups,
+        matched_prefix=paired,
+        source_versions=sorted({key[0] for key in code_hashes}),
+        complete=True,
+    ), hashes
+
+
+def optional_matrix(config_path, allow_incomplete):
+    config, output = load_config(config_path)
+    expected = len(config["cases"]) * len(config["trials"])
+    matrix = json.loads((output / "matrix.json").read_text()) if (output / "matrix.json").exists() else {"results": []}
+    if len(matrix["results"]) == expected:
+        return validate_matrix(config_path)
+    if not allow_incomplete:
+        raise ValueError(f"incomplete matrix: {config_path}")
+    return dict(cases=len(matrix["results"]), expected_cases=expected, groups=[], complete=False), {}
+
+
+def replay_prefix_parity():
+    rows = []
+    root = Path("outputs/libero_policy_replay_20261019")
+    for trial in range(5):
+        replay = [
+            json.loads(s) for s in (root / "affine_position" / f"trial{trial}" / "steps.jsonl").read_text().splitlines()
+        ][:8]
+        live = [
+            json.loads(s)
+            for s in (Path("outputs/libero_policy_20261019/policy/baseline") / f"trial{trial}" / "trace_steps.jsonl")
+            .read_text()
+            .splitlines()
+        ][:8]
+        a, b = [np.array([r["executed"] for r in data]) for data in (replay, live)]
+        pa, pb = [np.array([r["after_source"] for r in data]) for data in (replay, live)]
+        np.testing.assert_allclose(a, b, atol=1e-12, rtol=0)
+        np.testing.assert_allclose(pa, pb, atol=1e-12, rtol=0)
+        error = pose_error(pa, pb)
+        rows.append(
+            dict(
+                trial=trial,
+                steps=8,
+                command_max_abs=float(np.max(abs(a - b))),
+                position_max_m=float(np.max(np.linalg.norm(error[:, :3], axis=1))),
+                rotation_max_rad=float(np.max(np.linalg.norm(error[:, 3:], axis=1))),
+            )
+        )
+    return rows
 
 
 def validate_policy(config_path, allow_incomplete):
@@ -142,6 +190,10 @@ def validate_policy(config_path, allow_incomplete):
                     continue
                 raise FileNotFoundError(dest / "result.json")
             result = json.loads((dest / "result.json").read_text())
+            manifest = json.loads((dest / "manifest.json").read_text())
+            assert manifest["config"] == {**config, "server_url": config["server_urls"][trial]}
+            for path, expected_hash in manifest["inputs_sha256"].items():
+                assert sha256(path) == expected_hash
             assert result["error"] is None and (result["success"] or result["steps"] == config["max_steps"])
             rows = [json.loads(s) for s in (dest / "trace_steps.jsonl").read_text().splitlines()]
             assert len(rows) == result["steps"]
@@ -159,6 +211,7 @@ def validate_policy(config_path, allow_incomplete):
                         <= config["max_command_rate"] * 0.05 + 1e-8
                     )
                 previous = np.array(row["executed"][:6])
+                assert row["gripper_mode"] == config["gripper_mode_by_candidate"][candidate]
             traces[(candidate, trial)] = rows
             results.append(result)
             for path in dest.iterdir():
@@ -215,20 +268,24 @@ def main():
     holdout, h2 = validate_matrix("configs/libero_holdout_20261019.json")
     policy, h3 = validate_policy("configs/libero_policy_20261019.json", args.allow_incomplete)
     stress, h4 = validate_matrix("configs/libero_stress_20261019.json")
-    terminal_config, terminal_output = load_config("configs/libero_terminal_20261019.json")
-    terminal_expected = len(terminal_config["cases"]) * len(terminal_config["trials"])
-    terminal_done = (
-        json.loads((terminal_output / "matrix.json").read_text())
-        if (terminal_output / "matrix.json").exists()
-        else {"results": []}
-    )
-    terminal, h5 = dict(cases=len(terminal_done["results"]), groups=[], complete=False), {}
-    if len(terminal_done["results"]) == terminal_expected:
-        terminal, h5 = validate_matrix("configs/libero_terminal_20261019.json")
-        terminal["complete"] = True
-    elif not args.allow_incomplete:
-        raise ValueError("terminal matrix is incomplete")
-    complete = policy["complete"] and terminal["complete"]
+    terminal, h5 = optional_matrix("configs/libero_terminal_20261019.json", args.allow_incomplete)
+    published, h6 = optional_matrix("configs/libero_published_20261019.json", args.allow_incomplete)
+    published_terminal, h7 = optional_matrix("configs/libero_published_terminal_20261019.json", args.allow_incomplete)
+    replay, h8 = optional_matrix("configs/libero_policy_replay_20261019.json", args.allow_incomplete)
+    complete = all(s["complete"] for s in (policy, terminal, published, published_terminal, replay))
+    provenance = json.loads(Path("outputs/libero_audit_20261019/provenance/source_identity.json").read_text())
+    for path, expected_hash in provenance["inputs_sha256"].items():
+        assert sha256(path) == expected_hash
+    geometry = [g for case in provenance["cases"] for g in case["geometry"]]
+    assert len(geometry) == 14
+    for row in geometry:
+        assert row["r1_to_r2_state_max_m"] < 1e-5 and row["r1_to_r2_state_max_rad"] < 1e-4
+        assert row["r1_to_r2_action_max_m"] < 1e-5 and row["r1_to_r2_action_max_rad"] < 1e-4
+        assert row["r1_to_r2_gripper_max_abs"] < 1e-6
+    provenance["r1_r2_geometry_verified"] = True
+    provenance["hdf5_observation_identity_verified"] = False
+    write_json(Path("reports/libero_provenance_20261019.json"), provenance)
+    all_groups = (regression, holdout, policy, stress, terminal, published, published_terminal, replay)
     report = dict(
         seed=42,
         regression=regression,
@@ -236,6 +293,12 @@ def main():
         policy=policy,
         stress=stress,
         terminal=terminal,
+        published=published,
+        published_terminal=published_terminal,
+        model_reference_replay=replay,
+        replay_baseline_prefix_parity=replay_prefix_parity() if replay["complete"] else [],
+        completed_cases=sum(s["cases"] for s in all_groups),
+        expected_cases=481,
         complete=complete,
         integrity_passed=True if complete else None,
         hardware_executed=False,
@@ -248,7 +311,7 @@ def main():
     )
     out = Path("outputs/libero_audit_20261019")
     write_json(out / "summary.json", report)
-    write_json(out / "artifact_hashes.json", {**h1, **h2, **h3, **h4, **h5})
+    write_json(out / "artifact_hashes.json", {**h1, **h2, **h3, **h4, **h5, **h6, **h7, **h8})
     write_json(Path("reports/libero_control_audit_20261019.json"), report)
     lines = [
         "# LIBERO 控制合同与夹爪诊断 — 2026-10-19",
@@ -261,6 +324,9 @@ def main():
         ("额外10条episode", holdout),
         ("输入延迟与噪声压力测试", stress),
         ("完整轨迹与终态保持", terminal),
+        ("发布R2状态参考", published),
+        ("发布R2参考终态保持", published_terminal),
+        ("8800固定模型参考前向回放", replay),
         ("8800实时图像闭环", policy),
     ]:
         lines += [
@@ -274,7 +340,7 @@ def main():
                 f"| {row['name']} | {row['successes']}/{row['episodes']} | {row['position_rmse_mm']:.3f} | {row['rotation_rmse_rad']:.6f} |"
             )
         lines.append("")
-        if title == "完整轨迹与终态保持":
+        if title in ("完整轨迹与终态保持", "发布R2参考终态保持"):
             lines += ["| 条件 | 最终成功 | 末1秒成功比例均值 |", "| --- | ---: | ---: |"]
             for row in group["groups"]:
                 lines.append(
@@ -282,7 +348,9 @@ def main():
                 )
             lines.append("")
     lines += [
-        "oracle使用obs[t]作为actions[t]执行后的目标，保持原world frame；native正控与native-gripper诊断使用专家命令，其余候选不读取专家命令。",
+        "HDF5 oracle使用obs[t]作为actions[t]执行后的目标，保持原world frame；native正控与native-gripper诊断使用专家命令，其余候选不使用专家命令生成或发送控制动作。",
+        "发布参考从当前R2 state0开始接入，初态仍为固定HDF5场景，不声称恢复了R1隐藏控制状态。两种来源观测不能互换。",
+        "保存模型目标的回放使用已知外生参考和当前实际反馈；它包含原分支未来图像条件下生成的目标，不能冒充当前分支的实时策略。",
         "",
         "RMSE为各episode完整执行区间的均值，提前成功会改变长度；JSON另列相同参考、相同步数前缀的arm对照。",
         "oracle误差点为OSC source pose：grip site位置、right-hand body方向，均在world frame；实时模型表沿用canonical TCP位置误差，两者不混合汇总。",

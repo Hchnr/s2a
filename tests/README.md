@@ -15,3 +15,5 @@ LD_LIBRARY_PATH='' .venv/bin/python -m pytest tests -m integration --data-config
 跨数据集新增测试覆盖 native wxyz 四元数、M1 effector→link8固定方向与TCP力臂、native source row非零起点/乱序join、invalid观测边界的独立积分，以及URDF轴/原点/fixed joint（允许无效或零axis）的名义FK。真实60条跨数据集检查由 `scripts/run_cross_dataset.py --seed 42` 执行，证据分类和报告独立于pytest软件通过数。
 
 LIBERO扩展的5项OSC单元测试覆盖：非零初速度下固定PD响应的独立前向积分、历史affine inverse/clipping一致性、不可辨识短周期拒绝、最终发送命令变化率，以及大角度回退。独立MuJoCo的37项真实控制执行通过 `run_libero_matrix.py` 组织，`summarize_libero_simulation.py --seed 42` 复核状态误差/时钟/接口约束/成对输入和指纹，不计入pytest软件测试数。原生expert末行有效命令会执行，缺失的未来观测标签不进入pose/opening评分。
+
+2026-10-19新增测试验证开度趋势在接触平台的保持、释放滞回、非法开度拒绝、position actuator映射、post-action参考首末端、Action128按mask反归一化与时间合同，以及actuator delay的因果顺序、copy隔离和初始目标保持。实际MuJoCo矩阵、发布数据核查与模型响应审计分别由实验脚本执行，未计入pytest通过数；终态保持结果与首次环境success分开。

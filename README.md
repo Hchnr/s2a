@@ -12,6 +12,8 @@ S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接
 
 已实现 DROID 单 episode 的只读抽取、几何转换、参考接口编码、局部响应辨识、在线有状态 PID adapter 和模型内扰动对照。初轮使用真实未来状态形成 oracle 参考。后续新增 LIBERO 独立 MuJoCo 仿真和固定 Cosmos checkpoint 的成对评测，执行状态见 [仿真报告](reports/libero_simulation_20261016.md)。完整设计见 [实施计划](plans/v0.0.1/001_state_to_action.md)，过程见 [实施记录](plans/v0.0.1/record_20261016.md)，完成状态及限制见 [结论](plans/v0.0.1/conclusion_20261016.md)。
 
+2026-10-19 扩展修复了恢复仿真状态后的OSC缓存同步，区分HDF5动作后观测与当前R1/R2发布观测，并加入开度方向保持、释放锁存、输入延迟/噪声及终态保持对照。最新状态见 [控制审计报告](reports/libero_control_audit_20261019.md)、[本轮记录](plans/v0.0.1/record_20261019.md) 和 [本轮结论](plans/v0.0.1/conclusion_20261019.md)。候选的实验收益与部署资格分别判断，所有结果均无真机执行。
+
 ```text
 src/s2a/geometry.py        column-rot6d、SE(3)、TCP/flange、SO(3) 误差
 src/s2a/data.py            provenance join、物理时钟、masks、样本与指纹
@@ -104,3 +106,34 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_simulation.py --see
 ```
 
 单trial可直接用 `outputs/libero_env311/bin/python scripts/run_libero_simulation.py --seed 42 --stage oracle --candidate compensated --trial 0`，Python前仍加 `LD_LIBRARY_PATH=''`。新增仿真不读取Cosmos训练dataloader、不修改外部仓库；只有policy服务通过显式路径只读加载Cosmos推理实现和权重。policy仿真不读取专家未来状态。重跑矩阵可复用完全相同配置的已完成项；完整目录已存在但执行中断时需先归档该项，避免覆盖证据。
+
+2026-10-16配置保留历史协议。当前正控使用 `run_libero_audit.py` 显式刷新恢复后的控制器反馈，按case隔离LIBERO环境配置。当前图像闭环使用 `configs/libero_policy_20261019.json`：baseline是原arm+position，候选是保守响应逆+intent，两者都刷新初始化缓存。接口提供可选实验配置，默认夹爪映射仍为position。
+
+```bash
+# 65项已见场景的时间/缓存/夹爪/arm因子对照；从clean commit执行
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --seed 42 --workers 4
+
+# metadata预先冻结的额外10条：70项普通对照，120项压力，70项完整轨迹/终态
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_libero_holdout.py --seed 42
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_holdout_20261019.json --seed 42
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_stress_20261019.json --seed 42
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_terminal_20261019.json --seed 42
+
+# h5py和PyArrow使用各自兼容的解释器，通过outputs中的数字bridge核对R1/R2来源
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/audit_libero_provenance.py --seed 42 --stage export
+LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_libero_provenance.py --seed 42 --stage verify
+LD_LIBRARY_PATH='' .venv/bin/python scripts/prepare_libero_published.py --seed 42
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_published_20261019.json --seed 42
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_published_terminal_20261019.json --seed 42
+
+# 保存模型目标的独立前向回放：需先完成本轮实时baseline，和实时图像闭环分开报告
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_policy_replay_20261019.json --seed 42
+
+# 完整性/相同参考前缀/成对模型输入、报告及PNG/PDF
+LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_audit.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_audit.py --seed 42
+```
+
+每个新矩阵拒绝覆盖已有目录；`--resume`仅复用配置一致、无错误且预算完整的结果。未完成目录先归档再重跑，任务失败的完整结果同样保留。`--allow-incomplete`的报告明确标记未完成，不能作为完整验收通过。
+
+新模型服务沿用 `serve_libero_policy.py`，显式传入 `--config configs/libero_policy_20261019.json --gpu 0 --port 8280 --seed 42`，其余4个副本依次对应GPU1..4/端口8281..8284；执行命令为 `run_libero_matrix.py --config configs/libero_policy_20261019.json --stage policy --seed 42`。检查模型输出合同用 `audit_libero_predictions.py --policy-config configs/libero_policy_20261019.json --seed 42`。同步推理期间暂停物理时钟，不将该评测当作真实延迟下的实时控制证明。

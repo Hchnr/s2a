@@ -71,13 +71,49 @@
 | affine_latch | 6/10 | 0.540 |
 | response_latch | 3/10 | 0.300 |
 
+## 发布R2状态参考
+
+| 条件 | 成功 | 平均位置RMSE mm | 平均旋转RMSE rad |
+| --- | ---: | ---: | ---: |
+| native_measured | 14/14 | 11.073 | 0.034402 |
+| affine_position | 3/14 | 24.919 | 0.032738 |
+| affine_intent | 12/14 | 28.410 | 0.035044 |
+| response_position | 1/14 | 4.270 | 0.008741 |
+| response_intent | 14/14 | 4.844 | 0.008385 |
+| affine_latch | 13/14 | 28.625 | 0.035697 |
+| response_latch | 12/14 | 4.719 | 0.008240 |
+
+## 发布R2参考终态保持
+
+| 条件 | 成功 | 平均位置RMSE mm | 平均旋转RMSE rad |
+| --- | ---: | ---: | ---: |
+| affine_intent | 12/14 | 23.841 | 0.034466 |
+| response_intent | 14/14 | 4.257 | 0.008726 |
+
+| 条件 | 最终成功 | 末1秒成功比例均值 |
+| --- | ---: | ---: |
+| affine_intent | 12/14 | 0.857 |
+| response_intent | 14/14 | 1.000 |
+
+## 8800固定模型参考前向回放
+
+| 条件 | 成功 | 平均位置RMSE mm | 平均旋转RMSE rad |
+| --- | ---: | ---: | ---: |
+| affine_position | 0/5 | 36.208 | 1.899606 |
+| affine_intent | 0/5 | 63.101 | 1.914419 |
+| response_position | 0/5 | 255.483 | 1.883577 |
+| response_intent | 0/5 | 216.068 | 1.841047 |
+
 ## 8800实时图像闭环
 
 | 条件 | 成功 | 平均位置RMSE mm | 平均旋转RMSE rad |
 | --- | ---: | ---: | ---: |
 | baseline | 0/5 | 37.093 | 1.899606 |
+| compensated | 0/5 | 42.116 | 1.914515 |
 
-oracle使用obs[t]作为actions[t]执行后的目标，保持原world frame；native正控与native-gripper诊断使用专家命令，其余候选不读取专家命令。
+HDF5 oracle使用obs[t]作为actions[t]执行后的目标，保持原world frame；native正控与native-gripper诊断使用专家命令，其余候选不使用专家命令生成或发送控制动作。
+发布参考从当前R2 state0开始接入，初态仍为固定HDF5场景，不声称恢复了R1隐藏控制状态。两种来源观测不能互换。
+保存模型目标的回放使用已知外生参考和当前实际反馈；它包含原分支未来图像条件下生成的目标，不能冒充当前分支的实时策略。
 
 RMSE为各episode完整执行区间的均值，提前成功会改变长度；JSON另列相同参考、相同步数前缀的arm对照。
 oracle误差点为OSC source pose：grip site位置、right-hand body方向，均在world frame；实时模型表沿用canonical TCP位置误差，两者不混合汇总。
@@ -90,5 +126,3 @@ oracle误差点为OSC source pose：grip site位置、right-hand body方向，�
 
 [对照图](../outputs/libero_audit_20261019/figures/oracle_control_comparison.png)
 [夹爪与物体轨迹](../outputs/libero_audit_20261019/figures/gripper_contact_diagnostic.png)
-
-**实施中：模型或终态矩阵尚未完成，不计为全部通过。**
