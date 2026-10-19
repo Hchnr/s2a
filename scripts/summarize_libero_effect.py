@@ -244,6 +244,11 @@ def main():
             rows = [json.loads(line) for line in (dest / "steps.jsonl").read_text().splitlines()]
             chunks = json.loads((dest / "chunks.json").read_text())
             result = json.loads((dest / "result.json").read_text())
+            require(
+                result["episode"] == fixture["episodes"][trial]["episode"] == config["episodes"][trial],
+                "fixture episode identity differs",
+            )
+            require(result["seed"] == config["seed"] + trial, "simulation seed differs")
             require(result["error"] is None and len(rows) == result["steps"] == budget, "physics budget incomplete")
             require(len(chunks) == result["chunks"] == (budget + horizon - 1) // horizon, "prediction count differs")
             expected_targets, expected_openings = [], []
@@ -274,6 +279,7 @@ def main():
                     response = json.loads(path.read_text())
                     require(response["status"] == "success", "WAM request failed")
                     content = response["outputs"][0]["content"]
+                    require(content["action128"]["seed"] == config["seed"], "returned model seed differs")
                     checkpoint = Path(c["checkpoint_run"]) / "checkpoints" / c["checkpoint_iteration"] / "model"
                     require(
                         Path(content["action128"]["checkpoint_path"]).resolve() == checkpoint.resolve(),
