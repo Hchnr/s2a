@@ -70,7 +70,7 @@ def main():
         "# WAM checkpoint四层验收 — 2026-10-19 v2",
         f"预注册的离线与物理矩阵全部完成：2688次离线预测；{len(all_cases) + len(primary['probes'])}条独立物理实验、{steps}个控制步。最新非EMA iter_000008800经推理mask修正后，在冻结S2A、无推理延迟的H16主协议中曾成功{latest16['success']}/12、末端成功{latest16['terminal_success']}/12；原生H40补充中曾成功{latest40['success']}/12、末端成功{latest40['terminal_success']}/12。全部用例执行足600步，没有以缺失、基础设施失败或提前截断替代任务结果。",
         "## 这次验收回答了什么",
-        "确定发现了训练—推理合同缺陷：训练将118个无效Action128维度置零，原服务却向这些维度加噪声，只在最终输出mask；无效噪声会影响10个有效维度。S2A本地评测wrapper在初始噪声、每次网络输入和velocity三个位置保持mask，未修改学习参数。外部Cosmos仍只读，此修正尚未合入其生产服务。",
+        "确定发现了训练—推理合同缺陷：训练将118个无效Action128维度置零，原服务却向这些维度加噪声，只在最终输出mask；无效噪声会影响10个有效维度。S2A本地评测wrapper在初始噪声、每次网络输入和velocity三个位置保持mask，未修改学习参数。外部Cosmos仍只读，此修正尚未合入其生产服务。源码定位、固定回归样本与生产移植约束见[serving合同说明](wam_serving_contract_20261019v2.md)。",
         "修正后模型学到了部分有用的状态变化，但并未全面通过state质量验收。最新8800在本实验episode留出、task-only、H40窗口的池化位置RMSE为64.213mm、开度MAE为0.1079，优于保持state的122.395mm/0.2484；朝向RMSE为0.5159rad，差于保持基线的0.2832rad。不能把原服务缺陷等同于权重损坏，也不能把单条示范的state误差等同于任务失败。",
         "真实成功state经同一Action128接口和冻结S2A为12/12成功，证明该执行链路在这些参考附近可用；大角度/快速参考及任意绝对开度曲线仍有限制。下面同时报告真实任务谓词、参考跟踪和物体进度，避免将全部闭环失败唯一归因于WAM或S2A。",
         "## 固定协议与证据边界",
@@ -82,6 +82,13 @@ def main():
         "在三个任务、三个噪声强度上，原生H40/2秒、完整published caption、真实action/vision mask和标签clip的训练计算与对齐推理计算：token、条件latent、归一化标签和有效velocity逐项一致。使用保存的flash3_video与固定padding后，相对SDPA有效velocity最大绝对差0.0234375、最大RMS差0.00551005；无效维度噪声引起的有效velocity RMS扰动0.27–0.43，明显更大。复算包含训练loss及独立active MSE，不是分布式优化器更新重放。",
         "当前服务的caption/首帧像素192/192对照相同，撤回早期JSON嵌套假设；显式caption hook在这些样本上为无变化操作。冻结配置保留原字节，勘误见[协议勘误](../plans/v0.0.1/wam_protocol_errata_20261019v2.md)。历史图像/caption完整字节和消费账本未恢复，不能声称重放了当时的历史训练batch。",
         "实际warm-start父权重为6200，当前run比较8400/8600/8800。父权重只通过官方parameter-free规则迁移当前domain/归一化合同，所有参数对象、存储和version不变；排除action128_spec后整个model.config无差异。四份checkpoint全量SHA与DCP存储检查通过，未发现逻辑tensor缺失/重叠或混装证据；存储完整不代表学习质量达标。",
+        table(
+            ["checkpoint", "实际模型目录（非EMA）"],
+            [
+                [ck["name"], f"`{Path(ck['run']) / 'checkpoints' / ck['iteration'] / 'model'}`"]
+                for ck in c["checkpoints"]
+            ],
+        ),
         "## 直接state预测",
         "完整表、跨阶段结果、两个时域、两个文本条件、causal基线和误差随时间曲线见[直接state验收](wam_state_acceptance_20261019v2.md)。48个阶段样本包含43个不同观测锚点、16个阶段代理回退；9个样本未来不足40步，仅评分有效前缀。实际预测总量为7×384=2688。",
         "在task-only、study-heldout、H40的同组比较中，8400/8600/8800修正后位置RMSE为52.251/84.453/64.213mm，朝向0.3388/0.6354/0.5159rad；本小样本没有随训练阶段单调改善。8800原服务为129.808mm/2.0923rad/0.2170，修正后为64.213mm/0.5159rad/0.1079。训练标签clip自身重建位置RMSE6.988mm，不能独自解释上述误差。",

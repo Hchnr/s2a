@@ -307,6 +307,8 @@ def main():
         ],
     )
     out = root / ("summary_partial.json" if args.partial else "summary.json")
+    if out.exists() and not args.partial:
+        raise FileExistsError("complete acceptance summaries must not be silently overwritten")
     write_json(out, report)
     print(
         json.dumps(

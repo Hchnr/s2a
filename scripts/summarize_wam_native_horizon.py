@@ -90,7 +90,10 @@ def main():
             "Six initial states with two sampling seeds; not certified unseen during pretraining.",
         ],
     )
-    write_json(root / ("summary_partial.json" if args.partial else "summary.json"), report)
+    out = root / ("summary_partial.json" if args.partial else "summary.json")
+    if out.exists() and not args.partial:
+        raise FileExistsError("complete native-window summaries must not be silently overwritten")
+    write_json(out, report)
     print(
         json.dumps(
             dict(

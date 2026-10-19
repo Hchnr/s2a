@@ -169,6 +169,8 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_audit.py --seed 42
 
 冻结配置中的caption嵌套假设已撤回，正确解释见 [协议勘误](plans/v0.0.1/wam_protocol_errata_20261019v2.md)。保留原文件字节以维持预注册哈希及严格恢复条件。
 
+mask缺陷的源码定位、已执行回归和生产移植边界见 [serving合同说明](reports/wam_serving_contract_20261019v2.md)。当前hook只接受LIBERO十槽合同，其他domain和通用batch仍需在生产移植时单独验证。
+
 所有命令从本仓库执行，产物写入`outputs/wam_checkpoint_acceptance_20261019v2`。已经存在的完整或失败证据均拒绝覆盖；运行前检查目录和服务，重跑使用新输出目录或显式归档。
 
 ```bash
