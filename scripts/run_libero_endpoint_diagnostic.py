@@ -153,6 +153,8 @@ def main():
     parser.add_argument("--component-config", default="configs/libero_wam_components_20261019.json")
     parser.add_argument("--source", choices=["oracle_response", "wam_affine", "wam_position_oracle_rotation_opening"])
     parser.add_argument("--trial", type=int)
+    parser.add_argument("--trials", type=int, nargs="+")
+    parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
     c, out = load_config(args.config)
     cc = json.loads(Path(args.component_config).read_text())
@@ -166,6 +168,19 @@ def main():
         results = []
         for source in ("oracle_response", "wam_affine", "wam_position_oracle_rotation_opening"):
             path = out / f"quasistatic_{source}_trial{trial}.log"
+            dest = out / "quasistatic" / source / f"trial{trial}"
+            if args.resume and (dest / "result.json").is_file():
+                result = json.loads((dest / "result.json").read_text())
+                manifest = json.loads((dest / "manifest.json").read_text())
+                if result["error"] is not None or result["references"] != c["oracle_steps"] or manifest["config"] != c:
+                    raise ValueError("cannot resume a failed or changed diagnostic")
+                for name, digest in manifest["inputs_sha256"].items():
+                    if sha256(name) != digest:
+                        raise ValueError("cannot reuse changed reference inputs")
+                row = dict(source=source, trial=trial, exit_code=0, reused_complete=True)
+                results.append(row)
+                print(json.dumps(row), flush=True)
+                continue
             with path.open("x") as stream:
                 code = subprocess.call(
                     [
@@ -197,9 +212,13 @@ def main():
             results.append(row)
         return results
 
+    trials = args.trials if args.trials is not None else c["trials"]
+    if len(set(trials)) != len(trials) or not set(trials).issubset(c["trials"]):
+        raise ValueError("invalid trial subset")
     with ThreadPoolExecutor(max_workers=5) as executor:
-        results = [r for group in executor.map(execute_trial, c["trials"]) for r in group]
-    write_json(out / "matrix_quasistatic.json", dict(cases=results, complete=all(r["exit_code"] == 0 for r in results)))
+        results = [r for group in executor.map(execute_trial, trials) for r in group]
+    matrix_name = "matrix_quasistatic" if set(trials) == set(c["trials"]) else "matrix_quasistatic_partial"
+    write_json(out / f"{matrix_name}.json", dict(cases=results, complete=all(r["exit_code"] == 0 for r in results)))
     if any(r["exit_code"] for r in results):
         raise SystemExit("quasistatic diagnostic failed; evidence retained")
 
