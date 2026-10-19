@@ -90,7 +90,12 @@ def verify_quasistatic(config, root, component_root, *, trials=None, matrix_name
             index = row["reference_index"]
             require(row["step"] == step and 0 <= index < len(references), "quasistatic sequence failed")
             close(row["actual_dt"], 1 / config["control_fps"])
-            close(row["simulation_time"] - rows[0]["simulation_time"], step / config["control_fps"])
+            require(
+                abs(row["simulation_time"] - rows[0]["simulation_time"] - step / config["control_fps"]) <= 1e-8,
+                "long-horizon physical clock drift",
+            )
+            if step:
+                require(row["reference_index"] - rows[step - 1]["reference_index"] in (0, 1), "reference order changed")
             close(references[index]["pose"], original[index]["desired_source"])
             close(references[index]["opening"], original[index]["opening_target"])
             close(row["desired_source"], references[index]["pose"])
@@ -119,6 +124,7 @@ def verify_quasistatic(config, root, component_root, *, trials=None, matrix_name
         require(set(grouped) == set(range(len(references))), "endpoint skipped")
         endpoints = []
         for group in grouped.values():
+            require(1 <= len(group) <= config["endpoint_diagnostic"]["max_substeps"], "substep budget exceeded")
             require([r["substep"] for r in group] == list(range(len(group))), "substep sequence differs")
             require(not any(r["reached"] for r in group[:-1]), "reference held after convergence")
             require(
