@@ -131,18 +131,22 @@
     "release_above": 0.9
   },
   "selected_demos": [
+    "demo_27",
+    "demo_7",
+    "demo_9",
+    "demo_15",
+    "demo_0",
     "demo_49",
     "demo_37",
     "demo_12",
     "demo_33",
-    "demo_26",
     "demo_47",
     "demo_38",
     "demo_13",
     "demo_18",
     "demo_43"
   ],
-  "selection": "seed42 metadata-only selection, excludes previously inspected five demos; adapter episode holdout, model training visibility unknown/unchanged",
+  "selection": "All 14 command-content matches; published R2 state oracle from the fixed HDF5 initial scenes; diagnostic, no held-out claim",
   "source_hdf5": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/data/put_the_bowl_on_the_plate_demo.hdf5",
   "reference_source": "published_r2",
   "published_bridge": "outputs/libero_audit_20261019/provenance/published_bridge.json"
