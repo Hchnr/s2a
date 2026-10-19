@@ -14,6 +14,7 @@ import numpy as np
 
 from s2a.artifacts import code_fingerprint, sha256, write_json
 from s2a.async_reference import AsyncReferenceBuffer, TimedReference
+from s2a.cameras import render_current_cameras
 from s2a.geometry import inverse, pose_error
 from s2a.gripper import OpeningIntent, opening_position_target
 from s2a.libero_simulation import aperture, controller_contract, generate, make_environment, measured_twist, source_pose
@@ -64,7 +65,7 @@ def run_async_case(config, output, *, stage, arm, trial, delay=0.0):
         length = config["async_steps"]
     manifest["inputs_sha256"] = inputs
     write_json(dest / "manifest.json", manifest)
-    env, obs = make_environment({**policy, "camera_observations": stage == "live"}, dest, record, trial)
+    env, obs = make_environment({**policy, "camera_observations": False}, dest, record, trial)
     rows, events = [], []
     error, pending, executor = None, None, None
     started = time.monotonic()
@@ -90,6 +91,7 @@ def run_async_case(config, output, *, stage, arm, trial, delay=0.0):
         if stage == "live":
             executor = ThreadPoolExecutor(max_workers=1)
         started = time.monotonic()
+        next_tick_wall = started
         initial_sim_time = float(env.sim.data.time)
         sequence, last_request = 0, -np.inf
 
@@ -132,9 +134,9 @@ def run_async_case(config, output, *, stage, arm, trial, delay=0.0):
                         else:
                             pending = now + delay, meta, reference
                     else:
-                        snapshot = {
-                            k: np.asarray(obs[k]).copy() for k in ("agentview_image", "robot0_eye_in_hand_image")
-                        }
+                        # Include current-image acquisition in observation age.
+                        snapshot = render_current_cameras(env, policy["render_resolution"])
+                        meta["capture_duration_s"] = time.monotonic() - started - now
                         pending = executor.submit(query, snapshot, sequence), meta, current @ h
                     sequence += 1
                     last_request = now
@@ -172,15 +174,16 @@ def run_async_case(config, output, *, stage, arm, trial, delay=0.0):
                     rate_limited=converted["rate_limited"],
                 )
                 if stage == "live":
-                    row["deadline_lateness_s"] = max(0.0, time.monotonic() - started - (step + 1) * dt)
+                    row["planned_start_clock_s"] = next_tick_wall - started
+                    row["deadline_lateness_s"] = max(0.0, time.monotonic() - next_tick_wall - dt)
                 rows.append(row)
                 stream.write(json.dumps(row, default=lambda value: value.tolist(), allow_nan=False) + "\n")
                 stream.flush()
                 if stage == "live":
                     # Physics and feedback continue while the HTTP worker runs.
                     # Deadline misses remain measured; no catch-up steps are hidden.
-                    deadline = started + (step + 1) * dt
-                    remaining = deadline - time.monotonic()
+                    next_tick_wall = max(next_tick_wall + dt, time.monotonic())
+                    remaining = next_tick_wall - time.monotonic()
                     if remaining > 0:
                         time.sleep(remaining)
                 if step % 100 == 0:
