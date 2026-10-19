@@ -154,6 +154,7 @@ def main():
     h = np.asarray(json.loads(Path(c["tool_contract"]).read_text())["source_from_tcp"])
     hi, dt, horizon = np.linalg.inv(h), 1 / c["control_fps"], c["execution_horizon"]
     bounds = json.loads((out / "contact_bounds/bounds.json").read_text())
+    workspace = json.loads((out / "workspace_bound/bound.json").read_text())
     gripper_xml = []
     for record in fixture["episodes"]:
         xml = ET.fromstring(record["model_xml"])
@@ -335,6 +336,8 @@ def main():
                 - bounds["bowl_radius_m"]
                 - bowl_excursion
             )
+            reach = next(r for r in workspace["cases"] if r["trial"] == trial)
+            excess = np.linalg.norm(desired_points - reach["center_world"], axis=1) - reach["radius_m"]
             result.update(
                 stage=stage,
                 directory=str(dest),
@@ -343,6 +346,8 @@ def main():
                 ideal_finger_bowl_separation_lower_bound_m=gap,
                 max_bowl_lift_m=float(max(r["bowl_position"][2] for r in rows) - rows[0]["bowl_position"][2]),
                 desired_source_min_z_m=float(np.min(desired_points[:, 2])),
+                outside_conservative_workspace_endpoints=int(np.sum(excess[1:] > 1e-9)),
+                max_workspace_radius_excess_m=float(np.max(excess)),
             )
             results.append(result)
             for path in dest.glob("*"):
@@ -380,6 +385,7 @@ def main():
         checked_revision_files=len(revisions),
         inputs_sha256=inputs,
         collision_bounds=bounds,
+        conservative_workspace_bound=workspace,
         fixture_gripper_xml_sha256=gripper_xml[0],
         inference_latency_excluded=True,
         hardware_executed=False,
