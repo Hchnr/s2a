@@ -125,6 +125,7 @@ def main():
         "独立三轴正弦probe各180步、周期60步：平移振幅5/20/50mm和旋转0.05/0.2rad通过10mm/0.05rad点态门槛；旋转0.5rad虽RMS达标，TCP峰值24.739mm、旋转峰值0.07727rad超限。probe保持初始夹爪开度，没有独立证明任意开度曲线的执行资格。这个局部运动范围不能外推为整个工作空间的保证。",
         "## 每条任务的接触、移动与放置结果",
         "接触为MuJoCo/robosuite的目标物体grasp-contact谓词；高度增益和位移为相对初始物体位置的最大值，是连续进度代理。推碰也可能产生位移/高度，不能自动称为成功抓取或搬运；放置是否成功仍看原生任务谓词。所有值直接来自完整物理日志，没有事后添加成功门槛。",
+        "开度最小值另列实际执行前缀/完整生成序列，均投影至[0,1]。原生H40的task0_init0/seed42中，实际执行前缀最低0.917，而完整40步预测最低0.277；不能称模型从未预测闭合，但当前每次执行前8步再预测的协议没有执行到较小开度。该诊断不改变执行时域，也不替代全部12条任务结果。",
     ]
     for label, matrix in comparisons[1:]:
         rows = []
@@ -140,12 +141,24 @@ def main():
                     f"{1000 * d['position_rmse_tcp_m']:.2f}",
                     f"{d['rotation_rmse_rad']:.4f}",
                     f"{d['opening_mae']:.4f}",
+                    f"{d['opening_target_min']:.3f}/{d['opening_generated_min']:.3f}",
                 ]
             )
         parts += [
             f"### {label}",
             table(
-                ["初态/seed", "曾/末成功", "接触步", "升高mm", "位移mm", "TCP RMSE mm", "SO(3) rad", "开度MAE"], rows
+                [
+                    "初态/seed",
+                    "曾/末成功",
+                    "接触步",
+                    "升高mm",
+                    "位移mm",
+                    "TCP RMSE mm",
+                    "SO(3) rad",
+                    "开度MAE",
+                    "开度min 执行/完整",
+                ],
+                rows,
             ),
         ]
     parts += [

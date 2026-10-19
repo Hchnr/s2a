@@ -90,6 +90,10 @@ def physics_diagnostics(paths, source):
             position, rotation = np.linalg.norm(errors[:, :3], axis=1), np.linalg.norm(errors[:, 3:], axis=1)
             tcp_position = tcp_position_errors(path, steps)
             opening = np.asarray([r["opening_target"] for r in steps])
+            chunks = json.loads(path.with_name("chunks.json").read_text())
+            generated_openings = [np.clip(np.asarray(r["actions"])[:, 9], 0, 1) for r in chunks]
+            execution_horizon = json.loads(path.with_name("manifest.json").read_text())["config"]["execution_horizon"]
+            suffix_openings = [r[execution_horizon:] for r in generated_openings if len(r) > execution_horizon]
             item.update(
                 position_rmse_m=float(np.sqrt(np.mean(position**2))),
                 position_error_point="controller source (grip_site position / right_hand axes)",
@@ -105,6 +109,8 @@ def physics_diagnostics(paths, source):
                 rotation_within_005rad_fraction=float(np.mean(rotation <= 0.05)),
                 opening_target_min=float(opening.min()),
                 opening_target_max=float(opening.max()),
+                opening_generated_min=float(min(r.min() for r in generated_openings)),
+                opening_unexecuted_suffix_min=float(min(r.min() for r in suffix_openings)) if suffix_openings else None,
                 opening_mae=float(np.mean([abs(r["opening_after"] - r["opening_target"]) for r in steps])),
                 saturated_steps=sum(r["saturated"] for r in steps),
                 rate_limited_steps=sum(r["rate_limited"] for r in steps),
