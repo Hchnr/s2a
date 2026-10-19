@@ -4,8 +4,8 @@ import argparse
 import json
 import os
 import subprocess
-import sys
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 from s2a.artifacts import load_config, write_json
 from s2a.libero_async import case_name, run_async_case
@@ -56,7 +56,7 @@ def main():
         if log.exists():
             raise FileExistsError(f"Archive existing evidence before rerunning: {log}")
         command = [
-            sys.executable,
+            str(Path(c["simulation_python"]).absolute()),
             __file__,
             "--config",
             args.config,

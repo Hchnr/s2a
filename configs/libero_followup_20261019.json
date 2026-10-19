@@ -2,6 +2,7 @@
   "seed": 42,
   "output_dir": "outputs/libero_followup_20261019",
   "policy_config": "configs/libero_policy_20261019.json",
+  "simulation_python": "outputs/libero_env311/bin/python",
   "provenance_config": "configs/libero_provenance_20261019.json",
   "source_identity": "outputs/libero_audit_20261019/provenance/source_identity.json",
   "native_bridge": "outputs/libero_audit_20261019/provenance/native_bridge.json",
