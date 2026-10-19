@@ -14,6 +14,25 @@ S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接
 
 2026-10-19 扩展修复了恢复仿真状态后的OSC缓存同步，区分HDF5动作后观测与当前R1/R2发布观测，并加入开度方向保持、释放锁存、输入延迟/噪声及终态保持对照。最新状态见 [控制审计报告](reports/libero_control_audit_20261019.md)、[本轮记录](plans/v0.0.1/record_20261019.md) 和 [本轮结论](plans/v0.0.1/conclusion_20261019.md)。候选的实验收益与部署资格分别判断，所有结果均无真机执行。
 
+继续实施新增catalog所指当前发布帧的配对预测诊断，以及观测时间驱动的异步参考接入。`TimedReference`保留采集时的world锚点和时间轴；`AsyncReferenceBuffer`拒绝过期/乱序结果、跳过已过去的endpoint，空窗固定保持。新仿真逐步刷新当前端点反馈，只在需要请求模型时采集相机；物理控制与HTTP推理并行，实际墙钟超时单列记录。接口可执行、目标正确、任务成功和实时部署分别验证。
+
+入口配置为 `configs/libero_followup_20261019.json`。依赖此前冻结的来源bridge和基线初始图像/预测，路径与指纹随结果保存；复跑请另设output_dir，已有结果不覆盖。以下命令均从本仓库执行，模拟器和模型服务仍是可选环境：
+
+```bash
+LD_LIBRARY_PATH='' .venv/bin/python scripts/prepare_libero_followup.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_libero_alignment.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_libero_release_revision.py --seed 42
+# 独立终端运行本轮自有模型服务；结束后只停止其记录的进程组
+LD_LIBRARY_PATH='' .venv/bin/python scripts/serve_libero_policy.py --config outputs/libero_followup_20261019/serving_config.json --seed 42 --gpu 0 --port 8380
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/probe_libero_training_images.py --seed 42
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/verify_libero_camera_capture.py --seed 42
+# 编排器从显式simulation_python启动物理worker；live串行避免服务排队混淆延迟
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_async.py --seed 42 --stage synthetic
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_async.py --seed 42 --stage live
+LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_followup.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_followup.py --seed 42
+```
+
 ```text
 src/s2a/geometry.py        column-rot6d、SE(3)、TCP/flange、SO(3) 误差
 src/s2a/data.py            provenance join、物理时钟、masks、样本与指纹
