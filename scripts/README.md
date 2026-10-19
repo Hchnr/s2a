@@ -22,13 +22,19 @@
 WAM 效果专项使用 `configs/libero_wam_effect_20261019.json`，五个服务分别在 GPU 0–4/8480–8484；分量干预使用 `configs/libero_wam_components_20261019.json`，GPU 5–7/8485–8487。先按各配置的 `server_urls` 启动 `serve_libero_policy.py --config <config> --seed 42 --gpu <gpu> --port <port>` 并检查 `/info` 的权重路径。权重、推理代码和数据保持外部只读。依赖先前来源审计的 published bridge；复跑需生成该 bridge 或通过配置提供已校验的同源参考，并修改 output_dir，所有已有物理证据拒绝覆盖。
 
 ```bash
+LD_LIBRARY_PATH='' .venv/bin/python scripts/fingerprint_libero_checkpoint.py --config configs/libero_wam_effect_20261019.json --seed 42
 LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_effect.py --seed 42 --stage controls
 LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_effect.py --seed 42 --stage wam
 LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_effect.py --config configs/libero_wam_components_20261019.json --seed 42 --stage components --workers 3
 LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_libero_contact_bounds.py --seed 42
+LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_libero_workspace_bound.py --seed 42
 # 待 oracle_response 与 wam_affine 的完整原始轨迹生成后运行；变慢的冻结参考重放只作诊断
 LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_endpoint_diagnostic.py --seed 42
 LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_effect.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_effect.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/export_libero_effect_video.py --seed 42
 ```
 
 同步入口验证 HTTP 前后完整物理状态和仿真时间不变，全部前 8 个目标真实执行。分量干预在 world/source 点替换分量、保留 WAM 原始输出；含 oracle 的成功不计为纯 WAM 成功。独立汇总按冻结名单核对完整预算、逐目标执行、端点连续性、物理位姿、命令边界/变化率、模型反归一化与图像指纹；`--stage controls` 等仅保存阶段核验，不生成全量完成报告。
+
+效果专项最终55项/50739步与2010个响应核验通过，完整结果见 [报告](../reports/libero_wam_effect_20261019.md)。准静态 `--resume` 仅复用同配置/输入SHA不变的完整case；新运行已按300×12覆盖环境horizon。视频导出需可选 `imageio-ffmpeg`，当前环境已提供；输出来自真实输入相机，拒绝覆盖已有视频。核心源码应先提交，独立核验会按运行记录commit核对实际执行SHA。
