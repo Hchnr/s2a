@@ -1,0 +1,83 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_checkpoint_acceptance_20261019v2",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "r2_root": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef",
+  "training_catalog": "/share/project/liyue/data/parquet-data/action128-full-20261012/libero-eef/libero-eef.parquet",
+  "checkpoints": [
+    {
+      "name": "warm6200_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_e2aux345_run01/cosmos3_action/action128/action128_wam_nano_1b_e2aux345_12src_no_robomind2_160gpu_videocap30_static_vae_aot_run1",
+      "iteration": "iter_000006200",
+      "gpu": 0,
+      "port": 8590,
+      "spec_run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k"
+    },
+    {
+      "name": "8400_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008400",
+      "gpu": 2,
+      "port": 8592
+    },
+    {
+      "name": "8600_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008600",
+      "gpu": 3,
+      "port": 8593
+    },
+    {
+      "name": "8800_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008800",
+      "gpu": 4,
+      "port": 8594
+    }
+  ],
+  "tasks": [
+    "put the bowl on the plate",
+    "put the wine bottle on the rack",
+    "put the cream cheese in the bowl"
+  ],
+  "offline_episodes_per_task": 4,
+  "offline_diagnostic_episodes_per_task": 2,
+  "offline_prompt_modes": [
+    "task_only",
+    "published_caption"
+  ],
+  "offline_horizons": [
+    16,
+    40
+  ],
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "sampling_steps": 35,
+  "guidance": 1.5,
+  "shift": 5.0,
+  "control_fps": 20,
+  "online_initial_states_per_task": 2,
+  "online_max_steps": 600,
+  "online_chunk_size": 16,
+  "online_execution_horizon": 8,
+  "arm": "response",
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "qualification_position_tolerance_m": 0.01,
+  "qualification_rotation_tolerance_rad": 0.05,
+  "notes": [
+    "Freeze before reading new predictions; no WAM weight or task-reference learning.",
+    "Episode-disjoint assessment is relative to this study; historical pretraining consumption remains unverified.",
+    "Offline sample selection uses metadata and observed states only, never model results.",
+    "Pause physics for inference. Use actual task predicates, track progress and state errors separately.",
+    "Warm-start parent configuration explicitly points to iter6200 despite the run name from6k.",
+    "Amendment after paired numerical audit: inactive input/noise/velocity slots remain zero throughout sampling, matching training. All learned parameters are frozen.",
+    "published_caption means exact renderer text injected into ai_caption; the stock-server published_caption branch is nested JSON and must be labeled separately.",
+    "warm6200 is the parent learned parameters with current-run normalization contract, as specified by official warm_start; not native old-contract performance."
+  ]
+}

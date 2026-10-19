@@ -29,7 +29,9 @@ def main():
     path = out / "samples/manifest.json"
     samples = json.loads(path.read_text())
     template = json.loads(Path(c["policy_template"]).read_text())
-    spec = yaml.safe_load((Path(ck["run"]) / "config.yaml").read_text())["model"]["config"]["action128_spec"]
+    spec = yaml.safe_load((Path(ck.get("spec_run", ck["run"])) / "config.yaml").read_text())["model"]["config"][
+        "action128_spec"
+    ]
     domain = template["action_domain"]
     transform = spec["transforms"][spec["registry"]["domains"].index(domain)]
     endpoint = f"http://127.0.0.1:{ck['port']}"
