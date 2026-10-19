@@ -14,6 +14,7 @@ from PIL import Image
 from scipy.spatial.transform import Rotation
 
 from s2a.artifacts import code_fingerprint, sha256, write_json
+from s2a.collision_bounds import separation_bound
 from s2a.prediction_audit import audit_action_response
 
 
@@ -343,6 +344,12 @@ def main():
             )
             reach = next(r for r in workspace["cases"] if r["trial"] == trial)
             excess = np.linalg.norm(desired_points - reach["center_world"], axis=1) - reach["radius_m"]
+            ideal_poses = np.concatenate(
+                [np.asarray(rows[0]["measured_source"])[None], np.asarray(expected_targets[:budget])]
+            )
+            gripper_gap = separation_bound(
+                ideal_poses, bowl_center, bounds["bowl_radius_m"] + bowl_excursion, bounds["collision_geometries"]
+            )
             result.update(
                 stage=stage,
                 directory=str(dest),
@@ -353,6 +360,8 @@ def main():
                 desired_source_min_z_m=float(np.min(desired_points[:, 2])),
                 outside_conservative_workspace_endpoints=int(np.sum(excess[1:] > 1e-9)),
                 max_workspace_radius_excess_m=float(np.max(excess)),
+                ideal_gripper_endpoint_lower_bound_m=gripper_gap["endpoint_lower_bound_m"],
+                ideal_gripper_linear_slerp_lower_bound_m=gripper_gap["linear_slerp_lower_bound_m"],
                 raw_local_rotation_mean_executed_rad=float(np.mean(used_rotation_angles[:budget])),
                 raw_opening_outside_executed_fraction=float(
                     np.mean((np.asarray(used_raw_openings[:budget]) < 0) | (np.asarray(used_raw_openings[:budget]) > 1))
@@ -383,6 +392,8 @@ def main():
                 raw_opening_outside_executed_fraction=float(
                     np.mean([r["raw_opening_outside_executed_fraction"] for r in rows])
                 ),
+                ideal_gripper_linear_slerp_gap_min_mm=1000
+                * min(r["ideal_gripper_linear_slerp_lower_bound_m"] for r in rows),
             )
         )
     summary = dict(
