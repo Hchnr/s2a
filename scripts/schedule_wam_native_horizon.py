@@ -51,14 +51,12 @@ def main():
         for path in Path("/proc").glob("[0-9]*/cmdline"):
             try:
                 parts = path.read_bytes().split(b"\0")
+                if b"scripts/serve_wam_acceptance.py" not in parts or str(plan["old_port"]).encode() not in parts:
+                    continue
                 cwd = path.parent.joinpath("cwd").resolve()
-            except FileNotFoundError:
+            except (FileNotFoundError, PermissionError, ProcessLookupError):
                 continue
-            if (
-                b"scripts/serve_wam_acceptance.py" in parts
-                and str(plan["old_port"]).encode() in parts
-                and cwd == Path.cwd()
-            ):
+            if cwd == Path.cwd():
                 candidates.append(int(path.parent.name))
         if len(candidates) != 1:
             raise ValueError("owned primary service cannot be uniquely identified")
