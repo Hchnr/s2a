@@ -46,8 +46,11 @@ def main():
     inputs[path] = sha256(path)
     if inputs[path] != aligned["inputs_sha256"][path]:
         raise ValueError("published states changed since camera pairing")
+    episode_ids = [r["r2_episode"] for r in aligned["cases"] if r["trial"] in config["trials"]]
     published = pq.read_table(
-        path, columns=["episode_index", "frame_index", "observation.state", "observation.state_mask"]
+        path,
+        columns=["episode_index", "frame_index", "observation.state", "observation.state_mask"],
+        filters=[("episode_index", "in", episode_ids), ("frame_index", "<=", max(config["horizons"]))],
     ).to_pylist()
     cases = []
     for horizon in config["horizons"]:
