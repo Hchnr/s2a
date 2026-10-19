@@ -420,6 +420,23 @@ def main():
     if args.stage:
         write_json(out / ("verification_" + "_".join(args.stage) + ".json"), summary)
     else:
+        pairing = []
+        for trial in c["trials"]:
+            roots = [out / "sync" / case / f"trial{trial}" for case in ("wam_affine", "wam_response")]
+            pixels = [np.asarray(Image.open(p / "input_0000.png")) for p in roots]
+            actions = [
+                np.asarray(json.loads((p / "response_0000.json").read_text())["outputs"][0]["content"]["action"])
+                for p in roots
+            ]
+            require(np.array_equal(*pixels), "pure WAM comparison initial cameras differ")
+            pairing.append(
+                dict(
+                    trial=trial,
+                    initial_canvas_max_abs=0,
+                    first_action_max_abs=float(np.max(abs(actions[0] - actions[1]))),
+                )
+            )
+        summary["pure_wam_initial_pairing"] = pairing
         diagnostic = verify_quasistatic(c, out, Path(cc["output_dir"]))
         summary["quasistatic_cases"] = diagnostic
         summary["quasistatic_physics_steps"] = sum(r["physical_steps"] for r in diagnostic)
