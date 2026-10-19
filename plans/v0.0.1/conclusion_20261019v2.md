@@ -26,3 +26,5 @@
 - 当前全部测试发生在独立LIBERO/MuJoCo的Franka Panda仿真，没有进行真机实验。无延迟评测表示推理期间暂停物理时钟，不表示真实系统达到实时性能。
 
 最终state误差表、完整闭环成功率及可归因结论等待冻结矩阵完成后更新。
+
+来源补充：12个episode全部属于训练catalog；1464行完整action和mask与state修订前保留列一致，当前域归一化与三个当前run checkpoint一致。但历史9项metadata仅4项SHA未变，原训练图像/caption的完整字节快照及消费账本未恢复。本轮训练计算复算与当前服务输入一致性通过，不等于完整重放历史训练batch；study-heldout也不是预训练未见集合。
