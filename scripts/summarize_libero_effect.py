@@ -146,6 +146,103 @@ def verify_quasistatic(config, root, component_root, *, trials=None, matrix_name
     return results
 
 
+def write_report(summary, config, out):
+    groups = {r["case"]: r for r in summary["groups"]}
+    pure = [groups[name] for name in ("wam_affine", "wam_response")]
+    position = groups["wam_position_oracle_rotation_opening"]
+    supported = (
+        all(groups[name]["terminal_successes"] == 5 for name in ("oracle_affine", "oracle_response"))
+        and all(r["successes"] == 0 for r in pure)
+        and position["ideal_gripper_linear_slerp_gap_min_mm"] > 0
+    )
+    summary["reference_quality_issue_supported"] = supported
+    summary["pure_wam_successes"] = sum(r["successes"] for r in pure)
+    lines = [
+        "# WAM 不计推理延迟的效果与输出归因 — 2026-10-19",
+        "",
+        f"冻结 `{config['checkpoint_iteration']}`、seed42、LIBERO goal/task8（put the bowl on the plate）、5个已知初态。"
+        "HTTP期间暂停物理，不使用TTL；实际执行生成参考。结论只适用于这个checkpoint、推理协议与场景。",
+        "",
+        "**独立证据支持：当前参考存在与任务不符的问题，失败不能仅解释为缺少state→action转换。**"
+        if supported
+        else "当前数据不足以按预定正控/几何标准确认参考质量归因，见逐组结果。",
+        "",
+        "## 实现与协议",
+        "",
+        "Action128物理局部delta在SE(3)右乘积分，通过固定TCP合同转为world/source目标；反馈来自当前MuJoCo端点。"
+        "affine与小运动PD响应逆均通过原固定OSC，统一5/s命令变化率和intent夹爪；没有训练新逆网络或使用专家native命令。"
+        "正控将发布端点编码成Action128，再走同一解码与控制路径；oracle分量替换属于特权诊断。",
+        "",
+        "主WAM每条1000步/50物理秒，chunk16/执行8；正控与分量每条300步，最后chunk只执行4步。"
+        "所有case跑满预算，同时记录曾成功与终态成功。WAM各分支使用各自最新相机图像；分量对照不是旧图像预测回放。",
+        "",
+        "## 独立物理执行",
+        "",
+        "| 来源 / 转换 | 曾成功 | 终态成功 | source位置跟踪RMSE mm | 旋转跟踪RMSE rad | 手指接触tick |",
+        "| --- | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for row in summary["groups"]:
+        lines.append(
+            f"| {row['case']} | {row['successes']}/{row['episodes']} | {row['terminal_successes']}/{row['episodes']} | {row['position_rmse_mm']:.3f} | {row['rotation_rmse_rad']:.6f} | {row['finger_contact_steps']} |"
+        )
+    lines += [
+        "",
+        "这些RMSE是实际状态对各自生成目标的跟踪误差，不是对真实未来标签的预测误差。"
+        "闭环WAM参考随反馈改变，不能把两组RMSE之差当成同一固定轨迹上的纯控制收益。只有纯WAM两行可计为模型任务成功；其它行含特权参考。",
+        "",
+        "## 为什么不是只有转换问题",
+        "",
+        f"共享解码正控两组各5/5终态成功；正确pose+WAM opening为{groups['oracle_pose_wam_opening']['terminal_successes']}/5，"
+        f"位姿跟踪位置RMSE {groups['oracle_pose_wam_opening']['position_rmse_mm']:.3f}mm。此项限定于intent映射，不能独自排除其它夹爪映射。",
+        "",
+        f"原始纯WAM目标在位置直线连接下，对所有合法开度、任意手部朝向的手指到碗分离下界，affine最小{pure[0]['ideal_finger_bowl_gap_min_mm']:.3f}mm、"
+        f"response最小{pure[1]['ideal_finger_bowl_gap_min_mm']:.3f}mm。保留WAM积分位置、给定正确旋转/opening时，"
+        f"整个夹爪沿规定linear/SLERP理想参考仍与碗至少分离{position['ideal_gripper_linear_slerp_gap_min_mm']:.3f}mm。"
+        "这一证据不依赖实际跟踪误差：忠实执行这些参考没有给出手部接触路径，单纯提高逆模型精度不能补出该路径。",
+        "",
+        "包络来自实际MuJoCo碰撞几何与有限finger slide，覆盖全合法开度；以真实接触时刻交叉核验。"
+        "正下界才证明分离，负下界不证明碰撞。原始WAM整夹爪扫掠包络存在负下界，不能认证全手无接触；"
+        "不排除其它连杆或任意未规定绕行，也不宣称所有可能策略均失败。位置干预保留完整SE(3)积分所得位置，坏旋转也可影响它，不能唯一定位raw translation head。",
+        "",
+        "## 准静态冻结目标重放",
+        "",
+        "每条取完整来源的前300目标，每目标最多12个真实0.05秒tick，2mm/0.02rad停止等待；允许的wrapper horizon仅覆盖预定300×12上限。"
+        "这是改变参考节奏的特权诊断，使用已生成的外生目标，不是新的live-image策略或20Hz主评测。",
+        "",
+        "| 冻结来源 | 终态成功 | 物理步数 | 达标目标 / 1500 | endpoint位置RMSE mm | endpoint旋转RMSE rad |",
+        "| --- | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for name in ("oracle_response", "wam_affine", "wam_position_oracle_rotation_opening"):
+        rows = [r for r in summary["quasistatic_cases"] if r["source"] == name]
+        lines.append(
+            f"| {name} | {sum(r['terminal_success'] for r in rows)}/5 | {sum(r['physical_steps'] for r in rows)} | {sum(r['reached_endpoints'] for r in rows)}/1500 | {1000 * np.mean([r['endpoint_position_rmse_m'] for r in rows]):.3f} | {np.mean([r['endpoint_rotation_rmse_rad'] for r in rows]):.6f} |"
+        )
+    lines += [
+        "",
+        "WAM大角度目标多数仍未收敛，慢速失败不是理想逆模型上限证明；转换在大角度/接触下的局限仍存在。归因依赖上面的独立几何证据和正控，不把较差的重放跟踪误差当成已排除转换问题。",
+        "",
+        "## 核验与范围",
+        "",
+        f"{summary['formal_cases']}项正式物理对照/{summary['formal_physics_steps']}步，15项准静态/{summary['quasistatic_physics_steps']}步，"
+        f"{summary['model_responses']}个响应通过来源、执行源码、物理时钟、状态连续性、目标实际使用、命令边界/变化率、图像与归一化核验。"
+        f"反归一化最大差{summary['worst_denormalization_error']:.3e}。五对纯WAM初始canvas相同，首次预测最大差"
+        f"{max(r['first_action_max_abs'] for r in summary['pure_wam_initial_pairing']):.3e}。"
+        f"几何包络通过{summary['actual_contact_support_checks']}个真实finger-bowl接触时刻核对。",
+        "",
+        f"另保留{summary['archived_truncated_cases']}条默认1000tick上限截断诊断/{summary['archived_truncated_physics_steps']}步，未计入完整任务结果；原日志、失败原因及SHA均保留。"
+        "累计长时钟容差10ns，几何与任务阈值未放宽。宽松工作空间包络未发现越界不能证明目标可达，逐case保留该结果。",
+        "",
+        "没有真机、未见任务泛化、世界模型重训或默认部署资格。尚未唯一定位模型训练、采样或数据消费中的根因。下一步应修复/复核Action输出，"
+        "先通过同源图像/标签回归与本轮不计延迟闭环，再恢复异步时效验收；不能把特权分量成功或oracle成功算成WAM成功。",
+        "",
+        f"本地复核图：`{out / 'figures'}`；真实相机视频：`{out / 'videos'}`（不是模型生成视频）。完整指纹与逐步数据索引见同名JSON报告。",
+        "",
+        "[实施记录](../plans/v0.0.1/record_20261019.md) · [最终结论](../plans/v0.0.1/conclusion_20261019.md)",
+        "",
+    ]
+    Path("reports/libero_wam_effect_20261019.md").write_text("\n".join(lines))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/libero_wam_effect_20261019.json")
@@ -520,6 +617,7 @@ def main():
             *out.glob("matrix_*.json"),
         ]:
             artifacts[str(p)] = sha256(p)
+        write_report(summary, c, out)
         write_json(out / "summary.json", summary)
         write_json("reports/libero_wam_effect_20261019.json", summary)
     print(json.dumps({k: summary[k] for k in ("formal_cases", "formal_physics_steps", "model_responses", "groups")}))
