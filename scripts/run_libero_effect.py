@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/libero_wam_effect_20261019.json")
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument("--stage", choices=["controls", "wam"], required=True)
+    parser.add_argument("--stage", choices=["controls", "wam", "components"], required=True)
     parser.add_argument("--case")
     parser.add_argument("--trial", type=int)
     parser.add_argument("--workers", type=int, default=5)
@@ -23,7 +23,11 @@ def main():
     c, out = load_config(args.config)
     if args.seed != c["seed"]:
         raise ValueError("seed differs from frozen experiment")
-    cases = [r for r in c["effect_cases"] if r["source"] == ("oracle" if args.stage == "controls" else "wam")]
+    cases = (
+        c["component_cases"]
+        if args.stage == "components"
+        else [r for r in c["effect_cases"] if r["source"] == ("oracle" if args.stage == "controls" else "wam")]
+    )
     if args.case:
         case = next(r for r in cases if r["name"] == args.case)
         print(json.dumps(run_effect_case(c, out, case, args.trial)), flush=True)
@@ -37,9 +41,9 @@ def main():
         "PYTHONDONTWRITEBYTECODE": "1",
     }
 
-    def execute_trial(trial):
+    def execute_trials(trials):
         results = []
-        for case in cases:
+        for trial, case in ((trial, case) for trial in trials for case in cases):
             path = out / f"{case['name']}_trial{trial}.log"
             if path.exists():
                 raise FileExistsError(f"archive existing evidence before retry: {path}")
@@ -66,8 +70,13 @@ def main():
             print(json.dumps(row), flush=True)
         return results
 
+    # One worker per endpoint prevents incidental queueing when diagnostic
+    # trials share fewer service GPUs. Physics remains paused in every worker.
+    groups = {}
+    for trial in c["trials"]:
+        groups.setdefault(c["server_urls"][trial], []).append(trial)
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
-        results = [row for group in executor.map(execute_trial, c["trials"]) for row in group]
+        results = [row for group in executor.map(execute_trials, groups.values()) for row in group]
     write_json(
         out / f"matrix_{args.stage}.json", dict(cases=results, complete=all(r["exit_code"] == 0 for r in results))
     )

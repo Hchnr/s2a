@@ -42,12 +42,14 @@ def run_effect_case(config, output, case, trial):
     h = np.asarray(json.loads(Path(config["tool_contract"]).read_text())["source_from_tcp"])
     inputs = {str(p): sha256(p) for p in (config["fixture"], config["tool_contract"])}
     manifest = dict(config=config, case=case, trial=trial, code=code_fingerprint(), inputs_sha256=inputs)
-    if case["source"] == "oracle":
+    privileged = case["source"] == "oracle" or bool(case.get("oracle_components"))
+    if privileged:
         path = config["published_bridge"]
         reference = json.loads(Path(path).read_text())["trajectories"][record["demo"]]
         published_tcp = np.asarray(reference["source_poses"]) @ h
         published_opening = np.asarray(reference["openings"])
         inputs[path] = sha256(path)
+    if case["source"] == "oracle":
         manifest["evidence"] = "Privileged published endpoints encoded into Action128 and decoded by the WAM path"
         length = config["oracle_steps"]
     else:
@@ -65,7 +67,9 @@ def run_effect_case(config, output, case, trial):
         manifest["evidence"] = (
             "Live-image WAM; inference wall time excluded by paused physics; actual predicted targets executed"
         )
-        length = config["max_steps"]
+        length = config["component_steps"] if case.get("oracle_components") else config["max_steps"]
+        if case.get("oracle_components"):
+            manifest["evidence"] = "Privileged component intervention with fresh live-image WAM, not pure WAM success"
     write_json(dest / "manifest.json", manifest)
     env, obs = make_environment({**config, "camera_observations": False}, dest, record, trial)
     rows, chunks, error = [], [], None
@@ -114,6 +118,26 @@ def run_effect_case(config, output, case, trial):
                     if float(env.sim.data.time) != before_time or not np.array_equal(before, after):
                         raise RuntimeError("physics changed during the paused generation interval")
                     targets, openings = decode_action_targets(anchor, actions, horizon=config["execution_horizon"])
+                    raw_targets, raw_openings = targets.copy(), openings.copy()
+                    if case.get("oracle_components"):
+                        indices = np.minimum(step + np.arange(len(targets)), len(published_tcp) - 1)
+                        # Intervene at the fixed controller source point. Mixing
+                        # TCP rotations would also move an offset source point.
+                        source_targets = targets @ inverse(h)
+                        oracle_source = published_tcp[indices] @ inverse(h)
+                        for component in case["oracle_components"]:
+                            if component == "position":
+                                source_targets[:, :3, 3] = oracle_source[:, :3, 3]
+                            elif component == "rotation":
+                                source_targets[:, :3, :3] = oracle_source[:, :3, :3]
+                            elif component == "opening":
+                                openings = published_opening[indices].copy()
+                            else:
+                                raise ValueError("unknown privileged component")
+                        # Pass intervention endpoints through the shared delta
+                        # encoder/decoder as well; no alternative control path.
+                        diagnostic = encode_oracle_targets(anchor, source_targets @ h, openings)
+                        targets, openings = decode_action_targets(anchor, diagnostic, horizon=len(targets))
                     if case["source"] == "oracle":
                         np.testing.assert_allclose(targets, published_tcp[indices[: len(targets)]], atol=1e-12, rtol=0)
                     chunk = dict(
@@ -121,6 +145,8 @@ def run_effect_case(config, output, case, trial):
                         step=step,
                         anchor_tcp=anchor,
                         actions=actions,
+                        raw_targets_tcp=raw_targets,
+                        raw_openings=raw_openings,
                         observed_source=measured,
                         targets_tcp=targets,
                         observation_sha256=observation_hash,
