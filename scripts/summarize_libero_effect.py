@@ -51,9 +51,13 @@ def integrate(anchor, actions):
     return np.asarray(result)
 
 
-def verify_quasistatic(config, root):
+def verify_quasistatic(config, root, component_root):
     matrix = json.loads((root / "matrix_quasistatic.json").read_text())
-    expected = {(source, trial) for source in ("oracle_response", "wam_affine") for trial in config["trials"]}
+    expected = {
+        (source, trial)
+        for source in ("oracle_response", "wam_affine", "wam_position_oracle_rotation_opening")
+        for trial in config["trials"]
+    }
     require(matrix["complete"] and len(matrix["cases"]) == len(expected), "quasistatic matrix incomplete")
     require({(r["source"], r["trial"]) for r in matrix["cases"]} == expected, "quasistatic cases differ")
     results = []
@@ -68,7 +72,8 @@ def verify_quasistatic(config, root):
         require(
             hashlib.sha256(executed).hexdigest() == manifest["code"]["files_sha256"][name], "quasistatic source differs"
         )
-        source = root / "sync" / item["source"] / f"trial{item['trial']}" / "steps.jsonl"
+        source_root = component_root if item["source"] == "wam_position_oracle_rotation_opening" else root
+        source = source_root / "sync" / item["source"] / f"trial{item['trial']}" / "steps.jsonl"
         original = [json.loads(line) for line in source.read_text().splitlines()][: config["oracle_steps"]]
         references = json.loads((dest / "references.json").read_text())
         rows = [json.loads(line) for line in (dest / "steps.jsonl").read_text().splitlines()]
@@ -383,7 +388,7 @@ def main():
     if args.stage:
         write_json(out / ("verification_" + "_".join(args.stage) + ".json"), summary)
     else:
-        diagnostic = verify_quasistatic(c, out)
+        diagnostic = verify_quasistatic(c, out, Path(cc["output_dir"]))
         summary["quasistatic_cases"] = diagnostic
         summary["quasistatic_physics_steps"] = sum(r["physical_steps"] for r in diagnostic)
         write_json(out / "summary.json", summary)

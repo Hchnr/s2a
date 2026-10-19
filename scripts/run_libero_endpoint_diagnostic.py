@@ -29,8 +29,9 @@ from s2a.libero_simulation import (
 from s2a.osc import OSCInterface, OSCStateToAction
 
 
-def run(c, out, source, trial):
-    root = out / "sync" / source / f"trial{trial}"
+def run(c, out, source, trial, component_out):
+    source_out = component_out if source == "wam_position_oracle_rotation_opening" else out
+    root = source_out / "sync" / source / f"trial{trial}"
     original = json.loads((root / "result.json").read_text())
     if original["error"] is not None or original["steps"] != original["expected_steps"]:
         raise ValueError("source trajectory is incomplete")
@@ -149,19 +150,21 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/libero_wam_effect_20261019.json")
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument("--source", choices=["oracle_response", "wam_affine"])
+    parser.add_argument("--component-config", default="configs/libero_wam_components_20261019.json")
+    parser.add_argument("--source", choices=["oracle_response", "wam_affine", "wam_position_oracle_rotation_opening"])
     parser.add_argument("--trial", type=int)
     args = parser.parse_args()
     c, out = load_config(args.config)
+    cc = json.loads(Path(args.component_config).read_text())
     if args.seed != c["seed"]:
         raise ValueError("seed differs")
     if args.source:
-        print(json.dumps(run(c, out, args.source, args.trial)), flush=True)
+        print(json.dumps(run(c, out, args.source, args.trial, Path(cc["output_dir"]))), flush=True)
         return
 
     def execute_trial(trial):
         results = []
-        for source in ("oracle_response", "wam_affine"):
+        for source in ("oracle_response", "wam_affine", "wam_position_oracle_rotation_opening"):
             path = out / f"quasistatic_{source}_trial{trial}.log"
             with path.open("x") as stream:
                 code = subprocess.call(
@@ -172,6 +175,8 @@ def main():
                         args.config,
                         "--seed",
                         str(args.seed),
+                        "--component-config",
+                        args.component_config,
                         "--source",
                         source,
                         "--trial",
