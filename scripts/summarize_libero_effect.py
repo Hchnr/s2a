@@ -480,6 +480,28 @@ def main():
         diagnostic = verify_quasistatic(c, out, Path(cc["output_dir"]))
         summary["quasistatic_cases"] = diagnostic
         summary["quasistatic_physics_steps"] = sum(r["physical_steps"] for r in diagnostic)
+        archive = out / "archives/quasistatic_horizon1000"
+        archived = [json.loads(p.read_text()) for p in archive.glob("quasistatic/*/trial*/result.json")]
+        summary["archived_truncated_cases"] = len(archived)
+        summary["archived_truncated_physics_steps"] = sum(r["physical_steps"] for r in archived)
+        summary["archived_primary_files_sha256"] = {
+            str(p): sha256(p)
+            for p in archive.rglob("*")
+            if p.is_file()
+            and p.suffix in (".json", ".jsonl", ".log")
+            and not {"numba_cache", "libero_config", "matplotlib"}.intersection(p.parts)
+        }
+        for row in diagnostic:
+            for p in Path(row["directory"]).glob("*"):
+                if p.is_file() and p.suffix in (".json", ".jsonl"):
+                    artifacts[str(p)] = sha256(p)
+        for p in [
+            out / "checkpoint_fingerprints.json",
+            out / "contact_bounds/bounds.json",
+            out / "workspace_bound/bound.json",
+            *out.glob("matrix_*.json"),
+        ]:
+            artifacts[str(p)] = sha256(p)
         write_json(out / "summary.json", summary)
         write_json("reports/libero_wam_effect_20261019.json", summary)
     print(json.dumps({k: summary[k] for k in ("formal_cases", "formal_physics_steps", "model_responses", "groups")}))
