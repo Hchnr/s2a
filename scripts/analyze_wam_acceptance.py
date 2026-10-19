@@ -23,6 +23,23 @@ def summarize(rows, field="metrics"):
         rotation_rmse_rad=float(np.sqrt(np.mean(rotations**2))),
         opening_mae=float(np.mean(abs(openings))),
     )
+    if field == "metrics":
+        frames = sum(r["contract"]["frames"] for r in rows)
+        result["raw_output"] = dict(
+            generated_endpoints=frames,
+            opening_outside_fraction=sum(
+                r["contract"]["frames"] * r["contract"]["opening_outside_fraction"] for r in rows
+            )
+            / frames,
+            opening_min=min(r["raw_opening"]["minimum"] for r in rows),
+            opening_max=max(r["raw_opening"]["maximum"] for r in rows),
+            opening_clip_distance_mean=sum(r["raw_opening"]["clip_distance_sum"] for r in rows) / frames,
+            opening_clip_distance_max=max(r["raw_opening"]["clip_distance_max"] for r in rows),
+            rot6d_column_norm_error_mean=sum(
+                r["contract"]["frames"] * r["contract"]["rot6d_column_norm_error_mean"] for r in rows
+            )
+            / frames,
+        )
     result["endpoints_by_time"] = []
     for i in (0, 3, 7, 15, 23, 31, 39):
         valid = [r for r in curves if r["endpoints"] > i]
@@ -126,6 +143,15 @@ def main():
             row = json.loads(path.read_text())
             if row["checkpoint"] != name or row["name"] != path.parent.name:
                 raise ValueError("state result identity differs from its matrix")
+            response = json.loads(path.with_name("response.json").read_text())["outputs"][0]["content"]
+            raw_opening = np.asarray(response["action"])[:, 9]
+            clip_distance = abs(raw_opening - np.clip(raw_opening, 0, 1))
+            row["raw_opening"] = dict(
+                minimum=float(raw_opening.min()),
+                maximum=float(raw_opening.max()),
+                clip_distance_sum=float(clip_distance.sum()),
+                clip_distance_max=float(clip_distance.max()),
+            )
             key = (name, row["split"], row["prompt_mode"], row["horizon"])
             groups[key].append(row)
             fine_groups[key + (row["task"], row["phase"])].append(row)
@@ -242,6 +268,7 @@ def main():
             "Missing and infrastructure-failed cases are never counted as task failures.",
             "Native-command error fields in early artifacts describe step motion, not reference tracking.",
             "Constant velocity extrapolates observed pose motion; both causal baselines hold the current gripper opening.",
+            "Opening state MAE uses the physical [0,1] projection; raw range violations and their magnitude are reported separately over all generated endpoints.",
         ],
     )
     out = root / ("summary_partial.json" if args.partial else "summary.json")
