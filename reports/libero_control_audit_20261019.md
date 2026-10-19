@@ -32,6 +32,31 @@
 | affine_latch | 9/10 | 28.060 | 0.036882 |
 | response_latch | 9/10 | 4.212 | 0.007278 |
 
+## 输入延迟与噪声压力测试
+
+| 条件 | 成功 | 平均位置RMSE mm | 平均旋转RMSE rad |
+| --- | ---: | ---: | ---: |
+| affine_position_delay50ms | 1/10 | 26.645 | 0.044271 |
+| affine_position_delay100ms | 1/10 | 30.565 | 0.055004 |
+| affine_position_noisy | 2/10 | 24.694 | 0.037048 |
+| affine_position_delay50ms_noisy | 1/10 | 26.629 | 0.044278 |
+| affine_intent_delay50ms | 10/10 | 30.805 | 0.041663 |
+| affine_intent_delay100ms | 9/10 | 34.296 | 0.051471 |
+| affine_intent_noisy | 10/10 | 28.225 | 0.034007 |
+| affine_intent_delay50ms_noisy | 10/10 | 30.902 | 0.041425 |
+| response_latch_delay50ms | 3/10 | 46.810 | 0.052785 |
+| response_latch_delay100ms | 0/10 | 141.355 | 0.227819 |
+| response_latch_noisy | 8/10 | 4.278 | 0.007769 |
+| response_latch_delay50ms_noisy | 3/10 | 42.997 | 0.045566 |
+
+## 完整轨迹与终态保持
+
+| 条件 | 成功 | 平均位置RMSE mm | 平均旋转RMSE rad |
+| --- | ---: | ---: | ---: |
+
+| 条件 | 最终成功 | 末1秒成功比例均值 |
+| --- | ---: | ---: |
+
 ## 8800实时图像闭环
 
 | 条件 | 成功 | 平均位置RMSE mm | 平均旋转RMSE rad |
@@ -40,6 +65,7 @@
 oracle使用obs[t]作为actions[t]执行后的目标，保持原world frame；native正控与native-gripper诊断使用专家命令，其余候选不读取专家命令。
 
 RMSE为各episode完整执行区间的均值，提前成功会改变长度；JSON另列相同参考、相同步数前缀的arm对照。
+oracle误差点为OSC source pose：grip site位置、right-hand body方向，均在world frame；实时模型表沿用canonical TCP位置误差，两者不混合汇总。
 
 五个已见episode属于诊断回归；额外十条在数值评测前冻结，属于同任务adapter episode对照，不能声称世界模型未见任务泛化。
 
@@ -47,4 +73,7 @@ RMSE为各episode完整执行区间的均值，提前成功会改变长度；JSO
 
 原生初始化缓存、夹爪控制语义与模型输出质量的证据分别见实施记录和结论。完整trace与指纹位于outputs/。
 
-**实施中：实时模型矩阵尚未完成，不计为全部通过。**
+[对照图](../outputs/libero_audit_20261019/figures/oracle_control_comparison.png)
+[夹爪与物体轨迹](../outputs/libero_audit_20261019/figures/gripper_contact_diagnostic.png)
+
+**实施中：模型或终态矩阵尚未完成，不计为全部通过。**

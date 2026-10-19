@@ -76,8 +76,18 @@ def run_audit_case(config, output, case, trial):
         evidence="Independent MuJoCo; oracle state references; native commands only in explicit ceiling diagnostics",
         runtime={p: importlib.metadata.version(p) for p in ("mujoco", "robosuite", "numpy", "scipy")},
     )
+    if config.get("reference_source") == "published_r2":
+        bridge_path = config["published_bridge"]
+        bridge = json.loads(Path(bridge_path).read_text())["trajectories"][record["demo"]]
+        poses, openings = np.asarray(bridge["source_poses"]), np.asarray(bridge["openings"])
+        if len(poses) != len(native) or openings.shape != (len(native),):
+            raise ValueError("published reference length differs from the matched native episode")
+        manifest["input_sha256"][bridge_path] = sha256(bridge_path)
+        manifest["reference"] = "Published R2 state reference, original world coordinates; independent of HDF5 obs"
     write_json(dest / "manifest.json", manifest)
-    env, obs = make_environment(sim_config, output, record, trial)
+    # Imports may create/read LIBERO config concurrently; each case owns its
+    # environment directory, avoiding shared-file races at first startup.
+    env, obs = make_environment(sim_config, dest, record, trial)
     rows, error, success = [], None, False
     ever_success, first_success_step = False, None
     started = time.monotonic()

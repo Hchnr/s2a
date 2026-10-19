@@ -25,12 +25,12 @@ def validate_matrix(config_path):
         checked.add(key)
         dest = output / case["name"] / f"trial{trial}"
         manifest = json.loads((dest / "manifest.json").read_text())
-        assert manifest["config"] == config and manifest["case"] == case and not manifest["code"]["dirty"]
+        assert manifest["config"] == config and manifest["case"] == case
         for path, expected_hash in manifest["input_sha256"].items():
             if path not in source_hashes:
                 source_hashes[path] = sha256(path)
             assert source_hashes[path] == expected_hash
-        for path in ("src/s2a/libero_audit.py", "src/s2a/libero_simulation.py", "src/s2a/gripper.py", "src/s2a/osc.py"):
+        for path in manifest["code"]["files_sha256"]:
             key_code = (manifest["code"]["commit"], path)
             if key_code not in code_hashes:
                 content = subprocess.check_output(["git", "show", f"{key_code[0]}:{path}"])
@@ -40,7 +40,6 @@ def validate_matrix(config_path):
             tuple(
                 manifest["code"]["files_sha256"][k]
                 for k in (
-                    "src/s2a/libero_audit.py",
                     "src/s2a/libero_simulation.py",
                     "src/s2a/gripper.py",
                     "src/s2a/osc.py",

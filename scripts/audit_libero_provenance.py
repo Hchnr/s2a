@@ -61,16 +61,19 @@ def main():
         str(meta2): sha256(meta2),
         str(out / "native_bridge.json"): sha256(out / "native_bridge.json"),
     }
-    groups = {}
+    groups, source_observations = {}, {}
     for chunk, index in sorted({(r["data/chunk_index"], r["data/file_index"]) for r in episodes}):
         path = r1 / f"data/chunk-{chunk:03d}/file-{index:03d}.parquet"
         ids = [r["episode_index"] for r in episodes if r["data/chunk_index"] == chunk and r["data/file_index"] == index]
         data = pq.read_table(
-            path, columns=["episode_index", "action.native_control"], filters=[("episode_index", "in", ids)]
+            path,
+            columns=["episode_index", "action.native_control", "observation.state"],
+            filters=[("episode_index", "in", ids)],
         ).to_pylist()
         inputs[str(path)] = sha256(path)
         for row in data:
             groups.setdefault(row["episode_index"], []).append(row["action.native_control"])
+            source_observations.setdefault(row["episode_index"], []).append(row["observation.state"])
     current = pq.read_table(
         meta2, columns=["episode_index", "source_episode_id", "training_eligible", "data_role", "data_path"]
     ).to_pylist()
@@ -78,7 +81,7 @@ def main():
     tool_path = Path(c["tool_contract"])
     h = np.asarray(json.loads(tool_path.read_text())["source_from_tcp"])
     inputs[str(tool_path)] = sha256(tool_path)
-    numeric = {}
+    numeric, trajectories = {}, {}
     for name, actions in bridge["actions"].items():
         a = np.asarray(actions)
         rot = Rotation.from_rotvec(a[:, 3:6]).as_matrix()
@@ -136,13 +139,22 @@ def main():
             state_error = pose_error(
                 expected[state_valid], transform(values[state_valid, :3], rot6d_to_matrix(values[state_valid, 3:9]))
             )
+            published_tcp = transform(values[:, :3], rot6d_to_matrix(values[:, 3:9]))
+            r1_values = np.asarray(source_observations[matches[0][0]])
+            r1_tcp = transform(r1_values[:, :3], Rotation.from_rotvec(r1_values[:, 3:6]).as_matrix()) @ h
+            r1_state_error = pose_error(r1_tcp[state_valid], published_tcp[state_valid])
             delta = inverse(expected[:-1]) @ expected[1:]
             action = np.array([r["action"] for r in published[:-1]])
             mask = np.array([r["action_dim_mask"] for r in published[:-1]])
             valid = mask[:, :9].all(axis=1)
             action_error = pose_error(delta[valid], transform(action[valid, :3], rot6d_to_matrix(action[valid, 3:9])))
+            r1_delta = inverse(r1_tcp[:-1]) @ r1_tcp[1:]
+            r1_action_error = pose_error(
+                r1_delta[valid], transform(action[valid, :3], rot6d_to_matrix(action[valid, 3:9]))
+            )
             grip = np.array(labels["gripper_states"])[1:]
             expected_opening = np.clip((grip[:, 0] - grip[:, 1] - 0.001) / 0.079, 0, 1)
+            r1_opening = np.clip((r1_values[1:, 6] - r1_values[1:, 7] - 0.001) / 0.079, 0, 1)
             geometry.append(
                 dict(
                     r2_episode=metadata["episode_index"],
@@ -153,7 +165,17 @@ def main():
                     action_translation_max_m=float(np.max(np.linalg.norm(action_error[:, :3], axis=1))),
                     action_rotation_max_rad=float(np.max(np.linalg.norm(action_error[:, 3:], axis=1))),
                     gripper_endpoint_max_abs=float(np.max(abs(action[mask[:, 9], 9] - expected_opening[mask[:, 9]]))),
+                    r1_to_r2_state_max_m=float(np.max(np.linalg.norm(r1_state_error[:, :3], axis=1))),
+                    r1_to_r2_state_max_rad=float(np.max(np.linalg.norm(r1_state_error[:, 3:], axis=1))),
+                    r1_to_r2_action_max_m=float(np.max(np.linalg.norm(r1_action_error[:, :3], axis=1))),
+                    r1_to_r2_action_max_rad=float(np.max(np.linalg.norm(r1_action_error[:, 3:], axis=1))),
+                    r1_to_r2_gripper_max_abs=float(np.max(abs(action[mask[:, 9], 9] - r1_opening[mask[:, 9]]))),
                 )
+            )
+            if not state_valid.all():
+                raise ValueError("published oracle bridge requires a complete valid state trajectory")
+            trajectories[name] = dict(
+                source_poses=published_tcp @ inverse(h), openings=values[:, 9], r2_episode=metadata["episode_index"]
             )
         rows.append(
             dict(
@@ -183,6 +205,14 @@ def main():
         ],
     )
     write_json(out / "source_identity.json", result)
+    write_json(
+        out / "published_bridge.json",
+        dict(
+            trajectories=trajectories,
+            inputs_sha256=inputs,
+            evidence="Published state trajectory, not identical to the matched HDF5 observations",
+        ),
+    )
     print(json.dumps(dict(matched=result["matched"], total=len(rows))))
 
 
