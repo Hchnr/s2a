@@ -43,6 +43,7 @@
   ],
   "offline_episodes_per_task": 4,
   "offline_diagnostic_episodes_per_task": 2,
+  "offline_prompt_modes": ["task_only", "published_caption"],
   "offline_horizons": [
     16,
     40
