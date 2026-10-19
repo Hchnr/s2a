@@ -22,7 +22,9 @@ def main():
         raise ValueError("seed differs")
     source = root / "summary.json"
     summary = json.loads(source.read_text())
-    if not summary["complete"]:
+    native_source = root / "native_horizon40/summary.json"
+    native = json.loads(native_source.read_text())
+    if not summary["complete"] or not native["complete"]:
         raise ValueError("figures require complete matched matrices")
     out = root / "figures"
     out.mkdir(exist_ok=False)
@@ -80,15 +82,17 @@ def main():
     figure, axes = plt.subplots(1, 3, figsize=(12, 4), constrained_layout=True)
     for task_index, ax in enumerate(axes):
         success, terminal, counts = [], [], []
-        for name in ["oracle", *names]:
-            rows = [r for r in summary["physics"][name]["cases"] if r["record"].startswith(f"task{task_index}_")]
+        comparisons = [summary["physics"][name]["cases"] for name in ["oracle", *names]]
+        comparisons.append(native["physics"]["8800_masked"]["cases"])
+        for cases in comparisons:
+            rows = [r for r in cases if r["record"].startswith(f"task{task_index}_")]
             counts.append(len(rows))
             success.append(sum(r["success"] for r in rows))
             terminal.append(sum(r["terminal_success"] for r in rows))
         x = np.arange(len(success))
         ax.bar(x - 0.17, success, width=0.34, label="Ever successful", color="#4c72b0")
         ax.bar(x + 0.17, terminal, width=0.34, label="Terminal success", color="#55a868")
-        ax.set_xticks(x, ["Oracle", "6200", "8400", "8600", "8800"], rotation=30)
+        ax.set_xticks(x, ["Oracle", "6200 H16", "8400 H16", "8600 H16", "8800 H16", "8800 H40"], rotation=35)
         ax.set(ylim=(0, max(counts) + 0.8), ylabel="Successful / 4 trials", title=c["tasks"][task_index])
         ax.set_yticks(range(max(counts) + 1))
         for i, (a, b) in enumerate(zip(success, terminal, strict=True)):
@@ -105,6 +109,7 @@ def main():
         out / "manifest.json",
         dict(
             summary_sha256=sha256(source),
+            native_horizon_summary_sha256=sha256(native_source),
             artifacts={p.name: sha256(p) for p in out.iterdir() if p.suffix in (".png", ".pdf")},
         ),
     )

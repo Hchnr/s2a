@@ -192,3 +192,23 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/analyze_wam_acceptance.py --seed 42
 模型服务`serve_wam_acceptance.py`和数值审计`audit_wam_numerics.py`使用外部Cosmos的Python解释器，仅只读加载模型实现；`PYTHONPATH`显式包含外部Cosmos根目录和本仓库`src`，并设置`LD_LIBRARY_PATH=''`、`PYTHONDONTWRITEBYTECODE=1`、独立的`CUDA_VISIBLE_DEVICES`及`MASTER_PORT`。编译缓存通过`TORCHINDUCTOR_CACHE_DIR`放在本仓库`outputs`。服务参数为`--seed 42 --checkpoint 8800 --port 8594 --active-slot-mask --exact-published-caption`；数值审计参数为`--seed 42 --horizon 40 --published-caption`，`--training-backend`额外复算保存的attention和固定padding配置，需要独占GPU显存。`audit_wam_caption_contract.py`在同一外部解释器中只做CPU输入准备核验。
 
 在线只输入当前图像和简短任务指令，physics在推理期间暂停；成功以LIBERO原生谓词判定，分别报告曾成功、末端成功和抓取接触/高度/位移等连续进度。完整caption属于离线特权诊断。Study-heldout仅表示本次实验整episode隔离，当前没有证据可将其称为预训练未见数据。
+
+完整性检查与原生窗口补充：
+
+```bash
+# 完整权重哈希只执行一次；DCP存储核验使用具备相同torch版本的外部模型解释器
+LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_wam_acceptance.py --seed 42 --stage fingerprint
+# 主矩阵全量完成、生成summary.json之后核对每条已保存响应和执行目标
+LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_wam_acceptance.py --seed 42 --stage verify
+# 以下prepare仅用于全新补充输出目录，复用主实验的固定fixture和权重指纹
+LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_wam_native_horizon.py --seed 42 --prepare
+# 独占同权重masked HTTP服务后，40步生成、仍执行前8步，完整12个用例
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py \
+  --config configs/wam_checkpoint_native_h40_20261019v2.json --seed 42 --stage wam --checkpoint 8800_masked
+LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_wam_native_horizon.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_wam_acceptance.py \
+  --config configs/wam_checkpoint_native_h40_20261019v2.json --seed 42 --stage verify
+LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_wam_acceptance.py --seed 42
+```
+
+H16是四checkpoint的同协议主对照，H40是最新8800的训练原生窗口诊断；二者分开报告。`--job-indices`只分割不重叠的用例集合，`--server-port`可接入已验证逐项复现相同输出的服务副本，不改变采样和控制参数。`scripts/schedule_wam_replica.py`是本轮已记录进程与分组的专用资源调度入口，不作为新机器上的通用启动器。

@@ -156,6 +156,8 @@ def verify_case(path, c, fixtures, variants):
 
 
 def verify_state(c, root, summary):
+    if not summary["checkpoint_matrices"]:
+        return []
     samples = {r["name"]: r for r in json.loads((root / "samples/manifest.json").read_text())["cases"]}
     states = {}
     for sample in samples.values():
