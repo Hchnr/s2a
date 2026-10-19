@@ -16,6 +16,7 @@
   "async_max_age_s": 0.4,
   "async_steps": 1000,
   "live_camera_capture": "on_request",
+  "feedback_observation": "force_current_endpoint",
   "synthetic_min_steps": 300,
   "synthetic_delays_s": [0.0, 0.1, 11.2],
   "synthetic_request_interval_steps": 4,

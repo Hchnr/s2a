@@ -15,9 +15,17 @@ import numpy as np
 from s2a.artifacts import code_fingerprint, sha256, write_json
 from s2a.async_reference import AsyncReferenceBuffer, TimedReference
 from s2a.cameras import render_current_cameras
-from s2a.geometry import inverse, pose_error
+from s2a.geometry import inverse, pose_error, transform
 from s2a.gripper import OpeningIntent, opening_position_target
-from s2a.libero_simulation import aperture, controller_contract, generate, make_environment, measured_twist, source_pose
+from s2a.libero_simulation import (
+    aperture,
+    controller_contract,
+    current_observation,
+    generate,
+    make_environment,
+    measured_twist,
+    source_pose,
+)
 from s2a.osc import OSCInterface, OSCStateToAction
 
 
@@ -71,6 +79,7 @@ def run_async_case(config, output, *, stage, arm, trial, delay=0.0):
     started = time.monotonic()
     sequence, initial_sim_time = 0, float(env.sim.data.time)
     try:
+        obs = current_observation(env)
         _, contract = controller_contract(env)
         if not np.isclose(env.env.control_timestep, dt):
             raise ValueError("control interval differs from reference period")
@@ -87,9 +96,16 @@ def run_async_case(config, output, *, stage, arm, trial, delay=0.0):
         gripper.current_action = opening_position_target(aperture(obs))
         intent = OpeningIntent(aperture(obs), band=policy["opening_hysteresis"])
         buffer = AsyncReferenceBuffer(source_pose(obs) @ h, aperture(obs), max_age=config["async_max_age_s"])
-        write_json(dest / "controller.json", dict(**contract, initial_gripper=gripper.current_action.copy()))
+        camera_warmup_s = 0.0
         if stage == "live":
+            warmup_started = time.monotonic()
+            render_current_cameras(env, policy["render_resolution"])
+            camera_warmup_s = time.monotonic() - warmup_started
             executor = ThreadPoolExecutor(max_workers=1)
+        write_json(
+            dest / "controller.json",
+            dict(**contract, initial_gripper=gripper.current_action.copy(), camera_warmup_s=camera_warmup_s),
+        )
         started = time.monotonic()
         next_tick_wall = started
         initial_sim_time = float(env.sim.data.time)
@@ -149,6 +165,8 @@ def run_async_case(config, output, *, stage, arm, trial, delay=0.0):
                 before_time = float(env.sim.data.time)
                 grip_before = gripper.current_action.copy()
                 obs, _, _, _ = env.step(command)
+                cached = source_pose(obs)
+                obs = current_observation(env)
                 after = source_pose(obs)
                 row = dict(
                     step=step,
@@ -159,6 +177,11 @@ def run_async_case(config, output, *, stage, arm, trial, delay=0.0):
                     measured_source=current,
                     desired_source=desired,
                     after_source=after,
+                    returned_cached_source=cached,
+                    physical_after_source=transform(
+                        env.sim.data.get_site_xpos(env.robots[0].controller.eef_name),
+                        env.sim.data.get_body_xmat(env.robots[0].robot_model.eef_name).reshape(3, 3),
+                    ),
                     error=pose_error(desired, after),
                     opening_target=target["opening"],
                     opening_after=aperture(obs),

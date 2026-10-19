@@ -59,6 +59,16 @@ def source_pose(obs):
     return transform(obs["robot0_eef_pos"], Rotation.from_quat(obs["robot0_eef_quat"]).as_matrix())
 
 
+def current_observation(env):
+    """Read endpoint sensors; step() may return a within-period cached sample.
+
+    Forward only refreshes derived MuJoCo quantities; it does not advance or
+    restore the physical state. With camera observables disabled this is cheap.
+    """
+    env.sim.forward()
+    return env.env._get_observations(force_update=True)
+
+
 def make_environment(config, output, record, trial):
     benchmark, get_path, env_class = configure_simulator(config, output)
     task = benchmark.get_benchmark_dict()[config["task_suite"]]().get_task(config["task_id"])

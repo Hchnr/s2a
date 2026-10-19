@@ -8,7 +8,8 @@ import numpy as np
 
 from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
 from s2a.cameras import render_current_cameras
-from s2a.libero_simulation import make_environment
+from s2a.geometry import pose_error
+from s2a.libero_simulation import current_observation, make_environment, source_pose
 
 
 def main():
@@ -30,10 +31,21 @@ def main():
         )
         try:
             for step in range(3):
+                cached = obs
+                fresh = current_observation(env)
                 captured = render_current_cameras(env, policy["render_resolution"])
                 for key, pixels in captured.items():
-                    difference = int(np.max(abs(pixels.astype(int) - obs[key].astype(int))))
-                    rows.append(dict(trial=trial, step=step, camera=key, max_abs=difference))
+                    difference = int(np.max(abs(pixels.astype(int) - fresh[key].astype(int))))
+                    rows.append(
+                        dict(
+                            trial=trial,
+                            step=step,
+                            camera=key,
+                            max_abs=difference,
+                            cached_max_abs=int(np.max(abs(pixels.astype(int) - cached[key].astype(int)))),
+                            cached_pose_error=pose_error(source_pose(fresh), source_pose(cached)),
+                        )
+                    )
                     if difference:
                         raise ValueError("on-demand RGB differs from the robosuite observable")
                 obs, _, _, _ = env.step(np.zeros(7))
