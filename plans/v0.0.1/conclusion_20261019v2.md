@@ -21,7 +21,7 @@
 
 - 原生训练H40/2秒窗口、完整published caption、action/vision有效mask以及标签clip已复算。SDPA对齐路径的token、条件latent、标签、有效velocity逐项一致；实际训练flash3_video和固定padding的velocity最大绝对差0.0234375、最大RMS差0.00551005。无效维度噪声造成的有效velocity RMS扰动为0.27–0.43，量级明显更大。
 - Caption勘误：192/192个实际准备输入与发布caption字节一致、像素一致；原服务没有此前怀疑的JSON嵌套缺陷，explicit-caption开关在这些样本上没有改变输入。确认的问题是无效action维度mask。
-- 固定S2A是解析的控制器响应补偿，不是用任务标签学习的规划器。3任务×2初态×2seed，正确state经同一Action128接口12/12成功，位置RMSE1.197–1.891mm、朝向0.002517–0.006743rad。独立三轴运动中5/20/50mm和0.05/0.2rad通过点态门槛，0.5rad虽通过RMS门槛但峰值24.687mm/0.07727rad超限。
+- 固定S2A是解析的控制器响应补偿，不是用任务标签学习的规划器。3任务×2初态×2seed，正确state经同一Action128接口12/12成功，canonical TCP位置RMSE1.207–1.897mm、朝向0.002517–0.006743rad。独立三轴运动中5/20/50mm和0.05/0.2rad通过点态门槛，0.5rad虽通过RMS门槛但TCP峰值24.739mm/0.07727rad超限。
 - 四份权重都保留普通非EMA文件指纹；warm6200是官方warm-start规则下仅迁移当前归一化合同的初始化权重，所有学习参数保持不变，不是旧domain/TCP原生6200成绩。
 - 当前全部测试发生在独立LIBERO/MuJoCo的Franka Panda仿真，没有进行真机实验。无延迟评测表示推理期间暂停物理时钟，不表示真实系统达到实时性能。
 

@@ -213,6 +213,9 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_wam_native_horizon.py --se
 LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_wam_acceptance.py \
   --config configs/wam_checkpoint_native_h40_20261019v2.json --seed 42 --stage verify
 LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_wam_acceptance.py --seed 42
+LD_LIBRARY_PATH='' .venv/bin/python scripts/report_wam_checkpoint_acceptance.py --seed 42
 ```
 
 H16是四checkpoint的同协议主对照，H40是最新8800的训练原生窗口诊断；二者分开报告。`--job-indices`只分割不重叠的用例集合，`--server-port`可接入已验证逐项复现相同输出的服务副本，不改变采样和控制参数。`scripts/schedule_wam_replica.py`是本轮已记录进程与分组的专用资源调度入口，不作为新机器上的通用启动器。
+
+最终报告入口要求主矩阵和H40补充的完整汇总及独立完整性检查均完成，重新核对已保存文件指纹和90条/51480物理步预算，拒绝覆盖报告。任务谓词、参考跟踪及目标物体接触/高度/位移分别呈现，不能将位移或接触自动计作成功。
