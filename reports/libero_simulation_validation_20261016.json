@@ -1,0 +1,16 @@
+{
+  "complete": true,
+  "executed_cases": 37,
+  "expected_cases": 37,
+  "checked_output_files": 4017,
+  "checked_source_files": 8,
+  "finite_traces": true,
+  "physical_clock": true,
+  "sent_bounds": true,
+  "compensated_sent_rate": true,
+  "paired_fixed_references": true,
+  "performance_accepted": null,
+  "task_success_improvement_observed": false,
+  "promote_compensation": false,
+  "note": "Integrity checks are separate from task success and tracking improvement."
+}

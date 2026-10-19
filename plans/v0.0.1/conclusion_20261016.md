@@ -94,3 +94,50 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_artifacts.py --seed 42
 ```
 
 完整产物位于 `outputs/droid_episode0/`；Git 内保留 [报告](../../reports/droid_episode0_20261016.md)、[精简指标](../../reports/droid_episode0_20261016.json)、[验证摘要](../../reports/validation_20261016.json)。本轮未执行项是已确认的证据边界，不是测试通过项。
+
+## 补充：同型号跨数据集验证
+
+用户追问后已执行扩展，详细结果见 [跨数据集报告](../../reports/cross_dataset_franka.md) 与 [验证摘要](../../reports/cross_dataset_franka_validation.json)。真机执行仍为0；DROID所用机器人型号是Franka Emika Panda + Robotiq 2F85。当前基础转换是零训练解析式：
+
+```text
+T_BC_desired_next = T_BC_now @ Delta_T_C
+T_BF_desired_next = T_BC_desired_next @ inverse(H_FC)
+```
+
+完整chunk从锚点连续积分，反馈不反复重设目标；DROID参考接口用position差、复合旋转的EulerXYZ差及固定缩放编码，并独立映射夹爪。线性逆/PID属于另外的候选补偿，原有性能未达完整验收的结论不变。
+
+扩展实验commit `f3f7214`（启动clean，seed42）：名单在2bc696a冻结，未因结果替换。RoboMIND-v1的Panda日志30条共4251转移，M1/A1仿真日志20/10条共15070转移；全部60条通过几何检查。官方M1数据卡已确认其为仿真，纠正了盘点时的临时分类，未计入真实机器人结果。
+
+| 真实机器人日志 cohort | episode / 转移 | 单步最大 m / rad | 累计最大 m / rad | 候选下一状态 vs master-target名义FK 的RMSE m / rad |
+| --- | --- | --- | --- | --- |
+| RoboMIND-v1 Robotiq工具 | 20 / 2428 | 6.01e-8 / 5.70e-8 | 1.19e-7 / 4.46e-8 | .030775 / .060538 |
+| RoboMIND-v1 Panda工具 | 10 / 1823 | 7.19e-8 / 5.43e-8 | 1.21e-7 / 3.24e-7 | .021538 / .045045 |
+
+同机械臂型号的解析表示转换可跨数据集成立；几何1e-8量级只反映float32日志表示一致性，不是历史TCP标定精度，也不是机器人控制精度。RoboMIND的puppet关节经名义Panda FK与原始EEF观测RMSE约2.1–2.2e-8m，支持当前运动学约定；master joint target的FK仍只是目标代理，历史teleoperation/controller映射未确认。
+
+M1保存的Cartesian action字段与下一观测候选之差为 .002872m/.004434rad；A1该差异接近数值舍入，不据此认定控制器逆已解决。RoboMIND的夹爪是derived-next-observation，M1夹爪为masked，A1是native absolute target，分别保留。没有把DROID的.075/.15缩放、物理dt、前向模型或PID增益转移过去。
+
+新增验证后：28项独立软件测试通过，1项DROID外部集成通过；新wheel构建/安装后的cross-dataset与FK smoke通过；62个本次产物hash、29个实验源码hash核对通过，154个输入文件hash随运行保存。60条逐episode数值结果重跑一致；原DROID的70个模型内rollout与指纹仍通过。没有执行新的硬件或独立仿真控制，闭环泛化仍待验证。
+
+## 后续 LIBERO 独立仿真（37/37已完成）
+
+已从日志/局部模型推进到MuJoCo2.3.7、robosuite1.4.1的实际前向控制。机器人为MountedPanda + PandaGripper，控制点gripper0_grip_site；所有姿态/速度/OSC物理增量在MuJoCo world frame。未执行真机。完整结果、源码/数据/权重指纹与核验见 `reports/libero_simulation_20261016.md` 及对应JSON。
+
+历史评测使用warm-start run的iter_000005600，该权重已清理；本次冻结同run现存完成版本iter_000008800，重新运行baseline与补偿两组。每组5个相同初始场景、每场景1000步，seed42+trial，20Hz，chunk16/execute8，35采样步，guidance1.5、shift5，原物理模型、OSC增益与夹爪position路径保持相同。5对初始图像和首次16步预测逐位一致，核心算法/仿真入口/配置SHA一致；之后按各分支真实图像重新查询模型。
+
+| 8800实时模型闭环 | baseline | 补偿 |
+| --- | ---: | ---: |
+| 任务成功 | 0/5 | 0/5 |
+| 平均位置RMSE | 41.538mm | 45.878mm |
+| 平均旋转RMSE | 1.890796rad | 1.897341rad |
+| opening RMSE | 0.114244 | 0.131736 |
+
+位置误差恶化约10.4%，任务成功没有改善，保守决策是不将当前补偿提升为默认方案。新增补偿是固定OSC内环的二阶PD响应解析近似：用实际kp/kd、计划0.05s周期和当前末端速度反解goal delta，半权重混合，最终每轴5/s变化率限制；旋转误差>0.25rad时回退解析baseline。它不是完整非线性/接触动力学的精确逆，也没有迁移DROID模型或增益。参数只用单独probe确定，未用本轮模型任务结果重新整定。
+
+分层证据：原生expert正控4/5；oracle状态参考两组均1/5，位置误差26.210→4.447mm、旋转0.031406→0.007593rad；旧5600模型固定参考回放两组均0/5，位置39.077→126.066mm。局部轨迹跟踪改善不能推出操作成功。native episode132全90个动作仍未成功，末行无未来观测标签已排除评分，修正前后原生命令和物理跟踪轨迹逐位一致。
+
+初始预测诊断：前8步旋转均值预测0.525699rad、专家0.005651rad；首16步旋转误差0.551130rad，56.25%的原始opening越界（沿用原裁剪规则）。目标质量存在明显问题；原生正控未全通过、夹爪响应和接触也限制归因，不能仅据此把失败归咎于checkpoint。probe用于参数选择，5个任务episode属于训练可见的单任务回归，不声称留出泛化。
+
+工程核验：33单元测试、1项外部数据集成、旧DROID70条rollout核验、新版wheel构建/隔离导入及17源码SHA匹配通过；37项仿真执行无异常，物理时钟、位姿重算、固定参考一致性、最终命令幅值/变化率检查通过。32.399GB checkpoint逐文件SHA已保存。5个本轮推理服务均已停止，GPU已释放。完整性通过不等于任务效果通过。
+
+本轮采用历史同步仿真，推理期间暂停物理时钟，未包含真实推理延迟或速度估计噪声。下一步优先隔离复现expert observed-state的抓取/夹爪与接触段，审计模型旋转预测/反归一化与目标可执行性，再验证新的补偿方案；不凭这一结果直接增加PID增益或宣称可上真机。

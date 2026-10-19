@@ -10,7 +10,7 @@ S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接
 
 主要评价 `F_C(s_now, G_C(...))` 的状态跟踪误差；历史 action 误差仅作诊断。必须区分 measured state、desired state、observed delta 和 controller command。
 
-已实现 DROID 单 episode 的只读抽取、几何转换、参考接口编码、局部响应辨识、在线有状态 PID adapter 和模型内扰动对照。当前实验使用真实未来状态形成 oracle 参考，未接入世界模型预测。完整设计见 [实施计划](plans/v0.0.1/001_state_to_action.md)，过程见 [实施记录](plans/v0.0.1/record_20261016.md)，本轮完成状态及限制见 [结论](plans/v0.0.1/conclusion_20261016.md)。
+已实现 DROID 单 episode 的只读抽取、几何转换、参考接口编码、局部响应辨识、在线有状态 PID adapter 和模型内扰动对照。初轮使用真实未来状态形成 oracle 参考。后续新增 LIBERO 独立 MuJoCo 仿真和固定 Cosmos checkpoint 的成对评测，执行状态见 [仿真报告](reports/libero_simulation_20261016.md)。完整设计见 [实施计划](plans/v0.0.1/001_state_to_action.md)，过程见 [实施记录](plans/v0.0.1/record_20261016.md)，完成状态及限制见 [结论](plans/v0.0.1/conclusion_20261016.md)。
 
 ```text
 src/s2a/geometry.py        column-rot6d、SE(3)、TCP/flange、SO(3) 误差
@@ -78,4 +78,29 @@ command = result["command"]  # 6D arm + 绝对 gripper，gripper_action_space="p
 
 canonical TCP 的局部 delta 在 SE(3) 上右乘积分，再完整转换到 flange；DROID `cartesian_velocity` 是归一化接口量，不能当作 m/s、rad/s。夹爪 slot 9 是绝对 opening 命令，与 arm PID 分离。历史控制器版本和 command/state 时刻仍未确认，编码器属于固定公开版本的 reference-interface。
 
-实验矩阵保留解析、线性、P/PI/PD/PID、增益调度、直接逆及残差模型。后三者需要验证同设备的多 episode 数据后进入 P4；独立仿真和真机属于 P4/P5，当前未执行。日志回放、局部模型自洽、独立仿真和真机证据分别记录。开发约定见 [AGENTS.md](AGENTS.md)。
+实验矩阵保留解析、线性、P/PI/PD/PID、增益调度、直接逆及残差模型。后三者需要验证同设备的多 episode 数据后进入 P4；初轮未执行独立仿真和真机。后续 LIBERO 仿真不等于 DROID 真机验证。日志回放、局部模型自洽、独立仿真和真机证据分别记录。开发约定见 [AGENTS.md](AGENTS.md)。
+
+同型号跨数据集的解析验证入口：
+
+```bash
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_cross_dataset.py --seed 42
+```
+
+名单在 [cross_dataset_franka.json](configs/cross_dataset_franka.json) 冻结，分别评估 RoboMIND-v1 的30条真实Panda日志，以及 M1/A1 的20/10条仿真日志。各自使用原始TCP/方向约定与 source row provenance，不迁移DROID控制器参数。RoboMIND master joint 另经名义Panda FK作命令代理诊断；所有结果仍属于日志验证，未执行真机或独立仿真控制。设计见 [扩展计划](plans/v0.0.1/cross_dataset_franka_plan.md)，最终指标见 `reports/cross_dataset_franka.md`。
+
+LIBERO 的仿真入口使用独立 Python 3.11 环境，固定 MuJoCo2.3.7、robosuite1.4.1、NumPy1.26.4，环境版本见 [snapshot](configs/libero_sim_requirements_20261016.txt)。`src/s2a/osc.py` 针对固定 OSC 内环做二阶响应解析反解，使用当前末端速度并施加保守权重与最终命令变化率限制；不使用 DROID 接口常数。实验方案见 [仿真计划](plans/v0.0.1/libero_simulation_plan.md)。
+
+```bash
+# 原生expert正控、相同oracle轨迹与独立小幅运动（CPU物理仿真）
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage qualification
+# 旧checkpoint已保存预测的固定参考回放，不重新查询模型
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage prediction_replay
+# 先在空闲GPU上启动5个独立副本（gpu=0..4，端口8180..8184）
+LD_LIBRARY_PATH='' .venv/bin/python scripts/serve_libero_policy.py --seed 42 --gpu 0
+# 5个副本就绪后执行真实图像闭环，每trial两候选用同一副本
+LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage policy
+# 检查所有物理步、控制约束、成对输入与指纹，再生成报告/曲线
+LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_simulation.py --seed 42
+```
+
+单trial可直接用 `outputs/libero_env311/bin/python scripts/run_libero_simulation.py --seed 42 --stage oracle --candidate compensated --trial 0`，Python前仍加 `LD_LIBRARY_PATH=''`。新增仿真不读取Cosmos训练dataloader、不修改外部仓库；只有policy服务通过显式路径只读加载Cosmos推理实现和权重。policy仿真不读取专家未来状态。重跑矩阵可复用完全相同配置的已完成项；完整目录已存在但执行中断时需先归档该项，避免覆盖证据。

@@ -1,0 +1,27 @@
+{
+  "code_commit": "f3f7214577546b211a33f48eef6ef1d513d36a29",
+  "code_dirty": false,
+  "unit_tests_passed": 28,
+  "explicit_droid_integration_passed": 1,
+  "ruff_check": "passed",
+  "ruff_format_check": "passed",
+  "wheel_build": "passed",
+  "installed_cross_dataset_fk_smoke": "passed",
+  "frozen_episode_selection_unchanged": true,
+  "full_data_geometry": {
+    "selected": 60,
+    "executed": 60,
+    "passed": 60,
+    "real_robot_log_episodes": 30,
+    "simulation_log_episodes": 30
+  },
+  "artifact_hashes_verified": 62,
+  "experiment_source_hashes_verified": 29,
+  "input_file_hashes_recorded_during_run": 154,
+  "input_sizes_rechecked": true,
+  "per_episode_results_identical_to_previous_run": 60,
+  "all_saved_npz_arrays_finite": true,
+  "prior_droid_70_rollouts_and_hashes": "still_valid",
+  "hardware_execution": false,
+  "closed_loop_control_generalization": "unverified"
+}

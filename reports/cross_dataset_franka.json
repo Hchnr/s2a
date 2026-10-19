@@ -1,0 +1,185 @@
+{
+  "code": {
+    "commit": "f3f7214577546b211a33f48eef6ef1d513d36a29",
+    "dirty": false,
+    "files_sha256": {
+      "configs/cross_dataset_franka.json": "c80e4e7f36dfc494cc7df8dbc34c4df0b11fc9dc9cf260a9d99716af83697d4a",
+      "configs/droid_episode0.json": "7c7c90697c120f26acd353269ebec078a075bf2f35f41345310710231566a9c4",
+      "scripts/run_cross_dataset.py": "aa4c0dff5a74d5e8e846efe2be14d5e909c7b34a7c4cf4926711f26cc0a70035",
+      "scripts/run_experiment.py": "7bb8b28604fb5e78cb4ee7b0df648eb352e7b25a5c8f6808c3206257874809c1",
+      "scripts/verify_artifacts.py": "63af7f9a3c6db3b5873fcc0b2b740b680691be4640aa8e37b28bf5e31b0538ef",
+      "src/s2a/__init__.py": "ca50dfd1d7e797f05795eff5eb815dd5e1193295018cbfe93704a58819bc49ba",
+      "src/s2a/analytic.py": "629d68bc380c58c1bed134108f5a8eb66bae1aef8069520e329cb50d2ce37ad2",
+      "src/s2a/artifacts.py": "4723e2b1602ee020184eff838ab4934c6868e53a7af5dded68cf547df7fa791a",
+      "src/s2a/control.py": "20597530d57ddc1e42c4e04e1e3a4d31ce7f0a631611e698ff7b3144df7f02a4",
+      "src/s2a/cross_dataset.py": "db626f8a2de46ca2d2e8f3a8dab66965685bfd31320cca4c6b2ba9e1301455b5",
+      "src/s2a/data.py": "8e3429ce63456f816ca0f33cc461e2a3b0e82745a84f84d08ecbf204bff79380",
+      "src/s2a/geometry.py": "5b2817607553860bbed1cd199457d0fd863b6a090eab928409150ad1b1d4ef8a",
+      "src/s2a/identification.py": "2e151ee88de8872d93b6f7d6e548989fb3f82359971884354433d7213a745e1e",
+      "src/s2a/interface.py": "fd70fb6a0b9c32ae58f7c87f0916fe0c8098988a2f2424685135dabc011e83ee",
+      "src/s2a/kinematics.py": "5404d620cf03f195bd8a6861e4e690f81f3606e8fc0d52f2bead84404220d25c",
+      "src/s2a/reporting.py": "e9161aa976fae48ba08920f6efbc00c130ccbc9c34c41af2fbb080bbd230680f",
+      "src/s2a/rollout.py": "96b67143d2418ff07d5e00a27f4b64ecb99564b4781448ecc605a2eb96e5b2f4",
+      "src/s2a/runtime.py": "60d9c5fa1ff5d5efe9b380fd445b23f477074d886e8f012f452d95032da3cf94",
+      "src/s2a/study.py": "e238e6fbe06cc02841094f1b51d1fbc8eabdac4748f91b801a744dc1018048b6",
+      "src/s2a/trajectory.py": "f19c76f3b51f9334b7a056e10777272d80cdd17b0600220c2b94d2bba074b8de",
+      "tests/conftest.py": "25536d4f1c8d6f1e573d771da4fa2ca3dce44d38ec9e3c411492546af39b4bec",
+      "tests/test_control_trajectory.py": "6b7a9c8e6b0bdd5a5e5f2adad456fa1918834a997ec7d5096b2430b3ce8bcca1",
+      "tests/test_cross_dataset.py": "8646266bbdc164149333e8aa921d1be6aeeb25bea870104cdc033b7eca1aa6cc",
+      "tests/test_data.py": "fa0603d3409255ac6fb3b087e6e1f4980547b176f575dae3ae311599b09eb1d6",
+      "tests/test_external_data.py": "c44285f4e8a32a7c4661ee1f837e6b061e5b1fbd6562fcd9d302322d5727ce6b",
+      "tests/test_geometry_interface.py": "815ee38544f6ad9f5e6f78072719d3879526f563dc2223c3aaadd46cc0594e81",
+      "tests/test_identification.py": "a180cfbb392014884d5b15e4cdd51e13742b3ee4b1ed58234fe90b693d71359b",
+      "tests/test_runtime_rollout.py": "e4f15a499710841cc798da46d16254cfab5244b5fe24aef9488ebd004e0059d9",
+      "pyproject.toml": "108d6dcaed18c2931672f1d0a31ed5858fe14012dca29eb9c314e4e3bd2791d6"
+    },
+    "python": "3.12.3",
+    "dependencies": {
+      "numpy": "2.1.0",
+      "scipy": "1.17.1",
+      "pyarrow": "23.0.1"
+    }
+  },
+  "seed": 42,
+  "evidence_level": "cross_dataset_log_geometry_and_saved_action_fields_only",
+  "hardware_execution": false,
+  "cross_dataset_controller_transfer": false,
+  "limitations": [
+    "Same Panda release label does not identify serial, exact gripper, controller or historical TCP calibration",
+    "Native observations and published states share provenance; this is a representation check, not independent dynamics",
+    "No verified physical dt/controller configuration: no transferred DROID gains, velocity scaling or response-model rollout",
+    "Simulation log is reported separately and is not independent execution of candidate commands"
+  ],
+  "cohorts": [
+    {
+      "id": "robomind_robotiq",
+      "dataset": "RoboMIND-v1",
+      "evidence_level": "real_robot_log",
+      "selected_episodes": 20,
+      "executed_episodes": 20,
+      "geometry_passed_episodes": 20,
+      "valid_transitions": 2428,
+      "single_step": {
+        "position_max_m": 6.013696286758669e-08,
+        "rotation_max_rad": 5.699558169846294e-08
+      },
+      "integrated": {
+        "position_max_m": 1.1910862659712587e-07,
+        "rotation_max_rad": 4.4575957947153517e-08
+      },
+      "native_observation": {
+        "position_max_m": 4.154140192172943e-08,
+        "rotation_max_rad": 4.428528993906247e-08
+      },
+      "candidate_vs_next_native_observation": {
+        "position_max_m": 4.124710663979917e-08,
+        "rotation_max_rad": 4.3189900086493684e-08
+      },
+      "saved_master_joint_fk_target": {
+        "position_rmse_m": 0.030775378583191428,
+        "rotation_rmse_rad": 0.0605377051009175
+      },
+      "nominal_fk_observation": {
+        "position_rmse_m": 2.2178537057705596e-08,
+        "rotation_rmse_rad": 9.934500718182342e-09
+      }
+    },
+    {
+      "id": "m1_robotiq",
+      "dataset": "InternData-M1",
+      "evidence_level": "simulation_log",
+      "selected_episodes": 20,
+      "executed_episodes": 20,
+      "geometry_passed_episodes": 20,
+      "valid_transitions": 7614,
+      "single_step": {
+        "position_max_m": 6.339482146475318e-08,
+        "rotation_max_rad": 7.048360506190536e-08
+      },
+      "integrated": {
+        "position_max_m": 3.061195828360769e-07,
+        "rotation_max_rad": 6.518459065893108e-08
+      },
+      "native_observation": {
+        "position_max_m": 3.367936439423449e-08,
+        "rotation_max_rad": 4.153103208657588e-08
+      },
+      "candidate_vs_next_native_observation": {
+        "position_max_m": 3.5033706067774336e-08,
+        "rotation_max_rad": 4.153164775718114e-08
+      },
+      "saved_action_pose_comparison": {
+        "position_rmse_m": 0.0028721278447825333,
+        "rotation_rmse_rad": 0.0044336727638984485
+      }
+    },
+    {
+      "id": "robomind_panda_tool",
+      "dataset": "RoboMIND-v1",
+      "evidence_level": "real_robot_log_different_gripper",
+      "selected_episodes": 10,
+      "executed_episodes": 10,
+      "geometry_passed_episodes": 10,
+      "valid_transitions": 1823,
+      "single_step": {
+        "position_max_m": 7.189440184205439e-08,
+        "rotation_max_rad": 5.434018631025758e-08
+      },
+      "integrated": {
+        "position_max_m": 1.205880528015639e-07,
+        "rotation_max_rad": 3.2418777939174213e-07
+      },
+      "native_observation": {
+        "position_max_m": 4.171712062098914e-08,
+        "rotation_max_rad": 2.9776615033017016e-08
+      },
+      "candidate_vs_next_native_observation": {
+        "position_max_m": 4.358711560516788e-08,
+        "rotation_max_rad": 4.561370840356675e-08
+      },
+      "saved_master_joint_fk_target": {
+        "position_rmse_m": 0.02153783410651257,
+        "rotation_rmse_rad": 0.04504468116537321
+      },
+      "nominal_fk_observation": {
+        "position_rmse_m": 2.106702982420552e-08,
+        "rotation_rmse_rad": 2.4049458942695084e-08
+      }
+    },
+    {
+      "id": "a1_robotiq_sim",
+      "dataset": "InternData-A1",
+      "evidence_level": "simulation_log",
+      "selected_episodes": 10,
+      "executed_episodes": 10,
+      "geometry_passed_episodes": 10,
+      "valid_transitions": 7456,
+      "single_step": {
+        "position_max_m": 5.978010820472956e-08,
+        "rotation_max_rad": 7.808765604800722e-08
+      },
+      "integrated": {
+        "position_max_m": 4.628983421079832e-08,
+        "rotation_max_rad": 5.0583313076134955e-08
+      },
+      "native_observation": {
+        "position_max_m": 3.4281196433563877e-08,
+        "rotation_max_rad": 4.261033673252133e-08
+      },
+      "candidate_vs_next_native_observation": {
+        "position_max_m": 3.428876556971987e-08,
+        "rotation_max_rad": 4.261892420036326e-08
+      },
+      "saved_action_pose_comparison": {
+        "position_rmse_m": 1.4606304014516303e-08,
+        "rotation_rmse_rad": 7.184033219027866e-09
+      }
+    }
+  ],
+  "manifest_sha256": "ba11f160f2a6c6e37c3a4d736656005b78a6210c360099c316ec3f03291a978c",
+  "input_fingerprint_count": 154,
+  "frozen_selection_commit": "2bc696a",
+  "total_episodes": 60,
+  "real_robot_log_transitions": 4251,
+  "simulation_log_transitions": 15070
+}
