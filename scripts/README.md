@@ -1,5 +1,7 @@
 # 实验入口
 
+直接比较WAM参考与真实机器人state：`LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_libero_wam_states.py --seed 42`，配置为`configs/libero_wam_state_comparison_20261019.json`。复用保存的10份同源图像预测，只读R2的observation.state，不读取专家action；输出位置/SO(3)误差、开度误差、保持初态基线及指纹。不会重新推理或跑物理；已有输出拒绝覆盖，复跑须另设output_dir。
+
 从仓库根执行 `LD_LIBRARY_PATH='' .venv/bin/python scripts/run_experiment.py --seed 42 --stage all --plots`。
 
 `--config` 指定 JSON；`--seed` 必须显式提供并与配置相同；stage 可选 `extract`、`analytic`、`calibrate`、`all`（默认）或 `report`。前三者分别运行到 P0、P1、P2；`all` 包含 P3 与 Markdown/JSON 报告；`report` 只使用已有指标。`--plots` 需要 `.[report]`，生成曲线不进行新的参数选择。
