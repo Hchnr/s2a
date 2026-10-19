@@ -56,6 +56,21 @@ def run(c, out, source, trial, component_out):
         ),
     )
     env, _ = make_environment(c, dest, fixture["episodes"][trial], trial)
+    # A time-dilated path can exceed the benchmark's 1000-tick time limit.
+    # Keep the preset per-target budget; only this diagnostic's wrapper horizon
+    # must cover that already declared maximum. Never alter the primary run.
+    original_horizon = env.env.horizon
+    env.env.horizon = env.env.timestep + len(targets) * p["max_substeps"]
+    write_json(
+        dest / "execution_contract.json",
+        dict(
+            original_horizon=original_horizon,
+            diagnostic_horizon=env.env.horizon,
+            initial_timestep=env.env.timestep,
+            reference_count=len(targets),
+            max_substeps=p["max_substeps"],
+        ),
+    )
     rows, endpoints, error = [], [], None
     started = time.monotonic()
     try:
