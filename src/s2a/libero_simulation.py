@@ -68,6 +68,7 @@ def make_environment(config, output, record, trial):
         camera_heights=config["render_resolution"],
         camera_widths=config["render_resolution"],
         render_gpu_device_id=-1,
+        use_camera_obs=config.get("camera_observations", True),
     )
     env.seed(config["seed"] + trial)
     env.reset()
