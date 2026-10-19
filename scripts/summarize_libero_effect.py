@@ -145,10 +145,12 @@ def main():
     parser.add_argument("--component-config", default="configs/libero_wam_components_20261019.json")
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--stage", action="append", choices=["controls", "wam", "components"])
+    parser.add_argument("--case", action="append")
     args = parser.parse_args()
     c = json.loads(Path(args.config).read_text())
     cc = json.loads(Path(args.component_config).read_text())
     require(args.seed == c["seed"] == cc["seed"], "seed differs")
+    require(not args.case or args.stage, "case-level verification must be explicitly partial")
     out = Path(c["output_dir"])
     fixture = json.loads(Path(c["fixture"]).read_text())
     bridge = json.loads(Path(c["published_bridge"]).read_text())["trajectories"]
@@ -182,9 +184,23 @@ def main():
     ):
         if args.stage and stage not in args.stage:
             continue
+        if args.case:
+            expected_cases = [r for r in expected_cases if r["name"] in args.case]
+            if not expected_cases:
+                continue
         root = Path(config["output_dir"])
-        matrix = json.loads((root / f"matrix_{stage}.json").read_text())
-        require(matrix["complete"], "matrix failed")
+        matrix_path = root / f"matrix_{stage}.json"
+        if matrix_path.is_file():
+            matrix = json.loads(matrix_path.read_text())
+            require(matrix["complete"], "matrix failed")
+        elif args.case:
+            log_name = "components_matrix.log" if stage == "components" else f"{stage}_matrix.log"
+            ledger = [json.loads(line) for line in (root / log_name).read_text().splitlines() if line.startswith("{")]
+            matrix = dict(cases=[r for r in ledger if "exit_code" in r])
+        else:
+            raise ValueError("full matrix has not finished")
+        if args.case:
+            matrix["cases"] = [r for r in matrix["cases"] if r["case"]["name"] in args.case]
         expected = {(case["name"], trial) for case in expected_cases for trial in config["trials"]}
         require({(r["case"]["name"], r["trial"]) for r in matrix["cases"]} == expected, "case matrix differs")
         require(len(matrix["cases"]) == len(expected), "duplicate cases")
@@ -418,7 +434,7 @@ def main():
         limits="Frozen checkpoint, one task and five known scenes. Privileged interventions are not pure WAM successes. A positive ideal finger separation concerns the prescribed endpoint path, not all possible robot motions.",
     )
     if args.stage:
-        write_json(out / ("verification_" + "_".join(args.stage) + ".json"), summary)
+        write_json(out / ("verification_" + "_".join(args.stage + (args.case or [])) + ".json"), summary)
     else:
         pairing = []
         for trial in c["trials"]:
