@@ -71,7 +71,7 @@ def main():
         f"预注册的离线与物理矩阵全部完成：2688次离线预测；{len(all_cases) + len(primary['probes'])}条独立物理实验、{steps}个控制步。最新非EMA iter_000008800经推理mask修正后，在冻结S2A、无推理延迟的H16主协议中曾成功{latest16['success']}/12、末端成功{latest16['terminal_success']}/12；原生H40补充中曾成功{latest40['success']}/12、末端成功{latest40['terminal_success']}/12。全部用例执行足600步，没有以缺失、基础设施失败或提前截断替代任务结果。",
         "## 这次验收回答了什么",
         "确定发现了训练—推理合同缺陷：训练将118个无效Action128维度置零，原服务却向这些维度加噪声，只在最终输出mask；无效噪声会影响10个有效维度。S2A本地评测wrapper在初始噪声、每次网络输入和velocity三个位置保持mask，未修改学习参数。外部Cosmos仍只读，此修正尚未合入其生产服务。源码定位、固定回归样本与生产移植约束见[serving合同说明](wam_serving_contract_20261019v2.md)。",
-        "修正后模型学到了部分有用的状态变化，但并未全面通过state质量验收。最新8800在本实验episode留出、task-only、H40窗口的池化位置RMSE为64.213mm、开度MAE为0.1079，优于保持state的122.395mm/0.2484；朝向RMSE为0.5159rad，差于保持基线的0.2832rad。不能把原服务缺陷等同于权重损坏，也不能把单条示范的state误差等同于任务失败。",
+        "修正后模型学到了有用的状态变化，各指标表现不一致。最新8800在本实验episode留出、task-only、H40窗口的池化位置RMSE为64.213mm、开度MAE为0.1079，优于保持state的122.395mm/0.2484；朝向RMSE为0.5159rad，差于保持基线的0.2832rad。不能把原服务缺陷等同于权重损坏，也不能把单条示范的state误差等同于任务失败。",
         "真实成功state经同一Action128接口和冻结S2A为12/12成功，证明该执行链路在这些参考附近可用；大角度/快速参考及任意绝对开度曲线仍有限制。下面同时报告真实任务谓词、参考跟踪和物体进度，避免将全部闭环失败唯一归因于WAM或S2A。",
         "## 固定协议与证据边界",
         "三个任务：bowl→plate、wine bottle→rack、cream cheese→bowl。每任务两个独立物理初态，各用采样seed42/43；每条运行的每次请求重复使用对应seed。合计六个独立初态、12次运行，不能当作12个独立场景。初态在评测前固定，排除此前S2A调参用的bowl示范。离线12个episode整条划分成diagnostic/study-heldout，但全部属于训练catalog；历史逐样本消费未知，本次留出不能解释为预训练未见。",
@@ -183,7 +183,7 @@ def main():
     parts += [
         "## 复核与复现",
         "主矩阵和原生H40补充都通过独立完整性验证：checkpoint/非EMA身份、输入像素、任务/seed、固定协议、每个chunk的当前实测anchor、Action128积分与实际执行目标、0.05秒物理间隔、推理期间physics不推进、原生逐步成功谓词及全600步预算。2688条离线预测的有效前缀、积分和评分另行逐条重算。",
-        "完整来源：`outputs/wam_checkpoint_acceptance_20261019v2/summary.json`、`integrity.json`、`native_horizon40/summary.json`及`native_horizon40/integrity.json`；图表PNG/PDF在`figures/`。本报告与这些汇总的SHA写入`final_report_manifest.json`。每条原始输入、响应、controller参数、steps和代码指纹均保留；生成产物不提交Git，报告/代码/配置/决策进入Git。",
+        "完整来源：`outputs/wam_checkpoint_acceptance_20261019v2/summary.json`、`integrity.json`、`native_horizon40/summary.json`及`native_horizon40/integrity.json`；图表PNG/PDF在`figures/`。其中`success_examples`直接展示保存的模型输入相机图像，按各协议首个末端成功用例展示初始/首次保存到的成功观测/末段观测，来源像素文件SHA保留于图表manifest；这些示例不替代全部用例的成功率。本报告与汇总的SHA写入`final_report_manifest.json`。每条原始输入、响应、controller参数、steps和代码指纹均保留；生成产物不提交Git，报告/代码/配置/决策进入Git。",
         "共享服务忙和数值审计共享GPU显存不足等基础设施尝试已单独归档，不计作模型任务失败。模型副本在接入物理评测前必须逐项复现同输入/seed的完整Action128响应。实验未改变冻结权重、任务提示、S2A参数、预算或结果集合。",
         "## 结论边界与后续",
         "这轮可以区分已证实的serving mask缺陷、直接state预测质量和冻结执行链路下的任务表现；不能证明checkpoint文件损坏，不能从单条专家轨迹误差推断唯一正确行为，也不能把超出S2A已验证范围的执行偏差全归于权重。泛化还需要真正不属于预训练catalog的冻结数据，历史训练复现需要保存完整输入字节和消费账本。",

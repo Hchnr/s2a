@@ -5,11 +5,60 @@ import json
 
 import matplotlib
 import numpy as np
+from PIL import Image
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from s2a.artifacts import load_config, sha256, write_json
+
+
+def success_examples(summary, native, root, out, config):
+    """Show saved model-input observations; select one terminal success per protocol."""
+    selections = []
+    matrices = [(root, "H16", name, data) for name, data in summary["physics"].items() if name.endswith("_masked")]
+    matrices.append((root / "native_horizon40", "H40", "8800_masked", native["physics"]["8800_masked"]))
+    for base, horizon, name, matrix in matrices:
+        candidates = sorted(
+            (r for r in matrix["cases"] if r["terminal_success"]), key=lambda r: (r["record"], r["sampling_seed"])
+        )
+        if candidates:
+            case = candidates[0]
+            directory = base / "simulation" / name / f"{case['record']}_s{case['sampling_seed']}"
+            steps = [json.loads(line) for line in (directory / "steps.jsonl").read_text().splitlines()]
+            chunks = json.loads((directory / "chunks.json").read_text())
+            observed_success = [
+                i for i, chunk in enumerate(chunks) if chunk["step"] and steps[chunk["step"] - 1]["success"]
+            ]
+            indices = [0, observed_success[0] if observed_success else len(chunks) - 1, len(chunks) - 1]
+            selections.append((horizon, name, case, directory, chunks, steps, indices))
+    if not selections:
+        return []
+    figure, axes = plt.subplots(
+        len(selections), 3, figsize=(10, 5.6 * len(selections)), squeeze=False, constrained_layout=True
+    )
+    sources = []
+    for row, (horizon, name, case, directory, chunks, steps, indices) in enumerate(selections):
+        for column, index in enumerate(indices):
+            path = directory / f"input_{index:04d}.png"
+            step = chunks[index]["step"]
+            predicate = None if step == 0 else bool(steps[step - 1]["success"])
+            ax = axes[row, column]
+            ax.imshow(np.asarray(Image.open(path)), interpolation="nearest")
+            ax.set_axis_off()
+            state = "initial" if predicate is None else f"task predicate: {predicate}"
+            ax.set_title(
+                f"{name.removesuffix('_masked')} {horizon} | {case['record']} / seed {case['sampling_seed']}\n{step / config['control_fps']:.1f}s | {state}",
+                fontsize=9,
+            )
+            sources.append(dict(path=str(path), sha256=sha256(path), step=step, observed_success=predicate))
+    figure.suptitle(
+        "Saved simulator observations supplied to WAM\nFirst terminal-success case per protocol; complete trial counts are reported separately"
+    )
+    for suffix in ("png", "pdf"):
+        figure.savefig(out / f"success_examples.{suffix}", dpi=180)
+    plt.close(figure)
+    return sources
 
 
 def main():
@@ -119,11 +168,13 @@ def main():
     for suffix in ("png", "pdf"):
         figure.savefig(out / f"task_success.{suffix}", dpi=180)
     plt.close(figure)
+    examples = success_examples(summary, native, root, out, c)
     write_json(
         out / "manifest.json",
         dict(
             summary_sha256=sha256(source),
             native_horizon_summary_sha256=sha256(native_source),
+            success_example_input_sources=examples,
             artifacts={p.name: sha256(p) for p in out.iterdir() if p.suffix in (".png", ".pdf")},
         ),
     )
