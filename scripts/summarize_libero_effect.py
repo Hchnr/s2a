@@ -52,12 +52,12 @@ def integrate(anchor, actions):
     return np.asarray(result)
 
 
-def verify_quasistatic(config, root, component_root):
-    matrix = json.loads((root / "matrix_quasistatic.json").read_text())
+def verify_quasistatic(config, root, component_root, *, trials=None, matrix_name="matrix_quasistatic.json"):
+    matrix = json.loads((root / matrix_name).read_text())
     expected = {
         (source, trial)
         for source in ("oracle_response", "wam_affine", "wam_position_oracle_rotation_opening")
-        for trial in config["trials"]
+        for trial in (trials if trials is not None else config["trials"])
     }
     require(matrix["complete"] and len(matrix["cases"]) == len(expected), "quasistatic matrix incomplete")
     require({(r["source"], r["trial"]) for r in matrix["cases"]} == expected, "quasistatic cases differ")
@@ -66,6 +66,7 @@ def verify_quasistatic(config, root, component_root):
         require(item["exit_code"] == 0, "quasistatic process failed")
         dest = root / "quasistatic" / item["source"] / f"trial{item['trial']}"
         manifest = json.loads((dest / "manifest.json").read_text())
+        require(manifest["config"] == config, "quasistatic configuration differs")
         for path, digest in manifest["inputs_sha256"].items():
             require(sha256(path) == digest, "frozen reference input changed")
         name = "scripts/run_libero_endpoint_diagnostic.py"
