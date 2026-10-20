@@ -14,6 +14,7 @@
 | [训练attention backend](wam_backend_state_20261021.md) | 48真实初态配对预测，0物理 | H8/H16位置略差，未过推广门槛；退出内部ledger缺失另列 |
 | [双种子检查器](wam_seed_aware_checker_20261021.md) | 27旧case只读精确回归 | 只扩显式seed/来源接口，不新增任务成功 |
 | [真实43执行资格](wam_seed43_execution_qualification_20261021.md) | 3oracle，1800步 | 3/3，和对应42逐步相同；未验证43 WAM/新初态 |
+| [固定短间隔WAM](wam_short_replan_20261021.md) | 12WAM，7200步，678请求 | raw8仅bowl1/3；其余三组0/3；外部未使用历史权重缺失的收尾例外保留 |
 | [按跟踪误差重观测](wam_tracking_replan_20261021.md) | 3oracle通过后3WAM，共3600步 | WAM完整0/3稳定、97请求；不推广 |
 | [短重观测执行资格](short_replan_qualification_20261021.md) | 12条oracle，7200步 | 12/12稳定，只证明正确参考附近可执行 |
 | [整episode参考增益诊断](wam_reference_gain_diagnostic_20261021.md) | 缓存拟合/留出，0新推理/物理 | 数毫米位置收益、朝向/开度有退化，不推广 |

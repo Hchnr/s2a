@@ -87,3 +87,6 @@ wine补充执行诊断使用`run_wam_gripper_replay.py --config configs/wam_wine
 全六条资格/7200步/正常退出通过后，`prepare_wam_long_launch.py --qualification <full6-gate> --qualification-sha256 <sha> --output <new-directory>`重核完整旧证据、固定各卡完整PID roster、实际8400的163文件stat，并写3个immutable launch gate；该命令不启动模型/物理。随后`run_wam_long_service.py --seed 42 --partition 0|1|2 --gate <partition-gate> --gate-sha256 <sha>`分别使用物理GPU5/6/7与9655/9656/9657，每part一旧任务/1200步/150请求。`--dry-run`使用实际严格准入，真正启动还在锁内检查显存严格0和端口，不沿用GPU0–3。
 
 `capture_wam_long_ready.py --launch <root-group-launch> --launch-sha256 <sha> --output <new-file>`只读取12个自有实际进程的ticks/cmd/cwd/parent/environment、3次GET /info与NVML快照，0次生成/0步物理；NVML到local PID映射未知保留。010新增`audit_wam_short_replan_final.py --output <new-file>`仅为已记录外部未使用15400文件缺失的显式窄补核，原error/release/缺失complete不修改，不能混称原coordinator final gate成功。
+
+
+017另外显式保留两个准入元数据/诊断边界：`audit_wam_long_qualification_plan.py`仅接受已经绑定的同一source_review中计划SHA（oracle启动收据遗漏重复execution-map项），原严格拒绝保留。`audit_wam_long_physical_core.py --output <new-file>`引用原full6严格False，重核完整1200机械/原生评分，并严格要求600步实际state/desired/command/motor及其它字段完全相同；唯一允许另列的是step599四个不参与控制的诊断值，因旧8端点末尾插值和新40端点内部插值路径不同产生≤2.22e-16舍入，独立SciPy重建与AST控制消费者检查必须通过。使用原1e-10接口容差、不增加评分容差、不修改任何旧产物；新gate范围明确为physical core，不能称原all-row exact门禁通过。
