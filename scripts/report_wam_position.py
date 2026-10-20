@@ -306,7 +306,7 @@ def make_report(
         )
     lines += [
         "",
-        "该极端错配计数为零不代表所有开度都正确；高ref/低actual也可能发生在先前低ref合法锁存后的释放等待。motor target、实际开度和握力是不同量。更长600步的同类计数、首次reason/command/motor明细保存在配对诊断JSON，只作后续输入不同条件下的描述，不能唯一归因模型或控制。",
+        "分叉按精确数值非相等记录，不设置拟合后的显著性阈值；极小数值残差本身不代表实际运动差异。该极端错配计数为零也不代表所有开度都正确；高ref/低actual可能发生在先前低ref合法锁存后的释放等待。motor target、实际开度和握力是不同量。更长600步的同类计数、首次reason/command/motor明细保存在配对诊断JSON，只作后续输入不同条件下的描述，不能唯一归因模型或控制。",
         "",
         f"![首query开度对照]({os.path.relpath(opening_plot, ROOT / 'reports')})",
         "",
