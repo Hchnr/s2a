@@ -20,12 +20,13 @@ def main():
     parser.add_argument("--partition", type=int, choices=range(8), required=True)
     args = parser.parse_args()
     c, root = load_config(args.config)
-    if args.seed != c["seed"] or len(c["checkpoints"]) != 4:
-        raise ValueError("requires frozen seed and four checkpoints")
-    ck = c["checkpoints"][args.partition // 2]
+    if args.seed != c["seed"] or len(c["checkpoints"]) not in (1, 2, 4, 8):
+        raise ValueError("requires frozen seed and a checkpoint count dividing eight GPUs")
+    replicas = 8 // len(c["checkpoints"])
+    ck = c["checkpoints"][args.partition // replicas]
     records = json.loads((root / "simulation/fixtures.json").read_text())["records"]
     count = len(records) * len(c["sampling_seeds"])
-    indices = list(range(args.partition % 2, count, 2))
+    indices = list(range(args.partition % replicas, count, replicas))
     port = 8800 + args.partition
     output = root / "partitions" / str(args.partition)
     output.mkdir(parents=True, exist_ok=False)

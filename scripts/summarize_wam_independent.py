@@ -124,7 +124,11 @@ def main():
         cases=cases,
         groups=groups,
         limitations=[
-            "Experiment-independent physical initial states; pretraining visibility unknown.",
+            (
+                "Previously evaluated development scenes; not an independent assessment."
+                if "fixture_source" in c
+                else "Experiment-independent physical initial states; pretraining visibility unknown."
+            ),
             "Bootstrap intervals are descriptive and can degenerate for all-zero/all-one samples; they do not certify population reliability.",
             "Tracking errors and deferred closure are diagnostics, not unique causal attribution.",
         ],
