@@ -26,7 +26,11 @@ def main():
     parser.add_argument("--job-indices")
     parser.add_argument(
         "--matrix-entry",
-        choices=("scripts/run_wam_stability_matrix.py", "scripts/run_wam_recovery_matrix.py"),
+        choices=(
+            "scripts/run_wam_stability_matrix.py",
+            "scripts/run_wam_recovery_matrix.py",
+            "scripts/run_wam_position_matrix.py",
+        ),
         default="scripts/run_wam_stability_matrix.py",
         help="explicit immutable executor version; existing processes keep their original job command",
     )

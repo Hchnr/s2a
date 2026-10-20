@@ -27,4 +27,6 @@ alpha.5/0改变生成参考，不是纯S2A补偿；alpha0不验收完整WAM朝�
 
 只在物理GPU5/port9345与7/port9347各启动自有单卡模型，确认原003服务complete/release且空闲；CPU编排/OSMesa CUDA与LD_LIBRARY_PATH为空。root启动记录绑定完整资格artifact SHA与全部输入SHA、权重完整指纹、配置SHA、PID/startticks。已有8400在GPU4的不同阶段对照保持原字节跑完，GPU6无必要不占用。
 
+通用service编排仅新增`--matrix-entry scripts/run_wam_position_matrix.py`允许值，模型及命令构造逻辑不变。正在运行的8400 coordinator已缓存其原4个recovery jobs；独立wrapper核实该CLI脚本不在物理执行依赖或其SHA门禁内，原job命令与物理执行源码不变。新position入口另有源码/配置快照。
+
 24条完整后独立审计并报告全矩阵，不按成功病例挑task/seed拼接。若新映射已有稳定开发能力，再固定候选及两seed的新初态验收；新初态来源排除尚有未解，不能提前宣称独立。当前计划只追加这24条开发，不自动启动新初态验收、训练或其他预算。
