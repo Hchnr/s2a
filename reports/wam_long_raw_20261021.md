@@ -1,6 +1,6 @@
 # 017：raw WAM 延长执行时间的独立开发评测
 
-**本报告当前记录协议与审计准备；三条 WAM 长时间案例尚未完成独立审计，暂不给出成功率。** 原 010 的 raw8 为 bowl → plate 成功、wine bottle → rack 和 cream cheese → bowl 失败，即 1/3。017 用同一 raw 策略统一执行 1200 步，检查另外两个任务是否只是需要更长执行时间。原 600 步结果保持原样，长时间结果单列。
+**三条 1200 步 WAM 评测及完整独立审计已完成，稳定成功仍为 1/3。** bowl → plate 从 step338 持续成功到 step1199；wine bottle → rack 和 cream cheese → bowl 全程没有成功事件。将同一 raw8 策略的物理执行时间从 30 秒翻倍到 60 秒，没有增加成功任务，尚未达到多任务稳定成功。原 600 步结果保持原样，长时间结果单列。
 
 证据等级仍为 LIBERO/MuJoCo 独立闭环仿真、Panda 机器人模型，不是真机；三个旧 task/init0/seed42 是开发诊断，不代表新初态或预训练未见数据上的成功率。
 
@@ -11,6 +11,28 @@
 环境 horizon=1300、ignore_done=false，恢复原初态后内部 timestep 从 0 开始；不增加初始化物理步，也不提前终止。完整时钟审计要求 1200 个实际控制端点、60 秒物理时间及逐步 dt=0.05 秒。以原生 success 判据分别报告前 600 步、后 600 步、全部 1200 步及末 40 步稳定结果。
 
 GPU5/9655、GPU6/9656、GPU7/9657 分别绑定三个独立模型服务与单 CPU 仿真 worker；所有 CPU/OSMesa 进程 CUDA/LD 为空。模型只使用这三张允许卡，不使用 GPU0–3。实际 checkpoint 是旧 22-source masked `iter_000008400`，并非“最新”或 23-source；保留原完整字节 SHA 登记，重核实际使用的 163 个文件 size/mtime。
+
+## 完整结果
+
+正式独立审计 `long_raw_audit/complete3_verified.json`，SHA `b3910cdeb6669e5f6f74a654d44f2a214dc3b12249d33391e085efbb6a375168`，`complete=true`、3 条 verified、3600 实际物理步、450 次请求；11645 项来源 SHA 在审计前后相同。三条实际时钟均为 60 秒、内部 timestep 0→1200，未增加初始化物理步。
+
+| 任务 | 原前600步 stable | 新后600步 stable | 全1200步 ever / stable | 成功端点及事件区间 |
+| --- | --- | --- | --- | --- |
+| bowl → plate | 成功 | 成功 | 成功 / 成功 | 862；`[338,1200)`，新增600端点全部成功 |
+| wine bottle → rack | 失败 | 失败 | 失败 / 失败 | 0；无成功事件 |
+| cream cheese → bowl | 失败 | 失败 | 失败 / 失败 | 0；无成功事件 |
+
+bowl 第一成功完成端点为物理时间 16.95 秒，连续保持至 60 秒，末 40 步全部成功；没有依赖提前终止。两个失败任务的 ever、terminal、末40 stable 都为 false，不能用更多接触或抬升代替任务完成。
+
+| 任务 | 全1200 TCP RMSE (mm) | SO(3) RMSE (rad) | 目标双指接触端点 | 目标最大高度增量 (mm) |
+| --- | ---: | ---: | ---: | ---: |
+| bowl → plate | 6.436436 | 0.026772 | 0 | 27.915125 |
+| wine bottle → rack | 4.721284 | 0.012494 | 635 | 75.888990 |
+| cream cheese → bowl | 8.145223 | 0.019529 | 10 | 83.774092 |
+
+上述误差是实际 TCP 对生成执行参考的跟踪误差，不是对专家未来 state 的预测误差。wine 有持续接触和抬升、cream 有过抬升，仍没有原生任务成功。bowl 目标双指接触为 0，只确认原生目标完成，不声称专家抓持方式复现。
+
+完整审计直接重放全部 3600 步机械/S2A/夹爪/因果时钟，原前600步的1800行 canonical token 与225次旧查询再次精确核验；各150个生成目录精确等于对应case的service provenance，全部POST恰为450条 `/generate` HTTP200，没有额外请求。三个Uvicorn日志均有真实启动及结束记录，外部模型 returncode=-15、matrix=0，cleanup_errors为空；12个登记coordinator/model/matrix/physics进程均已退出。历史ready身份和实际8400权重163项stat检查仍通过，没有补造内部finally收据或推断NVML/PID映射。
 
 ## 六条执行资格与明确的日志例外
 
@@ -34,7 +56,7 @@ CPU 准备已核 literal1200 源差异、三个真实旧首 query 和 225 个既
 
 另一审阅方已固定最终 `66620b5` 通读审计器，并实调用确认新 physical-core 合同通过、原严格 false 合同被拒绝；独立收据 `long_raw_service_review/wam_auditor_66620b5_independent_review.json`，SHA `6d904b5b11bace6dc7c3e2e8f470bd593a6aef033270a070352909749018e86d`。
 
-## 当前运行与只读进度
+## 运行过程与只读进度（历史快照）
 
 root 启动收据 `long_raw_preflight/wam_root_launch.json`，SHA `d1924433405afd1ee92093779fa2b9b00b0c388ec86901852d1ac5758e12ad2f`，固定登记上述三条/3600 步/450 请求。首次实际只读审计 `long_raw_audit/progress_00_launch.json`，SHA `e13d116b56fb472da9402e58ab70351b5a2f99f2251792ed511dbd40b21402c8`，9352 项来源 SHA 前后完全一致；三条均 partial、0 条完整独立验证，成功率 null。已核三份真实 server info、8400 权重 stat 与 12 个运行中登记 PID/ticks/CUDA 身份，模型仅绑定 GPU5/6/7，所有 CPU CUDA/LD 为空。该部分快照采样时 request 文件计数为 0，不将它解释为整个审计期间模型没有执行请求。
 
@@ -42,10 +64,10 @@ root 启动收据 `long_raw_preflight/wam_root_launch.json`，SHA `d1924433405af
 
 新增只读 [有限前缀观察器](../scripts/audit_wam_long_prefix_progress.py) 提交 `86b1fbd`，将实际已写完的 JSONL 前缀单独冻结复制；永久 SHA 只绑定这些独立复制和已完成 query，增长中的原始 steps 文件仅登记读取时摘要，不冒称后续不变。三任务各前 160 步/20 次查询通过，收据 `long_raw_audit/available_prefix_160/prefix_observation.json`，SHA `349d0c629e57dee6d033543d5f8786e46e4445fd0a081b1ce86019f7c7580f6e`；随后各前 320 步/40 次查询也通过，收据 `long_raw_audit/available_prefix_320/prefix_observation.json`，SHA `352a997cc3bdb975ad6495890e5dd25ba76062aa1de177a54a8bf7e585519dee`。后者共 960 个物理端点 canonical token、120 个 query 的 PNG 字节、完整 40×128 raw/normalized 与共同条件均与旧 raw8 精确一致。它只支持当前有限前缀的可比性，不替代完整 1200 步机械审计或任务成功率。
 
-三条跨过 600 步后，全部旧预算范围的有限前缀也已通过：`long_raw_audit/available_prefix_600/prefix_observation.json`，SHA `93b6e00f10ddcaff94c8caa1815693cec89063ce3cd24cf2e15f8113a8697570`。共 1800 个实际物理端点 canonical token 和 225 次完整 40×128 raw/normalized、PNG 字节、共同条件与旧 010 raw8 一致；包含原 step599 全部字段，没有采用 oracle 日志例外。这确认当前长时间运行的前 30 秒实际重现旧评测，仍须完成后续 600 步、最终完整机械审计和正常释放后才能回答延长时间的效果。
+三条跨过 600 步后，全部旧预算范围的有限前缀也已通过：`long_raw_audit/available_prefix_600/prefix_observation.json`，SHA `93b6e00f10ddcaff94c8caa1815693cec89063ce3cd24cf2e15f8113a8697570`。共 1800 个实际物理端点 canonical token 和 225 次完整 40×128 raw/normalized、PNG 字节、共同条件与旧 010 raw8 一致；包含原 step599 全部字段，没有采用 oracle 日志例外。该有限前缀节点支持前30秒可比性；后续完整结果由上面的final审计独立验证，不以部分快照替代。
 
 该 600 前缀另有独立来源身份交叉核验：`long_raw_audit/available_prefix_600/source_identity_crosscheck.json`，SHA `3e450d71583cba64a7d8a1b07cbc290e598011b9122989604a84a6ac420f641f`。实际用到的 678 份旧案例文件 SHA 全部等于原 010 最终审计登记，三份当前配置逐字节等于 `9fe490a` 预注册，完整 1362 项选定来源前后重核通过；没有把增长中的原日志当成永久不变文件。
 
-本轮将回答旧场景下延长同一策略的物理执行时间是否改变原生任务结果；即使成功，也仍需另行冻结候选、完成未参与开发的新初态验收，不能直接宣称多任务稳定成功。
+本轮只检验统一延长同一策略的执行时间：30→60秒没有改善这三个旧场景的任务成功率。它说明当前失败在这个预算内并未因增加物理时间而解决，不证明无限等待仍必然失败，也不足以唯一归因权重、重观测策略或某个控制环节。接下来应依据完整后半段参考/实际轨迹分析登记新的统一假设；当前不将raw8提升为多任务稳定候选，不打开预留新初态的性能验收，不追溯修改旧600步结果。
 
 所有生成产物路径相对 `outputs/wam_stability_20261021/`。
