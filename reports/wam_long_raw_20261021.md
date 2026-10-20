@@ -40,6 +40,8 @@ root 启动收据 `long_raw_preflight/wam_root_launch.json`，SHA `d1924433405af
 
 下一份 `long_raw_audit/progress_01_ready.json`，SHA `78973db074522330fe4fe354a987ecbd301a697b210bebc9bb1f7b67b195d4cd`，绑定真实 ready 快照 `long_raw_review/actual_ready_resource_snapshot.json`，SHA `502b5c98ab7b225d66129a13ea12bd73f0626433a638ea0303b36150fef40dee`。12 个历史 PID/startticks、父子关系、完整 command、cwd 与环境逐项对应启动/执行记录，三个 GET info 精确等于保存的服务身份；9355 项来源 SHA 前后相同。此时三条仍 partial，case-loop 观察 36 个 request 文件，不给任务率或正常退出结论；没有推断 NVML 与本地 PID 命名空间的映射。
 
+新增只读 [有限前缀观察器](../scripts/audit_wam_long_prefix_progress.py) 提交 `86b1fbd`，将实际已写完的 JSONL 前缀单独冻结复制；永久 SHA 只绑定这些独立复制和已完成 query，增长中的原始 steps 文件仅登记读取时摘要，不冒称后续不变。三任务各前 160 步/20 次查询通过，收据 `long_raw_audit/available_prefix_160/prefix_observation.json`，SHA `349d0c629e57dee6d033543d5f8786e46e4445fd0a081b1ce86019f7c7580f6e`；随后各前 320 步/40 次查询也通过，收据 `long_raw_audit/available_prefix_320/prefix_observation.json`，SHA `352a997cc3bdb975ad6495890e5dd25ba76062aa1de177a54a8bf7e585519dee`。后者共 960 个物理端点 canonical token、120 个 query 的 PNG 字节、完整 40×128 raw/normalized 与共同条件均与旧 raw8 精确一致。它只支持当前有限前缀的可比性，不替代完整 1200 步机械审计或任务成功率。
+
 本轮将回答旧场景下延长同一策略的物理执行时间是否改变原生任务结果；即使成功，也仍需另行冻结候选、完成未参与开发的新初态验收，不能直接宣称多任务稳定成功。
 
 所有生成产物路径相对 `outputs/wam_stability_20261021/`。
