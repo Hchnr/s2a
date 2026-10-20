@@ -123,6 +123,13 @@ def run_stability_case(config, root, record, *, source, variant_name, sampling_s
     try:
         obs = current_observation(env)
         controller, contract = controller_contract(env)
+        # LIBERO's source quaternion uses the eef BODY, while OSC goals use
+        # its SITE. World-left errors are invariant to this fixed right
+        # offset, but a retained absolute goal must be expressed explicitly
+        # in the same orientation convention as measured/desired_source.
+        source_from_control_rotation = source_pose(obs)[:3, :3].T @ np.asarray(
+            env.sim.data.get_site_xmat(controller.eef_name)
+        )
         if not np.isclose(env.env.control_timestep, dt):
             raise ValueError("control interval differs from the declared model time")
         interface = OSCInterface(*(contract[k] for k in ("input_min", "input_max", "output_min", "output_max")))
@@ -141,7 +148,15 @@ def run_stability_case(config, root, record, *, source, variant_name, sampling_s
         gripper = GripperTrackingAdapter(initial_opening, config=grip_config)
         intent = OpeningIntent(initial_opening, band=config["opening_hysteresis"])
         governor = ReferenceGovernor(config=ReferenceGovernorConfig(**config["reference_governor"]))
-        write_json(dest / "controller.json", dict(contract=contract, gripper=asdict(grip_config)))
+        write_json(
+            dest / "controller.json",
+            dict(
+                contract=contract,
+                gripper=asdict(grip_config),
+                source_from_control_rotation=source_from_control_rotation,
+                actual_initial_physics_sha256=sha256_bytes(np.asarray(env.sim.get_state().flatten()).tobytes()),
+            ),
+        )
         previous_command = np.zeros(7)
         targets, openings, index, chunk_step, governed = None, None, 0, 0, None
         initial_objects = object_progress(env)["objects"]
@@ -214,7 +229,7 @@ def run_stability_case(config, root, record, *, source, variant_name, sampling_s
                         kd=contract["kd"][3:],
                         dt=dt,
                         previous_command=previous_command[3:6],
-                        current_goal_rotation=goal_before,
+                        current_goal_rotation=goal_before @ source_from_control_rotation.T,
                         max_command_rate=config["max_command_rate"],
                         **config["bounded_rotation"],
                     )
