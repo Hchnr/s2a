@@ -40,3 +40,6 @@
 016自适应完整WAM三任务稳定/曾成功均0/3：bowl26query/TCP25.117mm，wine40query/TCP24.892mm，cream31query/TCP25.041mm，共1800步/97请求。实际触发与全部case逐值审计通过，服务97个HTTP请求及完整预算、正常退出均独立核实；未胜过raw8，不推广。[完整报告](../../reports/wam_tracking_replan_20261021.md)。[017](017_long_raw_development_20261021.md)另预注册三任务统一60秒/1200步原始raw8诊断（native3/oracle3资格先行，共六条/7200步；条件WAM3/3600步/450query），同时报告600截点，不追溯改原600失败。新隔离环境1300上限/ignore_doneFalse、无额外pre-roll，actual初始timestep按0现场核。017 native三条3600步通过、oracle三条3600步也全部稳定（TCP1.005–1.300mm/SO3 .001835–.004769rad）。实际控制前600逐值相同；原严格all-row门禁False明确保留，因为599端点四个不参与控制的诊断值有≤2.22e-16舍入。独立分支/消费者证明及原容差重构后，新physical-core资格通过；[完整说明](../../reports/wam_long_qualification_20261021.md)。三条raw8 WAM已22:49:15UTC在GPU5/6/7启动，完整结果尚待核验，fresh未打开。时长延长有可能检验完成较慢/持续丢失，不预设改善。
 
 010全部12条实际物理及最终独立补核已结束。原interval8 coordinator在收尾重查**非本轮15400**历史权重时发现外部98项文件消失，原错误与release均保留；本轮实际8400的163项stat及旧3477项源SHA仍一致。此异常不计任务失败、不伪造原complete成功；新独立入口完整核验12/7200步/678请求、6993源SHA、本轮8400全163stat、全部owned释放与精确HTTP/generation预算；raw8唯一bowl正例，另三组均0/3。第二审查方完整CPU复跑与7200条success逐值复算一致。
+
+
+017现已完成前600可比性里程碑：三任务1800实际端点及225完整query图像/raw/normalized与旧raw8全部canonical精确，30秒仍1/3（仅bowl），1200结果未定。并行[018角漂移缓存诊断](018_rotation_drift_diagnostic_20261021.md)只研究六旧episode的三参数世界旋转偏置，19fit/0模型/0物理，需整episode留出优于无WAM/打乱/保持/历史外推才有进一步验证资格；模块6项几何测试已通过，真实拟合尚未开始。它改变模型参考，不能认证原checkpoint，且不改正在跑的017。
