@@ -29,6 +29,6 @@
 
 新23源并非已知最佳checkpoint：validation关闭、15400是首次冻结时的latest complete；20:17UTC再查已有同run完整15600，[009](009_latest_state_screen_20261021.md)的48次state-only对照现全部核验通过、798输入SHA与正常release绑定。H8/H16/H40位置mm/SO3rad/opening分别29.185/.104531/.075429、52.861/.221368/.125687、98.696/.563030/.140309，九项均差于8400及15400。仅六旧episode证据，不作全局训练退化或任务能力排名；不因为latest追加物理。[完整报告](../../reports/wam_latest_state_screen_20261021.md)。新加入源是FastUMI-eef，RoboMIND2旧run已有。LIBERO eef/joint合计名义packed-microbatch份额由200/10194=1.961938%降至10/10000=.1%（约19.62倍下降）；不是实际历史消费、token/loss份额或失败因果证明。两run当前LIBERO条件/clip/归一化审查未发现新run专属推理错接，完整数值一致性、历史消费字节和上游图像/pose物理同步仍未证实。
 
-下一步已在完整005/006/009结果之后预注册[010短重观测](010_short_replan_wam_20261021.md)：同8400、无gov、每8/16步重query、raw与alpha0全部三旧任务，12条/7200步/最多678请求，物理GPU4/5；不改变控制器或按任务拼接方案。独立[011采样步数诊断](011_sampler_steps_state_20261021.md)固定8400/35、70、140各48次state请求，GPU6，0物理；先全部48份traced35输出exact准入，再以实际sampler入口SHA配对比较70/140。尚未有该两轮的新性能结论，fresh性能继续未打开。
+下一步已在完整005/006/009结果之后预注册[010短重观测](010_short_replan_wam_20261021.md)：同8400、无gov、每8/16步重query、raw与alpha0全部三旧任务，12条/7200步/最多678请求，物理GPU4/5；不改变控制器或按任务拼接方案。独立[011采样步数诊断](011_sampler_steps_state_20261021.md)固定8400/35、70、140各48次state请求，GPU6，0物理；先全部48份traced35输出exact准入，再以实际sampler入口SHA配对比较70/140。010已在GPU4/5运行，首interval16/raw bowl完整无成功，其余仍待完整；011已在GPU6启动35真实exact准入，尚未有70/140性能结论。另[012](012_guidance_state_20261021.md)单guidance3/8400的48state-only在GPU7执行，不改010/011；fresh性能继续未打开。
 
 仅允许物理GPU4–7，CPU/OSMesa禁CUDA，外部Cosmos/R1/R2只读。方案与决策见[002计划](002_wam_stability_20261021.md)及[实施记录](record_20261021.md)。上述数字为阶段进度，随完整结果追加更新；上一轮20261020报告/封存证据不覆盖。
