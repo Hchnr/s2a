@@ -21,6 +21,24 @@ def main():
         raise ValueError("seed differs")
     dest = out / "simulation"
     dest.mkdir(exist_ok=False)
+    if "fixture_source" in c:
+        source = Path(c["fixture_source"])
+        records = json.loads(source.read_text())["records"]
+        if len(records) != len(c["tasks"]) * c["online_initial_states_per_task"]:
+            raise ValueError("development fixture count differs from protocol")
+        for record in records:
+            if record["task"] != c["tasks"][record["task_index"]]:
+                raise ValueError("development task identity differs")
+            if sha256(record["expert_path"]) != record["expert_sha256"]:
+                raise ValueError("development expert commands changed")
+            initial = np.asarray(record["initial_state"], dtype=float)
+            if sha256_bytes(initial.tobytes()) != record["initial_state_sha256"]:
+                raise ValueError("development initial state changed")
+        write_json(
+            dest / "fixtures.json",
+            dict(code=code_fingerprint(), config=c, records=records, exclusions={}, source_sha256=sha256(source)),
+        )
+        return
     template = json.loads(Path(c["policy_template"]).read_text())
     benchmark, _, _ = configure_simulator(template, dest)
     suite = benchmark.get_benchmark_dict()[template["task_suite"]]()
