@@ -24,6 +24,12 @@ def main():
     parser.add_argument("--variants", required=True, help="comma-separated, pre-registered variant names")
     parser.add_argument("--fingerprints", required=True)
     parser.add_argument("--job-indices")
+    parser.add_argument(
+        "--matrix-entry",
+        choices=("scripts/run_wam_stability_matrix.py", "scripts/run_wam_recovery_matrix.py"),
+        default="scripts/run_wam_stability_matrix.py",
+        help="explicit immutable executor version; existing processes keep their original job command",
+    )
     parser.add_argument("--wait-for-screen", help="completed diagnostic output root; requires its successful release")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
@@ -73,7 +79,7 @@ def main():
     for variant in variants:
         cmd = [
             str(Path(".venv/bin/python").absolute()),
-            "scripts/run_wam_stability_matrix.py",
+            args.matrix_entry,
             "--config",
             args.config,
             "--seed",
