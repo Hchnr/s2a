@@ -43,6 +43,11 @@ def merge(signatures, additions):
     signatures.update(additions)
 
 
+def unused_root(root):
+    """The frozen generic --dry-run creates an empty root via load_config."""
+    return not root.exists() or root.is_dir() and not any(root.iterdir())
+
+
 def prepare():
     cpu_environment()
     if Path.cwd().resolve() != REPO:
@@ -93,7 +98,7 @@ def prepare():
             notes=config["notes"],
         )
         expected["checkpoints"] = [dict(base["checkpoints"][0], gpu=4 + task, port=9744 + task)]
-        if config != expected or len(records) != 1 or root.exists():
+        if config != expected or len(records) != 1 or not unused_root(root):
             raise ValueError("019 must retain registered raw8 protocol and a fresh output")
         merge(signatures, execution_inputs(config, name))
         stats = weight_stats(ck)
@@ -121,6 +126,7 @@ def prepare():
                 config_path=str(REPO / name),
                 config_sha256=sha256(REPO / name),
                 output_dir=str(root),
+                preexisting_empty_output_root=root.exists(),
                 command=command,
                 actual_checkpoint_stat=stats,
             )
