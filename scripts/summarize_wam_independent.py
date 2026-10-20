@@ -9,7 +9,7 @@ from verify_wam_acceptance import verify_case
 
 from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
 from s2a.geometry import pose_error
-from s2a.task_acceptance import scene_bootstrap, task_outcome
+from s2a.task_acceptance import chunk_opening_diagnostics, scene_bootstrap, task_outcome
 
 
 def main():
@@ -111,14 +111,7 @@ def main():
             actions = [np.asarray(ch["actions"]) for ch in chunks]
             horizon = c["online_execution_horizon"]
             # Descriptive opening threshold only; no task-dependent command change.
-            row["opening_diagnostics"] = dict(
-                chunks=len(actions),
-                executed_prefix_min=float(min(a[:horizon, 9].min() for a in actions)),
-                full_prediction_min=float(min(a[:, 9].min() for a in actions)),
-                deferred_closure_chunks=sum(
-                    bool(a[:horizon, 9].min() >= 0.35 and a[horizon:, 9].min() < 0.35) for a in actions
-                ),
-            )
+            row["opening_diagnostics"] = chunk_opening_diagnostics(actions, execution_horizon=horizon)
         cases.append(row)
     groups = {}
     for label in labels:
