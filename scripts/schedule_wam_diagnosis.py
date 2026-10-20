@@ -23,7 +23,7 @@ def process_identity(pid):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument("--partition", type=int, choices=range(8), required=True)
+    parser.add_argument("--partition", type=int, choices=range(4), required=True)
     args = parser.parse_args()
     if args.seed != 42:
         raise ValueError("frozen diagnostic seed is 42")
@@ -68,7 +68,10 @@ def main():
         ]
         with (output / f"execute{horizon}.log").open("x") as log:
             process = subprocess.Popen(
-                command, env=dict(os.environ, LD_LIBRARY_PATH=""), stdout=log, stderr=subprocess.STDOUT
+                command,
+                env=dict(os.environ, LD_LIBRARY_PATH="", CUDA_VISIBLE_DEVICES="4,5,6,7"),
+                stdout=log,
+                stderr=subprocess.STDOUT,
             )
             write_json(output / f"execute{horizon}_process.json", dict(pid=process.pid, command=command))
             status = process.wait()

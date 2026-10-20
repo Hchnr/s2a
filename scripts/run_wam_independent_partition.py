@@ -17,17 +17,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/wam_independent_20261020.json")
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument("--partition", type=int, choices=range(8), required=True)
+    parser.add_argument("--partition", type=int, choices=range(4), required=True)
     args = parser.parse_args()
     c, root = load_config(args.config)
-    if args.seed != c["seed"] or len(c["checkpoints"]) not in (1, 2, 4, 8):
-        raise ValueError("requires frozen seed and a checkpoint count dividing eight GPUs")
-    replicas = 8 // len(c["checkpoints"])
+    if args.seed != c["seed"] or len(c["checkpoints"]) not in (1, 2, 4):
+        raise ValueError("requires frozen seed and a checkpoint count dividing the four allowed GPUs")
+    replicas = 4 // len(c["checkpoints"])
     ck = c["checkpoints"][args.partition // replicas]
     records = json.loads((root / "simulation/fixtures.json").read_text())["records"]
     count = len(records) * len(c["sampling_seeds"])
     indices = list(range(args.partition % replicas, count, replicas))
-    port = 8800 + args.partition
+    gpu = (4, 5, 6, 7)[args.partition]
+    port = 8900 + gpu
     output = root / "partitions" / str(args.partition)
     output.mkdir(parents=True, exist_ok=False)
     reference = Path("outputs/wam_checkpoint_acceptance_20261019v2/state_queries") / ck["name"]
@@ -41,7 +42,7 @@ def main():
             code=code_fingerprint(),
             checkpoint=ck,
             job_indices=indices,
-            gpu=args.partition,
+            gpu=gpu,
             port=port,
             reference_request_sha256=sha256(case / "request.json"),
             reference_response_sha256=sha256(case / "response.json"),
@@ -65,8 +66,8 @@ def main():
     env = dict(
         os.environ,
         LD_LIBRARY_PATH="",
-        CUDA_VISIBLE_DEVICES=str(args.partition),
-        MASTER_PORT=str(30400 + args.partition),
+        CUDA_VISIBLE_DEVICES=str(gpu),
+        MASTER_PORT=str(30500 + gpu),
         COSMOS_TRAINING="0",
         PYTHONPATH=c["cosmos_repo"] + ":" + str(Path("src").absolute()),
         OMP_NUM_THREADS="2",
@@ -125,10 +126,14 @@ def main():
                 str(port),
                 "--job-indices",
                 ",".join(map(str, indices)),
+                "--resume",
             ]
             with (output / "jobs.log").open("x") as stream:
                 status = subprocess.call(
-                    command, env=dict(os.environ, LD_LIBRARY_PATH=""), stdout=stream, stderr=subprocess.STDOUT
+                    command,
+                    env=dict(os.environ, LD_LIBRARY_PATH="", CUDA_VISIBLE_DEVICES=""),
+                    stdout=stream,
+                    stderr=subprocess.STDOUT,
                 )
             if status:
                 raise RuntimeError("physics partition failed; original evidence retained")
