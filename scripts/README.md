@@ -50,3 +50,16 @@ CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/export_liber
 `finalize_wam_independent.py --seed 42 --check-only`只读检查上述216条结果及当前分区/调度器退出门槛，pending不算模型失败。去掉`--check-only`会独占新建outputs/wam_independent_20261020/finalizer/，每30秒检测，全部就绪后CPU串行汇总和生成报告；stdout应重定向到该目录外。命令使用上述CUDA空及LD_LIBRARY_PATH空前缀；已有正式产物或旧finalizer目录、错误、取消、冻结输入变化均拒绝，需审阅保留证据后另行处理，不自动重试、覆盖或Git提交。
 
 wine补充执行诊断使用`run_wam_gripper_replay.py --config configs/wam_wine_gripper_replay_20261020.json --seed 42 --stage prepare/baseline/counterfactual/report`，仍逐阶段先复现原intent；独立输出和报告保护旧9条。重放报告路径可显式配置且必须在本仓库reports内。此2源×3夹爪CPU实验只重放原执行前缀，不执行原H40后缀、不重新推理，不并入独立WAM成功率，也不替代原定执行窗口对照。
+
+2026-10-21稳定性阶段入口如下。所有命令从本仓库执行，CPU入口加`CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/`前缀。模型由自有编排设置单张物理GPU4–7；新运行须复制配置并使用新的output_dir，已有证据不覆盖。
+
+| 入口 | 用途与边界 |
+| --- | --- |
+| `run_wam_stability_screen.py --config <config> --seed 42 --fingerprints <complete-byte-manifest>` | 单服务48个固定diagnostic请求、身份/mask/权重检查、GPU锁与自有进程清理；`--dry-run`不加载模型。 |
+| `run_wam_stability_service.py --config <config> --seed 42 --checkpoint <name> --variants <comma-separated> --fingerprints <manifest> --matrix-entry scripts/run_wam_recovery_matrix.py` | 排队运行冻结恢复执行器；每次推理暂停物理，保存raw/effective/admitted参考和真实状态/命令；不是实时性能评测。 |
+| `audit_wam_stability_pilots.py --seed 42 --output <new-snapshot.json>` | 独立重建首24条的控制/夹爪/参考时钟、完整预算与历史逐值baseline；pending不能计失败。 |
+| `audit_wam_recovery.py --output <new-snapshot.json>` | 固定6oracle+24WAM恢复矩阵，独立重建恢复时钟、输出正则、motor目标、不同参考时钟误差及任务结果；`--reuse-verified <snapshot>`只复用同审计源码且全部输入SHA仍相同的case。 |
+| `summarize_wam_earlier_screen.py --output <new-snapshot.json>` | 8400/8600/8800/15400同guidance1.0原始响应与state计分；四组全部48请求完成才给比较，`audit_wam_earlier_screen.py`另用直接积分独立复核。 |
+| `analyze_wam_seed_consensus.py --output <new-snapshot.json>` | 只读缓存两seed等权world参考中点，0新增推理/物理；`audit_wam_seed_consensus.py --output <new-audit.json>`用Slerp独立复核，不把state误差当任务成功。 |
+
+`diagnose_wam_reference_geometry.py --seed 42`与`review_wam_reference_geometry.py`只读固定6条raw intent_hold、其旧baseline及两条恢复bowl，分别记录参考几何、实际提前闭合、model时间消费和对象指标；图像只覆盖已保存观测，不能推断连续接触机制。`qualify_osc_rotation.py`、`qualify_gripper_tracking.py`、`qualify_gripper_intent_hold.py`及`qualify_reference_recovery.py`属于独立物理资格，oracle/合成参考均不计入WAM成功率。完整协议、预算、资格失败和未执行项见[002计划](../plans/v0.0.1/002_wam_stability_20261021.md)、[003恢复对照](../plans/v0.0.1/003_wam_recovery_20261021.md)与[本轮记录](../plans/v0.0.1/record_20261021.md)。
