@@ -14,27 +14,27 @@
 
 `run_cross_dataset.py --seed 42` 执行冻结的60条Panda跨数据集轨迹，使用各自TCP合同验证解析式，并单列原始Cartesian action或nominal master-joint FK差异。结果写 `outputs/cross_dataset_franka/`；只读原始数字列，不执行控制。RoboMIND-v1为真实日志，M1/A1为仿真日志。各自分类、指纹与未验证项随报告保存。
 
-`run_libero_simulation.py` 是独立MuJoCo单trial入口；`run_libero_matrix.py` 组织 `qualification`、`prediction_replay` 或 `policy` 成对矩阵。仿真子进程固定用S2A的 `outputs/libero_env311`，每步实际调用环境前向控制，并保存当前状态、已生成目标、执行命令及执行后状态。`serve_libero_policy.py` 等待空闲GPU和其他训练结束，从S2A工作目录只读加载固定Cosmos权重；5个副本分别指定 `--gpu 0` 至 `--gpu 4`，端口和rendezvous互相独立。启动器是前台监控进程，服务PID保存在outputs中，仅清理本轮拥有的进程。
+`run_libero_simulation.py` 是独立MuJoCo单trial入口；`run_libero_matrix.py` 组织 `qualification`、`prediction_replay` 或 `policy` 成对矩阵。仿真子进程固定用S2A的 `outputs/libero_env311`，每步实际调用环境前向控制，并保存当前状态、已生成目标、执行命令及执行后状态。`serve_libero_policy.py` 等待空闲GPU和其他训练结束，从S2A工作目录只读加载固定Cosmos权重；后续显式指定物理 `--gpu 4`、`5`、`6` 或 `7`，最多四个并行副本，端口和rendezvous互相独立。历史五副本映射不可直接复用。启动器是前台监控进程，服务PID保存在outputs中，仅清理本轮拥有的进程。
 
 `summarize_libero_simulation.py --seed 42` 独立核查37项实际仿真的物理时钟、state error、最终命令幅值/变化率、固定参考成对一致性和源码/输入/产物指纹。`--allow-incomplete` 只生成明确标记未完成的阶段报告，不将缺失项计为通过。完整性校验与任务成功率分开判断。所有命令前使用 `LD_LIBRARY_PATH=''`。
 
 2026-10-19入口：`run_libero_audit.py`按显式config执行case×episode物理矩阵，支持严格`--resume`；`prepare_libero_holdout.py`和`prepare_libero_published.py`生成事先冻结的fixture。`audit_libero_provenance.py`分别在h5py解释器export与PyArrow解释器verify，按整段命令内容核对来源，再分别评价HDF5/R1/R2观测。`audit_libero_predictions.py`独立核对所有已完成模型响应的单位/归一化/mask/时钟；`summarize_libero_audit.py`核对当前矩阵、执行状态、真实前向误差和代码/输入/输出指纹；`plot_libero_audit.py`生成可导出的PNG/PDF。具体命令和证据边界见根README与 `plans/v0.0.1/record_20261019.md`。
 
 
-WAM 效果专项使用 `configs/libero_wam_effect_20261019.json`，五个服务分别在 GPU 0–4/8480–8484；分量干预使用 `configs/libero_wam_components_20261019.json`，GPU 5–7/8485–8487。先按各配置的 `server_urls` 启动 `serve_libero_policy.py --config <config> --seed 42 --gpu <gpu> --port <port>` 并检查 `/info` 的权重路径。权重、推理代码和数据保持外部只读。依赖先前来源审计的 published bridge；复跑需生成该 bridge 或通过配置提供已校验的同源参考，并修改 output_dir，所有已有物理证据拒绝覆盖。
+WAM 效果专项使用 `configs/libero_wam_effect_20261019.json`，历史五服务映射为 GPU 0–4/8480–8484；分量干预使用 `configs/libero_wam_components_20261019.json`，历史映射为 GPU 5–7/8485–8487。这些是已完成实验的资源记录，不能直接重启旧八卡编排器。复跑必须先明确重排至物理GPU4–7并记录新映射；服务命令为 `CUDA_VISIBLE_DEVICES=<允许卡> LD_LIBRARY_PATH='' .venv/bin/python scripts/serve_libero_policy.py --config <config> --seed 42 --gpu <允许卡> --port <port>`，随后检查 `/info` 的权重路径。权重、推理代码和数据保持外部只读。依赖先前来源审计的 published bridge；复跑需生成该 bridge 或通过配置提供已校验的同源参考，并修改 output_dir，所有已有物理证据拒绝覆盖。
 
 ```bash
-LD_LIBRARY_PATH='' .venv/bin/python scripts/fingerprint_libero_checkpoint.py --config configs/libero_wam_effect_20261019.json --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_effect.py --seed 42 --stage controls
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_effect.py --seed 42 --stage wam
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_effect.py --config configs/libero_wam_components_20261019.json --seed 42 --stage components --workers 3
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_libero_contact_bounds.py --seed 42
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_libero_workspace_bound.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/fingerprint_libero_checkpoint.py --config configs/libero_wam_effect_20261019.json --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_effect.py --seed 42 --stage controls
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_effect.py --seed 42 --stage wam
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_effect.py --config configs/libero_wam_components_20261019.json --seed 42 --stage components --workers 3
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_libero_contact_bounds.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_libero_workspace_bound.py --seed 42
 # 待 oracle_response 与 wam_affine 的完整原始轨迹生成后运行；变慢的冻结参考重放只作诊断
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_endpoint_diagnostic.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_effect.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_effect.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/export_libero_effect_video.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_endpoint_diagnostic.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_effect.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_effect.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/export_libero_effect_video.py --seed 42
 ```
 
 同步入口验证 HTTP 前后完整物理状态和仿真时间不变，全部前 8 个目标真实执行。分量干预在 world/source 点替换分量、保留 WAM 原始输出；含 oracle 的成功不计为纯 WAM 成功。独立汇总按冻结名单核对完整预算、逐目标执行、端点连续性、物理位姿、命令边界/变化率、模型反归一化与图像指纹；`--stage controls` 等仅保存阶段核验，不生成全量完成报告。

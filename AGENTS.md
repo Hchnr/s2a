@@ -18,7 +18,7 @@
 ```bash
 .venv/bin/ruff check src tests scripts
 .venv/bin/ruff format --check src tests scripts
-LD_LIBRARY_PATH='' .venv/bin/python -m pytest
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python -m pytest
 ```
 
 当前 NGC 环境执行 Python 时使用 `LD_LIBRARY_PATH=''` 前缀。本机已有 `/opt/venv/bin/python` 可用于验证，避免修改外部共享环境。
