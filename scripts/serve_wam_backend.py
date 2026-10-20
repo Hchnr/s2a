@@ -36,6 +36,29 @@ def main():
     service = load_backend_service(c, "8400_masked", output)
     if service.model.training or service.model.net.training:
         raise ValueError("requires eval model")
+    import flash_attn_3_nv
+    import torch
+    from cosmos_framework.model.attention.flash3 import FLASH3_SUPPORTED
+
+    backend_probe = dict(
+        network_backend=service.model.net.config.action_tower_attention_backend,
+        language_backend=service.model.net.language_model.model.small_action_backend,
+        flash3_supported=bool(FLASH3_SUPPORTED),
+        provider=os.environ.get("COSMOS_FA3_PROVIDER", "nv"),
+        provider_version=flash_attn_3_nv.__version__,
+        provider_module=str(Path(flash_attn_3_nv.__file__).resolve()),
+        provider_module_sha256=file_sha(flash_attn_3_nv.__file__),
+        cuda_device_uuid=str(torch.cuda.get_device_properties(0).uuid),
+        hybrid_backend="VIDEO FA3; UND/ACTION Flex with its existing internal kernel compilation",
+    )
+    if (
+        backend_probe["network_backend"] != "flash3_video"
+        or backend_probe["language_backend"] != "flash3_video"
+        or not backend_probe["flash3_supported"]
+        or backend_probe["provider"] != "nv"
+    ):
+        raise ValueError("actual network/backend/provider is not the registered flash3_video path")
+    write_new_json(output / "actual_backend.json", backend_probe)
     evidence = install_active_slot_mask(service.model, [True] * 10 + [False] * 118)
     trace = SamplerTrace(
         service.model,
@@ -54,6 +77,7 @@ def main():
         code=code_fingerprint(),
         prepared_sha256=args.prepared_sha256,
         physical_gpu=7,
+        actual_backend_probe=backend_probe,
     )
     service.info["acceptance_intervention"] = runtime
     service.info["port"] = 9587

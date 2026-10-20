@@ -189,7 +189,20 @@ def main():
     cpu_environment()
     c = configuration()
     if args.dry_run:
-        print(json.dumps(dict(physical_gpu=7, port=9587, requests=48, physics_steps=0, attention="flash3_video")))
+        print(
+            json.dumps(
+                dict(
+                    physical_gpu=7,
+                    port=9587,
+                    requests=48,
+                    physics_steps=0,
+                    attention="flash3_video",
+                    prerequisites_checked=False,
+                    model_started=False,
+                    physics_started=False,
+                )
+            )
+        )
         return
     if args.prepare_only:
         if args.guidance_audit is None:
@@ -256,6 +269,7 @@ def main():
                 LD_LIBRARY_PATH="",
                 MASTER_PORT="31987",
                 COSMOS_TRAINING="0",
+                COSMOS_FA3_PROVIDER="nv",
                 PYTHONDONTWRITEBYTECODE="1",
                 PYTHONPATH=c["cosmos_repo"] + ":" + str(REPO / "src"),
                 OMP_NUM_THREADS="2",
