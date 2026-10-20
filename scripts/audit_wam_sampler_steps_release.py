@@ -41,14 +41,16 @@ def check_shutdown_log(log, model_pid, expected_requests=144):
     markers = (
         f"Started server process [{model_pid}]",
         "Shutting down",
+        "Waiting for application shutdown.",
         "Application shutdown complete.",
         f"Finished server process [{model_pid}]",
     )
     if statuses != ["200"] * expected_requests or any(log.count(m) != 1 for m in markers):
         raise ValueError("shutdown log does not cover exact HTTP budget and owned normal lifecycle")
     positions = [log.index(m) for m in markers]
+    first_post = log.find('"POST /generate HTTP/1.1"')
     last_post = log.rfind('"POST /generate HTTP/1.1"')
-    if positions != sorted(positions) or not positions[0] < last_post < positions[1]:
+    if positions != sorted(positions) or not positions[0] < first_post <= last_post < positions[1]:
         raise ValueError("owned shutdown lifecycle is out of order or requests continued after shutdown")
     if "ERROR:" in log or "Traceback (most recent call last):" in log:
         raise ValueError("service log contains an error or traceback")

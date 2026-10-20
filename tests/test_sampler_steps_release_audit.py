@@ -25,7 +25,12 @@ def log(pid=123, count=144):
     return "\n".join(
         [f"INFO: Started server process [{pid}]"]
         + ['INFO: 127.0.0.1 - "POST /generate HTTP/1.1" 200 OK'] * count
-        + ["INFO: Shutting down", "INFO: Application shutdown complete.", f"INFO: Finished server process [{pid}]"]
+        + [
+            "INFO: Shutting down",
+            "INFO: Waiting for application shutdown.",
+            "INFO: Application shutdown complete.",
+            f"INFO: Finished server process [{pid}]",
+        ]
     )
 
 
@@ -49,6 +54,7 @@ def test_exact_http_budget_and_owned_shutdown_order(audit):
         log(pid=999),
         log() + '\n"POST /generate HTTP/1.1" 200 OK',
         log().replace("Application shutdown complete.", ""),
+        '\n"POST /generate HTTP/1.1" 200 OK' + log(count=143),
     ):
         with pytest.raises(ValueError):
             audit.check_shutdown_log(changed, 123)
