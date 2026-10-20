@@ -32,6 +32,12 @@ WAM 前置资格使用同三个旧初态的新 1200 步 native 与 oracle 各三
 
 CPU 准备已核 literal1200 源差异、三个真实旧首 query 和 225 个既有服务输出，并拒绝错误 seed、服务根与原 false 资格。收据 `long_raw_review/wam_auditor_cpu_prelaunch_source_and_helpers_v2.json`，SHA `e82f4af7c069ae7ec23a9f08930263f8acf81b025efc895338923082830ede6e`，绑定 canonical token 守卫加入前的审计版本；追加守卫只加强精确性要求。实际 physical-core 资格合同及全部 284 项来源 SHA 也已只读重核：`long_raw_review/wam_auditor_actual_physical_core_contract.json`，SHA `3cdde381578851a2c17176cb5187ce59f1fb7a4e3019c99f97acb6a855c2afb7`。这些准备检查不构成三条 WAM 长时间结果。
 
+另一审阅方已固定最终 `66620b5` 通读审计器，并实调用确认新 physical-core 合同通过、原严格 false 合同被拒绝；独立收据 `long_raw_service_review/wam_auditor_66620b5_independent_review.json`，SHA `6d904b5b11bace6dc7c3e2e8f470bd593a6aef033270a070352909749018e86d`。
+
+## 当前运行与只读进度
+
+root 启动收据 `long_raw_preflight/wam_root_launch.json`，SHA `d1924433405afd1ee92093779fa2b9b00b0c388ec86901852d1ac5758e12ad2f`，固定登记上述三条/3600 步/450 请求。首次实际只读审计 `long_raw_audit/progress_00_launch.json`，SHA `e13d116b56fb472da9402e58ab70351b5a2f99f2251792ed511dbd40b21402c8`，9352 项来源 SHA 前后完全一致；三条均 partial、0 条完整独立验证，成功率 null。已核三份真实 server info、8400 权重 stat 与 12 个运行中登记 PID/ticks/CUDA 身份，模型仅绑定 GPU5/6/7，所有 CPU CUDA/LD 为空。该部分快照采样时 request 文件计数为 0，不将它解释为整个审计期间模型没有执行请求。
+
 本轮将回答旧场景下延长同一策略的物理执行时间是否改变原生任务结果；即使成功，也仍需另行冻结候选、完成未参与开发的新初态验收，不能直接宣称多任务稳定成功。
 
 所有生成产物路径相对 `outputs/wam_stability_20261021/`。
