@@ -217,6 +217,9 @@ def commands(interval, configs):
 def stop_owned(process, identity, expected_cuda):
     if process is None:
         return None, None
+    code = process.poll()
+    if code is not None:
+        return code, dict(pid=process.pid, exited=True, signal_sent=False)
     if identity is None or "start_ticks" not in identity:
         return process.poll(), dict(identity_unavailable=True, signal_sent=False)
     observed = process_record(process.pid, expected_cuda, start_ticks=identity["start_ticks"])
