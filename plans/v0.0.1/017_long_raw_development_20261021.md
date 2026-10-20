@@ -16,6 +16,6 @@ WAM三分区一task各一私有模型/单CPU物理worker：task0→GPU5/9655，t
 
 本轮完整结果按单一1200预算报告三个任务，并并列600截点，不能将“曾成功”代替末40稳定。旧任务开发成功仍不认证新初态泛化；最终预留新初态的候选/时长协议如有调整，必须在任何fresh性能前另冻结，并保留既有30秒失败证据。本017不授权直接执行fresh，不引入任务规划器或选择成功seed。
 
-资格启动前明确oracle边界：原600步oracle在step592的最后query只有8个未来端点，新1200步的同次query有40；要求其前8端点及前600实际state/command一致，不能要求原来不存在的后32端点或execution_endpoint_count相等。WAM固定每次完整H40，前75次full raw/normalized和图像仍要求对应精确回归。native正确参考是实际物理记录，未来长度差异单列，不按未知尾部猜补。
+资格启动前明确oracle边界：原600步oracle在step568/576/584/592的最后四个query分别只有32/24/16/8个未来端点，新1200步的对应query均有40；每次按旧实际长度比较有效前缀及前600实际state/command，不能要求原来不存在的未来suffix或execution_endpoint_count相等。WAM固定每次完整H40，前75次full raw/normalized和图像仍要求对应精确回归。native正确参考是实际物理记录，未来长度差异单列，不按未知尾部猜补。
 
 实现前初始化勘误：首注册稿写“5步初始化”，actual旧factory/当前LIBERO set_init_state只set_state/forward/update_observables，没有env.step；reset的内部timestep为0。首次新环境前据源码修正：不新增任何pre-roll，保留旧物理起点，记录actual initial_timestep/simtime（不伪写5）。horizon1300/ignore_doneFalse、1200评分预算、算法和前600精确回归条件不变。
