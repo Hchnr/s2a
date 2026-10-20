@@ -22,7 +22,7 @@
 | wine bottle → rack | 40 | 37 | 24.892264 | 0.063054 | 0.052837 | 否 |
 | cream cheese → bowl | 31 | 27 | 25.040897 | 0.084950 | 0.063750 | 否 |
 
-共 86 次 tracking-limit、8 次 reference-exhausted、3 次 initial query，合计 97，低于登记上限 225。原始参考消费更长：各组平均 query 间隔约 23.1/15.0/19.4 步；它仍没有解决本轮任务失败。每个真实 query 的原因、前一端点计数、年龄和全部 1800 个 after-TCP 误差均已独立重建。例如 bowl 的 step88 在年龄8、此前连续3次超界时触发，真实覆盖了 min8 之前累计的分支。
+共 86 次 tracking-limit、8 次 reference-exhausted、3 次 initial query，合计 97，低于登记上限 225。原始参考消费更长：每段平均实际消费约 23.1/15.0/19.4 步，含最后预算截断的参考段；它仍没有解决本轮任务失败。每个真实 query 的原因、前一端点计数、年龄和全部 1800 个 after-TCP 误差均已独立重建。例如 bowl 的 step88 在年龄8、此前连续3次超界时触发，真实覆盖了 min8 之前累计的分支。
 
 | 场景 | 位置误差 p95 / 最大 (mm) | 命令饱和 / 速率限制步数 | 目标双指接触端点数 | 目标最高抬升 (mm) |
 | --- | ---: | ---: | ---: | ---: |
@@ -48,6 +48,8 @@ coordinator 292314、model 292482、matrix 293856 和三个 physics worker 29398
 | `tracking_service_review/actual_ready_resource_snapshot.json` | `be69ea89b57844749603485e985d73c319fdf55145d1aff09b372a9233520012` |
 
 路径相对 `outputs/wam_stability_20261021/`。完整 case 审计有 3206 项输入 SHA，最终 outcome 诊断有 3213 项，均审计前后重核。[诊断入口](../scripts/audit_wam_tracking_outcomes.py) 显式复用冻结 010 的几何/事件统计 helper，涵盖三条全部末40、成功区间、位置/SO(3)/opening、饱和/速率限制、参考目标中心距离、接触与最高抬升；不启动模型、仿真或 render。
+
+另一审查方独立复跑最终 sidecar，并重核完整 case 审计的全部输入 SHA、历史 ready 来源、6 个已退出 PID、97 目录和 97 POST，结果一致；没有重复运行 1800 步或新增模型请求。交叉证据为 `tracking_service_review/complete_release_fc765b3_crosscheck.json`，SHA `92d2ef62d63b9e086b0883fc62213df678e7ae9d76da9e99e0f1b553473ee286`。
 
 ## 结论边界
 
