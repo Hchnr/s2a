@@ -19,7 +19,7 @@
 
 首批24条真实WAM开发pilot已全部独立核验，合计14400物理步、无运行异常，ever/terminal/稳定均0/24，8个模型/执行方式cell各0/3。12条governor的7200步中3704步scale=0、4130步在bridge（二者可重叠）；这限制了模型参考消费。8800g1 bowl目标双指接触0→78端点、最高抬起31.4mm，但仍未完成。8800g1.5三个baseline的45张图、全部原始预测和1800步state-command与历史execute40逐值相同，max_abs=0，证明统一baseline未改变旧行为。完整快照：`outputs/wam_stability_20261021/pilot_audits/complete24_verified.json`，SHA `c57b13ef682ce22eb7115b255e0c4475c3faa42e8fc86c06632c2ea58f120211`；另有4组PNG/PDF及独立SHA复核。
 
-固定两个checkpoint/guidance1.0的恢复+握持/朝向消融协议见[003计划](003_wam_recovery_20261021.md)。24条新WAM开发在物理GPU5/7运行；截至独立快照09已完整核验20条，其余4条pending。两种raw alpha1执行方式共12条均未成功；alpha.5共6条中8800 bowl仅2个非连续端点曾成功，末尾/稳定均0；alpha0的15400 bowl曾连续228端点/11.4s成功，随后丢失，末尾/稳定仍false，8800 alpha0 bowl无成功。alpha0丢弃朝向，只能说明位置/夹爪与恒定朝向先验的组合能力，不能认证完整WAM或取代末40验收。所有完整case无运行/审计错误，缺失项不计失败。**新初态验收尚未启动，稳定目标仍进行中。**
+固定两个checkpoint/guidance1.0的恢复+握持/朝向消融协议见[003计划](003_wam_recovery_20261021.md)。24条新WAM开发在物理GPU5/7运行；截至独立快照09已完整核验20条，其余4条pending。两种raw alpha1执行方式共12条均未成功；alpha.5共6条中8800 bowl仅2个非连续端点曾成功，末尾/稳定均0；alpha0的15400 bowl曾连续228端点/11.4s成功，随后丢失，末尾/稳定仍false，8800 alpha0 bowl无成功。alpha0丢弃生成朝向、每个chunk保持其当前实测anchor朝向，重新观测及bridge仍可改变朝向；它只说明位置/夹爪与该保持策略的组合能力，不能认证完整WAM或取代末40验收。所有完整case无运行/审计错误，缺失项不计失败。**新初态验收尚未启动，稳定目标仍进行中。**
 
 新的直接失败证据需要分开归因：15400恢复bowl有端点TCP误差仅2.529mm、但参考横向距bowl body origin206.84mm且低开度，说明该次生成参考自身偏离目标；现有intent_hold又会在reference仍.922时让实际夹爪闭合到.148，不能将这种早闭合全归于模型。只读几何/消费/真实命令报告与896项SHA保存在`reference_geometry_diagnosis/`。下一项是[004位置/闭合保持资格](004_gripper_position_hold_20261021.md)：先修高开度趋势触发的过度闭合，单独9条oracle/5400步资格，不改已在跑的36条配置，不从task/contact生成控制。
 
