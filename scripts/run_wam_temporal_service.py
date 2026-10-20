@@ -60,6 +60,12 @@ def preflight(gate_path, gate_sha, part):
         item = json.loads(Path(source["path"]).read_text())
         assert item["complete"] and item["normal_process_release"]
         if label == "qualification":
+            assert item["schema_version"] == "s2a.temporal-equal-oracle-qualification.v1"
+            assert item["registered_budget"] == dict(
+                oracle_trials=3, physical_steps=1800, model_requests=0, fresh_initial_states=0
+            )
+            assert item["errors"] == [] and item["source_oracle_only"]
+            assert item["oracle_is_wam_success_evidence"] is False
             assert item["qualified"] and item["verified_oracle_cases"] == 3
             assert item["verified_physics_log_endpoints"] == 1800 and item["all1800_common_step_fields_exact_to_007"]
         else:
