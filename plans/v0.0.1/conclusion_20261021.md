@@ -12,11 +12,12 @@
 - 第一版夹爪位置反馈在正确参考上仅2/3稳定，旧intent为3/3；cream回归，**不具资格，不提升为默认**。独立第二版GripperIntentHold保留原关闭时机、关闭至motor limit后0保持、确认释放，同样三旧场景3/3稳定并通过raw审计。两批12条/7200步；这是电机位置目标保持，没有力传感器证实握持力，也不是WAM成功。[资格报告](../../reports/gripper_tracking_qualification_20261021.md)。
 - bounded旋转反解修正其自身SITE/BODY绝对goal混帧及float校验后，24条/4320真实物理步已完整。大阶跃位置21.783/25.379mm明显差于原response3.688/3.724mm；局部朝向收益伴随位置退化，**仍不提升为默认**。旧response的world-left误差对固定右乘offset不变，不能据此认定旧接口错误。
 - 第一版governor有桥接自锁和开度意图插入问题。独立修正版在4条/800步真实合成参考试验中，重query后.70/.75s出桥、端点误差.041/.059mm；旧版5s内桥进度0。但物理TCP平台条件未满足，原observed_blockage及其资格gate仍false，**不能冒称广义堵塞资格通过**。支持的窄证据是zero-scale参考暂停后的有界新参考恢复。新组合还需chunked oracle正控。
-- 最近全仓基础检查：Ruff check通过、141文件format通过，158 tests passed / 1 integration deselected；随后新增恢复governor5项定向测试通过，统一新入口交付后再更新全仓数字。另有真实MuJoCo资格，不拿CPU模型测试代替物理成功。
+- 恢复版统一执行器6条chunked oracle资格已完成：intent_hold与recovering_intent_hold各3/3，均600步、末40端点native连续成功。独立审计重建控制命令、共同参考时钟、三项速度界、实际motor目标及完整SHA，基本和完整oracle gate均为true；它不是WAM成功。恢复组合的admitted TCP pooled误差1.838mm，而未重定时nominal参考为12.856mm，两者口径不同，必须同时保留。
+- 最近全仓基础检查：Ruff check通过、153文件format通过，170 tests passed / 1 integration deselected。另有真实MuJoCo资格，不拿CPU模型测试代替物理成功。
 
-首批24条真实WAM开发pilot保持原协议跑完。截至本检查已独立核验18/24（全12 baseline与6条g1 governor），均600步无运行异常，ever/稳定均0；余6条g1.5 governor未完成不计失败。8800g1 bowl的governor相对baseline TCP误差133.822→32.184mm，目标双指接触0→78端点、最高抬起31.4mm，但仍未完成。8800g1.5三条baseline的15张图/完整128输出/600步state-command与历史execute40逐值相同，max_abs=0，证明本次统一baseline未改变旧行为。
+首批24条真实WAM开发pilot已全部独立核验，合计14400物理步、无运行异常，ever/terminal/稳定均0/24，8个模型/执行方式cell各0/3。12条governor的7200步中3704步scale=0、4130步在bridge（二者可重叠）；这限制了模型参考消费。8800g1 bowl目标双指接触0→78端点、最高抬起31.4mm，但仍未完成。8800g1.5三个baseline的45张图、全部原始预测和1800步state-command与历史execute40逐值相同，max_abs=0，证明统一baseline未改变旧行为。完整快照：`outputs/wam_stability_20261021/pilot_audits/complete24_verified.json`，SHA `c57b13ef682ce22eb7115b255e0c4475c3faa42e8fc86c06632c2ea58f120211`；另有4组PNG/PDF及独立SHA复核。
 
-后续固定两个checkpoint/guidance1.0的恢复+握持/朝向消融协议，见[003计划](003_wam_recovery_20261021.md)。先6条chunked oracle正控，再24条新WAM开发，不把alpha0朝向消融当原始完整checkpoint成绩。**新初态验收尚未启动，稳定目标仍进行中。**
+固定两个checkpoint/guidance1.0的恢复+握持/朝向消融协议见[003计划](003_wam_recovery_20261021.md)。6条chunked oracle正控及完整独立gate通过后，24条新WAM开发已在物理GPU5/7启动。截至独立快照03，已验证4条intent_hold（两个checkpoint各bowl/wine）均无曾成功/终态/稳定成功，另外20条尚未完整，不能提前记失败。alpha0朝向消融不计作原始完整checkpoint成绩。另冻结8400/8600的同协议guidance1.0 state-only诊断，各48请求、总96，仅原diagnostic锚点；不改变两批任务预算，也不打开新holdout。**新初态验收尚未启动，稳定目标仍进行中。**
 
 新23源并非已知最佳checkpoint：validation关闭、15400仅latest complete；新加入源是FastUMI-eef，RoboMIND2旧run已有。LIBERO eef/joint合计名义packed-microbatch份额由200/10194=1.961938%降至10/10000=.1%（约19.62倍下降）；不是实际历史消费、token/loss份额或失败因果证明。两run当前LIBERO条件/clip/归一化审查未发现新run专属推理错接，完整数值一致性、历史消费字节和上游图像/pose物理同步仍未证实。
 
