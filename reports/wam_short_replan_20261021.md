@@ -12,7 +12,7 @@ alpha0 改变局部旋转及其后积分得到的 world 位置，是分量诊断
 
 ## 当前完整案例结果
 
-| 重观测间隔 | 模型旋转 alpha | bowl → plate | wine bottle → rack | cream cheese → basket | 完整组稳定成功 |
+| 重观测间隔 | 模型旋转 alpha | bowl → plate | wine bottle → rack | cream cheese → bowl | 完整组稳定成功 |
 | --- | ---: | --- | --- | --- | --- |
 | 8 | 1，raw | 成功 | 失败 | 失败 | 1/3 |
 | 8 | 0，分量消融 | 失败 | 待完成 | 待完成 | 未统计 |

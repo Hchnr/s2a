@@ -18,7 +18,7 @@
 | --- | ---: | ---: | ---: | ---: | ---: |
 | bowl → plate | 1.838090 | 0.003339389 | 531 | 531 | 15 |
 | wine bottle → rack | 1.421041 | 0.006743932 | 458 | 454 | 15 |
-| cream cheese → basket | 1.547627 | 0.002594670 | 501 | 501 | 15 |
+| cream cheese → bowl | 1.547627 | 0.002594670 | 501 | 501 | 15 |
 
 每条均为一次 initial query 加 14 次 reference exhaustion，**没有 tracking-limit 触发**。全部 1800 个新端点均通过机械与因果重放。移除新增的 `query_decision` / `tracking_replan` 字段后，1800 条 step 的所有共享字段与原无 governor、H40 正确参考执行精确相同；45 条 chunk 排除新增决策和墙钟 `generation_s` 后也精确相同，最大数值差均为 0。声明的比较容差为 `1e-10`，未用于放宽成功门槛。
 
