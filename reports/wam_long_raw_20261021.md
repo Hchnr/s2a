@@ -34,9 +34,13 @@ bowl 第一成功完成端点为物理时间 16.95 秒，连续保持至 60 秒�
 
 完整审计直接重放全部 3600 步机械/S2A/夹爪/因果时钟，原前600步的1800行 canonical token 与225次旧查询再次精确核验；各150个生成目录精确等于对应case的service provenance，全部POST恰为450条 `/generate` HTTP200，没有额外请求。三个Uvicorn日志均有真实启动及结束记录，外部模型 returncode=-15、matrix=0，cleanup_errors为空；12个登记coordinator/model/matrix/physics进程均已退出。历史ready身份和实际8400权重163项stat检查仍通过，没有补造内部finally收据或推断NVML/PID映射。
 
+另一审阅方完成最终独立交叉复核：`long_raw_service_review/final017_independent_verified.json`，SHA `573924d1f6880832f3efc88276163234dfbecdc6a0fc717c80877203082652f3`。全部11650项审计/图表来源SHA无差异，3600个原生端点、九个统计窗口与成功区间、450次请求、旧1800行/225次查询精确回归、12个PID确实不存在均再次确认；没有重跑模型或物理。
+
+该审阅方的reader初稿曾把`chunk.image_sha256`误当PNG文件字节SHA，实际约定是RGB像素字节SHA；拒绝收据 `long_raw_service_review/final017_reader_v1_image_hash_semantics_rejected.json`，SHA `4d88ca9824b449c0d56b9e526ac9e4979204c03d538b68b5c2b87fd21de0a4e5`，保留原稿与差异。修正只读reader对已有图像约定的解释后，上述独立复核通过；真实执行源、计分和文件未更改，这不是模型或仿真失败。
+
 ## 后半段参考跟踪与实际任务进展
 
-root 在完整final审计之后运行新的纯CPU [窗口诊断与出图入口](../scripts/report_wam_long_raw.py)，独立按 source→TCP 几何重算位置、SO(3)、opening、原生成功区间、接触、物体高度与执行约束；没有新增模型请求、render或物理步。结果 `long_raw_report_final_20261021/diagnostics.json`，SHA `0a9ab5d3fcc67bd16fb203f17ae539d447a07a0e460c001ec147eb140585c727`，保留原0–30秒、追加30–60秒与全60秒三个窗口。
+root 在完整final审计之后运行新的纯CPU [窗口诊断与出图入口](../scripts/report_wam_long_raw.py)，独立按 source→TCP 几何重算位置、SO(3)、opening、原生成功区间、接触、物体高度与执行约束；没有新增模型请求、仿真相机render或物理步。结果 `long_raw_report_final_20261021/diagnostics.json`，SHA `0a9ab5d3fcc67bd16fb203f17ae539d447a07a0e460c001ec147eb140585c727`，保留原0–30秒、追加30–60秒与全60秒三个窗口。
 
 | 任务，新增30–60秒 | TCP RMSE (mm) | SO(3) RMSE (rad) | opening MAE | 饱和 / 速率限制步数 | 目标双指接触端点 | 原生成功端点 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
