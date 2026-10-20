@@ -79,3 +79,23 @@ def test_actual_source_consumes_diagnostic_pose_only_in_logged_metrics(audit, tm
     )
     with pytest.raises(AssertionError):
         audit.diagnostic_only_source(changed)
+
+
+def test_diagnostic_reconstruction_reports_roundoff_and_rejects_existing_bound_violation(audit):
+    targets = np.repeat(np.eye(4)[None], 40, axis=0)
+    old = dict(step=592, raw_targets_tcp=targets[:8], effective_targets_tcp=targets[:8], anchor_tcp=np.eye(4))
+    new = dict(step=592, raw_targets_tcp=targets, effective_targets_tcp=targets, anchor_tcp=np.eye(4))
+    old_row = dict(step=599, model_time_s=0.4, after_source=np.eye(4).tolist())
+    new_row = copy.deepcopy(old_row)
+    for row in (old_row, new_row):
+        for kind in ("raw", "effective"):
+            row[f"{kind}_desired_tcp"] = np.eye(4).tolist()
+            row[f"{kind}_model_tcp_error"] = np.zeros(6).tolist()
+    old_row["raw_model_tcp_error"][0] = 1e-16
+    result = audit.diagnostic_reconstruction(new_row, old_row, new, old, np.eye(4), 0.05)
+    assert result["old"]["actual_reconstruction_residuals"]["raw"]["maximum_error_absolute_difference"] == 1e-16
+    assert not result["old"]["actual_reconstruction_residuals"]["raw"]["exactly_equal"]
+    assert result["old"]["all_four_logged_values_reconstructed_within_existing_tolerance"]
+    old_row["raw_model_tcp_error"][0] = 2e-10
+    with pytest.raises(AssertionError):
+        audit.diagnostic_reconstruction(new_row, old_row, new, old, np.eye(4), 0.05)

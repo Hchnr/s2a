@@ -88,14 +88,27 @@ def diagnostic_reconstruction(new_row, old_row, new_chunk, old_chunk, h, dt):
         ("new", new_row, new_chunk, dict(targets=40, cursor=8.0, index=8, fraction=0.0)),
     ):
         actual_tcp = np.asarray(row["after_source"], dtype=float) @ h
+        residuals = {}
         for kind in ("raw", "effective"):
             pose, branch = sample_diagnostic(chunk, kind, row["model_time_s"], dt)
             assert branch == expected
-            np.testing.assert_array_equal(pose, row[f"{kind}_desired_tcp"])
+            saved_pose = np.asarray(row[f"{kind}_desired_tcp"], dtype=float)
+            np.testing.assert_allclose(pose, saved_pose, atol=1e-10, rtol=0)
             rotation = Rotation.from_matrix(pose[:3, :3] @ actual_tcp[:3, :3].T).as_rotvec()
             error = np.concatenate((pose[:3, 3] - actual_tcp[:3, 3], rotation))
-            np.testing.assert_array_equal(error, row[f"{kind}_model_tcp_error"])
-        branches[label] = dict(**expected, all_four_logged_values_reconstructed_exactly=True)
+            saved_error = np.asarray(row[f"{kind}_model_tcp_error"], dtype=float)
+            np.testing.assert_allclose(error, saved_error, atol=1e-10, rtol=0)
+            residuals[kind] = dict(
+                maximum_pose_absolute_difference=float(np.max(np.abs(pose - saved_pose))),
+                maximum_error_absolute_difference=float(np.max(np.abs(error - saved_error))),
+                exactly_equal=bool(np.array_equal(pose, saved_pose) and np.array_equal(error, saved_error)),
+            )
+        branches[label] = dict(
+            **expected,
+            all_four_logged_values_reconstructed_within_existing_tolerance=True,
+            existing_interface_tolerance=1e-10,
+            actual_reconstruction_residuals=residuals,
+        )
     return branches
 
 
