@@ -1,6 +1,6 @@
 # 010：固定短间隔重新观测的 WAM 开发评测
 
-**尚未全部完成**：当前独立核验 10/12 条，原登记的剩余两条继续执行。原始完整 WAM 在每 8 步重观测的 bowl → plate 上首次满足 600 步、末 40 步连续原生成功；同组 wine、cream 均失败。这个结果证明当前 checkpoint 的原始输出在一个旧场景上具备任务能力，还没有达到多任务稳定成功。
+**尚未全部完成**：当前独立核验 11/12 条，原登记的最后一条继续执行。原始完整 WAM 在每 8 步重观测的 bowl → plate 上首次满足 600 步、末 40 步连续原生成功；同组 wine、cream 均失败。这个结果证明当前 checkpoint 的原始输出在一个旧场景上具备任务能力，还没有达到多任务稳定成功。
 
 证据等级为 LIBERO/MuJoCo 独立闭环仿真，使用 Panda 机器人模型；没有运行真机。
 
@@ -17,11 +17,11 @@ alpha0 改变局部旋转及其后积分得到的 world 位置，是分量诊断
 | 重观测间隔 | 模型旋转 alpha | bowl → plate | wine bottle → rack | cream cheese → bowl | 完整组稳定成功 |
 | --- | ---: | --- | --- | --- | --- |
 | 8 | 1，raw | 成功 | 失败 | 失败 | 1/3 |
-| 8 | 0，分量消融 | 失败 | 待完成 | 待完成 | 未统计 |
+| 8 | 0，分量消融 | 失败 | 失败 | 待完成 | 未统计 |
 | 16 | 1，raw | 失败 | 失败 | 失败 | 0/3 |
 | 16 | 0，分量消融 | 失败 | 失败 | 失败 | 0/3 |
 
-依据 `short_replan_audit/progress_10.json`，SHA `2f0051e33ae1a1ed3a32facedce2c91ef4f31acb82c365a5a8791801a7f82d0b`。完整案例均通过冻结独立检查器的 600 步重放；partial/missing 没有算作失败，没有给未完成组成功率。interval16 自有服务已经正常释放，interval8 等待剩余两条；整体 `complete=false`。
+依据 `short_replan_audit/progress_11.json`，SHA `3af07f8811b523b0f635d7ac6c227d6a1b30defb4fb7fdebdc61affd60949dab`。完整案例均通过冻结独立检查器的 600 步重放；partial/missing 没有算作失败，没有给未完成组成功率。interval16 自有服务已经正常释放，interval8 等待最后一条；整体 `complete=false`。
 
 ## 第一条 raw WAM 稳定成功的证据
 
