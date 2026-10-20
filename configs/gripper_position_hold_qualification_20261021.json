@@ -1,0 +1,95 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/gripper_position_hold_qualification",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "fixture": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json",
+  "fixture_sha256": "f522ee333827d51ab66b5b8d1c2a7ebd8ceca3832403b3c54dfa56a821fb2a8e",
+  "records": [
+    "task0_init0",
+    "task1_init0",
+    "task2_init0"
+  ],
+  "sampling_seeds": [
+    42
+  ],
+  "oracle_reference_root": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/native",
+  "online_max_steps": 600,
+  "online_chunk_size": 40,
+  "online_execution_horizon": 40,
+  "max_observation_interval_steps": 80,
+  "stable_success_last_steps": 40,
+  "control_fps": 20,
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "gripper_intent_hold": {
+    "reference_hysteresis": 0.02,
+    "release_margin": 0.04,
+    "release_excursion": 0.04,
+    "release_confirmation_s": 0.05,
+    "motor_limit_tolerance": 0.005,
+    "max_evidence_interval_s": 0.1
+  },
+  "reference_governor": {
+    "max_translation_speed_m_s": 0.2,
+    "max_rotation_speed_rad_s": 1.0,
+    "max_opening_speed_s": 2.0,
+    "position_soft_m": 0.01,
+    "position_stop_m": 0.04,
+    "rotation_soft_rad": 0.1,
+    "rotation_stop_rad": 0.4
+  },
+  "variants": [
+    {
+      "name": "baseline_v2",
+      "rotation": "response",
+      "gripper": "intent_hold",
+      "governor": false,
+      "model_rotation_alpha": 1
+    },
+    {
+      "name": "position_hold",
+      "rotation": "response",
+      "gripper": "position_hold",
+      "governor": false,
+      "model_rotation_alpha": 1
+    },
+    {
+      "name": "recovering_position_hold",
+      "rotation": "response",
+      "gripper": "position_hold",
+      "governor": "recovering",
+      "model_rotation_alpha": 1
+    }
+  ],
+  "notes": [
+    "Frozen004 protocol: baseline_v2/no governor3, position_hold/no governor3, recovering_position_hold3; nine600-step CPU trials, no models.",
+    "Same physical executor as future WAM: stability_position_simulation.py via run_wam_position_matrix.py oracle branch. All raw references remain alpha1.",
+    "Reference opening<=.60 and closing intent starts full motor latch; motor position deadband.07 outside latch, complete v2 measured-clearance/confirmation release retained. No fixed.70 release requirement.",
+    "Qualification requires every case last40 native-success, TCP<=10mm and SO3<=.05rad; parameters are not adjusted or failed cases rerun."
+  ],
+  "gripper_position_hold": {
+    "reference_hysteresis": 0.02,
+    "release_margin": 0.04,
+    "release_excursion": 0.04,
+    "release_confirmation_s": 0.05,
+    "motor_limit_tolerance": 0.005,
+    "max_evidence_interval_s": 0.1,
+    "close_threshold": 0.6,
+    "motor_deadband": 0.07
+  },
+  "qualification": {
+    "workers": 2,
+    "expected_cases": 9,
+    "expected_physics_steps": 5400,
+    "position_rmse_max_m": 0.01,
+    "rotation_rmse_max_rad": 0.05,
+    "historical_baseline_root": "outputs/wam_stability_20261021/recovery_executor_qualification/simulation/oracle_intent_hold",
+    "baseline_exact_before_candidate": true
+  }
+}
