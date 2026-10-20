@@ -208,6 +208,18 @@ def report(audit, audit_path, output):
         "- 冻结协议：`plans/v0.0.1/011_sampler_steps_state_20261021.md`；完整checkpoint路径见prepared.json。",
         "- 后续仅按本报告预注册门槛决定是否另行登记更多步数的开发物理实验；本入口不启动任何新推理或物理。",
     ]
+    exit_evidence = audit.get("exit_observability")
+    if exit_evidence is not None:
+        lines += ["", "## 退出收据的可观测性", ""]
+        if exit_evidence["exit_observability_complete"]:
+            lines.append("原服务关闭及初始化mask收据均实际落盘，并按原严格条件核验。")
+        else:
+            lines.append(
+                "本轮使用独立显式fork的有限退出旁证，原冻结审计器和严格收据要求保持原字节。实际Uvicorn在正常shutdown后恢复默认SIGTERM handler并重发信号，CPU因果probe证实外层finally可被OS终止绕过。缺失的closed/mask_evidence文件没有补造；initial-noise RMS内存ledger与最终poison状态仍未知。"
+            )
+            lines.append(
+                "state质量证据完整与退出可观测性分别报告：144条实际请求/trace/raw、35全量exact、70/140配对、NFE/schedule/参数RNGguard、raw最终无效槽全零、144条HTTP200、正常Uvicorn生命周期和登记PID受控释放均独立核验；这些证据不会恢复缺失的内存诊断。退出旁证、CPUprobe及实际源码SHA见完整audit，未修改质量或候选门槛。"
+            )
     return "\n".join(lines) + "\n"
 
 
