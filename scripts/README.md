@@ -78,3 +78,12 @@ wine补充执行诊断使用`run_wam_gripper_replay.py --config configs/wam_wine
 014的`wam_position_acceptance_checker.py`是seed与首query来源回调显式参数化的字面旧checker，`verify_wam_acceptance_seed_regression.py`只读回归旧27条。015的`audit_wam_seed43_qualification.py`独立验收三旧场景真实43 oracle；这些都不启动WAM或证明43模型任务能力。
 
 016新版本`run_wam_tracking_matrix.py --config configs/tracking_replan_qualification_20261021_v2.json --seed 42 --source oracle --variant position_hold --workers 2 --dry-run`会实际只读验证三条native参考，0环境步进/0模型。去掉dry-run的资格已有输出后拒绝覆盖。新`run_wam_tracking_service.py --seed 42 --gate <frozen-launch-gate.json> --gate-sha256 <sha>`只在完整独立资格与013正常释放等输入SHA门禁通过后启动物理GPU7/9597的一份8400和单物理worker，3条/1800步/max225请求；`--dry-run`也严格核门禁。所有CPU命令沿用空CUDA/LD前缀，原position/recovery入口字节保留；完整预算/算法见016计划。
+
+
+017使用隔离的`long_environment.py`/`long_simulation.py`与`run_wam_long_matrix.py`，明确horizon1300/ignore_doneFalse、1200评分步、无新增初始化步。CPU入口仍为空CUDA/LD。先`--config configs/long_raw_qualification_20261021.json --seed 42 --source native --variant position_hold --workers 2`，再同配置`--source oracle`；已存在输出拒绝覆盖。新原生参考必须实际包含1200步，不能补长原600日志。
+
+资格的原严格入口为`audit_wam_long_qualification.py`；显式窄入口`audit_wam_long_qualification_commit.py --stage native|full --launch <native-launch> --launch-sha256 <sha> [--oracle-launch <oracle-launch> --oracle-launch-sha256 <sha>] --output <new-file>`仅规范化精确同一Git commit标识，几何/机械/前600/clock全部复用冻结原checker。旧严格短/长ID字符串拒绝原样保留。
+
+全六条资格/7200步/正常退出通过后，`prepare_wam_long_launch.py --qualification <full6-gate> --qualification-sha256 <sha> --output <new-directory>`重核完整旧证据、固定各卡完整PID roster、实际8400的163文件stat，并写3个immutable launch gate；该命令不启动模型/物理。随后`run_wam_long_service.py --seed 42 --partition 0|1|2 --gate <partition-gate> --gate-sha256 <sha>`分别使用物理GPU5/6/7与9655/9656/9657，每part一旧任务/1200步/150请求。`--dry-run`使用实际严格准入，真正启动还在锁内检查显存严格0和端口，不沿用GPU0–3。
+
+`capture_wam_long_ready.py --launch <root-group-launch> --launch-sha256 <sha> --output <new-file>`只读取12个自有实际进程的ticks/cmd/cwd/parent/environment、3次GET /info与NVML快照，0次生成/0步物理；NVML到local PID映射未知保留。010新增`audit_wam_short_replan_final.py --output <new-file>`仅为已记录外部未使用15400文件缺失的显式窄补核，原error/release/缺失complete不修改，不能混称原coordinator final gate成功。

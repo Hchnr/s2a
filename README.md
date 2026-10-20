@@ -2,7 +2,7 @@
 
 S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接收的 action，使执行后的实际状态接近目标。
 
-2026-10-21继续以**稳定成功**为目标。完整WAM曾在旧初态成功，但尚未达到多任务、新初态的稳定门槛：新v3夹爪8800/15400共24条稳定0/24；8400完整12条稳定1/12，仅alpha0/cream（修改了生成参考）。[010短闭环](plans/v0.0.1/010_short_replan_wam_20261021.md)目前raw每8步三个旧任务稳定1/3，仅bowl尾13.1s成功且保留完整模型旋转；每16步raw/alpha0均0/3，8步alpha0三条也已执行完、待最终独立补核。单例不算整体达标。见[本轮结论](plans/v0.0.1/conclusion_20261021.md)和[记录](plans/v0.0.1/record_20261021.md)。
+2026-10-21继续以**稳定成功**为目标。完整WAM曾在旧初态成功，但尚未达到多任务、新初态的稳定门槛：新v3夹爪8800/15400共24条稳定0/24；8400完整12条稳定1/12，仅alpha0/cream（修改了生成参考）。[010短闭环](plans/v0.0.1/010_short_replan_wam_20261021.md)目前raw每8步三个旧任务稳定1/3，仅bowl尾13.1s成功且保留完整模型旋转；每16步raw/alpha0均0/3，8步alpha0三条也完整0/3；全12/7200步/678请求已独立补核。原收尾发现未使用历史权重15400外部缺失，错误保留，未伪造原门禁成功。单例不算整体达标。见[本轮结论](plans/v0.0.1/conclusion_20261021.md)和[记录](plans/v0.0.1/record_20261021.md)。
 
 state对照不支持盲目更换推理配置：[latest15600](reports/wam_latest_state_screen_20261021.md)九项误差均差于8400及15400；[guidance3](reports/wam_guidance_state_20261021.md)和[训练attention backend](reports/wam_backend_state_20261021.md)各48次完整诊断均未通过事先规定的改善门槛，不追加其物理任务评测。[011采样步数](reports/wam_sampler_steps_state_20261021.md)的144次已完整核验：35步48次全部精确复现原输出，70/140步九项误差均更差，不推广。模型实际只使用物理GPU4–7；CPU/OSMesa空CUDA/LD，外部Cosmos及发布数据只读。
 
