@@ -61,5 +61,11 @@ wine补充执行诊断使用`run_wam_gripper_replay.py --config configs/wam_wine
 | `audit_wam_recovery.py --output <new-snapshot.json>` | 固定6oracle+24WAM恢复矩阵，独立重建恢复时钟、输出正则、motor目标、不同参考时钟误差及任务结果；`--reuse-verified <snapshot>`只复用同审计源码且全部输入SHA仍相同的case。 |
 | `summarize_wam_earlier_screen.py --output <new-snapshot.json>` | 8400/8600/8800/15400同guidance1.0原始响应与state计分；四组全部48请求完成才给比较，`audit_wam_earlier_screen.py`另用直接积分独立复核。 |
 | `analyze_wam_seed_consensus.py --output <new-snapshot.json>` | 只读缓存两seed等权world参考中点，0新增推理/物理；`audit_wam_seed_consensus.py --output <new-audit.json>`用Slerp独立复核，不把state误差当任务成功。 |
+| `qualify_gripper_position_hold.py --config configs/gripper_position_hold_qualification_20261021.json --seed 42 --prepare-only` | 冻结004九条CPU资格及实际依赖；去掉prepare-only执行，先精确复现旧v2，再评价新v3两方式；已完成目录拒绝重跑。 |
+| `run_wam_stability_service.py ... --matrix-entry scripts/run_wam_position_matrix.py` | 004资格门禁通过后的005/006新夹爪执行入口，物理函数与oracle共用，模型单卡、每服务一CPU worker；须沿用各自预注册预算。 |
+| `audit_wam_position.py --output <new-snapshot.json>` | 固定9oracle＋24WAM的005独立重建，新增独立scalar v3、qpos/motor/开度连续及对应003首query精确回归；不包含006。 |
+| `audit_wam_earlier_position.py --output <new-snapshot.json>` | 006固定8400十二条独立重建；仅引用已通过的9oracle资格，首query对同8400旧十二条，不把资格重复计数或扩大005分母。 |
+| `analyze_wam_position_gripper.py --audit <audit.json> --output <new-snapshot.json>` | 对已验证005与旧003仅共同首query作严格开度配对；600步对照另标后续输入分叉，不能当全程相同参考。 |
+| `report_wam_position.py --audit <complete-audit.json> --gripper-diagnostic <complete-diagnostic.json> --output <new-directory>` | 仅005全部33项verified和24对诊断完整时生成正式报告/图；partial门禁不通过，不提前给全矩阵结论。 |
 
 `diagnose_wam_reference_geometry.py --seed 42`与`review_wam_reference_geometry.py`只读固定6条raw intent_hold、其旧baseline及两条恢复bowl，分别记录参考几何、实际提前闭合、model时间消费和对象指标；图像只覆盖已保存观测，不能推断连续接触机制。`qualify_osc_rotation.py`、`qualify_gripper_tracking.py`、`qualify_gripper_intent_hold.py`及`qualify_reference_recovery.py`属于独立物理资格，oracle/合成参考均不计入WAM成功率。完整协议、预算、资格失败和未执行项见[002计划](../plans/v0.0.1/002_wam_stability_20261021.md)、[003恢复对照](../plans/v0.0.1/003_wam_recovery_20261021.md)与[本轮记录](../plans/v0.0.1/record_20261021.md)。
