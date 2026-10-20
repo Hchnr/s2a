@@ -26,19 +26,36 @@ def main():
     suite = benchmark.get_benchmark_dict()[template["task_suite"]]()
     tasks = {suite.get_task(i).language: i for i in range(suite.n_tasks)}
     rng = np.random.default_rng(args.seed)
+    previous_hashes = set()
+    for path in c.get("previous_simulation_fixtures", []):
+        previous_hashes.update(r["initial_state_sha256"] for r in json.loads(Path(path).read_text())["records"])
     records = []
     for task_index, task in enumerate(c["tasks"]):
         filename = task.replace(" ", "_") + "_demo.hdf5"
         source = out / "assets" / filename
         if task_index == 0:
             source = Path("/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/data") / filename
+        if "simulation_sources" in c:
+            source = Path(c["simulation_sources"][task_index])
         with h5py.File(source) as data:
             old_tuning = {"demo_27", "demo_7", "demo_9", "demo_15", "demo_0"} if task_index == 0 else set()
+            if "excluded_demos_by_task" in c:
+                old_tuning.update(c["excluded_demos_by_task"][task_index])
             demos = sorted(set(data["data"]) - old_tuning, key=lambda x: int(x.split("_")[-1]))
+            demos = [
+                demo
+                for demo in demos
+                if sha256_bytes(np.asarray(data["data"][demo]["states"][0], dtype=float).tobytes())
+                not in previous_hashes
+            ]
             selected = rng.choice(demos, size=c["online_initial_states_per_task"], replace=False)
             for initial_index, demo in enumerate(selected):
                 episode = data["data"][demo]
                 initial = np.asarray(episode["states"][0], dtype=float)
+                initial_hash = sha256_bytes(initial.tobytes())
+                if initial_hash in previous_hashes:
+                    raise ValueError("duplicate or previously evaluated initial state")
+                previous_hashes.add(initial_hash)
                 native_path = dest / f"task{task_index}_init{initial_index}_expert.npy"
                 np.save(native_path, episode["actions"][:])
                 records.append(
@@ -60,7 +77,8 @@ def main():
                         pretraining_consumption="unknown; initial states excluded from prior controller tuning",
                     )
                 )
-    write_json(dest / "fixtures.json", dict(code=code_fingerprint(), config=c, records=records))
+    exclusions = {path: sha256(path) for path in c.get("exclusion_sources", [])}
+    write_json(dest / "fixtures.json", dict(code=code_fingerprint(), config=c, records=records, exclusions=exclusions))
     print(json.dumps([dict(name=r["name"], task_id=r["task_id"], demo=r["demo"]) for r in records]))
 
 
