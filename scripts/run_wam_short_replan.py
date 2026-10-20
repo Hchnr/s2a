@@ -127,13 +127,24 @@ def weight_stats(gate):
 def process_record(pid, expected_cuda, *, start_ticks=None):
     proc = Path(f"/proc/{pid}")
     try:
-        ticks = int((proc / "stat").read_text().rsplit(")", 1)[1].split()[19])
+        fields = (proc / "stat").read_text().rsplit(")", 1)[1].split()
+        ticks = int(fields[19])
+        if fields[0] in ("Z", "X"):
+            return dict(pid=pid, present=False, start_ticks=ticks, exited_proc_state=fields[0])
         env = dict(x.split(b"=", 1) for x in (proc / "environ").read_bytes().split(b"\0") if b"=" in x)
     except FileNotFoundError:
         return dict(pid=pid, present=False)
     if start_ticks is not None and ticks != start_ticks:
         return dict(pid=pid, present=False, pid_reused=True, observed_start_ticks=ticks)
     if env.get(b"CUDA_VISIBLE_DEVICES") != expected_cuda.encode() or env.get(b"LD_LIBRARY_PATH") != b"":
+        # A child can exit between reading stat and environ. Only an absent or
+        # explicitly dead process may bypass the live environment guard.
+        try:
+            fields = (proc / "stat").read_text().rsplit(")", 1)[1].split()
+        except FileNotFoundError:
+            return dict(pid=pid, present=False)
+        if fields[0] in ("Z", "X"):
+            return dict(pid=pid, present=False, start_ticks=int(fields[19]), exited_proc_state=fields[0])
         raise ValueError(f"owned process environment differs: {pid}")
     return dict(pid=pid, present=True, start_ticks=ticks, cuda_visible_devices=expected_cuda, ld_library_path="")
 
