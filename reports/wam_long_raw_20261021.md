@@ -24,15 +24,31 @@ GPU5/9655、GPU6/9656、GPU7/9657 分别绑定三个独立模型服务与单 CPU
 
 bowl 第一成功完成端点为物理时间 16.95 秒，连续保持至 60 秒，末 40 步全部成功；没有依赖提前终止。两个失败任务的 ever、terminal、末40 stable 都为 false，不能用更多接触或抬升代替任务完成。
 
-| 任务 | 全1200 TCP RMSE (mm) | SO(3) RMSE (rad) | 目标双指接触端点 | 目标最大高度增量 (mm) |
-| --- | ---: | ---: | ---: | ---: |
-| bowl → plate | 6.436436 | 0.026772 | 0 | 27.915125 |
-| wine bottle → rack | 4.721284 | 0.012494 | 635 | 75.888990 |
-| cream cheese → bowl | 8.145223 | 0.019529 | 10 | 83.774092 |
+| 任务 | 全1200 TCP RMSE (mm) | SO(3) RMSE (rad) | opening MAE | 目标双指接触端点 | 最大高度增量（相对初始观测，mm） |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| bowl → plate | 6.436436 | 0.026772 | 0.020314 | 0 | 27.915125 |
+| wine bottle → rack | 4.721284 | 0.012494 | 0.025709 | 635 | 75.888990 |
+| cream cheese → bowl | 8.145223 | 0.019529 | 0.018507 | 10 | 83.774092 |
 
 上述误差是实际 TCP 对生成执行参考的跟踪误差，不是对专家未来 state 的预测误差。wine 有持续接触和抬升、cream 有过抬升，仍没有原生任务成功。bowl 目标双指接触为 0，只确认原生目标完成，不声称专家抓持方式复现。
 
 完整审计直接重放全部 3600 步机械/S2A/夹爪/因果时钟，原前600步的1800行 canonical token 与225次旧查询再次精确核验；各150个生成目录精确等于对应case的service provenance，全部POST恰为450条 `/generate` HTTP200，没有额外请求。三个Uvicorn日志均有真实启动及结束记录，外部模型 returncode=-15、matrix=0，cleanup_errors为空；12个登记coordinator/model/matrix/physics进程均已退出。历史ready身份和实际8400权重163项stat检查仍通过，没有补造内部finally收据或推断NVML/PID映射。
+
+## 后半段参考跟踪与实际任务进展
+
+root 在完整final审计之后运行新的纯CPU [窗口诊断与出图入口](../scripts/report_wam_long_raw.py)，独立按 source→TCP 几何重算位置、SO(3)、opening、原生成功区间、接触、物体高度与执行约束；没有新增模型请求、render或物理步。结果 `long_raw_report_final_20261021/diagnostics.json`，SHA `0a9ab5d3fcc67bd16fb203f17ae539d447a07a0e460c001ec147eb140585c727`，保留原0–30秒、追加30–60秒与全60秒三个窗口。
+
+| 任务，新增30–60秒 | TCP RMSE (mm) | SO(3) RMSE (rad) | opening MAE | 饱和 / 速率限制步数 | 目标双指接触端点 | 原生成功端点 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| bowl → plate | 5.782709 | 0.031377 | 0.003824 | 6 / 131 | 0 | 600 |
+| wine bottle → rack | 1.880187 | 0.010904 | 0.013272 | 0 / 36 | 600 | 0 |
+| cream cheese → bowl | 1.903345 | 0.010629 | 0.002040 | 0 / 4 | 0 | 0 |
+
+两个失败任务在新增30秒的给定参考跟踪已较好、没有饱和，但仍完全没有原生成功。这支持“这一后半段即使较好跟随当前生成参考，目标仍未完成”的有限结论；早期较大的误差、参考质量与重观测策略仍可能同时影响任务，不能据此把全部失败唯一归因某一环节。
+
+root 与独立审计方均实际查看了完整三行四列图：30秒分界、末40端点灰带、原生成功绿带、实际/参考开度及物理时间标注清楚。wine 后半段夹爪参考/实测开度较小且持续双指接触，cream 后半段两者接近全开、没有双指接触；图中只有 bowl 有原生成功绿带。图的物体高度以首个已执行端点为基准，前表高度沿完整case checker的初始观测基准，二者未混列。
+
+[完整60秒PNG](../outputs/wam_stability_20261021/long_raw_report_final_20261021/long_raw_tracking_and_progress.png)，SHA `cb30df989d998984cd33903dacf64837ded8ed346c91cb4aa199390cceb6c564`；[同图PDF](../outputs/wam_stability_20261021/long_raw_report_final_20261021/long_raw_tracking_and_progress.pdf)，SHA `281429f7c80915a078ac06763f247dcb23729fee59e53adc161569ac10699df3`。图展示已执行轨迹诊断，不是连续摄像视频。
 
 ## 六条执行资格与明确的日志例外
 
