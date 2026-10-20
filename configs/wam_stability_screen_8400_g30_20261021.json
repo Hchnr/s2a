@@ -1,0 +1,35 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/screening/8400_g30",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoints": [
+    {
+      "name": "8400_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008400",
+      "gpu": 7,
+      "port": 9577
+    }
+  ],
+  "offline_horizons": [
+    40
+  ],
+  "offline_prompt_modes": [
+    "task_only"
+  ],
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "sampling_steps": 35,
+  "guidance": 3.0,
+  "shift": 5.0,
+  "control_fps": 20,
+  "source_samples_manifest": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_checkpoint_acceptance_20261019v2/samples/manifest.json",
+  "notes": [
+    "012 state-only single guidance3 candidate; original24 cases/seeds42/43;35steps/shift5/H40,48calls/0physics, no fresh.",
+    "Only physicalGPU7/9577; CPU CUDA/LD empty. Full inputs fixed; actual-noise witness absent, do not assert bitexact noise pairing.",
+    "Frozen H8/H16 no-regression and10percent position-gain admission before any separately registered physical test."
+  ]
+}
