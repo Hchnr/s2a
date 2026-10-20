@@ -1,0 +1,37 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/earlier_screening/8400_g10",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoints": [
+    {
+      "name": "8400_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008400",
+      "gpu": 4,
+      "port": 9144
+    }
+  ],
+  "offline_horizons": [
+    40
+  ],
+  "offline_prompt_modes": [
+    "task_only"
+  ],
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "control_fps": 20,
+  "source_samples_manifest": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_checkpoint_acceptance_20261019v2/samples/manifest.json",
+  "notes": [
+    "Additional2026-10-21 development-only state screen: old22-source stage at guidance1.0; not a23-source continuation or a latest/best-weight designation.",
+    "Exactly the same24 diagnostic phase anchors/6 original episodes as the first8800/15400 screen. H40, task-only, seeds42/43,35denoising steps,shift5;48queries per checkpoint.",
+    "Use the existing complete checkpoint byte fingerprints after path/size/mtime checks. No identical guidance1 request was found in explicitly stage-associated repository outputs.",
+    "No task-success conclusion follows from this state-only comparison. Historical guidance1.5 physical scores are separate. No fresh holdout is opened.",
+    "Only root-owned orchestration may start this service on physicalGPU4/port9144; preparation and dry-run use empty CUDA_VISIBLE_DEVICES and LD_LIBRARY_PATH."
+  ]
+}
