@@ -1,0 +1,18 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/reference_gain_diagnostic",
+  "checkpoints": ["8400_g10", "8800_g10", "15400_g10"],
+  "ridge": 0.1,
+  "position_scale_m": 0.1,
+  "rotation_scale_rad": 0.5,
+  "opening_scale": 1.0,
+  "position_gain_bounds": [0.0, 2.0],
+  "rotation_gain_bounds": [0.0, 1.0],
+  "opening_bias_bounds": [-0.25, 0.25],
+  "prefixes": [8, 16, 40],
+  "split": "leave_one_complete_episode_out",
+  "deduplicate": ["episode", "anchor_frame", "sampling_seed"],
+  "new_model_queries": 0,
+  "new_physics_steps": 0,
+  "physical_promotion_authorized": false
+}
