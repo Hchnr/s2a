@@ -23,9 +23,7 @@ from s2a.reference_gains import ReferenceGains, relative_features
 
 def load_cases(label, root, evidence):
     config, _, verified, progress = (
-        verify_earlier(label, root, evidence)
-        if label == "8400_g10"
-        else verify_cell(label, root, evidence)
+        verify_earlier(label, root, evidence) if label == "8400_g10" else verify_cell(label, root, evidence)
     )
     assert progress["complete"] and len(verified) == 48
     checkpoint = config["checkpoints"][0]["name"]
