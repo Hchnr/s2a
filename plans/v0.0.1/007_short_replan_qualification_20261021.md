@@ -1,0 +1,15 @@
+# 短重新观测间隔的执行资格 — 2026-10-21（Asia/Shanghai）
+
+状态：仅冻结CPU资格预算，不启动新的WAM或新初态性能评测。005/006已启动矩阵继续按原字节完成，不改变其maxobs80或分母。
+
+本轮六设置state诊断中短H8/H16误差较小，8400在两前缀的三项指标均最低；现恢复参考在多条任务上模型时间消费较低，而最长80步才重新观测。修正夹爪映射后的两权重no-gov六条已完整核验但均未成功，不能据此否定仍在执行的18条gov/朝向干预。本计划先检查更频繁更新是否保持正确参考的执行能力，避免直接批量增加模型请求。
+
+保留已通过004的GripperPositionHold默认值、OSC inverse_weight.5/rate5、H40/20Hz、execution horizon40、每case600实际步、最后40原生成功、旧三task/init0/seed42、正确native state/opening参考。仅将max_observation_interval_steps从80分别改为8/16；每个间隔保留position_hold无governor与recovering_position_hold两方式，参考alpha1，不使用模型。无governor也受相同物理间隔上限约束。gov可能提前完成参考；新query继续使用原RecoveringReferenceGovernor，不能为通过资格事后改变bridge实现。
+
+两个配置各6条，共12条/7200物理步，最多两个CPU/OSMesa worker同时运行；CUDA_VISIBLE_DEVICES与LD_LIBRARY_PATH为空，无GPU占用或模型调用。所有输入和实际依赖在启动前保存SHA，不修改原runtime或004/005核验器。使用相同position执行函数，另建编排和只读资格核验入口，原12条全部结果保留，失败不调阈值或自动重跑。
+
+每条须完整600步、无执行或输入变化错误、末40原生成功、canonical TCP RMSE≤10mm及SO3 RMSE≤.05rad。独立重建每次query的全H40 oracle来源、查询前后物理状态/时钟、三值gripper状态、电机量化子步及qpos开度连续关系、OSC命令/速率界、gov桥接及原始/有效/admitted/nominal时钟，并报告bridge占比与实际模型时间消费。全部来源与输入SHA前后重验。资格只证明正确参考的执行，不算WAM成功。
+
+特别检查反复重query是否持续处于bridge：已保存完整600端点、每query的bridge/retiming状态，并与旧004的maxobs80只读对照。参考轨迹的独立重新锚定仅连接到已知当前oracle世界端点，不把任意WAM未来重锚成专家轨迹。若资格未通过，相应组合不进入模型试验，不放松原门槛。
+
+后续短间隔WAM的checkpoint、variant、物理和请求预算须在资格结果和005/006完整证据之后另行冻结；本计划不自动启动它们。新初态保留到最终候选冻结后，不用于调参。历史图像/pose同步和checkpoint泛化未知不由本资格解决。
