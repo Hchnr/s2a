@@ -15,6 +15,14 @@ from s2a.task_acceptance import task_outcome
 from s2a.wam_reference_replay import run_replay
 
 
+def report_destination(c):
+    repo = Path(__file__).resolve().parents[1]
+    path = (repo / c.get("report_path", "reports/wam_gripper_replay_20261020.md")).resolve()
+    if not path.is_relative_to(repo / "reports"):
+        raise ValueError("replay report_path must resolve inside repository reports/")
+    return path
+
+
 def prepare(c, root):
     destination = root / "manifest.json"
     if destination.exists():
@@ -97,7 +105,7 @@ def execute(c, root, config_path, modes):
 
 def report(c, root):
     dest = root / "summary.json"
-    report_path = Path("reports/wam_gripper_replay_20261020.md")
+    report_path = report_destination(c)
     if dest.exists() or report_path.exists():
         raise FileExistsError("replay report already exists")
     prepared = json.loads((root / "manifest.json").read_text())
@@ -143,7 +151,7 @@ def report(c, root):
     lines = [
         "# 保存WAM参考的夹爪执行诊断 — 2026-10-20",
         "",
-        "事后选择三条已完成WAM参考：稳定成功、提前释放失败、间歇成功。CPU独立物理重放，600步/20Hz，不查询模型。",
+        f"事后选择{len(c['cases'])}条已完成WAM固定参考，比较{len(c['gripper_modes'])}种夹爪方式，共{len(rows)}条CPU独立物理重放，每条{c['steps']}步，不查询模型。",
         "",
         "固定原world参考、arm算法/参数/限速；各反事实使用自身当前反馈，因此arm命令数值可以不同。原intent必须复现原始轨迹和判定才执行其余夹爪。",
         "",
@@ -159,10 +167,11 @@ def report(c, root):
     lines += [
         "",
         "这些是保存参考的执行反事实，后续参考来自原轨迹观测，不是对反事实当前图像重新推理；结果不能计入WAM闭环成功率或独立验收。",
-        "Latch复用历史0.8/0.9阈值，同时改变闭合和释放条件；position改变夹爪接口，均仅回答策略总影响。原始完整轨迹、当前反馈及图像保存在outputs。",
+        "Latch复用历史0.8/0.9阈值，同时改变闭合和释放条件；position改变夹爪接口，均仅回答策略总影响，不能将成败差异唯一归于释放机制。原始完整轨迹、当前反馈及图像保存在outputs。",
         "",
     ]
-    report_path.write_text("\n".join(lines))
+    with report_path.open("x") as stream:
+        stream.write("\n".join(lines))
     write_json(
         dest, dict(code=code_fingerprint(), config=c, cases=rows, files_sha256=files, report_sha256=sha256(report_path))
     )
