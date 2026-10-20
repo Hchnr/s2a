@@ -1,0 +1,11 @@
+# 新初态验收检查器准备 — 2026-10-21（Asia/Shanghai）
+
+状态：纯CPU实现/旧证据回放，不授权任何新的模型请求、物理步或fresh性能。010/011/013全部继续原冻结来源；002的新初态正式候选与预算仍须完整开发结果后单独冻结。
+
+现有006/010完整逐步检查器固定sampling_seed42并将首query回归到旧8400场景。为后续42/43与新fixture验收准备独立新入口，保留所有旧checker/执行器字节；从冻结006 verify_case及其670行后verify_query来源显式继承完整检查，唯一必要差异是采样seed显式参数化和首query来源验证callback。禁止dynamic patch、运行时替换旧全局、放宽任何机械/几何/时间/成功容差或去掉字段检查。
+
+新函数必须检查seed属于config声明，并将同一seed贯穿result/request/response authentication；新初态首querycallback未来必须由正式协议绑定fixture/initial physics/anchor/输入，不假造旧raw回归。继承代码逐行/AST最小diff与源SHA保存，callback不会读未来任务状态，也不改变控制。新script仅验证保存日志，不生成action或任务规划。
+
+准入先用原完整004/006和010已完成cases逐值重放，保持全部旧SHA与机械/参考/原生结果相同，包含失败与成功，source/query40×128与retiming检查一并保留；这只是新checker对已知seed42证据的回归，不冒充seed43物理验证。seed43的真实物理/来源资格留到未来冻结协议，不能靠编辑42日志伪造。新函数没有fresh性能入口或自动生成新评测。
+
+新开发函数及验证脚本在独立新文件，提交后互review；所有生成结果outputs，源只读。准备工作是为后续统一24条验收消除硬编码，不允许以CPU检查器回归通过替代实际WAM多初态稳定。
