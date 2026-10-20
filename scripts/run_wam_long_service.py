@@ -109,6 +109,11 @@ def preflight(path, digest, partition):
             raise ValueError(f"prior {kind} evidence is not bound to the launch gate")
     complete = json.loads(Path(prior["complete_path"]).read_text())
     release = json.loads(Path(prior["release_path"]).read_text())
+    audit = json.loads(Path(prior["audit_path"]).read_text())
+    prior_inputs = audit["source_before_after_hashes" if partition == 0 else "input_sha256"]
+    for filename, expected in prior_inputs.items():
+        if signatures.get(filename) != expected:
+            raise ValueError("launch gate omitted an independent prior-audit input")
     if (
         not complete["complete"]
         or release["model_returncode"] not in (0, -15)
@@ -123,10 +128,40 @@ def preflight(path, digest, partition):
         228,
     ):
         raise ValueError("010 interval16 complete budget differs")
+    if partition == 0:
+        selected = [case for case in audit["cases"] if case["interval"] == 16]
+        expected_cases = {(f"task{task}_init0", alpha) for task in (0, 1, 2) for alpha in (0, 1)}
+        if (
+            len(selected) != 6
+            or {(case["record"], case["model_rotation_alpha"]) for case in selected} != expected_cases
+            or any(case["status"] != "verified" or (case["steps"], case["chunks"]) != (600, 38) for case in selected)
+        ):
+            raise ValueError("010 interval16 independent six-case audit is incomplete")
     if partition == 1 and (complete["requests"], complete["physics_steps"]) != (144, 0):
         raise ValueError("011 complete sampler budget differs")
+    if partition == 1 and (
+        not audit["complete"]
+        or not audit["quality_evidence_complete"]
+        or audit["errors"]
+        or audit["scope"]["requests"] != 144
+        or any(
+            audit["groups"][str(stage)]["verified_requests"] != 48
+            or not audit["groups"][str(stage)]["data_complete"]
+            or not audit["groups"][str(stage)]["stage_admission_present"]
+            for stage in (35, 70, 140)
+        )
+    ):
+        raise ValueError("011 independent144-request quality audit is incomplete")
     if partition == 2 and (complete["wam_trials"], complete["physics_steps"]) != (3, 1800):
         raise ValueError("016 complete raw-reference budget differs")
+    if partition == 2 and (
+        not audit["complete"]
+        or not audit["all_cases_independently_verified"]
+        or audit["verified_cases"] != 3
+        or len(audit["cases"]) != 3
+        or any(case["status"] != "verified" or case["steps"] != 600 for case in audit["cases"])
+    ):
+        raise ValueError("016 independent three-case audit is incomplete")
     owned = prior["owned_processes"]
     models = [p for p in owned if p["cuda_visible_devices"] == str(ck["gpu"])]
     if (
