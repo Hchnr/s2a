@@ -6,7 +6,7 @@
 
 本协议保留每8步当前图像/任务重观测、8400/guidance1/35steps/shift5/SDPA/active-slot mask、raw H40/执行40、20Hz、response逆.5/rate5、无gov及v3参数；没有修改模型pose/rotation/opening、夹爪事件或使用物体/成功输入。每条1200实际控制步，最后40端点原生连续成功，同时另外报告原600步截点、首次/最长成功、31–60秒进度和跟踪。600步结果不被1200步成功追溯覆盖。此处排除推理延迟，延长的是物理任务窗口。
 
-旧factory默认horizon1000/ignore_done=False，1001前self.done会拒绝；不能靠忽略外层success-done或手动清self.done突破。只读证据`libero_1200step_readonly_feasibility_20261021.json` SHA `3ad53ac56e3bb0854f3ab16fd5ad2c390020e17fe5f2c312ffadff7f03478f81`已绑定实际源。新增隔离factory显式horizon1300、ignore_done=False，保留原恢复/5步初始化；记录effective_horizon、initial/final内部timestep、control频率与实际dt，1200评测不消费初始化预算。保守留100步初始化余量，明确不把1300当评分步数。原factory和正在跑的源码字节不改。
+旧factory默认horizon1000/ignore_done=False，1001前self.done会拒绝；不能靠忽略外层success-done或手动清self.done突破。只读证据`libero_1200step_readonly_feasibility_20261021.json` SHA `3ad53ac56e3bb0854f3ab16fd5ad2c390020e17fe5f2c312ffadff7f03478f81`已绑定实际源。新增隔离factory显式horizon1300、ignore_done=False，保留原reset/restore过程、不新增初始化物理步；记录effective_horizon、initial/final内部timestep、control频率与实际dt，1200评测从恢复后的当前状态开始，actual初始内部timestep按源码应为0并现场核验。1300只为明确高于1200的环境上限，留100步余量，明确不把1300当评分步数。原factory和正在跑的源码字节不改。
 
 有限预算分别是：native3×1200=3600步，oracle＋同一冻结S2A3×1200=3600步，条件WAM3×1200=3600步/450个H40请求（每条150）。合计9条/10800步；不是新鲜初态验收。native复用原专家命令及结束后已有保持约定，不新规划；oracle参考只来自本轮完整native实际state，不伪造native/补写后600日志。native和oracle均须完整/末40原生成功，oracle TCP≤10mm/SO3≤.05rad。先核六条正确参考资格，失败不启动该新WAM预算。
 
@@ -17,3 +17,5 @@ WAM三分区一task各一私有模型/单CPU物理worker：task0→GPU5/9655，t
 本轮完整结果按单一1200预算报告三个任务，并并列600截点，不能将“曾成功”代替末40稳定。旧任务开发成功仍不认证新初态泛化；最终预留新初态的候选/时长协议如有调整，必须在任何fresh性能前另冻结，并保留既有30秒失败证据。本017不授权直接执行fresh，不引入任务规划器或选择成功seed。
 
 资格启动前明确oracle边界：原600步oracle在step592的最后query只有8个未来端点，新1200步的同次query有40；要求其前8端点及前600实际state/command一致，不能要求原来不存在的后32端点或execution_endpoint_count相等。WAM固定每次完整H40，前75次full raw/normalized和图像仍要求对应精确回归。native正确参考是实际物理记录，未来长度差异单列，不按未知尾部猜补。
+
+实现前初始化勘误：首注册稿写“5步初始化”，actual旧factory/当前LIBERO set_init_state只set_state/forward/update_observables，没有env.step；reset的内部timestep为0。首次新环境前据源码修正：不新增任何pre-roll，保留旧物理起点，记录actual initial_timestep/simtime（不伪写5）。horizon1300/ignore_doneFalse、1200评分预算、算法和前600精确回归条件不变。
