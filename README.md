@@ -6,7 +6,7 @@ S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接
 
 state对照不支持盲目更换推理配置：[latest15600](reports/wam_latest_state_screen_20261021.md)九项误差均差于8400及15400；[guidance3](reports/wam_guidance_state_20261021.md)和[训练attention backend](reports/wam_backend_state_20261021.md)各48次完整诊断均未通过事先规定的改善门槛，不追加其物理任务评测。[011采样步数](reports/wam_sampler_steps_state_20261021.md)的144次已完整核验：35步48次全部精确复现原输出，70/140步九项误差均更差，不推广。模型实际只使用物理GPU4–7；CPU/OSMesa空CUDA/LD，外部Cosmos及发布数据只读。
 
-[018旋转漂移诊断](reports/wam_rotation_drift_diagnostic_20261021.md)已完成固定19次拟合及独立重算：六整episode留出，H8/H16旋转误差降低10.50%/21.63%，但仍差于保持、历史外推及shuffle等对照，未过推广门槛，不投入物理或fresh。该研究0新增推理/物理；位置及opening不变。最新全仓检查289 passed / 1外部integration deselected，Ruff check与243文件format通过。
+[018旋转漂移诊断](reports/wam_rotation_drift_diagnostic_20261021.md)已完成固定19次拟合及独立重算：六整episode留出，H8/H16旋转误差降低10.50%/21.63%，但仍差于保持、历史外推及shuffle等对照，未过推广门槛，不投入物理或fresh。该研究0新增推理/物理；位置及opening不变。最新全仓检查335 passed / 1外部integration deselected，Ruff check与261文件format通过（含新019/020来源、几何、时钟及控制不变检查）。[020因果参考集成](plans/v0.0.1/020_causal_temporal_ensemble_20261021.md)正执行三条正确参考CPU资格；没有020 WAM任务结果，不能当成模型成功。
 
 执行侧[短重观测正确参考](reports/short_replan_qualification_20261021.md)12/12、[真实seed43正确参考](reports/wam_seed43_execution_qualification_20261021.md)3/3通过；[双种子日志检查器](reports/wam_seed_aware_checker_20261021.md)旧27条精确回归。这些不计WAM成功。[016](plans/v0.0.1/016_tracking_replan_20261021.md)保持所有raw pose/opening，以实测误差决定8–40步重新观测，WAM三任务完整0/3稳定（1800步、97请求），[报告](reports/wam_tracking_replan_20261021.md)已完成。[017持续效果](reports/wam_long_raw_20261021.md)三条1200步/450请求已全部独立核验：仍仅bowl成功，稳定1/3；bowl尾43.1秒连续成功，wine/cream追加30秒仍0成功，后半TCP跟踪约1.9mm。不能只归因时间不足，也未达到多任务稳定。三服务正常释放，原600结论保留。下一项[019第二seed重复性](plans/v0.0.1/019_raw8_seed43_replication_20261021.md)固定原30秒raw8、三个旧任务seed43，物理GPU4–6；12个预留新初态未做性能评测，无真机。所有已保存输出拒绝覆盖。
 
