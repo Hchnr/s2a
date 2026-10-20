@@ -8,7 +8,7 @@
 
 - 12个新初态×2seed的原生命令正控全部完成600步，24/24末端成功、24/24最后40步稳定成功；独立复核见 outputs/wam_independent_20261020/native_integrity.json。
 - 4份checkpoint、8个模型副本均精确复现各自历史H40预测，max_abs=0；mask修正版及权重身份通过检查。
-- 96条同协议H40/执行8模型实验正在运行，24条oracle正控正在运行；尚无本轮WAM完整成功率结论。
+- 24条oracle正控已全部独立复核，24/24稳定成功；canonical TCP位置RMSE 1.1745–1.8592mm、SO(3) 0.001568–0.006964rad。96条同协议H40/执行8模型实验仍在运行，尚无本轮WAM完整成功率结论。
 - 旧集合的执行16/40对照正控已启动；模型诊断已排队，在各自主分区退出后复用GPU。
 - Ruff与107文件格式检查通过；pytest 54 passed、1 integration deselected。
 
