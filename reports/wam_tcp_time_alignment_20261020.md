@@ -26,3 +26,5 @@ max_abs = 2.22e-16
 当前训练reader直接消费发布action、mask和timestamp，不消费state条件，也不在reader内应用上述工具矩阵。当前catalog、receipt和checkpoint配置不能证明历史训练实际消费的字节及窗口；消费记录未提供，不将静态合同核对提升为历史训练全链认证。
 
 原始数值、索引比较、41项输入SHA及代码依据见 [audit.json](../outputs/wam_tcp_time_alignment_20261020/audit.json)，产物SHA256为 `da7f2f02215d8ae496608bfae562c7f8cee6e9631ea140b10ac81f8e1764b51e`。执行锚点见 [checkpoint_simulation.py:155](../src/s2a/checkpoint_simulation.py#L155)，原生观测点见 [libero_simulation.py:58](../src/s2a/libero_simulation.py#L58)，完整来源边界见原始审计的 `limitations`。
+
+后续只读第一方核对已认证该同源流对应[NVIDIA固定发布版本](https://huggingface.co/datasets/nvidia/LIBERO_LeRobot_v3/tree/e5907374380b8f96511957e6ba5582be52a1e179)：两份本地元数据文本原字节、四个goal数据/视频shard SHA与远端内容身份相同。原始NVIDIA生成器、HDF版本和图像/pose物理同步仍未闭合；这项新证据不改上表的TCP/时间数值，也不证明历史训练消费。第一方响应及边界见[图像/时刻报告](wam_video_pose_timing_20261020.md)与[audit_reconciled.json](../outputs/wam_upstream_generation_contract_20261020/audit_reconciled.json)。

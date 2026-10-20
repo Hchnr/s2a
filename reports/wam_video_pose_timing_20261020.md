@@ -43,6 +43,14 @@
 
 后续只读追溯定位到本地原始下载版（README声明为`nvidia/LIBERO_LeRobot_v3`）的`libero_goal episode304 → R1 episode683 → R2 episode1139`。原始下载版158行8维state与R1逐项相同（max_abs=0），frame index及timestamp均相同；两路完整MP4在原始下载版、R1、R2三处各自字节SHA一致，并与保留的merge记录匹配。当前merge代码也直接复制视频字节；R1变换writer和entrypoint的SHA与发布记录一致。
 
-这将已观察到的native HDF与发布流差异定位到该本地原始LeRobot发布边界，不能归因于本地合并重新执行物理或重编码视频。它没有恢复NVIDIA上游具体HDF版本/SHA、生成/重放代码或pose与像素的物理时刻合同，仍不能判断是否是同一HDF版本或相同commands的另一条重放。命令内容匹配不等于观测或物理轨迹相同。来源声明及记录的revision未在远端独立认证，历史训练实际消费亦未恢复。
+这将已观察到的native HDF与发布流差异定位到该本地原始LeRobot发布边界，不能归因于本地合并重新执行物理或重编码视频。它没有恢复NVIDIA上游具体HDF版本/SHA、生成/重放代码或pose与像素的物理时刻合同，仍不能判断是否是同一HDF版本或相同commands的另一条重放。命令内容匹配不等于观测或物理轨迹相同。该本地追溯本身未认证远端revision，后续第一方核对见下文；历史训练实际消费仍未恢复。
 
 该专项绑定35项输入SHA，数值继承、视频SHA、原始源路径、脚本及具体行号保存在 [upstream_lineage_followup.json](../outputs/wam_tcp_time_alignment_20261020/upstream_lineage_followup.json)（SHA256 `807f57ca2fe083a3cfb310d040a04040da72eb03f1b40934cdc238d44347ce21`）。未改变旧审计或原始数据，也未发现需要停止主评测的已证实错误。
+
+## 第一方发布版本核验
+
+后续查验[官方固定revision](https://huggingface.co/datasets/nvidia/LIBERO_LeRobot_v3/tree/e5907374380b8f96511957e6ba5582be52a1e179)及其API，确认记录的e5907374380b8f96511957e6ba5582be52a1e179确实存在。本地README、goal info与固定版本原响应字节相同；goal数据Parquet、episode metadata Parquet及两路完整MP4的本地SHA均与该版本远端LFS内容身份相同。只读取文本及元数据，没有重新下载数据/视频payload或解码。这补齐的是发布来源身份，不能自动认证其物理同步。
+
+有界查阅该版本83文件、历史README、官方LIBERO及NVIDIA下游代码，仍没有可绑定goal episode304的精确生成器、HDF版本/SHA或图像/pose物理时刻合同。官方LIBERO脚本先env.step再保存obs属于程序次序上下文，既不能证明它生成了该NVIDIA发布，也不能单独认证cached observable时刻；其他suite的字串同样不构成goal来源证明。本轮不据此修改标签、锚点或主矩阵。
+
+16次第一方响应的URL、UTC、headers和内容SHA及26项输入见[audit_reconciled.json](../outputs/wam_upstream_generation_contract_20261020/audit_reconciled.json)，SHA256 `aabba3339ff24c825dc987810f2cb7473f4beea9f69c721e86baff38879acd32`。原audit.json及其SHA保留；派生版仅纠正继承自旧输入的revision_status文字，使之与新核验结论一致，未改原始响应或其他结果。全部26项输入及远端内容字段已由另一条读取路径复核。

@@ -40,6 +40,8 @@ wine首初态8800/seed43整段TCP/SO(3)跟踪RMSE为4.690mm/0.02203rad，仍未�
 
 更上游只读追溯确认：本地NVIDIA原始下载版libero_goal ep304的158行state、frame index、timestamp被R1原样保留，两路MP4在原始/R1/R2三处字节SHA一致。故已知HDF观测差异并非本地merge重放physics或重编码造成；原始发布使用的HDF版本及物理时刻生成合同仍未知，不能据此认证上游同步或唯一归因权重。
 
+第一方远端补查现已确认上述本地源对应NVIDIA官方固定revision：两元数据文本原字节、四个goal Parquet/视频shard内容SHA相同。它加强发布版本身份，未找到可绑定该episode的精确生成器或HDF指纹，仍不认证物理时刻同步。完整边界与保留的原始响应见[图像/时刻报告](../../reports/wam_video_pose_timing_20261020.md)。
+
 已验证：
 
 - 12个新初态×2seed的原生命令正控全部完成600步，24/24末端成功、24/24最后40步稳定成功；独立复核见 outputs/wam_independent_20261020/native_integrity.json。
