@@ -44,3 +44,5 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/export_libero_effect_video.py --seed
 当前GPU限制以根AGENTS.md为准：只允许物理4–7，以上GPU0–3命令为历史记录。已完成初态的成对轨迹诊断可运行 `CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_wam_scene_diagnostics.py --record task0_init0 --seed 42`。入口先独立核验该初态所有checkpoint和seed的完整预算，输出TCP/SO(3)、夹爪、原生抓取接触和任务判定曲线及PNG/PDF和原始证据SHA，已有输出拒绝覆盖。前5秒几何图与分段误差是事后诊断窗口，整条30秒曲线和成功判定一并保留；场景图不代表全矩阵验收或因果证明。
 
 `audit_wam_gripper_commands.py --seed 42 --output outputs/wam_independent_20261020/gripper_command_audit_<snapshot>.json`只读复核增量完整性SHA，比较实际夹爪命令/方向反转、接触和控制限制，区分command作用起点与endpoint；未完成项不计失败。`run_wam_gripper_replay.py --seed 42 --stage prepare/baseline/counterfactual/report`使用configs/wam_gripper_replay_20261020.json做三源×三夹爪的CPU固定参考重放；先通过原intent复现门槛再解释其他策略。命令均加`CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/`前缀，重放是事后执行反事实，不计作新WAM闭环成功。
+
+`report_wam_independent.py --seed 42`要求主144条、执行16/40各36条的完整summary/integrity，以及9条CPU重放完整证据；任一缺失拒绝生成正式报告。报告按目标原生双侧指垫接触及任务判定划分失败阶段，单列固定参考反事实并复核来源与结果SHA，不将阶段或跟踪统计写成唯一因果。
