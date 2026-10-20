@@ -21,7 +21,7 @@
 
 固定两个checkpoint/guidance1.0的恢复+握持/朝向消融见[003计划](003_wam_recovery_20261021.md)，24条/14400步现已全部独立核验：ever2/24、terminal0/24、stable0/24，无运行/审计错误，完整1199输入SHA前后重验通过。两种raw alpha1方式共12条均未成功；alpha.5中8800 bowl仅step154/157两个非连续端点曾成功；alpha0的15400 bowl曾连续228端点/11.4s成功，随后丢失。alpha0丢弃生成朝向、每个chunk保持当前实测anchor，重新观测及bridge仍可改变朝向；它只说明位置/夹爪与该保持策略的组合能力，不能认证完整WAM。两服务GPU5/7正常释放。[正式报告及图表](../../reports/wam_recovery_20261021.md)。**新初态验收尚未启动，稳定目标仍进行中。**
 
-新的直接失败证据需要分开归因：15400恢复bowl有端点TCP误差仅2.529mm、但参考横向距bowl body origin206.84mm且低开度，说明该次生成参考自身偏离目标；现有intent_hold又会在reference仍.922时让实际夹爪闭合到.148，不能将这种早闭合全归于模型。只读几何/消费/真实命令与896项SHA保存在`reference_geometry_diagnosis/`。独立[004位置/闭合保持](004_gripper_position_hold_20261021.md)9条oracle/5400步已全部稳定：旧v2基线三条逐值复现、新position_hold无gov与加恢复各3/3，TCP1.31–2.06mm、SO3 .00259–.00679rad。新模块不从task/contact生成控制。完整独立主核验通过，补充qpos→opening/连续及motor_after核验后才按[005固定24WAM协议](005_wam_position_hold_20261021.md)启动，不能将9条资格当新WAM成功。
+新的直接失败证据需要分开归因：15400恢复bowl有端点TCP误差仅2.529mm、但参考横向距bowl body origin206.84mm且低开度，说明该次生成参考自身偏离目标；现有intent_hold又会在reference仍.922时让实际夹爪闭合到.148，不能将这种早闭合全归于模型。只读几何/消费/真实命令与896项SHA保存在`reference_geometry_diagnosis/`。独立[004位置/闭合保持](004_gripper_position_hold_20261021.md)9条oracle/5400步已全部稳定：旧v2基线三条逐值复现、新position_hold无gov与加恢复各3/3，TCP1.30–2.06mm、SO3 .00259–.00679rad。新模块不从task/contact生成控制。主核验与5400前后qpos/motor开度及5391连续关系补核均通过；root再次重核434输入SHA后，已于19:41:56UTC在物理GPU5/7启动[005固定24WAM对照](005_wam_position_hold_20261021.md)。不能将9条资格当新WAM成功，新24结果尚待完整验证。
 
 12个新物理初态已仅按metadata/seed42预留并独立核验，未进行任何候选性能评测：每task4、12初态SHA唯一且与旧5real fixture无重叠、expert/model XML/initial与HDF来源一致、重现抽样完全相同。除9完整命令及1严格后缀匹配外，另2历史episode只有唯一全长XYZ+gripper部分匹配、旋转仍差约.0075；保守将这两个疑似来源也排除，不升级为完整控制/历史物理同步认证。源旋转、图像/pose/初态同步及预训练可见性未知继续保留。此为输入准备，不是新初态任务验收。
 
