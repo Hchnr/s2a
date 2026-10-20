@@ -94,6 +94,7 @@ def preflight(path, digest, partition):
         sha256(gate["qualification"]["path"]) != gate["qualification"]["sha256"]
         or not qualification["qualification_passed"]
         or not qualification["all_cases_complete"]
+        or not qualification["normal_process_release"]
         or qualification["native_trials"] != 3
         or qualification["oracle_trials"] != 3
         or qualification["physical_steps"] != 7200
