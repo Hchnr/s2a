@@ -24,6 +24,7 @@ def main():
     parser.add_argument("--variants", required=True, help="comma-separated, pre-registered variant names")
     parser.add_argument("--fingerprints", required=True)
     parser.add_argument("--job-indices")
+    parser.add_argument("--wait-for-screen", help="completed diagnostic output root; requires its successful release")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     c, root = load_config(args.config)
@@ -88,7 +89,7 @@ def main():
             cmd += ["--job-indices", args.job_indices]
         jobs.append((variant, cmd))
     if args.dry_run:
-        print(json.dumps(dict(physical_gpu=gpu, model=model_cmd, jobs=jobs)))
+        print(json.dumps(dict(physical_gpu=gpu, model=model_cmd, jobs=jobs, wait_for_screen=args.wait_for_screen)))
         return
     suffix = "_jobs" + args.job_indices.replace(",", "-") if args.job_indices else ""
     dest = root / "orchestration" / (ck["name"] + "_" + "_".join(variants) + suffix)
@@ -98,6 +99,28 @@ def main():
     model, job = None, None
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, interrupted)
+    if args.wait_for_screen:
+        screening = Path(args.wait_for_screen).resolve()
+        if not screening.is_relative_to(Path("outputs").resolve()):
+            raise ValueError("screen dependency must be a repository artifact")
+        for _ in range(180):
+            if (screening / "orchestration/error.json").exists():
+                raise RuntimeError("upstream diagnostic failed; no model was started")
+            complete, release = screening / "orchestration/complete.json", screening / "orchestration/release.json"
+            if complete.exists() and release.exists():
+                if json.loads(complete.read_text())["queries"] != 48:
+                    raise ValueError("upstream diagnostic did not finish48 queries")
+                upstream = json.loads((screening / "orchestration/manifest.json").read_text())
+                if upstream["physical_gpu"] != gpu:
+                    raise ValueError("screen dependency belongs to another physical GPU")
+                write_json(
+                    dest / "screen_dependency.json",
+                    dict(complete_sha256=sha256(complete), release_sha256=sha256(release)),
+                )
+                break
+            time.sleep(10)
+        else:
+            raise TimeoutError("upstream screening did not release within30minutes; no model was started")
     with (lock_path / f"physical{gpu}.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         memory = subprocess.check_output(

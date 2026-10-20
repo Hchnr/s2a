@@ -1,10 +1,12 @@
 """Causal common-clock retiming of already generated world/TCP references.
 
-This module preserves every generated endpoint, including its aperture. It
+This module preserves the current path's endpoints, including aperture. It
 does not plan, infer a grasp, or use a task predicate. Piecewise linear world
 translation and shortest SO(3) interpolation share a retimed clock. A new
 chunk has an explicit bridge from the preceding admitted reference to its
 measured anchor; that bridge consumes physical time but no model time.
+Replacing a chunk discards its unexecuted suffix, as ordinary receding-horizon
+execution does; endpoint preservation does not promise executing that suffix.
 """
 
 from dataclasses import dataclass
