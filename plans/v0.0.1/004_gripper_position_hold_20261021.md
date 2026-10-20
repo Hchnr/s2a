@@ -1,0 +1,25 @@
+# 夹爪连续开度与闭合保持 — 2026-10-21（Asia/Shanghai）
+
+目标是修正现有执行映射对WAM连续opening的过度响应，先资格验证，不预设任务会成功。正在运行的003及8400扩展源码、配置、产物保持原字节。
+
+已有证据：8800 wine在reference opening=.922时actual已=.148；intent_hold采用下降趋势触发完全闭合，不能将其实际早闭合全部归于WAM。第一版位置跟踪曾仅2/3 oracle成功，它把受载观测宽度附近作为自由motor目标，未保持闭合至motor limit。第二版保持motor limit解决了资格回归，但保留了过早关闭的趋势触发。因此新候选分别处理高开度位置、明确闭合参考及释放。
+
+固定.5闭合门槛不适用已成功的wine/cream正确参考：各最低约.528641/.528560，永远不会触发。以下参数是本次候选的固定工程起点，限定当前Panda/20Hz接口，不能当通用抓取保证。
+
+## 新候选与在线边界
+
+- 尚未闭合锁存时，按已生成absolute opening与已知motor opening之差发native−1/0/+1，motor deadband=.07；当前20Hz、25子步使一个完整命令的归一化opening变化约.126582，deadband略高于半步，避免小幅预测噪声导致满行程开闭。不得把单个小下降趋势当完全闭合请求。
+- reference≤.60才进入close-to-limit锁存；.60覆盖正确参考约.529的受载宽度并留一个半命令步余量。进入后不把观测受载宽度当自由motor目标，继续native+1直到已知motor opening≤.005，然后0保留目标。
+- 释放须reference≥.70、同时超过当前/已记载受载宽度+.04（近全开上限按既有.99处理）、相比本次closing最低参考上升至少.04，并经完整.05s观测间隔确认；最大有效证据间隔.1s。释放后恢复motor位置跟踪，不无条件一直开到1。
+- 仅输入当前观测opening、已知motor目标、前次实际command、dt及已生成reference。不输入task标签、对象位置、contact、成功谓词或专家未来观测。闭合motor目标不是校准握持力或抓稳证明。
+- 新模块、测试、资格入口和配置独立维护。先覆盖真实问题的高开度小抖动、受载宽度保留、释放确认、量化不抖动、状态隔离/无效采样因果性，不修改已冻结旧模块。
+
+## 启动前冻结的资格预算
+
+原三个task/init0、seed42、20Hz、H40、执行40、600物理步、末40端点native连续成功。正确参考取已保存成功native state，按当前物理step选未来chunk，仅作特权oracle资格，不算WAM任务能力。
+
+三种执行方式各3场景，共9条/5400物理步：旧intent_hold无governor作为基线；新position_hold无governor；新position_hold加recovering governor。恢复参数、OSC response逆、inverse_weight=.5、command rate5/s、最长80物理步重新选chunk均同003。基线应与已完成chunked oracle intent_hold对应三条逐值复现，运行差异必须先解释，不能计作新算法收益。
+
+每条重置环境与adapter，CPU/OSMesa CUDA和LD_LIBRARY_PATH为空，两worker内运行；不调用模型、不启动GPU任务。模块/入口/配置及所有实际依赖在运行前提交并写SHA，出错保留、不自动重跑或改阈值。完整9条均600步无error、三方式各3/3稳定、TCP RMSE≤10mm、SO3≤.05rad，且motor积分/零保留/命令约束/来源独立核验通过后才考虑后续WAM新协议。资格失败保留原结果，不事后放宽门槛。
+
+本计划不追加WAM预算、不改变尚在运行的原24及8400新12条。后续模型对照须根据完整开发证据另行冻结。新鲜初态验收仍未运行。
