@@ -119,6 +119,25 @@ def reconstruct_ensemble(physical_step, chunks):
     return target, opening, expected
 
 
+def compare_ensemble_log(saved, expected):
+    """Integer chronology and equal weights are exact, not tolerance gates."""
+    assert set(saved) == set(expected)
+    for field in ("physical_step", "absolute_endpoint", "contributor_count", "newest_query_step"):
+        assert type(saved[field]) is int and saved[field] == expected[field]
+    assert type(saved["identity_fast_path"]) is bool
+    assert saved["equal_weight"] == expected["equal_weight"]
+    assert len(saved["contributors"]) == len(expected["contributors"])
+    for actual, desired in zip(saved["contributors"], expected["contributors"], strict=True):
+        for field in ("query_step", "endpoint_index", "absolute_endpoint"):
+            assert type(actual[field]) is int and actual[field] == desired[field]
+        assert actual["weight"] == desired["weight"]
+        mapping(actual, desired)
+    mapping(
+        {key: value for key, value in saved.items() if key != "contributors"},
+        {key: value for key, value in expected.items() if key != "contributors"},
+    )
+
+
 def source_proof(evidence):
     """All014 query/physics/control AST remains except explicitly listed edits."""
     parent = original_source_proof(evidence)
@@ -182,7 +201,7 @@ ALLOWED_SOURCE_CHANGES = [
     ),
     (
         '            close(desired_tcp, effective_poses[step - chunk["step"]])\n            close(row["opening_target"], openings[step - chunk["step"]])',
-        '            ensemble_pose, ensemble_opening, ensemble_provenance = reconstruct_ensemble(step, chunks)\n            close(desired_tcp, ensemble_pose)\n            close(row["opening_target"], ensemble_opening)\n            mapping(row["temporal_ensemble"], ensemble_provenance)',
+        '            ensemble_pose, ensemble_opening, ensemble_provenance = reconstruct_ensemble(step, chunks)\n            close(desired_tcp, ensemble_pose)\n            close(row["opening_target"], ensemble_opening)\n            compare_ensemble_log(row["temporal_ensemble"], ensemble_provenance)',
     ),
     (
         '        raw_checkpoint_evidence=source == "wam" and variant["model_rotation_alpha"] == 1,',
@@ -459,7 +478,7 @@ def verify_case(
             ensemble_pose, ensemble_opening, ensemble_provenance = reconstruct_ensemble(step, chunks)
             close(desired_tcp, ensemble_pose)
             close(row["opening_target"], ensemble_opening)
-            mapping(row["temporal_ensemble"], ensemble_provenance)
+            compare_ensemble_log(row["temporal_ensemble"], ensemble_provenance)
             assert row["reference_progress"] is None and not row["bridging"] and not row["bridge_recovery_advanced"]
             close(row["model_time_s"], (step - chunk["step"] + 1) * dt)
             close(row["retimed_clock_s"], row["model_time_s"])

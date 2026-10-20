@@ -1,6 +1,8 @@
 """Independent020 causal endpoint, geometry and retained-source contracts."""
 
+import copy
 import importlib.util
+import json
 from pathlib import Path
 
 import numpy as np
@@ -53,6 +55,8 @@ def test_same_absolute_endpoint_indices_and_all_channel_weights(checker):
     assert opening == pytest.approx(0.5)
     np.testing.assert_allclose(pose[:3, :3].T @ pose[:3, :3], np.eye(3), atol=1e-14)
     assert np.linalg.det(pose[:3, :3]) == pytest.approx(1)
+    actual_json = json.loads(json.dumps(log, default=lambda value: value.tolist()))
+    checker.compare_ensemble_log(actual_json, log)
 
 
 def test_expired_predictions_future_values_and_input_ownership(checker):
@@ -109,3 +113,20 @@ def test_all_unrelated014_case_ast_and_entire_query_ast_remain_exact(checker):
     proof = checker.source_proof(Evidence())
     assert proof["all_other_case_ast_nodes_exact"] and proof["literal_query_ast_exact"]
     assert not proof["production_temporal_module_imported"] and not proof["dynamic_patch_or_generated_function_used"]
+
+
+def test_logged_indices_and_uniform_weights_are_exact_not_numeric_tolerances(checker):
+    inputs = [chunk(0, path(40), np.full(40, 0.5))]
+    _, _, expected = checker.reconstruct_ensemble(0, inputs)
+    checker.compare_ensemble_log(copy.deepcopy(expected), expected)
+    for group, field, value in (
+        (None, "physical_step", 0.0),
+        (None, "equal_weight", 1 - 1e-15),
+        (0, "endpoint_index", 0.0),
+        (0, "weight", 1 - 1e-15),
+    ):
+        saved = copy.deepcopy(expected)
+        target = saved if group is None else saved["contributors"][group]
+        target[field] = value
+        with pytest.raises(AssertionError):
+            checker.compare_ensemble_log(saved, expected)
