@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -41,6 +42,65 @@ def fingerprint(c, root):
             flush=True,
         )
     write_json(destination, dict(code=code_fingerprint(), checkpoints=weights))
+
+
+def verify_object_progress(result, steps):
+    """Bind each recorded object's progress to its endpoint log, not geometry."""
+    summary_fields = {"grasp_contact_steps", "max_height_gain_m", "max_displacement_m"}
+    step_fields = {"position", "grasp_contact", "height_gain_m", "displacement_m"}
+    summaries = result.get("object_progress")
+    if not steps or not isinstance(summaries, dict) or not summaries:
+        raise ValueError("object progress requires nonempty summaries and endpoint logs")
+
+    def finite_number(value):
+        try:
+            return type(value) in (int, float) and math.isfinite(value)
+        except OverflowError:
+            return False
+
+    observed = {
+        name: dict(grasp_contact_steps=0, max_height_gain_m=-math.inf, max_displacement_m=-math.inf)
+        for name in summaries
+    }
+    for row in steps:
+        objects = row.get("objects")
+        if not isinstance(objects, dict) or set(objects) != set(summaries):
+            raise ValueError("object progress object set differs between summaries and endpoint logs")
+        for name, obj in objects.items():
+            if not isinstance(obj, dict) or set(obj) != step_fields:
+                raise ValueError(f"object progress endpoint schema differs: {name}")
+            position = obj["position"]
+            if (
+                not isinstance(position, list)
+                or len(position) != 3
+                or not all(finite_number(value) for value in position)
+                or type(obj["grasp_contact"]) is not bool
+                or not finite_number(obj["height_gain_m"])
+                or not finite_number(obj["displacement_m"])
+                or obj["displacement_m"] < 0
+            ):
+                raise ValueError(f"object progress endpoint has invalid boolean/finite physical fields: {name}")
+            accumulated = observed[name]
+            accumulated["grasp_contact_steps"] += obj["grasp_contact"]
+            accumulated["max_height_gain_m"] = max(accumulated["max_height_gain_m"], obj["height_gain_m"])
+            accumulated["max_displacement_m"] = max(accumulated["max_displacement_m"], obj["displacement_m"])
+    for name, summary in summaries.items():
+        if (
+            not isinstance(summary, dict)
+            or set(summary) != summary_fields
+            or type(summary["grasp_contact_steps"]) is not int
+            or not 0 <= summary["grasp_contact_steps"] <= len(steps)
+            or not finite_number(summary["max_height_gain_m"])
+            or not finite_number(summary["max_displacement_m"])
+            or summary["max_displacement_m"] < 0
+        ):
+            raise ValueError(f"object progress summary schema or boolean/finite fields differ: {name}")
+        expected = observed[name]
+        if summary["grasp_contact_steps"] != expected["grasp_contact_steps"] or any(
+            not math.isclose(summary[key], expected[key], rel_tol=0, abs_tol=1e-12)
+            for key in ("max_height_gain_m", "max_displacement_m")
+        ):
+            raise ValueError(f"object progress summary differs from endpoint logs: {name}")
 
 
 def verify_case(path, c, fixtures, variants):
@@ -90,6 +150,7 @@ def verify_case(path, c, fixtures, variants):
     np.testing.assert_allclose([r["actual_dt"] for r in steps], 1 / c["control_fps"], atol=1e-10, rtol=0)
     if result["success"] != any(r["success"] for r in steps) or result["terminal_success"] != steps[-1]["success"]:
         raise ValueError("success summary differs from native step predicates")
+    verify_object_progress(result, steps)
     files = {
         str(p): sha256(p)
         for p in (

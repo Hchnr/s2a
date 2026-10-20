@@ -13,7 +13,7 @@ from scripts.verify_wam_acceptance import verify_case
 
 @pytest.fixture
 def saved_wam_case(tmp_path):
-    """A complete static two-step rollout, with a real saved request and image."""
+    """Complete two-step arm evidence with object progress and a saved request/image."""
     directory = tmp_path / "simulation/8400_masked/task0_init0_s42"
     directory.mkdir(parents=True)
     path = directory / "result.json"
@@ -71,6 +71,10 @@ def saved_wam_case(tmp_path):
             success=False,
             terminal_success=False,
             chunks=1,
+            object_progress={
+                "akita_black_bowl_1": dict(grasp_contact_steps=1, max_height_gain_m=-0.001, max_displacement_m=0.002),
+                "wine_bottle_1": dict(grasp_contact_steps=0, max_height_gain_m=0.0005, max_displacement_m=0.0005),
+            },
         ),
     )
     steps = [
@@ -81,6 +85,20 @@ def saved_wam_case(tmp_path):
             measured_source=pose,
             desired_source=pose,
             opening_target=1.0,
+            objects={
+                "akita_black_bowl_1": dict(
+                    position=[0.0, 0.0, 1 - (i + 1) * 0.001],
+                    grasp_contact=i == 0,
+                    height_gain_m=-(i + 1) * 0.001,
+                    displacement_m=(i + 1) * 0.001,
+                ),
+                "wine_bottle_1": dict(
+                    position=[0.2, 0.3, 0.4005],
+                    grasp_contact=False,
+                    height_gain_m=0.0005,
+                    displacement_m=0.0005,
+                ),
+            },
         )
         for i in range(2)
     ]
@@ -146,6 +164,96 @@ def saved_wam_case(tmp_path):
 def test_complete_wam_evidence_is_accepted(saved_wam_case):
     checked = verify_case(*saved_wam_case)
     assert checked["source"] == "wam" and checked["checkpoint"] == "8400_masked" and checked["steps"] == 2
+
+
+@pytest.mark.parametrize("source", ["native", "oracle", "probe"])
+def test_valid_object_progress_is_accepted_for_each_control_source(saved_wam_case, source):
+    path, *arguments = saved_wam_case
+    label = "probe_test" if source == "probe" else source
+    directory = path.parent.parent.with_name(label) / path.parent.name
+    directory.parent.mkdir(parents=True, exist_ok=True)
+    path.parent.rename(directory)
+    path = directory / path.name
+    result = json.loads(path.read_text())
+    result.update(source=source, checkpoint=None)
+    write_json(path, result)
+    manifest_path = path.with_name("manifest.json")
+    manifest = json.loads(manifest_path.read_text())
+    manifest.update(source=source, probe=dict(name="test") if source == "probe" else None)
+    write_json(manifest_path, manifest)
+    assert verify_case(path, *arguments)["source"] == source
+
+
+@pytest.mark.parametrize(
+    ("field", "wrong_value"),
+    [("grasp_contact_steps", 0), ("max_height_gain_m", 0.0), ("max_displacement_m", 0.003)],
+)
+def test_object_progress_summary_drift_is_rejected(saved_wam_case, field, wrong_value):
+    path, *arguments = saved_wam_case
+    result = json.loads(path.read_text())
+    result["object_progress"]["akita_black_bowl_1"][field] = wrong_value
+    write_json(path, result)
+    with pytest.raises(ValueError, match="object progress summary differs from endpoint logs"):
+        verify_case(path, *arguments)
+
+
+@pytest.mark.parametrize(
+    ("field", "wrong_value"),
+    [
+        ("grasp_contact_steps", True),
+        ("grasp_contact_steps", 1.0),
+        ("max_height_gain_m", False),
+        ("max_height_gain_m", float("nan")),
+        ("max_displacement_m", float("inf")),
+    ],
+)
+def test_object_progress_summary_requires_integer_count_and_finite_metrics(saved_wam_case, field, wrong_value):
+    path, *arguments = saved_wam_case
+    result = json.loads(path.read_text())
+    result["object_progress"]["akita_black_bowl_1"][field] = wrong_value
+    path.write_text(json.dumps(result))
+    with pytest.raises(ValueError, match="object progress summary schema"):
+        verify_case(path, *arguments)
+
+
+@pytest.mark.parametrize(
+    ("field", "wrong_value"),
+    [
+        ("grasp_contact", 1),
+        ("grasp_contact", "false"),
+        ("height_gain_m", float("nan")),
+        ("height_gain_m", True),
+        ("displacement_m", float("inf")),
+        ("displacement_m", -0.001),
+        ("position", [0.0, 0.0]),
+        ("position", [0.0, False, 1.0]),
+        ("position", [0.0, 0.0, float("inf")]),
+    ],
+)
+def test_object_progress_rejects_invalid_endpoint_values(saved_wam_case, field, wrong_value):
+    path, *arguments = saved_wam_case
+    trace = path.with_name("steps.jsonl")
+    rows = [json.loads(line) for line in trace.read_text().splitlines()]
+    rows[0]["objects"]["akita_black_bowl_1"][field] = wrong_value
+    trace.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    with pytest.raises(ValueError, match="object progress endpoint"):
+        verify_case(path, *arguments)
+
+
+@pytest.mark.parametrize("location", ["summary", "first_endpoint", "second_endpoint"])
+def test_object_progress_requires_the_same_object_set_for_every_endpoint(saved_wam_case, location):
+    path, *arguments = saved_wam_case
+    if location == "summary":
+        result = json.loads(path.read_text())
+        del result["object_progress"]["wine_bottle_1"]
+        write_json(path, result)
+    else:
+        trace = path.with_name("steps.jsonl")
+        rows = [json.loads(line) for line in trace.read_text().splitlines()]
+        del rows[0 if location == "first_endpoint" else 1]["objects"]["wine_bottle_1"]
+        trace.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    with pytest.raises(ValueError, match="object progress object set"):
+        verify_case(path, *arguments)
 
 
 def test_another_checkpoint_directory_cannot_relabel_valid_evidence(saved_wam_case):
