@@ -92,7 +92,11 @@ def admission(candidate, baseline):
         for h in (8, 16)
     }
     all_six = all(x["nonregression"] for x in checks)
-    ten_percent = any(v >= 0.1 for v in improvements.values())
+    ten_percent = any(
+        candidate["all"][str(h)]["wam"]["position_rmse_m"]
+        <= 0.9 * baseline["all"][str(h)]["wam"]["position_rmse_m"]
+        for h in (8, 16)
+    )
     return dict(
         checks=checks,
         all_six_nonregression=all_six,
