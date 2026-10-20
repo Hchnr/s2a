@@ -148,7 +148,7 @@ def pooled(cases, prefixes):
                 endpoints=len(position),
                 position_rmse_m=float(np.sqrt(np.mean(position**2))),
                 rotation_rmse_rad=float(np.sqrt(np.mean(rotation**2))),
-                opening_mae=float(np.mean(opening)),
+                opening_mae=float(np.mean(np.abs(opening))),
             )
     return result
 
@@ -205,6 +205,7 @@ def run_fold(cases, held_episode, config):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/reference_gain_diagnostic_20261021.json")
+    parser.add_argument("--output-root", help="new artifact directory only; does not change the registered fit")
     args = parser.parse_args()
     if (
         Path.cwd().resolve() != REPO
@@ -232,7 +233,7 @@ def main():
         physical_promotion_authorized=False,
     )
     assert {k: config[k] for k in expected} == expected
-    root = (REPO / config["output_dir"]).resolve()
+    root = (REPO / (args.output_root or config["output_dir"])).resolve()
     if not root.is_relative_to(REPO / "outputs") or root.exists():
         raise ValueError("requires a new repository output directory")
     for name in [
