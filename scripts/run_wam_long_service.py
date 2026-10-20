@@ -27,6 +27,8 @@ MATRIX = "scripts/run_wam_long_matrix.py"
 SERVER = "scripts/serve_wam_acceptance.py"
 FINGERPRINT = "outputs/wam_independent_20261020/checkpoint_fingerprints.json"
 FINGERPRINT_SHA = "624ba2dd93b49fd76629f7a6c6905b2813b6605d48da8fc7c3f05a026da413a8"
+PRIOR = REPO / "outputs/wam_stability_20261021/long_raw_preflight/prior_services_verified.json"
+PRIOR_SHA = "698d0171234814b787148ddde8b1abaad574de3caacb9f5de9109362d2c54ef7"
 
 
 def weight_stats(checkpoint):
@@ -101,6 +103,14 @@ def preflight(path, digest, partition):
         if signatures.get(name) != digest_value:
             raise ValueError("launch gate omitted a qualification input")
     prior = gate["prior_release"]
+    if signatures.get(str(PRIOR)) != PRIOR_SHA or sha256(PRIOR) != PRIOR_SHA:
+        raise ValueError("launch gate omitted the independently checked prior-service roster")
+    registered_prior = json.loads(PRIOR.read_text())
+    if not registered_prior["prior_scopes_passed"] or prior != registered_prior["partitions"][str(partition)]:
+        raise ValueError("prior release differs from its independently checked complete process roster")
+    for filename, expected in registered_prior["input_sha256"].items():
+        if signatures.get(filename) != expected:
+            raise ValueError("launch gate omitted an independently checked prior-service input")
     if prior["physical_gpu"] != ck["gpu"] or not prior["whole_same_gpu_budget_complete"]:
         raise ValueError("prior same-card registered budget is incomplete")
     for kind in ("complete", "release", "audit"):
