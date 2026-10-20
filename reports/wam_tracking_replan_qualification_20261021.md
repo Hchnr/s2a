@@ -2,6 +2,8 @@
 
 新增执行路径在三个旧场景的正确参考上 **3/3 通过**。这证明它保留了已有正确参考的执行能力；不构成 WAM 成功或新初态泛化证据。WAM 仍需使用独立的三条开发预算评估，不能把这三条 oracle 计入 WAM 分母。
 
+证据等级为 LIBERO/MuJoCo 独立闭环仿真，使用 Panda 机器人模型；没有运行真机。
+
 ## 固定协议与实现
 
 协议见 [016 计划](../plans/v0.0.1/016_tracking_replan_20261021.md)。每条 600 个物理步，20 Hz，H40，原始朝向和 opening，无 governor，沿用 v3 夹爪和原 S2A 参数。每次至少消费 8 步、最多 40 步；已完成端点的位置误差严格大于 40 mm 或 SO(3) 误差严格大于 0.4 rad，连续两步后在下一步重新观测。相邻两步可由不同误差分量超限；最少间隔之前也累计，query 和正常端点清零计数，arm/gripper 历史跨 query 保留。
@@ -36,6 +38,8 @@ root 在 `68fa982` 提交独立 v2 配置与新输出根，仅补充 oracle 来�
 | 完整资格 `tracking_replan_qualification_v2/qualification_independent_verification.json` | `353d7669f8060f99b6099f25b458394d04457cbf77b2845fd562ff2d58cf1a49` |
 
 上述路径相对 `outputs/wam_stability_20261021/`。完整资格有 1546 项输入 SHA，审计前后均一致。matrix PID 279501（启动 ticks 167961364）及三个 worker PID 279513、279514、281214 均已退出；三个 worker returncode=0，matrix complete=true。检查器及资格入口代码提交为 `d84460a`，独立检查不创建任何模型或物理步。
+
+另一审查方独立通读 `d84460a`、重跑 literal AST 证明、复核 1546 项来源 SHA 及独立时序边界，没有发现 blocker。review receipt 为 `tracking_service_review/qualification_d84460a_independent_review.json`，SHA `b8161bb0bf7fe56b5dc0b69a01d7b4d4871655d20b6914e40fec924c34d4d3ad`；这项复核没有重复运行模型或仿真。
 
 ## 可以与不可以推出什么
 

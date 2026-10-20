@@ -2,6 +2,8 @@
 
 **尚未全部完成**：当前独立核验 10/12 条，原登记的剩余两条继续执行。原始完整 WAM 在每 8 步重观测的 bowl → plate 上首次满足 600 步、末 40 步连续原生成功；同组 wine、cream 均失败。这个结果证明当前 checkpoint 的原始输出在一个旧场景上具备任务能力，还没有达到多任务稳定成功。
 
+证据等级为 LIBERO/MuJoCo 独立闭环仿真，使用 Panda 机器人模型；没有运行真机。
+
 ## 固定协议
 
 [010 预注册](../plans/v0.0.1/010_short_replan_wam_20261021.md) 固定 8400 masked checkpoint、guidance=1、35 sampling steps、shift=5、SDPA、H40、20 Hz，每条 600 物理步。每 8/16 步重新观测，比较完整 raw 朝向 alpha1 与朝向分量消融 alpha0；四组各三个旧 task/init0/seed42，共 12 条、7200 步、最多 678 个 H40 请求。不计模型等待时间，等待时物理不推进。无 governor，沿用 v3 夹爪与原反解参数，没有按任务挑选策略或提前终止。
