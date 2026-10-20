@@ -15,4 +15,4 @@
 - [完整27条回归](../outputs/wam_stability_20261021/seed_aware_checker/seed42_regression.json)：`b90d0915f3880fe71ac8d4f3b79afcae18720ca569d270849ab5158712d85f7e`。
 - [最小源码diff/AST证明](../outputs/wam_stability_20261021/seed_aware_checker/literal_source_diff.json)：`60082d732c08a1f28b2b61d082c6612059beed931639c25a40c11f287ab65873`。
 
-本份证明仅覆盖真实seed42旧日志上的兼容性。015另行注册的真实43 oracle执行资格应独立记录；它不能验证43的WAM请求/响应分支，也不能计入WAM成功分母。新checker回归通过不替代010完整开发结果或未来真实多初态验收。
+本份证明仅覆盖真实seed42旧日志上的兼容性。[015另行注册的真实43 oracle执行资格](wam_seed43_execution_qualification_20261021.md)独立记录；它不能验证43的WAM请求/响应分支，也不能计入WAM成功分母。新checker回归通过不替代010完整开发结果或未来真实多初态验收。
