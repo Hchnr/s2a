@@ -1,0 +1,39 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_release_hold_20261020",
+  "report_path": "reports/wam_release_hold_20261020.md",
+  "source_config": "configs/wam_independent_20261020.json",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "workers": 2,
+  "steps": 600,
+  "stable_steps": 40,
+  "control_fps": 20,
+  "gripper_modes": ["baseline", "hold20", "hold40"],
+  "hold_control_steps": {"hold20": 20, "hold40": 40},
+  "trigger": {
+    "normal_open_command": -1.0,
+    "forced_close_command": 1.0,
+    "contact": "any_single_object_native_two_finger_grasp_contact",
+    "contact_time": "current_initial_or_previous_completed_endpoint_before_command",
+    "first_only": true,
+    "include_trigger_step": true,
+    "intent_update": "every_step_including_hold"
+  },
+  "cases": [
+    {"name": "8800_bowl_init0_s43", "checkpoint": "8800_masked", "record": "task0_init0", "sampling_seed": 43},
+    {"name": "8800_bowl_init1_s43", "checkpoint": "8800_masked", "record": "task0_init1", "sampling_seed": 43},
+    {"name": "8800_wine_init0_s43", "checkpoint": "8800_masked", "record": "task1_init0", "sampling_seed": 43},
+    {"name": "8800_wine_init2_s43", "checkpoint": "8800_masked", "record": "task1_init2", "sampling_seed": 43}
+  ],
+  "notes": [
+    "Post-hoc, sim-privileged contact diagnosis on four completed fixed-world WAM reference trajectories; not an independent WAM success-rate evaluation.",
+    "Study seed42 identifies this protocol; use each unchanged source simulation_config, including environment seed43, XML and initial full state.",
+    "First normal open command with any single object's already-observed native two-finger grasp contact starts one fixed 20/40-step close interval, including its trigger step; never use future or target-specific contact.",
+    "OpeningIntent updates on every step; all 600 normal gripper commands must exactly equal source command[6]. Only the actual gripper command can be overridden inside the hold interval.",
+    "Preserve all 600 source desired_source/opening_target endpoints, source tool, arm algorithm, gains, command-rate state and per-8-step render schedule. No WAM query, delta re-anchoring, intermediate state restore, early stop or extra budget.",
+    "All four baselines must reproduce original commands, poses, openings, object progress, contacts, predicates and chunk physical/image hashes exactly before either hold mode can run.",
+    "Before the trigger, including its command-start state but excluding its changed command, candidates must match baseline exactly. Untriggered candidates must match the full baseline. Hold20 and hold40 share the same trigger and their first20 hold steps exactly.",
+    "The arm converter uses each candidate's own causal feedback, so its numerical arm commands may differ after intervention. Contact is privileged simulator evidence, not a deployable task-independent sensor assumption.",
+    "The bowl stable case is a positive control; wine init2 lost its brief source contact before a later open and is a no-trigger negative control. Outcomes and any deviations must be reported without changing the frozen main protocol."
+  ]
+}
