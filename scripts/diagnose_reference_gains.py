@@ -5,7 +5,6 @@ is loaded. Parameters and controls were registered in008 before fitting.
 """
 
 import argparse
-import json
 import os
 from collections import Counter
 from dataclasses import asdict
@@ -24,7 +23,7 @@ from s2a.reference_gains import ReferenceGains, relative_features
 
 def load_cases(label, root, evidence):
     config, _, verified, progress = (
-        verify_earlier(label, root / "earlier_screening", evidence)
+        verify_earlier(label, root, evidence)
         if label == "8400_g10"
         else verify_cell(label, root, evidence)
     )
