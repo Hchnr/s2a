@@ -10,11 +10,14 @@ import hashlib
 import json
 import math
 import os
+import traceback
 from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
+import yaml
+from PIL import Image
 from scipy.spatial.transform import Rotation
 
 from s2a.artifacts import REPO
@@ -34,6 +37,7 @@ TARGETS = {8: "akita_black_bowl_1", 9: "wine_bottle_1", 6: "cream_cheese_1"}
 class Evidence:
     def __init__(self):
         self.hashes = {}
+        self.yaml_cache = {}
 
     def read(self, path):
         path = Path(path).resolve()
@@ -54,6 +58,12 @@ class Evidence:
     def recheck(self):
         for path, digest in list(self.hashes.items()):
             self.check(path, digest)
+
+    def yaml(self, path):
+        path = str(Path(path).resolve())
+        if path not in self.yaml_cache:
+            self.yaml_cache[path] = yaml.safe_load(self.read(path))
+        return self.yaml_cache[path]
 
 
 def close(saved, expected, *, tolerance=1e-10):
@@ -141,6 +151,118 @@ def native_delta_rotation(vector):
     )
 
 
+class RecoveryReplay:
+    """Independent scalar reconstruction; does not call either governor module.
+
+    The clock plan is rebuilt from segment lengths and three separate speed
+    ceilings. Each bridge exception is retested in metres and radians against
+    the preceding admitted reference, using current measured TCP only.
+    """
+
+    def __init__(self, limits):
+        self.limits, self.admitted, self.opening = limits, None, None
+
+    def chunk(self, anchor, targets, openings, measured_opening, dt):
+        previous = self.admitted is not None
+        opening = self.opening if previous else measured_opening
+        self.poses = np.concatenate([anchor[None], targets])
+        self.values = np.r_[opening, openings]
+        self.nominal = np.arange(len(targets) + 1) * dt
+        if previous:
+            self.poses = np.concatenate([self.admitted[None], self.poses])
+            self.values = np.r_[self.opening, self.values]
+            self.nominal = np.r_[0.0, self.nominal]
+        else:
+            self.admitted, self.opening = anchor.copy(), float(opening)
+        durations = []
+        for i in range(len(self.poses) - 1):
+            delta = error(self.poses[i + 1], self.poses[i])
+            durations.append(
+                max(
+                    self.nominal[i + 1] - self.nominal[i],
+                    np.linalg.norm(delta[:3]) / self.limits["max_translation_speed_m_s"],
+                    np.linalg.norm(delta[3:]) / self.limits["max_rotation_speed_rad_s"],
+                    abs(self.values[i + 1] - self.values[i]) / self.limits["max_opening_speed_s"],
+                )
+            )
+        self.times, self.clock = np.r_[0.0, np.cumsum(durations)], 0.0
+        return dict(
+            retimed_duration_s=float(self.times[-1]),
+            model_duration_s=float(self.nominal[-1]),
+            measured_anchor_opening=measured_opening,
+            opening_reference_at_anchor=float(opening),
+            bridge_opening_preserved=previous,
+        )
+
+    def at(self, clock):
+        segment = min(int(np.searchsorted(self.times, clock, side="right") - 1), len(self.poses) - 2)
+        interval = self.times[segment + 1] - self.times[segment]
+        fraction = (clock - self.times[segment]) / interval if interval else 1.0
+        return (
+            interpolate(self.poses[segment], self.poses[segment + 1], fraction),
+            float((1 - fraction) * self.values[segment] + fraction * self.values[segment + 1]),
+            float((1 - fraction) * self.nominal[segment] + fraction * self.nominal[segment + 1]),
+            bool(segment == 0 and self.nominal[1] == 0),
+        )
+
+    def step(self, measured, dt):
+        previous_clock, previous_target = self.clock, self.admitted.copy()
+        preceding = error(previous_target, measured)
+        distances = [float(np.linalg.norm(preceding[:3])), float(np.linalg.norm(preceding[3:]))]
+        c = self.limits
+        scale = float(
+            np.clip(
+                min(
+                    (c["position_stop_m"] - distances[0]) / (c["position_stop_m"] - c["position_soft_m"]),
+                    (c["rotation_stop_rad"] - distances[1]) / (c["rotation_stop_rad"] - c["rotation_soft_rad"]),
+                ),
+                0,
+                1,
+            )
+        )
+        self.clock = min(previous_clock + dt * scale, self.times[-1])
+        self.admitted, self.opening, model_clock, bridge = self.at(self.clock)
+        result = dict(
+            target_tcp=self.admitted.copy(),
+            opening=self.opening,
+            model_time_s=model_clock,
+            retimed_clock_s=float(self.clock),
+            tracking_scale=scale,
+            preceding_position_error_m=distances[0],
+            preceding_rotation_error_rad=distances[1],
+            bridging=bridge,
+            complete=bool(self.clock >= self.times[-1]),
+            nominal_tracking_scale=scale,
+            bridge_recovery_advanced=False,
+        )
+        gate = None
+        if self.nominal[1] == 0 and previous_clock < self.times[1] and scale < 1:
+            candidate_clock = min(previous_clock + dt, self.times[1])
+            if candidate_clock > self.clock:
+                fraction = candidate_clock / self.times[1]
+                candidate = interpolate(self.poses[0], self.poses[1], fraction)
+                next_error = error(candidate, measured)
+                following = [float(np.linalg.norm(next_error[:3])), float(np.linalg.norm(next_error[3:]))]
+                allowed = all(b <= a + 1e-12 for a, b in zip(distances, following, strict=True)) and any(
+                    b < a - 1e-12 for a, b in zip(distances, following, strict=True)
+                )
+                gate = dict(preceding=distances, candidate=following, allowed=allowed)
+                if allowed:
+                    self.clock, self.admitted = float(candidate_clock), candidate
+                    self.opening = float((1 - fraction) * self.values[0] + fraction * self.values[1])
+                    result.update(
+                        target_tcp=candidate.copy(),
+                        opening=self.opening,
+                        model_time_s=0.0,
+                        retimed_clock_s=self.clock,
+                        tracking_scale=float((self.clock - previous_clock) / dt),
+                        bridging=bool(self.clock < self.times[1]),
+                        complete=False,
+                        bridge_recovery_advanced=True,
+                    )
+        return result, gate
+
+
 def verify_case(config, record, variant, case, evidence, *, source, checkpoint, full):
     result = evidence.json(case / "result.json")
     manifest = evidence.json(case / "manifest.json")
@@ -153,10 +275,26 @@ def verify_case(config, record, variant, case, evidence, *, source, checkpoint, 
     assert manifest["experiment"] == config and manifest["variant"] == variant and manifest["record"] == record
     assert result["sampling_seed"] == 42 and result["variant"] == variant["name"]
     assert result["checkpoint"] == checkpoint and result["model_rotation_alpha"] == variant["model_rotation_alpha"]
+    raw_flag = source == "wam" and variant["model_rotation_alpha"] == 1
+    assert manifest["raw_checkpoint_reference"] is raw_flag and result["raw_checkpoint_reference"] is raw_flag
+    assert manifest["reference_intervention"] == (
+        "raw" if variant["model_rotation_alpha"] == 1 else "model_rotation_attenuation"
+    )
     assert manifest["oracle_is_wam_success_evidence"] is False and result["oracle_is_wam_success_evidence"] is False
+    assert manifest["inference_latency_excluded"] is True and result["inference_latency_excluded"] is True
     assert manifest["environment"]["CUDA_VISIBLE_DEVICES"] == manifest["environment"]["LD_LIBRARY_PATH"] == ""
     for path, signature in manifest["execution_sha256"].items():
         evidence.check(path, signature)
+    required_runtime = [
+        "src/s2a/stability_recovery_simulation.py",
+        "scripts/run_wam_recovery_matrix.py",
+        "src/s2a/gripper_intent_hold.py",
+        "src/s2a/reference_governor_v2.py",
+        "src/s2a/wam_regularization.py",
+        "src/s2a/osc.py",
+        "src/s2a/action_reference.py",
+    ]
+    assert all(str((REPO / p).resolve()) in manifest["execution_sha256"] for p in required_runtime)
     assert set(manifest["simulator_source_sha256"]) <= set(manifest["execution_sha256"])
     evidence.check(case / "model.xml", manifest["initial_model_xml_sha256"])
     template = evidence.json(config["policy_template"])
@@ -167,6 +305,10 @@ def verify_case(config, record, variant, case, evidence, *, source, checkpoint, 
     assert chunks and len(chunks) == result["chunks"]
     assert chunks[0]["step"] == 0
     assert controller["actual_initial_physics_sha256"] == record["initial_state_sha256"]
+    assert (
+        hashlib.sha256(np.asarray(record["initial_state"], dtype=float).tobytes()).hexdigest()
+        == record["initial_state_sha256"]
+    )
     assert chunks[0]["physics_before_sha256"] == controller["actual_initial_physics_sha256"]
     close(controller["aligned_initial_motor_target"], rows[0]["motor_target_before"])
     initial = rows[0]["opening_before"]
@@ -190,8 +332,9 @@ def verify_case(config, record, variant, case, evidence, *, source, checkpoint, 
     gripper = GripperIntentHold(initial, config=GripperIntentHoldConfig(**config["gripper_intent_hold"]))
     intent = OpeningIntent(initial, band=config["opening_hysteresis"])
     assert controller["gripper_config"] == asdict(gripper.config)
+    assert asdict(gripper.config) == asdict(GripperIntentHoldConfig())
     previous = np.zeros(7)
-    references = None
+    references, native_source_outcome = None, None
     if source == "oracle":
         assert checkpoint is None and variant["model_rotation_alpha"] == 1
         assert not manifest["raw_checkpoint_reference"]
@@ -200,6 +343,25 @@ def verify_case(config, record, variant, case, evidence, *, source, checkpoint, 
         assert len(paths) == 1
         with np.load(paths[0]) as data:
             references, oracle_opening = data["poses"] @ h, data["openings"]
+        native_folder = Path(paths[0]).parent
+        native_rows = [json.loads(line) for line in evidence.read(native_folder / "steps.jsonl").splitlines()]
+        native_result = evidence.json(native_folder / "result.json")
+        assert native_result["error"] is None and native_result["steps"] == len(native_rows) == 600
+        native_source_outcome = task_outcome(
+            [r["success"] for r in native_rows], expected_steps=600, stable_steps=config["stable_success_last_steps"]
+        )
+        assert native_source_outcome["stable"]
+        close(references, np.asarray([r["after_source"] for r in native_rows]) @ h)
+        close(oracle_opening, [r["opening_after"] for r in native_rows])
+    else:
+        ck = next(c for c in config["checkpoints"] if c["name"] == checkpoint)
+        info = manifest["server_info"]
+        expected = Path(ck["run"]) / "checkpoints" / ck["iteration"] / "model"
+        assert Path(info["checkpoint_path"]).resolve() == expected.resolve() and not info["ema_weights"]
+        assert Path(info["config_file"]).resolve() == (Path(ck["run"]) / "config.yaml").resolve()
+        assert info["acceptance_intervention"]["active_slot_mask"] is True and ck["gpu"] in (4, 5, 6, 7)
+        for relative in ("scripts/serve_wam_acceptance.py", "src/s2a/wam_runtime.py"):
+            evidence.check(REPO / relative, info["acceptance_intervention"]["code"]["files_sha256"][relative])
     tracking = {
         name: []
         for name in (
@@ -211,10 +373,22 @@ def verify_case(config, record, variant, case, evidence, *, source, checkpoint, 
         )
     }
     zero_motor_steps, max_goal_rotation_error = 0, 0.0
+    governor = RecoveryReplay(config["reference_governor"]) if full and variant["governor"] else None
+    bridge_gates = []
+    max_reference_speed = np.zeros(3)
     chunks_by_step = {c["step"]: (i, c) for i, c in enumerate(chunks)}
     assert len(chunks_by_step) == len(chunks)
+    chunk, count = None, 0
     for step, row in enumerate(rows):
         assert row["step"] == step
+        due = step == 0
+        if step:
+            due = (
+                rows[step - 1]["reference_progress"]["complete"]
+                if variant["governor"]
+                else step - chunk["step"] >= count
+            ) or step - chunk["step"] >= config["max_observation_interval_steps"]
+        assert bool(due) == (step in chunks_by_step), "requery timing differs from causal completion/budget"
         close(row["actual_dt"], dt, tolerance=1e-9)
         close(row["physical_time_after_s"] - row["physical_time_before_s"], dt, tolerance=1e-9)
         if step:
@@ -245,13 +419,11 @@ def verify_case(config, record, variant, case, evidence, *, source, checkpoint, 
             if alpha == 1:
                 np.testing.assert_array_equal(raw, effective)
             else:
-                raw_rotations = decode(np.eye(4), np.column_stack((np.zeros((len(raw), 3)), raw[:, 3:])))
                 # Per-delta SO(3), not cumulative orientation, is attenuated.
                 for a, b in zip(raw, effective, strict=True):
                     ar = decode(np.eye(4), a[None])[0][:3, :3]
                     br = decode(np.eye(4), b[None])[0][:3, :3]
                     close(br, Rotation.from_rotvec(alpha * Rotation.from_matrix(ar).as_rotvec()).as_matrix())
-                assert len(raw_rotations) == len(raw)
             openings = np.clip(raw[:, 9], 0, 1)
             close(chunk["openings"], openings)
             count = chunk["execution_endpoint_count"]
@@ -264,12 +436,54 @@ def verify_case(config, record, variant, case, evidence, *, source, checkpoint, 
                 assert chunk["response_identity"] is None and chunk["request_sha256"] is None
             else:
                 verify_query(config, case, chunk_index, chunk, evidence, checkpoint)
+            if governor is not None:
+                mapping(
+                    chunk["retiming"],
+                    governor.chunk(anchor, effective_poses, openings[:count], row["opening_before"], dt),
+                )
         assert row["chunk_index"] == chunk_index and row["chunk_physical_step"] == step - chunk["step"]
         assert step - chunk["step"] < config["max_observation_interval_steps"]
         if not variant["governor"]:
             assert step - chunk["step"] < count
             close(desired_tcp, effective_poses[step - chunk["step"]])
             close(row["opening_target"], openings[step - chunk["step"]])
+            assert row["reference_progress"] is None and not row["bridging"] and not row["bridge_recovery_advanced"]
+            close(row["model_time_s"], (step - chunk["step"] + 1) * dt)
+            close(row["retimed_clock_s"], row["model_time_s"])
+        elif governor is not None:
+            expected, bridge_gate = governor.step(measured @ h, dt)
+            mapping(row["reference_progress"], expected)
+            close(row["desired_tcp"], expected["target_tcp"])
+            close(row["opening_target"], expected["opening"])
+            for key in ("model_time_s", "retimed_clock_s", "bridging", "bridge_recovery_advanced"):
+                close(row[key], expected[key])
+            if bridge_gate is not None:
+                bridge_gates.append(dict(step=step, **bridge_gate))
+            previous_pose = anchor if step == 0 else np.asarray(rows[step - 1]["desired_tcp"])
+            previous_opening = initial if step == 0 else rows[step - 1]["opening_target"]
+            motion = error(desired_tcp, previous_pose)
+            speeds = np.array(
+                [
+                    np.linalg.norm(motion[:3]) / dt,
+                    np.linalg.norm(motion[3:]) / dt,
+                    abs(row["opening_target"] - previous_opening) / dt,
+                ]
+            )
+            max_reference_speed = np.maximum(max_reference_speed, speeds)
+            limits = config["reference_governor"]
+            assert np.all(
+                speeds
+                <= np.array(
+                    [
+                        limits["max_translation_speed_m_s"],
+                        limits["max_rotation_speed_rad_s"],
+                        limits["max_opening_speed_s"],
+                    ]
+                )
+                + 1e-9
+            )
+            previous_clock = 0 if step == chunk["step"] else rows[step - 1]["model_time_s"]
+            assert previous_clock - 1e-10 <= row["model_time_s"] <= count * dt + 1e-10
         raw_pose, raw_opening = sample(
             anchor, raw_poses, openings[:count], chunk["anchor_opening"], row["model_time_s"], dt
         )
@@ -344,9 +558,37 @@ def verify_case(config, record, variant, case, evidence, *, source, checkpoint, 
     assert result["task_outcome"] == outcome
     assert result["stable_success"] == outcome["stable"] and result["ever_success"] == outcome["ever"]
     target = TARGETS[record["task_id"]]
+    for name in rows[0]["objects"]:
+        first = rows[0]["objects"][name]
+        initial_height = first["position"][2] - first["height_gain_m"]
+        for row in rows:
+            obj = row["objects"][name]
+            assert type(obj["grasp_contact"]) is bool
+            close(obj["height_gain_m"], obj["position"][2] - initial_height)
     admitted = rmse(tracking["admitted"])
     close(result["tcp_position_rmse_m"], admitted["position_rmse_m"])
     close(result["rotation_rmse_rad"], admitted["so3_rmse_rad"])
+    consumption = []
+    for i, chunk in enumerate(chunks):
+        final_step = chunks[i + 1]["step"] - 1 if i + 1 < len(chunks) else len(rows) - 1
+        consumed = rows[final_step]["model_time_s"]
+        available = chunk["execution_endpoint_count"] * dt
+        generated = len(chunk["raw128"]) * dt
+        consumption.append(
+            dict(
+                chunk=i,
+                first_step=chunk["step"],
+                final_step=final_step,
+                physical_steps=final_step - chunk["step"] + 1,
+                generated_model_s=generated,
+                execution_prefix_model_s=available,
+                consumed_model_s=consumed,
+                prefix_fraction=min(consumed / available, 1.0),
+                discarded_on_requery_s=max(0.0, generated - consumed) if i + 1 < len(chunks) else 0.0,
+                remaining_at_budget_s=max(0.0, generated - consumed) if i + 1 == len(chunks) else 0.0,
+            )
+        )
+    model_consumed = sum(c["consumed_model_s"] for c in consumption)
     return dict(
         case=str(case),
         source=source,
@@ -356,6 +598,7 @@ def verify_case(config, record, variant, case, evidence, *, source, checkpoint, 
         status="verified_basic" if not full else "verified",
         steps=600,
         chunks=len(chunks),
+        oracle_native_source_outcome=native_source_outcome,
         outcome=outcome,
         zero_motor_steps=zero_motor_steps,
         controller_goal_rotation_max_abs_reconstruction_error=max_goal_rotation_error,
@@ -369,28 +612,121 @@ def verify_case(config, record, variant, case, evidence, *, source, checkpoint, 
             )
             for name in rows[0]["objects"]
         },
-        independent_governor_replay="pending" if variant["governor"] else "not_applicable",
+        independent_governor_replay=("passed" if governor else "pending") if variant["governor"] else "not_applicable",
+        governor_diagnostics=dict(
+            chunk_consumption=consumption,
+            consumed_model_s=model_consumed,
+            generated_model_s=sum(c["generated_model_s"] for c in consumption),
+            model_consumed_per_physical_second=model_consumed / (len(rows) * dt),
+            generated_reference_fraction=model_consumed / sum(c["generated_model_s"] for c in consumption),
+            discarded_on_requery_s=sum(c["discarded_on_requery_s"] for c in consumption),
+            remaining_at_budget_s=sum(c["remaining_at_budget_s"] for c in consumption),
+            bridging_endpoint_count=sum(r["bridging"] for r in rows),
+            bridge_recovery_advanced_count=sum(r["bridge_recovery_advanced"] for r in rows),
+            paused_clock_endpoints=sum(
+                r["reference_progress"] is not None and r["reference_progress"]["tracking_scale"] == 0 for r in rows
+            ),
+            nominal_tracking_paused_endpoints=sum(
+                r["reference_progress"] is not None and r["reference_progress"]["nominal_tracking_scale"] == 0
+                for r in rows
+            ),
+            max_admitted_reference_speeds=max_reference_speed.tolist() if governor else None,
+            independently_recomputed_bridge_gates=bridge_gates,
+        ),
         component_ablation=variant["model_rotation_alpha"] == 0,
         raw_checkpoint_evidence=source == "wam" and variant["model_rotation_alpha"] == 1,
     )
 
 
 def verify_query(config, case, index, chunk, evidence, checkpoint):
-    """Filled by the full matrix auditor before WAM results are accepted."""
-    raise NotImplementedError("WAM response audit not ready; no WAM case is certified")
+    """Independently bind saved pixels/request/response to each generated chunk."""
+    ck = next(c for c in config["checkpoints"] if c["name"] == checkpoint)
+    assert ck["gpu"] in (4, 5, 6, 7)
+    expected_checkpoint = (Path(ck["run"]) / "checkpoints" / ck["iteration"] / "model").resolve()
+    request_path, response_path = (case / f"{kind}_{index:04d}.json" for kind in ("request", "response"))
+    evidence.check(request_path, chunk["request_sha256"])
+    evidence.check(response_path, chunk["response_sha256"])
+    request, response = evidence.json(request_path), evidence.json(response_path)
+    assert response["status"] == "success"
+    assert request["model_mode"] == "wam" and request["seed"] == 42
+    assert request["action_chunk_size"] == config["online_chunk_size"]
+    assert request["fps"] == config["control_fps"] and request["num_frames"] == config["online_chunk_size"] + 1
+    assert request["num_steps"] == config["sampling_steps"] and request["guidance"] == config["guidance"]
+    assert request["shift"] == config["shift"]
+    assert request["prompt"] == evidence.json(case / "manifest.json")["record"]["task"]
+    extra = request["extra"]["action128"]
+    mask = [True] * 10 + [False] * 118
+    assert extra["action_dim_mask"] == mask and all(type(v) is bool for v in extra["action_dim_mask"])
+    template = evidence.json(config["policy_template"])
+    assert extra["action_domain"] == template["action_domain"]
+    assert extra["action_fps"] == config["control_fps"] and extra["return_video"] is False
+    assert extra["selected_roles"] == ["auxiliary_0", "left_wrist"]
+    assert extra["camera_layout"] == [["auxiliary_0", "top", 640, 480], ["left_wrist", "bottom", 640, 480]]
+    image = case / f"input_{index:04d}.png"
+    assert Path(request["vision_path"]).resolve() == image.resolve()
+    evidence.read(image)
+    pixels = np.asarray(Image.open(image))
+    assert pixels.shape == (960, 640, 3) and pixels.dtype == np.uint8
+    assert hashlib.sha256(pixels.tobytes()).hexdigest() == chunk["image_sha256"]
+    args = response["args"]
+    for key in ("seed", "fps", "num_frames", "action_chunk_size", "guidance", "num_steps", "shift", "prompt"):
+        assert args[key] == request[key], key
+    assert args["condition_frame_indexes_vision"] == [0] and args["action_path"] is None
+    assert args["native_prompt_upsampling"] is False and args["model_mode"] == "wam"
+    content = response["outputs"][0]["content"]
+    identity = content["action128"]
+    assert Path(identity["checkpoint_path"]).resolve() == expected_checkpoint
+    assert type(identity["seed"]) is int and identity["seed"] == request["seed"]
+    assert identity["action_domain"] == extra["action_domain"] and identity["action_dim_mask"] == mask
+    assert all(type(v) is bool for v in identity["action_dim_mask"])
+    assert identity["action_units"] == "raw_physical_or_source_units"
+    assert identity["action_fps"] == config["control_fps"]
+    close(identity["action_timestamps_seconds"], np.arange(config["online_chunk_size"]) / config["control_fps"])
+    mapping(chunk["response_identity"], {k: v for k, v in identity.items() if k != "normalized_action"})
+    np.testing.assert_array_equal(content["action"], chunk["raw128"])
+    assert len(content["action"]) == config["online_chunk_size"]
+    saved_config = evidence.yaml(Path(ck["run"]) / "config.yaml")
+    spec = saved_config["model"]["config"]["action128_spec"]
+    transform = spec["transforms"][spec["registry"]["domains"].index(extra["action_domain"])]
+    normalized = np.asarray(identity["normalized_action"], dtype=np.float32)
+    assert normalized.shape == (config["online_chunk_size"], 128) and np.isfinite(normalized).all()
+    assert not normalized[:, 10:].any()
+    expected = normalized.copy()
+    normalization_mask = np.asarray(transform["normalization_mask"], dtype=bool)
+    expected[:, normalization_mask] = (
+        expected[:, normalization_mask] - np.asarray(transform["bias"], dtype=np.float32)[normalization_mask]
+    ) / np.asarray(transform["scale"], dtype=np.float32)[normalization_mask]
+    expected[:, 10:] = 0
+    close(content["action"], expected, tolerance=1e-8)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True)
     parser.add_argument("--basic-oracle", action="store_true")
+    parser.add_argument(
+        "--reuse-verified", help="prior full artifact with identical auditor bytes and unchanged inputs"
+    )
     args = parser.parse_args()
     if os.environ.get("CUDA_VISIBLE_DEVICES") != "" or os.environ.get("LD_LIBRARY_PATH") != "":
         raise ValueError("read-only audit requires empty CUDA and LD paths")
     output = Path(args.output).resolve()
     if not output.is_relative_to(REPO / "outputs") or output.exists():
         raise ValueError("new audit artifact must be below repository outputs; refusing overwrite")
-    evidence, cases = Evidence(), []
+    evidence, cases, expected_groups = Evidence(), [], []
+    evidence.read(__file__)
+    reusable = {}
+    if args.reuse_verified:
+        previous_path = Path(args.reuse_verified).resolve()
+        if not previous_path.is_relative_to(REPO / "outputs") or args.basic_oracle:
+            raise ValueError("reuse requires a prior full repository output artifact")
+        previous = evidence.json(previous_path)
+        assert previous["scope"] == "full" and previous["schema_version"] == "s2a.recovery-readonly-audit.v2"
+        own_source = str(Path(__file__).resolve())
+        assert previous["source_before_after_hashes"][own_source] == evidence.hashes[own_source]
+        for path, signature in previous["source_before_after_hashes"].items():
+            evidence.check(path, signature)
+        reusable = {str(Path(c["case"]).resolve()): c for c in previous["cases"] if c["status"] == "verified"}
     for config_path, source in CONFIGS:
         if args.basic_oracle and source != "oracle":
             continue
@@ -399,6 +735,15 @@ def main():
         fixtures = {r["name"]: r for r in evidence.json(config["fixture"])["records"]}
         checkpoint = None if source == "oracle" else config["checkpoints"][0]["name"]
         for variant in config["variants"]:
+            expected_groups.append(
+                dict(
+                    source=source,
+                    checkpoint=checkpoint,
+                    variant=variant["name"],
+                    model_rotation_alpha=variant["model_rotation_alpha"],
+                    expected_cases=len(config["records"]) * len(config["sampling_seeds"]),
+                )
+            )
             for name in config["records"]:
                 for seed in config["sampling_seeds"]:
                     case = (
@@ -407,16 +752,31 @@ def main():
                         / f"{checkpoint or source}_{variant['name']}"
                         / f"{name}_s{seed}"
                     )
+                    identity = dict(
+                        case=str(case),
+                        source=source,
+                        checkpoint=checkpoint,
+                        variant=variant["name"],
+                        record=name,
+                        sampling_seed=seed,
+                    )
                     if not (case / "result.json").exists():
-                        cases.append(
-                            dict(case=str(case), source=source, status="partial" if case.exists() else "missing")
-                        )
+                        cases.append(dict(identity, status="partial" if case.exists() else "missing"))
+                        continue
+                    cached = reusable.get(str(case.resolve()))
+                    if cached is not None:
+                        cases.append(dict(cached, reused_from=str(Path(args.reuse_verified).resolve())))
+                        continue
+                    try:
+                        # Completion JSON can briefly exist before its single
+                        # write finishes. Do not fingerprint a partial marker.
+                        json.loads((case / "result.json").read_bytes())
+                    except json.JSONDecodeError:
+                        cases.append(dict(identity, status="partial", reason="result marker being written"))
                         continue
                     result = evidence.json(case / "result.json")
                     if result["error"]:
-                        cases.append(
-                            dict(case=str(case), source=source, status="execution_error", error=result["error"])
-                        )
+                        cases.append(dict(identity, status="execution_error", error=result["error"]))
                         continue
                     try:
                         cases.append(
@@ -432,26 +792,76 @@ def main():
                             )
                         )
                     except Exception as exc:
-                        cases.append(dict(case=str(case), source=source, status="audit_error", error=repr(exc)))
+                        cases.append(
+                            dict(identity, status="audit_error", error=repr(exc), traceback=traceback.format_exc())
+                        )
     evidence.read(__file__)
     evidence.recheck()
     oracle = [c for c in cases if c["source"] == "oracle"]
     basic_gate = len(oracle) == 6 and all(
         c["status"] in ("verified", "verified_basic") and c["outcome"]["stable"] for c in oracle
     )
+    full_oracle_gate = basic_gate and all(
+        c["independent_governor_replay"] in ("passed", "not_applicable") for c in oracle
+    )
+    groups = []
+    for group in expected_groups:
+        items = [c for c in cases if all(c[k] == group[k] for k in ("source", "checkpoint", "variant"))]
+        verified = [c for c in items if c["status"] in ("verified", "verified_basic")]
+        complete = len(verified) == group["expected_cases"]
+        groups.append(
+            dict(
+                group,
+                complete=complete,
+                verified_cases=len(verified),
+                stable_successes_among_verified=sum(c["outcome"]["stable"] for c in verified),
+                ever_successes_among_verified=sum(c["outcome"]["ever"] for c in verified),
+                stable_rate=sum(c["outcome"]["stable"] for c in verified) / len(verified) if complete else None,
+                raw_checkpoint_reference=group["source"] == "wam" and group["model_rotation_alpha"] == 1,
+                model_reference_changed=group["model_rotation_alpha"] != 1,
+                component_ablation_only=group["model_rotation_alpha"] == 0,
+                tracking_pooled_equal_length_cases={
+                    ref: {
+                        metric: float(np.sqrt(np.mean([c["tracking"][ref][metric] ** 2 for c in verified])))
+                        for metric in ("position_rmse_m", "so3_rmse_rad")
+                    }
+                    for ref in verified[0]["tracking"]
+                }
+                if complete
+                else None,
+                consumed_model_per_physical_second=[
+                    c["governor_diagnostics"]["model_consumed_per_physical_second"] for c in verified
+                ],
+            )
+        )
     value = dict(
-        schema_version="s2a.recovery-readonly-audit.v1",
+        schema_version="s2a.recovery-readonly-audit.v2",
         created_utc=datetime.now(timezone.utc).isoformat(),
         scope="basic_oracle" if args.basic_oracle else "full",
+        reused_verified_cases=sum("reused_from" in c for c in cases),
         cases=cases,
+        groups=groups,
         oracle_basic_gate_passed=basic_gate,
-        independent_governor_replay_complete=False,
+        oracle_full_independent_gate_passed=full_oracle_gate,
+        independent_governor_replay_complete=not args.basic_oracle
+        and all(c["status"] == "verified" for c in cases if c["status"] not in ("missing", "partial")),
+        whole_registered_protocol_complete=not args.basic_oracle
+        and len(cases) == 30
+        and all(c["status"] == "verified" for c in cases),
         source_before_after_hashes=evidence.hashes,
         warnings=[
             "Task/contact are recorded metrics only, never replay inputs.",
+            "Target fingerpad contact0 does not imply native task failure; these endpoint boolean metrics do not certify grasp force or continuous contact.",
             "Oracle is privileged qualification, not WAM success.",
             "Smaller admitted tracking error does not prove equal nominal reference following.",
-            "Full governor replay and future WAM identity audit remain pending in this basic gate.",
+            "Only old development scenes are covered, not fresh unseen-scene acceptance or real hardware.",
+            "Alpha0 is a position/opening plus constant-orientation component ablation, not full/raw checkpoint correctness.",
+            "Alpha.5 changes the generated model reference. Local translation slots unchanged does not preserve the world path.",
+            "Per-query full-state hash/time equality is authenticated from frozen logger; intermediate full physical arrays were not retained for independent rehashing.",
+            "Controller goal matrix comparison uses uniform1e-6 vendor float32 numeric tolerance; all state/error/control checks retain their stricter tolerances. BODY quaternion observation merely reorders body_xquat; no claimed float32 sensor cast.",
+            "Package versions/source files are authenticated; no complete OS/shared-library binary closure is claimed.",
+            "Separate synthetic mechanical-blockage qualification remains unproven; this audit does not promote broad recovery safety.",
+            "Any missing/partial/error case prevents whole-protocol completion; partial group counts do not establish a winning setting.",
         ],
     )
     output.parent.mkdir(parents=True, exist_ok=True)
