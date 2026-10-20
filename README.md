@@ -2,7 +2,9 @@
 
 S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接收的 action，使执行后的实际状态接近目标。
 
-2026-10-20 独立物理评测正在执行：四份 checkpoint 统一 H40/执行8，另在旧集合固定执行16/40对照。新集合 native 和 oracle＋冻结S2A 均已独立复核24/24稳定成功；WAM已有56条完整轨迹，2条曾成功、1条稳定成功。bowl任务已全部完成：warm6200/8400/8600各0/8稳定，8800为1/8。四份checkpoint均已无法达到本轮预设稳定性门槛；完整多任务结果和主要失败原因仍待后续矩阵及窗口对照。该集合与旧物理评测分离，但包含训练catalog来源及1条旧离线样本重叠。当前协议、来源边界和运行进度见[实施记录](plans/v0.0.1/record_20261020.md)与[阶段结论](plans/v0.0.1/conclusion_20261020.md)。
+2026-10-20 独立物理评测正在执行：四份 checkpoint 统一 H40/执行8，另在旧集合固定执行16/40对照。新集合 native 和 oracle＋冻结S2A 均已独立复核24/24稳定成功；WAM已有76/96条完整核验轨迹，2条曾成功、1条稳定成功。bowl任务已全部完成：warm6200/8400/8600各0/8稳定，8800为1/8；wine完整32条均未曾成功，cream已完成12/32且无成功。四份checkpoint均已无法达到本轮预设稳定性门槛；完整多任务结果和主要失败原因仍待后续矩阵及窗口对照。该集合与旧物理评测分离，但包含训练catalog来源及1条旧离线样本重叠。当前协议、来源边界和运行进度见[实施记录](plans/v0.0.1/record_20261020.md)与[阶段结论](plans/v0.0.1/conclusion_20261020.md)。
+
+后续模型实现和测试仅允许物理GPU4、5、6、7；旧八卡运行已取消并归档。当前编排入口 `run_wam_independent_partition.py` 固定partition0–3分别使用GPU4–7，等待中的执行窗口对照也沿用此映射。CPU测试和OSMesa仿真显式设置 `CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH=''`；历史配置保留原始字节，不沿用其中旧GPU映射启动任务。
 
 ```text
 已生成的期望 delta chunk → 带时间的 SE(3) 参考轨迹
@@ -124,10 +126,7 @@ LIBERO 的仿真入口使用独立 Python 3.11 环境，固定 MuJoCo2.3.7、rob
 LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage qualification
 # 旧checkpoint已保存预测的固定参考回放，不重新查询模型
 LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage prediction_replay
-# 先在空闲GPU上启动5个独立副本（gpu=0..4，端口8180..8184）
-LD_LIBRARY_PATH='' .venv/bin/python scripts/serve_libero_policy.py --seed 42 --gpu 0
-# 5个副本就绪后执行真实图像闭环，每trial两候选用同一副本
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage policy
+# 历史五副本policy启动映射已归档；后续模型任务使用上文GPU4–7编排
 # 检查所有物理步、控制约束、成对输入与指纹，再生成报告/曲线
 LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_simulation.py --seed 42
 ```
@@ -163,7 +162,7 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_audit.py --seed 42
 
 每个新矩阵拒绝覆盖已有目录；`--resume`仅复用配置一致、无错误且预算完整的结果。未完成目录先归档再重跑，任务失败的完整结果同样保留。`--allow-incomplete`的报告明确标记未完成，不能作为完整验收通过。
 
-新模型服务沿用 `serve_libero_policy.py`，显式传入 `--config configs/libero_policy_20261019.json --gpu 0 --port 8280 --seed 42`，其余4个副本依次对应GPU1..4/端口8281..8284；执行命令为 `run_libero_matrix.py --config configs/libero_policy_20261019.json --stage policy --seed 42`。检查模型输出合同用 `audit_libero_predictions.py --policy-config configs/libero_policy_20261019.json --seed 42`。同步推理期间暂停物理时钟，不将该评测当作真实延迟下的实时控制证明。
+2026-10-19的历史模型服务使用 `serve_libero_policy.py` 和 `configs/libero_policy_20261019.json`，当时五副本GPU/端口映射仅保留为实验记录，不能直接用于后续启动。当前模型任务使用上文GPU4–7编排。检查历史模型输出合同用 `audit_libero_predictions.py --policy-config configs/libero_policy_20261019.json --seed 42`。同步推理期间暂停物理时钟，不将该评测当作真实延迟下的实时控制证明。
 
 ### WAM checkpoint 四层验收（2026-10-19 v2）
 
