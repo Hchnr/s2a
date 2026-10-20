@@ -2,6 +2,8 @@
 
 状态：实施中，稳定成功目标尚未达标。上一轮完整结论见conclusion_20261020.md，不覆盖其历史原字节。
 
+最新完成项：[018旋转漂移诊断](../../reports/wam_rotation_drift_diagnostic_20261021.md)固定19次拟合/六整episode留出及独立重算全部完成，但推广判定为False。H8/H16/H40旋转RMSE从.090896/.182583/.470659降至.081348/.143087/.320673rad；短窗口仍差于hold、历史外推及独立noWAM/shuffle对照。没有据此重调参数或追加模型、物理、fresh。017三条1200步raw8结果仍待完整核验；下文早期“018未拟合”是保留的时间记录。当前全仓289 passed / 1外部integration deselected、Ruff243文件通过，验证收据SHA `399ebbb6f28ab4399712e0fb53eb887328f492fb90c638d10007e7148465961d`。
+
 本轮将分别验证新15400权重/采样、因果SE(3)跟踪与夹爪反馈，先在旧开发集合筛选并通过执行资格，再冻结到全新初态。沿用总体至少80%、各任务至少50%、末40控制端点稳定成功门槛；不将oracle、保存参考、单例成功或完成实验预算当成目标达成。
 
 目前已完成的证据：
@@ -15,7 +17,7 @@
 - 恢复版统一执行器6条chunked oracle资格已完成：intent_hold与recovering_intent_hold各3/3，均600步、末40端点native连续成功。独立审计重建控制命令、共同参考时钟、三项速度界、实际motor目标及完整SHA，基本和完整oracle gate均为true；它不是WAM成功。恢复组合的admitted TCP pooled误差1.838mm，而未重定时nominal参考为12.856mm，两者口径不同，必须同时保留。
 - 更早8400/8600追加96次state诊断已完整。guidance1.0相同48请求下H40位置/SO3/opening：8400为85.521mm/.479894rad/.114660，8600为103.871mm/.546207rad/.118672；8400 H8/H16三项均最低，H40与8800的位置存在取舍。642项SHA与独立积分核验通过，仍只属6历史episode/22 distinct anchors的开发state证据。[四阶段报告](../../reports/wam_earlier_state_screen_20261021.md)。8400因此追加同003四variant×三旧场景的12条/7200步，现完整核验：raw alpha1两组各0/3、alpha.5为0/3、alpha0为1/3稳定（cream，最后456端点/22.8s连续成功）；全批1/12，136请求，无错误，正常释放。不是原完整checkpoint或多任务稳定成功。[完整报告](../../reports/wam_earlier_recovery_20261021.md)。同权重新夹爪[006](006_earlier_position_hold_20261021.md)现12条/7200步/133请求全核验：raw两组各0/3，alpha.5末端1/3但稳定0/3，alpha0稳定1/3（cream尾486端点/24.3s）；整体1/12稳定，未提升多任务稳定率。[完整报告](../../reports/wam_earlier_position_20261021.md)。
 - 两seed等权生成参考中点（0新推理/物理）的位置/开度小幅改善，H40位置约74.66–82.87mm，但SO3仍.491–.582rad，均差于hold .309rad。独立Slerp/GT/分组聚合核验通过，暂不提升为物理候选，不把改变推理策略的结果归于原单seed checkpoint。
-- 最近全仓基础检查：Ruff check通过、235文件format通过，271 tests passed / 1 integration deselected（含因果重观测、真实trace与独立退出旁证测试）。另有真实MuJoCo资格，不拿CPU模型测试代替物理成功。
+- 最近全仓基础检查：Ruff check通过、243文件format通过，289 tests passed / 1 integration deselected（新增018生产13项、独立审计5项）。另有真实MuJoCo资格，不拿CPU模型测试代替物理成功。
 
 首批24条真实WAM开发pilot已全部独立核验，合计14400物理步、无运行异常，ever/terminal/稳定均0/24，8个模型/执行方式cell各0/3。12条governor的7200步中3704步scale=0、4130步在bridge（二者可重叠）；这限制了模型参考消费。8800g1 bowl目标双指接触0→78端点、最高抬起31.4mm，但仍未完成。8800g1.5三个baseline的45张图、全部原始预测和1800步state-command与历史execute40逐值相同，max_abs=0，证明统一baseline未改变旧行为。完整快照：`outputs/wam_stability_20261021/pilot_audits/complete24_verified.json`，SHA `c57b13ef682ce22eb7115b255e0c4475c3faa42e8fc86c06632c2ea58f120211`；另有4组PNG/PDF及独立SHA复核。
 

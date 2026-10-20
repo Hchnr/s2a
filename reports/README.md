@@ -19,6 +19,7 @@
 | [按跟踪误差重观测](wam_tracking_replan_20261021.md) | 3oracle通过后3WAM，共3600步 | WAM完整0/3稳定、97请求；不推广 |
 | [短重观测执行资格](short_replan_qualification_20261021.md) | 12条oracle，7200步 | 12/12稳定，只证明正确参考附近可执行 |
 | [整episode参考增益诊断](wam_reference_gain_diagnostic_20261021.md) | 缓存拟合/留出，0新推理/物理 | 数毫米位置收益、朝向/开度有退化，不推广 |
+| [世界旋转漂移诊断](wam_rotation_drift_diagnostic_20261021.md) | 19次缓存拟合、六整episode留出，0新推理/物理 | H8/H16旋转改善10.50%/21.63%，仍差于简单对照，不推广 |
 
 进行中的独立协议为[017持续效果](../plans/v0.0.1/017_long_raw_development_20261021.md)，执行进度见[结论](../plans/v0.0.1/conclusion_20261021.md)和[记录](../plans/v0.0.1/record_20261021.md)。
 
