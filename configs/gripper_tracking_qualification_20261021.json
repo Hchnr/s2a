@@ -1,0 +1,47 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/gripper_qualification",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "fixture_path": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json",
+  "native_reference_root": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/native",
+  "records": ["task0_init0", "task1_init0", "task2_init0"],
+  "modes": ["intent", "tracking"],
+  "workers": 2,
+  "steps": 600,
+  "control_fps": 20,
+  "generation_horizon": 40,
+  "execution_horizon": 8,
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "tracking": {
+    "reference_time_constant_s": 0.1,
+    "tracking_deadband": 0.025,
+    "motor_deadband": 0.04,
+    "closing_preload": 0.04,
+    "release_margin": 0.06,
+    "release_excursion": 0.08,
+    "release_confirmation_s": 0.15,
+    "stall_target_gap": 0.08,
+    "stall_speed_per_s": 0.04,
+    "stall_confirmation_s": 0.2,
+    "closed_limit": 0.03,
+    "max_evidence_interval_s": 0.1
+  },
+  "acceptance": {
+    "stable_tail_steps": 40,
+    "require_each_baseline_and_candidate_stable": true,
+    "position_rmse_max_m": 0.01,
+    "rotation_rmse_max_rad": 0.05,
+    "note": "Qualification on three old development scenes, not WAM success or unseen generalization. No retuning defaults from these outcomes."
+  },
+  "notes": [
+    "True successful native state/opening references only; same OSC and H40/execute8 Action128 oracle interface.",
+    "Each mode restores its own environment. Three tasks, init0, seed42, six complete600-step CPU trials.",
+    "Adapter inputs are only current measured opening, existing motor target, previous actual command, generated scalar reference and past interval.",
+    "Object/contact/native success are measured after commands solely as metrics and never passed to the adapter.",
+    "Native zero holds the existing motor position target. Closing preload is not a calibrated force.",
+    "Pre-execution review fix caps closing tolerance at half preload so default motor deadband cannot cancel the declared offset."
+  ]
+}
