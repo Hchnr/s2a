@@ -2,7 +2,7 @@
 
 S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接收的 action，使执行后的实际状态接近目标。
 
-2026-10-21继续以**稳定成功**为目标：新增15400权重/采样对照、因果共同参考重定时、独立旋转与夹爪资格检查。oracle下baseline/governor-only各3/3稳定；首版夹爪反馈2/3有回归，暂不采用。真实WAM开发pilot执行中，新初态验收尚未开始，不能将资格成功计为WAM成功。见[本轮计划](plans/v0.0.1/002_wam_stability_20261021.md)、[进度结论](plans/v0.0.1/conclusion_20261021.md)与[实施记录](plans/v0.0.1/record_20261021.md)。新入口`run_wam_stability_screen.py`/`run_wam_stability_service.py`强制物理GPU4–7，CPU编排/OSMesa空CUDA，各输出目录拒绝覆盖。
+2026-10-21继续以**稳定成功**为目标：8800/15400×guidance1.0/1.5的192次state诊断与24条真实WAM开发pilot已完整，任务ever/terminal/stable均0/24。第一版governor频繁暂停/桥接，不能以较小admitted参考误差宣称任务改善。第二版夹爪保持和桥接恢复已通过6条chunked oracle完整独立审计，新的24条WAM恢复/朝向消融正在物理GPU5/7执行；较早8400/8600的96次state-only对照使用GPU4/6。新初态验收尚未开始，资格成功不计WAM成功。见[本轮计划](plans/v0.0.1/002_wam_stability_20261021.md)、[恢复对照](plans/v0.0.1/003_wam_recovery_20261021.md)、[进度结论](plans/v0.0.1/conclusion_20261021.md)与[实施记录](plans/v0.0.1/record_20261021.md)。新入口`run_wam_stability_screen.py`/`run_wam_stability_service.py`强制物理GPU4–7，CPU编排/OSMesa空CUDA，各输出目录拒绝覆盖。
 
 2026-10-20 独立物理评测及窗口对照已完成：主矩阵四份checkpoint统一H40/执行8，稳定成功为warm6200 0/24、8400 0/24、8600 0/24、8800 1/24；native与oracle＋冻结S2A均24/24稳定。旧集合8800执行8/16/40分别1/12、0/12、1/12稳定，成功病例不同，未观察到总体提升。全部216条评测＋27条固定参考诊断共243条/145800步完成并独立审计；能完成部分任务，稳定能力仍未达预注册门槛，不能将全部失败唯一归于权重或转换。详见[正式报告](reports/wam_independent_20261020.md)、[最终结论](plans/v0.0.1/conclusion_20261020.md)和[实施记录](plans/v0.0.1/record_20261020.md)。来源独立性仅限已记录物理评测/控制调参，并非预训练未见；历史训练消费及上游图像/pose物理同步仍未知。
 
