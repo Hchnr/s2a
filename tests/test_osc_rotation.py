@@ -197,6 +197,54 @@ def test_isotropic_model_is_covariant_under_world_frame_rotation():
     np.testing.assert_allclose(changed_velocity, world_change @ velocity, atol=1e-12)
 
 
+def test_retained_goal_requires_matching_body_or_control_site_frames():
+    source = Rotation.from_rotvec([0.4, -0.2, 0.3]).as_matrix()
+    source_from_control = Rotation.from_rotvec([0, 0, -np.pi / 2]).as_matrix()
+    control = source @ source_from_control
+    goal_control = Rotation.from_rotvec([0.1, -0.04, 0.03]).as_matrix() @ control
+    kwargs = dict(kp=np.full(3, 150), kd=np.full(3, 25), dt=0.05)
+    control_after, _ = predict_osc_orientation(
+        control, np.zeros(3), np.zeros(3), current_goal_rotation=goal_control, **kwargs
+    )
+    source_after, _ = predict_osc_orientation(
+        source, np.zeros(3), np.zeros(3), current_goal_rotation=goal_control @ source_from_control.T, **kwargs
+    )
+    np.testing.assert_allclose(source_after @ source_from_control, control_after, atol=1e-13)
+    wrong_frame_after, _ = predict_osc_orientation(
+        source, np.zeros(3), np.zeros(3), current_goal_rotation=goal_control, **kwargs
+    )
+    assert error(wrong_frame_after, source_after) > 0.05
+
+
+def test_float32_controller_goal_defect_is_accepted_preserved_and_reported():
+    raw_goal = Rotation.from_rotvec([0.6, -0.3, 0.4]).as_matrix().astype(np.float32)
+    result = bounded_osc_rotation_inverse(
+        np.eye(3),
+        Rotation.from_rotvec([0.1, 0.1, -0.1]).as_matrix(),
+        np.zeros(3),
+        interface=interface(),
+        kp=np.full(3, 150),
+        kd=np.full(3, 25),
+        dt=0.05,
+        current_goal_rotation=raw_goal,
+    )
+    assert 1e-8 < result["input_rotation_defects"]["current_goal_rotation"]["orthogonality_max_abs"] < 1e-6
+    assert result["rotation_matrix_tolerance"] == 1e-6
+    assert not result["input_rotations_projected"]
+    bad_goal = np.eye(3)
+    bad_goal[0, 0] += 1e-4
+    with pytest.raises(ValueError, match="proper rotation"):
+        predict_osc_orientation(
+            np.eye(3),
+            np.zeros(3),
+            np.zeros(3),
+            kp=np.full(3, 150),
+            kd=np.full(3, 25),
+            dt=0.05,
+            current_goal_rotation=bad_goal,
+        )
+
+
 @pytest.mark.parametrize("field,value", [("dt", 0), ("integration_steps", 0), ("max_nfev", 0)])
 def test_invalid_solver_contract_is_rejected(field, value):
     options = dict(interface=interface(), kp=np.full(3, 150), kd=np.full(3, 25), dt=0.05)

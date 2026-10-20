@@ -15,7 +15,7 @@ from scipy.spatial.transform import Rotation
 from s2a.artifacts import load_config, sha256
 from s2a.geometry import inverse, pose_error
 from s2a.osc import OSCInterface, OSCStateToAction
-from s2a.osc_rotation import bounded_osc_rotation_inverse
+from s2a.osc_rotation import ROTATION_MATRIX_ATOL, bounded_osc_rotation_inverse
 
 
 def write_new(path, value):
@@ -144,6 +144,8 @@ def run_worker(args, config, root):
         )
         initial_source = source_pose(obs)
         initial_tcp = initial_source @ h
+        source_from_control_rotation = initial_source[:3, :3].T @ controller.ee_ori_mat
+        control_site_id = env.sim.model.site_name2id(controller.eef_name)
         simulation_state = np.asarray(env.sim.get_state().flatten()).copy()
         gripper = env.robots[0].gripper
         initial_gripper_action = np.asarray(gripper.current_action).copy()
@@ -163,6 +165,7 @@ def run_worker(args, config, root):
                 measured_twist=measured_twist(env),
                 controller_goal_rotation=controller.goal_ori.copy(),
                 controller_feedback_rotation=controller.ee_ori_mat.copy(),
+                source_from_control_rotation=source_from_control_rotation,
                 gripper_current_action=initial_gripper_action,
                 held_gripper_motor_target=held_gripper_motor_target,
                 expected_gripper_control=expected_gripper_control,
@@ -180,6 +183,10 @@ def run_worker(args, config, root):
                 desired = desired_tcp @ inverse(h)
                 velocity = measured_twist(env)
                 goal_before = controller.goal_ori.copy()
+                measured_control_rotation = env.sim.data.site_xmat[control_site_id].reshape(3, 3).copy()
+                desired_control_rotation = desired[:3, :3] @ source_from_control_rotation
+                observed_offset = measured[:3, :3].T @ measured_control_rotation
+                np.testing.assert_allclose(observed_offset, source_from_control_rotation, atol=1e-6, rtol=0)
                 base = response.convert(measured, desired, velocity)
                 command = base["command"].copy()
                 rotation_diagnostic = None
@@ -188,8 +195,8 @@ def run_worker(args, config, root):
                     command[3:] = old["command"][3:]
                 elif args.method == "bounded_rotation":
                     rotation_diagnostic = bounded_osc_rotation_inverse(
-                        measured[:3, :3],
-                        desired[:3, :3],
+                        measured_control_rotation,
+                        desired_control_rotation,
                         velocity[3:],
                         interface=interface,
                         kp=contract["kp"][3:],
@@ -232,6 +239,11 @@ def run_worker(args, config, root):
                     command=np.r_[command, 0.0],
                     physical_delta=controller.scale_action(command).copy(),
                     controller_goal_rotation_before=goal_before,
+                    measured_control_rotation=measured_control_rotation,
+                    desired_control_rotation=desired_control_rotation,
+                    source_from_control_rotation_max_abs_error=float(
+                        np.max(np.abs(observed_offset - source_from_control_rotation))
+                    ),
                     controller_goal_rotation_after=controller.goal_ori.copy(),
                     controller_feedback_rotation=controller.ee_ori_mat.copy(),
                     controller_feedback_position=controller.ee_pos.copy(),
@@ -314,7 +326,7 @@ def run_worker(args, config, root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", default="configs/osc_rotation_qualification_20261021.json")
+    parser.add_argument("--config", default="configs/osc_rotation_qualification_20261021_v2.json")
     parser.add_argument("--seed", required=True, type=int)
     parser.add_argument("--worker", action="store_true")
     parser.add_argument("--record")
@@ -326,6 +338,8 @@ def main():
     config, root = load_config(args.config)
     if args.seed != config["seed"] or sha256(config["fixture"]) != config["fixture_sha256"]:
         raise ValueError("seed or frozen fixture SHA differs")
+    if config.get("protocol_version") != 2 or config.get("rotation_matrix_tolerance") != ROTATION_MATRIX_ATOL:
+        raise ValueError("requires explicit corrected rotation frame protocol and numerical tolerance")
     if args.worker:
         return run_worker(args, config, root)
     # load_config creates the output directory. Require it to be empty, and

@@ -17,11 +17,16 @@ from scipy.spatial.transform import Rotation
 
 from s2a.geometry import finite
 
+ROTATION_MATRIX_ATOL = 1e-6
+
 
 def _rotation(value):
     value = finite(value, (3, 3))
-    if not np.allclose(value.T @ value, np.eye(3), atol=1e-8, rtol=0) or not np.isclose(
-        np.linalg.det(value), 1, atol=1e-8, rtol=0
+    # Upstream robosuite quat2mat explicitly casts its quaternion to float32.
+    # Preserve that raw goal for the spring rather than silently projecting
+    # it to a different SO(3) matrix. The accepted numerical defect is reported.
+    if not np.allclose(value.T @ value, np.eye(3), atol=ROTATION_MATRIX_ATOL, rtol=0) or not np.isclose(
+        np.linalg.det(value), 1, atol=ROTATION_MATRIX_ATOL, rtol=0
     ):
         raise ValueError("orientation must be a proper rotation matrix")
     return value
@@ -80,6 +85,9 @@ def predict_osc_orientation(
     Rotations map control-point coordinates into world; angular velocity and
     the physical goal's rotation vector are world-frame quantities in rad/s
     and rad. Returned orientation is absolute, and velocity is world-frame.
+    All absolute rotations must refer to the SAME frame, including the current
+    goal. LIBERO's observed eef BODY rotation differs from its OSC SITE frame;
+    the caller must apply their fixed right-offset before mixing those inputs.
     A zero physical rotation delta preserves the controller's previous goal,
     so that case requires ``current_goal_rotation``. This prediction is a
     model diagnostic, not a simulated robot observation.
@@ -114,6 +122,12 @@ def bounded_osc_rotation_inverse(
 ):
     """Return a legal three-component rotational OSC command for one endpoint.
 
+    All three absolute rotations, including current_goal_rotation, must map the
+    SAME controlled frame to world. A caller using LIBERO's eef BODY observation
+    must convert it and the desired orientation to the controller SITE frame,
+    or convert the retained controller goal into the body frame. A world-frame
+    angular velocity alone does not remove this absolute-frame requirement.
+
     ``interface`` is an OSCInterface with the actual six-dimensional affine
     input/output limits. ``previous_command`` is only its three normalized
     rotational entries. When a rate limit is supplied, that previous command
@@ -137,6 +151,16 @@ def bounded_osc_rotation_inverse(
     measured, desired = _rotation(measured_rotation), _rotation(desired_rotation)
     omega = finite(world_angular_velocity, (3,))
     retained_goal = None if current_goal_rotation is None else _rotation(current_goal_rotation) @ measured.T
+    rotation_inputs = dict(measured_rotation=measured, desired_rotation=desired)
+    if current_goal_rotation is not None:
+        rotation_inputs["current_goal_rotation"] = np.asarray(current_goal_rotation, dtype=float)
+    input_rotation_defects = {
+        name: dict(
+            orthogonality_max_abs=float(np.max(np.abs(value.T @ value - np.eye(3)))),
+            determinant_error_abs=float(abs(np.linalg.det(value) - 1)),
+        )
+        for name, value in rotation_inputs.items()
+    }
     kp, kd = _gains(kp, kd, dt, integration_steps)
     if isinstance(max_nfev, bool) or not isinstance(max_nfev, (int, np.integer)) or max_nfev < 1:
         raise ValueError("max_nfev must be a positive integer")
@@ -282,6 +306,9 @@ def bounded_osc_rotation_inverse(
         current_goal_rotation_provided=current_goal_rotation is not None,
         applied_goal_rotation=(retained_goal if preserved else Rotation.from_rotvec(sent_delta).as_matrix()) @ measured,
         command_dtype=str(command.dtype),
+        input_rotation_defects=input_rotation_defects,
+        rotation_matrix_tolerance=ROTATION_MATRIX_ATOL,
+        input_rotations_projected=False,
         integration_steps=int(integration_steps),
         local_model_only=True,
     )
