@@ -1,0 +1,117 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/executor_qualification",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoints": [
+    {
+      "name": "15400_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_23src_20261015_warm_start_from22src_i8800_run01/cosmos3_action/action128/action128_wam_nano_1b_23src_20261015_warm_start_from22src_20261012_i8800_from12src_e2aux345_i6200_videocap30_static_vae_aot_run1",
+      "iteration": "iter_000015400",
+      "gpu": 7,
+      "port": 8947
+    }
+  ],
+  "offline_horizons": [
+    40
+  ],
+  "offline_prompt_modes": [
+    "task_only"
+  ],
+  "sampling_seeds": [
+    42
+  ],
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "control_fps": 20,
+  "source_samples_manifest": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_checkpoint_acceptance_20261019v2/samples/manifest.json",
+  "notes": [
+    "Qualification only on three old development scenes, source=privileged oracle. Not WAM success or fresh acceptance. Both baseline and governed run the full600 physics steps with the same fixed inner controller and initial motor target aligned as in the historical evaluator.",
+    "The governor preserves endpoints, retimes translation/rotation/aperture jointly, and adds explicit chunk bridges. All variants use a maximum observation interval40steps for eventual WAM pilots, including when progress stalls. No contact/object/task predicate enters control.",
+    "Variants are candidates only; physical qualification determines which are eligible for subsequent WAM development. No new holdout is used."
+  ],
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "fixture": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json",
+  "fixture_sha256": "f522ee333827d51ab66b5b8d1c2a7ebd8ceca3832403b3c54dfa56a821fb2a8e",
+  "records": [
+    "task0_init0",
+    "task1_init0",
+    "task2_init0"
+  ],
+  "oracle_reference_root": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/native",
+  "online_max_steps": 600,
+  "online_chunk_size": 40,
+  "online_execution_horizon": 40,
+  "max_observation_interval_steps": 40,
+  "stable_success_last_steps": 40,
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "gripper_tracking": {
+    "reference_time_constant_s": 0.1,
+    "tracking_deadband": 0.025,
+    "motor_deadband": 0.04,
+    "closing_preload": 0.04,
+    "release_margin": 0.06,
+    "release_excursion": 0.08,
+    "release_confirmation_s": 0.15,
+    "stall_target_gap": 0.08,
+    "stall_speed_per_s": 0.04,
+    "stall_confirmation_s": 0.2,
+    "closed_limit": 0.03,
+    "max_evidence_interval_s": 0.1
+  },
+  "reference_governor": {
+    "max_translation_speed_m_s": 0.2,
+    "max_rotation_speed_rad_s": 1.0,
+    "max_opening_speed_s": 2.0,
+    "position_soft_m": 0.01,
+    "position_stop_m": 0.04,
+    "rotation_soft_rad": 0.1,
+    "rotation_stop_rad": 0.4
+  },
+  "bounded_rotation": {
+    "integration_steps": 50,
+    "max_nfev": 30,
+    "zero_goal_epsilon_rad": null
+  },
+  "variants": [
+    {
+      "name": "baseline",
+      "rotation": "response",
+      "gripper": "intent",
+      "governor": false
+    },
+    {
+      "name": "governor_only",
+      "rotation": "response",
+      "gripper": "intent",
+      "governor": true
+    },
+    {
+      "name": "gripper_only",
+      "rotation": "response",
+      "gripper": "tracking",
+      "governor": false
+    },
+    {
+      "name": "bounded_only",
+      "rotation": "bounded",
+      "gripper": "intent",
+      "governor": false
+    },
+    {
+      "name": "governor_gripper",
+      "rotation": "response",
+      "gripper": "tracking",
+      "governor": true
+    },
+    {
+      "name": "combined",
+      "rotation": "bounded",
+      "gripper": "tracking",
+      "governor": true
+    }
+  ]
+}
