@@ -14,12 +14,13 @@
 | [训练attention backend](wam_backend_state_20261021.md) | 48真实初态配对预测，0物理 | H8/H16位置略差，未过推广门槛；退出内部ledger缺失另列 |
 | [双种子检查器](wam_seed_aware_checker_20261021.md) | 27旧case只读精确回归 | 只扩显式seed/来源接口，不新增任务成功 |
 | [真实43执行资格](wam_seed43_execution_qualification_20261021.md) | 3oracle，1800步 | 3/3，和对应42逐步相同；未验证43 WAM/新初态 |
+| [60秒执行资格](wam_long_qualification_20261021.md) | native3＋oracle3，7200步 | 全6稳定，实际控制前600精确；原终点诊断日志strictFalse与舍入原因保留 |
 | [固定短间隔WAM](wam_short_replan_20261021.md) | 12WAM，7200步，678请求 | raw8仅bowl1/3；其余三组0/3；外部未使用历史权重缺失的收尾例外保留 |
 | [按跟踪误差重观测](wam_tracking_replan_20261021.md) | 3oracle通过后3WAM，共3600步 | WAM完整0/3稳定、97请求；不推广 |
 | [短重观测执行资格](short_replan_qualification_20261021.md) | 12条oracle，7200步 | 12/12稳定，只证明正确参考附近可执行 |
 | [整episode参考增益诊断](wam_reference_gain_diagnostic_20261021.md) | 缓存拟合/留出，0新推理/物理 | 数毫米位置收益、朝向/开度有退化，不推广 |
 
-进行中的独立协议为[017持续效果](../plans/v0.0.1/017_long_raw_development_20261021.md)、[010短闭环](../plans/v0.0.1/010_short_replan_wam_20261021.md)，执行进度见[结论](../plans/v0.0.1/conclusion_20261021.md)和[记录](../plans/v0.0.1/record_20261021.md)。
+进行中的独立协议为[017持续效果](../plans/v0.0.1/017_long_raw_development_20261021.md)，执行进度见[结论](../plans/v0.0.1/conclusion_20261021.md)和[记录](../plans/v0.0.1/record_20261021.md)。
 
 
 本轮报告为 `droid_episode0_20261016.md`，摘要为 `droid_episode0_20261016.json`；对应 [实施记录](../plans/v0.0.1/record_20261016.md) 和 [结论](../plans/v0.0.1/conclusion_20261016.md)。所有实验均标明代码/数据指纹、控制接口、划分与证据范围。
