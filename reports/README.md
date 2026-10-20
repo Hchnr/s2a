@@ -2,6 +2,19 @@
 
 这里保存 Git 内的精简报告、指标摘要和完成状态，完整产物位于 `outputs/`。
 
+当前稳定成功阶段的完整结果见下表。结果均为开发集证据；尚未执行预留新初态验收，无真机。
+
+| 报告 | 已完成范围 | 主要结果 |
+| --- | --- | --- |
+| [WAM夹爪位置/保持](wam_position_hold_20261021.md) | 8800/15400，24条WAM，14400步 | 曾成功2/24，终态/稳定0/24；映射错误减少没有转化为任务稳定提升 |
+| [8400同协议对照](wam_earlier_position_20261021.md) | 12条WAM，7200步 | 稳定1/12，仅alpha0/cream；raw各组0/3 |
+| [最新15600的state](wam_latest_state_screen_20261021.md) | 48预测，0物理 | 九项H8/H16/H40指标均差于8400及15400；不将latest作为best |
+| [短重观测执行资格](short_replan_qualification_20261021.md) | 12条oracle，7200步 | 12/12稳定，只证明正确参考附近可执行 |
+| [整episode参考增益诊断](wam_reference_gain_diagnostic_20261021.md) | 缓存拟合/留出，0新推理/物理 | 数毫米位置收益、朝向/开度有退化，不推广 |
+
+下一轮协议为[010短闭环](../plans/v0.0.1/010_short_replan_wam_20261021.md)与[011采样步数](../plans/v0.0.1/011_sampler_steps_state_20261021.md)，执行进度见[结论](../plans/v0.0.1/conclusion_20261021.md)和[记录](../plans/v0.0.1/record_20261021.md)。
+
+
 本轮报告为 `droid_episode0_20261016.md`，摘要为 `droid_episode0_20261016.json`；对应 [实施记录](../plans/v0.0.1/record_20261016.md) 和 [结论](../plans/v0.0.1/conclusion_20261016.md)。所有实验均标明代码/数据指纹、控制接口、划分与证据范围。
 
 重建报告：`LD_LIBRARY_PATH='' .venv/bin/python scripts/run_experiment.py --seed 42 --stage report --plots`。它读取已有指标，不重新选择模型或增益。图在 `outputs/droid_episode0/figures/`，报告链接保留本地完整产物的位置。
