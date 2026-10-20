@@ -14,6 +14,11 @@ import numpy as np
 from audit_wam_sampler_steps import METRIC_KEYS, PREFIXES, ROOT, STEPS, STUDY, Evidence, process_snapshot, promotion
 from matplotlib.backends.backend_pdf import PdfPages
 
+SHIFT_REVIEW = STUDY.parent / "sampler_steps_shift_contract_review_20261021/review.json"
+SHIFT_REVIEW_SHA = "16a9a409ef46978a7fd96e552c347fcb0efabd41cd43414dc5e77f6f9610a774"
+SHIFT_MEMO = SHIFT_REVIEW.with_name("memo.md")
+SHIFT_MEMO_SHA = "2f634491430d34220ca4c9f9a911ba32a84f6dee0e5728cb05fb73c4ef4de6ac"
+
 
 def triple(values):
     return f"{values['position_rmse_mm']:.3f} / {values['rotation_rmse_rad']:.6f} / {values['opening_mae']:.6f}"
@@ -197,6 +202,7 @@ def report(audit, audit_path, output):
         "独立Gram–Schmidt解码和逐步local delta积分直接读取raw输出；GT、hold及只用anchor前最多4帧的constant velocity独立复算，并逐端点核对原结果。最终重新核对冻结输入/source/snapshot、每个response/trace、三阶段准入、163个权重文件path/size/mtime和登记PID/startticks释放。未重复读取完整权重字节。",
         "sampler保持原实例和原求值/返回对象，只在实例forward与velocity调用边界观察；未加velocity_postprocess_builder、网络forward hook、新solver或随机数抽样。实测velocity NFE为35/70/140；denoising网络forward数只在冻结guidance1/无postprocess/单rank/无padding调用条件下由源码推导，包含VAE等全部模块的总forward次数并未直接hook计数。",
         "actual sigma与integer timestep来自受source SHA/code identity/对象身份保护的实际caller frame。保存的sigma/timepoint数值逐字节重建SHA并用独立NumPy公式复核。初态是conditioning/mask之后的实际sampler输入，不是mask之前pure Gaussian。初态/clean/ref/mask/text保存的是观察到的digest witness，未保存完整tensor值；审计能独立核跨步数digest和字段一致，不能重新从原tensor字节计算其SHA。参数/RNG无修改来自冻结observer的逐观察guard和CPU透明性测试，不伪称另一次张量重放。",
+        "shift5有当前保存训练合同的依据：实际vision latent空间60×40、downsample16对应960×640画布；当前训练按实际短边640归480档，保存shift表的480档为5。independent_action_schedule=false，action复用vision sigma；推理也共享timestep。sampler constructor默认1由显式request5覆盖，不能将scheduler_config.shift=1误判成有效shift错接。只读核查见 `outputs/wam_stability_20261021/sampler_steps_shift_contract_review_20261021/memo.md`（file:line/源码与实际trace SHA见review.json）；这不证明历史实际训练版本/消费。本轮不另登记shift1/3或新敏感性网格。",
         "预实现的只读提案曾查看权重run旁的另一Cosmos源码树；011实际运行按config.cosmos_repo绑定 `/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm`，不是 `/share/project/eai_pwm/repos/cosmos-framework-pwm`。此差异在任何011模型启动前修正，原提案字节保留；它不构成旧实验推理接错的证据。",
         "纯CPU preparation v1在启动前自审发现acceptance_input误指恒定service根目录，会使第二请求拒覆盖。d26e324改为prepared.sample_args中的独立generate_UUID目录，并通过连续两请求与拒覆盖测试。旧准备目录30文件逐字节完整归档为 `sampler_steps_state_prepare_v1_superseded`，没有任何旧模型请求或物理步；新目录按相同冻结config重新prepare，144预算不变。",
         "本轮仅物理GPU6/9566单服务、三个串行state矩阵，所有CPU环境CUDA/LD为空；owned协调器/模型/三个worker均已按登记身份释放，模型正常或受控SIGTERM退出。其他协议010/012与真机均不在本报告分母。本轮未重新证明历史训练消费或上游图像/pose物理同步，示范future也并非唯一正确任务轨迹。",
@@ -243,6 +249,11 @@ def main():
     if not audit["complete"] or audit["status"] != "complete" or audit["errors"]:
         raise ValueError("final report requires complete144 independent audit and resource release")
     for path, h in audit["input_sha256"].items():
+        evidence.check(path, h)
+    evidence.check(SHIFT_REVIEW, SHIFT_REVIEW_SHA)
+    evidence.check(SHIFT_MEMO, SHIFT_MEMO_SHA)
+    shift_review = evidence.json(SHIFT_REVIEW)
+    for path, h in shift_review["input_sha256"].items():
         evidence.check(path, h)
     prepared = evidence.json(STUDY / "orchestration/prepared.json")
 
