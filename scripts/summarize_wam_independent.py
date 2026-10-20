@@ -111,7 +111,11 @@ def main():
             actions = [np.asarray(ch["actions"]) for ch in chunks]
             horizon = c["online_execution_horizon"]
             # Descriptive opening threshold only; no task-dependent command change.
-            row["opening_diagnostics"] = chunk_opening_diagnostics(actions, execution_horizon=horizon)
+            row["opening_diagnostics"] = chunk_opening_diagnostics(
+                actions,
+                execution_horizon=horizon,
+                executed_steps=[min(horizon, len(steps) - ch["step"]) for ch in chunks],
+            )
         cases.append(row)
     groups = {}
     for label in labels:

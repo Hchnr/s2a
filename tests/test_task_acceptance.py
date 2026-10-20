@@ -41,3 +41,19 @@ def test_closure_deferral_depends_on_a_real_unexecuted_suffix():
     assert full["executed_prefix_min"] == full["full_prediction_min"] == 0
     assert chunk_opening_diagnostics([future_close], execution_horizon=16)["deferred_closure_chunks"] == 1
     assert chunk_opening_diagnostics([future_close], execution_horizon=24)["deferred_closure_chunks"] == 0
+
+
+def test_partial_final_execution_keeps_unexecuted_closure_in_the_suffix():
+    # H16 at step592 of a 600-step trial executes only its first eight endpoints.
+    final_chunk = np.ones((40, 128))
+    final_chunk[8:16, 9] = 0
+    partial = chunk_opening_diagnostics([final_chunk], execution_horizon=16, executed_steps=[8])
+    assert partial["executed_prefix_min"] == 1
+    assert partial["full_prediction_min"] == 0
+    assert partial["deferred_closure_chunks"] == 1
+    full = chunk_opening_diagnostics([final_chunk], execution_horizon=16, executed_steps=[16])
+    assert full["executed_prefix_min"] == 0
+    assert full["deferred_closure_chunks"] == 0
+    for invalid in ([], [0], [17], [8, 8], [8.0]):
+        with pytest.raises(ValueError, match="actual execution length"):
+            chunk_opening_diagnostics([final_chunk], execution_horizon=16, executed_steps=invalid)

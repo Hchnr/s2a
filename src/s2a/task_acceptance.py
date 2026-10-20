@@ -24,24 +24,26 @@ def task_outcome(success, *, expected_steps, stable_steps):
     )
 
 
-def chunk_opening_diagnostics(actions, *, execution_horizon):
-    """Count closures confined to a skipped suffix; full execution has no suffix."""
+def chunk_opening_diagnostics(actions, *, execution_horizon, executed_steps=None):
+    """Count skipped closures, using actual prefix lengths for partial final chunks."""
     if not isinstance(execution_horizon, (int, np.integer)) or execution_horizon < 1:
         raise ValueError("requires a positive integer execution horizon")
     chunks = [np.asarray(chunk, dtype=float) for chunk in actions]
     if not chunks or any(a.ndim != 2 or a.shape[0] == 0 or a.shape[1] < 10 or not np.isfinite(a).all() for a in chunks):
         raise ValueError("requires nonempty finite action chunks with opening slot 9")
+    counts = [min(execution_horizon, len(a)) for a in chunks] if executed_steps is None else list(executed_steps)
+    if len(counts) != len(chunks) or any(
+        isinstance(n, bool) or not isinstance(n, (int, np.integer)) or not 1 <= n <= min(execution_horizon, len(a))
+        for a, n in zip(chunks, counts, strict=False)
+    ):
+        raise ValueError("requires one valid actual execution length per chunk")
     return dict(
         chunks=len(chunks),
-        executed_prefix_min=float(min(a[:execution_horizon, 9].min() for a in chunks)),
+        executed_prefix_min=float(min(a[:n, 9].min() for a, n in zip(chunks, counts, strict=True))),
         full_prediction_min=float(min(a[:, 9].min() for a in chunks)),
         deferred_closure_chunks=sum(
-            bool(
-                len(a) > execution_horizon
-                and a[:execution_horizon, 9].min() >= 0.35
-                and a[execution_horizon:, 9].min() < 0.35
-            )
-            for a in chunks
+            bool(len(a) > n and a[:n, 9].min() >= 0.35 and a[n:, 9].min() < 0.35)
+            for a, n in zip(chunks, counts, strict=True)
         ),
     )
 
