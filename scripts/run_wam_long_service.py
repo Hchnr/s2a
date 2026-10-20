@@ -134,7 +134,7 @@ def preflight(path, digest, partition):
         or len({p["pid"] for p in owned}) != len(owned)
         or len(models) != 1
         or models[0]["pid"] != release["model_pid"]
-        or models[0]["start_ticks"] != release["model_startticks" if partition == 1 else "model_start_ticks"]
+        or models[0]["start_ticks"] != int(release["model_startticks" if partition == 1 else "model_start_ticks"])
         or any(p["cuda_visible_devices"] not in ("", str(ck["gpu"])) for p in owned)
     ):
         raise ValueError("prior owned model PID/ticks/CUDA identity differs")
