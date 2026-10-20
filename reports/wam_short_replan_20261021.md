@@ -1,6 +1,8 @@
 # 010：固定短间隔重新观测的 WAM 开发评测
 
-**尚未全部完成**：当前独立核验 11/12 条，原登记的最后一条继续执行。原始完整 WAM 在每 8 步重观测的 bowl → plate 上首次满足 600 步、末 40 步连续原生成功；同组 wine、cream 均失败。这个结果证明当前 checkpoint 的原始输出在一个旧场景上具备任务能力，还没有达到多任务稳定成功。
+**12 条物理评测及新独立结果审计全部完成，存在明确的协调器收尾例外。** 原始完整 WAM 每 8 步重观测稳定成功 1/3，仅 bowl → plate；其余三组均 0/3。所有案例总计 7200 步、678 次请求，只有这一条出现原生成功。这证明当前 checkpoint 的原始输出在一个旧场景上具备任务能力，还没有达到多任务稳定成功。
+
+原 interval8 协调器在最后检查一个本轮未使用的历史 15400 checkpoint 时发现外部文件缺失，`original_coordinator_final_gate_success=false`。实际使用的 8400 权重登记、执行源、全部案例和服务预算通过新的独立严格核验。原错误和缺失的 complete 标记保留，没有重跑或补造完成文件。
 
 证据等级为 LIBERO/MuJoCo 独立闭环仿真，使用 Panda 机器人模型；没有运行真机。
 
@@ -17,11 +19,30 @@ alpha0 改变局部旋转及其后积分得到的 world 位置，是分量诊断
 | 重观测间隔 | 模型旋转 alpha | bowl → plate | wine bottle → rack | cream cheese → bowl | 完整组稳定成功 |
 | --- | ---: | --- | --- | --- | --- |
 | 8 | 1，raw | 成功 | 失败 | 失败 | 1/3 |
-| 8 | 0，分量消融 | 失败 | 失败 | 待完成 | 未统计 |
+| 8 | 0，分量消融 | 失败 | 失败 | 失败 | 0/3 |
 | 16 | 1，raw | 失败 | 失败 | 失败 | 0/3 |
 | 16 | 0，分量消融 | 失败 | 失败 | 失败 | 0/3 |
 
-依据 `short_replan_audit/progress_11.json`，SHA `3af07f8811b523b0f635d7ac6c227d6a1b30defb4fb7fdebdc61affd60949dab`。完整案例均通过冻结独立检查器的 600 步重放；partial/missing 没有算作失败，没有给未完成组成功率。interval16 自有服务已经正常释放，interval8 等待最后一条；整体 `complete=false`。
+依据 `short_replan_audit/final12_verified_with_unused_checkpoint_exception.json`，SHA `a4560bb70cc21e204dc7bd0e35fc3aa2a7cab7365b394a6a4c1727473b60ad12`。新 artifact 的 `complete=true` 仅指这项独立只读案例/请求审计；原协调器最终门禁仍为 false。11 条此前完整审计的所有来源 SHA 再核，最后一条执行完整 600 步机械重放；另对全部 12 条重新计算几何/事件/执行约束。两套模型均已退出、外部 model=-15/matrix=0，原 interval16 完成标记有效，interval8 收尾错误保留。
+
+下面全部跟踪误差针对实际执行参考；alpha0 的低朝向误差不代表原始 WAM 朝向预测改善。
+
+| 间隔/alpha | 场景 | TCP RMSE (mm) | SO(3) RMSE (rad) | opening MAE | 目标双指接触端点 | 饱和/速率限制步数 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| 8/1 raw | bowl | 7.029629 | 0.021189 | 0.036805 | 0 | 47/212 |
+| 8/1 raw | wine | 6.406711 | 0.013904 | 0.038146 | 35 | 23/146 |
+| 8/1 raw | cream | 11.360748 | 0.025491 | 0.034974 | 10 | 108/240 |
+| 8/0 | bowl | 7.700130 | 0.001586 | 0.040577 | 0 | 30/119 |
+| 8/0 | wine | 0.649828 | 0.001323 | 0.020225 | 0 | 0/8 |
+| 8/0 | cream | 8.591747 | 0.002874 | 0.056289 | 0 | 71/310 |
+| 16/1 raw | bowl | 20.502662 | 0.033162 | 0.053328 | 0 | 270/504 |
+| 16/1 raw | wine | 40.503872 | 0.042709 | 0.023847 | 0 | 288/446 |
+| 16/1 raw | cream | 46.576619 | 0.081509 | 0.052480 | 0 | 377/426 |
+| 16/0 | bowl | 43.121043 | 0.049150 | 0.098896 | 0 | 435/171 |
+| 16/0 | wine | 8.626749 | 0.001806 | 0.025770 | 0 | 25/32 |
+| 16/0 | cream | 8.633714 | 0.008036 | 0.046574 | 292 | 71/199 |
+
+低跟踪误差、双指接触或抬升都不等于任务完成。raw8 wine 虽跟踪误差约 6.4 mm、末端曾持物，仍未在 30 秒内完成；raw8 cream 曾抬升约 83.77 mm，但末端不再记录接触且开度接近 1。不能把两种失败统一解释为只差时间，也不能用较小动作/位姿误差替代原生任务判据。
 
 ## 第一条 raw WAM 稳定成功的证据
 
@@ -36,11 +57,17 @@ alpha0 改变局部旋转及其后积分得到的 world 位置，是分量诊断
 
 已有观测预览：`short_replan_visuals/first_raw8_bowl/raw8_bowl_query_images.mp4`，manifest SHA `bcbb4581fe51bf1dfb9ebedb64c44d688ff73aa0aa0deabde294ecf00141c659`。该 30 秒视频由原 75 张 query PNG 以 2.5 fps 保持采样拼接，末张对应 step592；它不是连续摄像或 step600 图像。600 步完整运行与末段 262 步持续成功由完整日志证明。没有新增 render、模型请求或物理步。
 
-## 验证方法与剩余工作
+## 验证方法、收尾例外与结论范围
 
 只读入口 [audit_wam_short_replan.py](../scripts/audit_wam_short_replan.py) 直接复用冻结 006 的完整 case checker，并增加 010 的固定预算、四配置、共享服务来源、准确 query 步号和外部进程释放校验。其源码 SHA 为 `03e19eb1b5c4cf8bb591ecf224a80966d355d11b1352a3b687ba9a65a13a5177`，代码提交 `8a7396a`。原真实执行器、服务、配置和该审计源码均保持字节不变。
 
-全部 12 条完成并正常释放后，输出完整 canonical 审计，再用独立 [audit_wam_short_replan_outcomes.py](../scripts/audit_wam_short_replan_outcomes.py) 复算所有案例的原生事件区间/末40、位置/朝向/opening 跟踪、饱和与速率限制、目标接触/抬升，以及参考和实际 TCP 相对目标中心的距离。参考偏离与执行约束可以同时存在；不凭单项误差唯一归因模型或控制器。
+新增 [final wrapper](../scripts/audit_wam_short_replan_final.py) 提交 `763888e`，不修改原冻结执行器或审计器。它直接复用冻结 006 完整 case verifier、010 配置注册/服务来源 helper 和 [几何/事件统计 helper](../scripts/audit_wam_short_replan_outcomes.py)，不是动态替换或弱化旧检查器。最后一条新的完整重放与旧 11 条来源复核均通过，所有 6993 项最终输入 SHA 在审计前后完全一致。
+
+严格保留本轮实际 8400 全 163 个文件的原完整 SHA 登记与 size/mtime 核验，旧 8800 全163、15600全99也仍在且 metadata 一致；3477 项原 prior gate 来源 SHA 均存在且未变。只有未用于本轮 inference 的历史 15400 原 99 项中有 98 项消失，原因 unknown。结束时原协调器在 `weight_stats(gate)` 读取其 `.save_complete` 失败，随后仍正常释放自己的模型；原 `error.json` / `release.json`、trace 和缺失的 `complete.json` 保持原状。没有写外部 Cosmos，没有恢复/伪造 marker，也没有重新采样。完整原始错误来源在 `short_replan_audit/final_unrelated_weight_stat_failure.json`，SHA `73506055b250979dbdf5a48bb13cddc7d48c0de7046d652edefc3766328d4310`。
+
+新独立 final 审计仅允许这个明确的历史权重可用性例外；实际8400、任何执行代码/数据 SHA 或其它权重 metadata 变化仍拒绝。它逐一确认全部 12 案例、7200 步、678 次模型请求，interval8 的 450 个和 interval16 的 228 个生成目录全集分别精确等于两 alpha 配置的案例来源，service.log 所有 POST 恰为对应数量的 `/generate` 200，无额外请求。模型、matrix、coordinator 和所有 physics 子进程均已退出，模型/物理预算没有重跑。
+
+最终 artifact 内嵌全部 12 条原生事件区间/末40、位置/朝向/opening 跟踪、饱和与速率限制、目标接触，以及参考和实际 TCP 相对目标中心的距离。参考偏离与执行约束可以同时存在；不凭单项误差唯一归因模型或控制器。只有 raw8 bowl 存在成功区间，其余11条全部原生成功标志均为 false。
 
 新 016 自适应重观测使用独立注册、实现与分母，不会改变本轮 600 步成功门槛。预留新初态仍未用于性能评测。
 
