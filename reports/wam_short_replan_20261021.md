@@ -32,7 +32,7 @@ alpha0 改变局部旋转及其后积分得到的 world 位置，是分量诊断
 
 独立事件与几何复算在 `short_replan_audit/first_raw_bowl_verified_event.json`，SHA `d3f50ac334028fee350c5b951a2fd6ccd27b5ad0a1ac3abe11e912d47f8d8dd6`。root 与独立审计方均实际查看原始 query 的初、末 PNG，bowl 由盘外进入盘内，与原生目标一致。
 
-已有观测预览：`short_replan_visuals/first_raw8_bowl/raw8_bowl_query_images.mp4`，manifest SHA `bcbb4581fe51bf1dfb9ebedb64c44d688ff73aa0aa0deabde294ecf00141c659`。该 30 秒视频由原 75 张 query PNG 以 2.5 fps 保持采样拼接，末张对应 step592；它不是连续摄像或 step600 图像。600 步持续成功由完整日志证明。没有新增 render、模型请求或物理步。
+已有观测预览：`short_replan_visuals/first_raw8_bowl/raw8_bowl_query_images.mp4`，manifest SHA `bcbb4581fe51bf1dfb9ebedb64c44d688ff73aa0aa0deabde294ecf00141c659`。该 30 秒视频由原 75 张 query PNG 以 2.5 fps 保持采样拼接，末张对应 step592；它不是连续摄像或 step600 图像。600 步完整运行与末段 262 步持续成功由完整日志证明。没有新增 render、模型请求或物理步。
 
 ## 验证方法与剩余工作
 
