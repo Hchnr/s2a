@@ -44,6 +44,8 @@ root 启动收据 `long_raw_preflight/wam_root_launch.json`，SHA `d1924433405af
 
 三条跨过 600 步后，全部旧预算范围的有限前缀也已通过：`long_raw_audit/available_prefix_600/prefix_observation.json`，SHA `93b6e00f10ddcaff94c8caa1815693cec89063ce3cd24cf2e15f8113a8697570`。共 1800 个实际物理端点 canonical token 和 225 次完整 40×128 raw/normalized、PNG 字节、共同条件与旧 010 raw8 一致；包含原 step599 全部字段，没有采用 oracle 日志例外。这确认当前长时间运行的前 30 秒实际重现旧评测，仍须完成后续 600 步、最终完整机械审计和正常释放后才能回答延长时间的效果。
 
+该 600 前缀另有独立来源身份交叉核验：`long_raw_audit/available_prefix_600/source_identity_crosscheck.json`，SHA `3e450d71583cba64a7d8a1b07cbc290e598011b9122989604a84a6ac420f641f`。实际用到的 678 份旧案例文件 SHA 全部等于原 010 最终审计登记，三份当前配置逐字节等于 `9fe490a` 预注册，完整 1362 项选定来源前后重核通过；没有把增长中的原日志当成永久不变文件。
+
 本轮将回答旧场景下延长同一策略的物理执行时间是否改变原生任务结果；即使成功，也仍需另行冻结候选、完成未参与开发的新初态验收，不能直接宣称多任务稳定成功。
 
 所有生成产物路径相对 `outputs/wam_stability_20261021/`。
