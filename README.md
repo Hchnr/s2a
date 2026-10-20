@@ -2,7 +2,11 @@
 
 S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接收的 action，使执行后的实际状态接近目标。
 
-2026-10-21继续以**稳定成功**为目标。旧开发初态上，新夹爪v3的8800/15400完整24条稳定0/24；8400完整12条稳定1/12，仅改变模型参考的alpha0/cream连续24.3s成功，raw两组均0/3。见[24条完整报告](reports/wam_position_hold_20261021.md)和[8400完整报告](reports/wam_earlier_position_20261021.md)。新latest15600的48次state诊断九项指标均差于8400及15400，[报告](reports/wam_latest_state_screen_20261021.md)。下一轮按[010](plans/v0.0.1/010_short_replan_wam_20261021.md)固定8400每8/16步重新观测，已核验raw每8步的bowl单旧初态尾13.1s稳定，其余仍执行；另按[011](plans/v0.0.1/011_sampler_steps_state_20261021.md)独立检验更多采样步的state效果，另以[012](plans/v0.0.1/012_guidance_state_20261021.md)单候选检查更强文本引导（48完整，未通过推广门槛），再按[013](plans/v0.0.1/013_attention_backend_state_20261021.md)独立核训练attention backend；各预算、来源和结论分开。短重观测正确参考12/12资格不计WAM成功；三参数参考校正未通过推广条件。12个新初态仅完成metadata预留，未进行性能评测。见[本轮结论](plans/v0.0.1/conclusion_20261021.md)和[记录](plans/v0.0.1/record_20261021.md)。模型仅物理GPU4–7、CPU/OSMesa空CUDA，生成输出拒绝覆盖。
+2026-10-21继续以**稳定成功**为目标。完整WAM曾在旧初态成功，但尚未达到多任务、新初态的稳定门槛：新v3夹爪8800/15400共24条稳定0/24；8400完整12条稳定1/12，仅alpha0/cream（修改了生成参考）。[010短闭环](plans/v0.0.1/010_short_replan_wam_20261021.md)目前raw每8步三个旧任务稳定1/3，仅bowl尾13.1s成功且保留完整模型旋转；每16步raw/alpha0均0/3，余每8步alpha0继续。单例不算整体达标。见[本轮结论](plans/v0.0.1/conclusion_20261021.md)和[记录](plans/v0.0.1/record_20261021.md)。
+
+state对照不支持盲目更换推理配置：[latest15600](reports/wam_latest_state_screen_20261021.md)九项误差均差于8400及15400；[guidance3](reports/wam_guidance_state_20261021.md)和[训练attention backend](reports/wam_backend_state_20261021.md)各48次完整诊断均未通过事先规定的改善门槛，不追加其物理任务评测。[011](plans/v0.0.1/011_sampler_steps_state_20261021.md)的35步48次全部精确复现原输出、70步48次已核且略差，140步仍执行。模型实际只使用物理GPU4–7；CPU/OSMesa空CUDA/LD，外部Cosmos及发布数据只读。
+
+执行侧[短重观测正确参考](reports/short_replan_qualification_20261021.md)12/12、[真实seed43正确参考](reports/wam_seed43_execution_qualification_20261021.md)3/3通过；[双种子日志检查器](reports/wam_seed_aware_checker_20261021.md)旧27条精确回归。这些不计WAM成功。新[016](plans/v0.0.1/016_tracking_replan_20261021.md)保持所有raw pose/opening，以实测误差决定8–40步重新观测，独立资格及条件3条WAM开发对照进行中。12个预留新初态仅完成metadata准备，未做性能评测；当前无真机实验。所有已保存输出拒绝覆盖。
 
 2026-10-20 独立物理评测及窗口对照已完成：主矩阵四份checkpoint统一H40/执行8，稳定成功为warm6200 0/24、8400 0/24、8600 0/24、8800 1/24；native与oracle＋冻结S2A均24/24稳定。旧集合8800执行8/16/40分别1/12、0/12、1/12稳定，成功病例不同，未观察到总体提升。全部216条评测＋27条固定参考诊断共243条/145800步完成并独立审计；能完成部分任务，稳定能力仍未达预注册门槛，不能将全部失败唯一归于权重或转换。详见[正式报告](reports/wam_independent_20261020.md)、[最终结论](plans/v0.0.1/conclusion_20261020.md)和[实施记录](plans/v0.0.1/record_20261020.md)。来源独立性仅限已记录物理评测/控制调参，并非预训练未见；历史训练消费及上游图像/pose物理同步仍未知。
 

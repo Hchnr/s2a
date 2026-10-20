@@ -72,3 +72,9 @@ wine补充执行诊断使用`run_wam_gripper_replay.py --config configs/wam_wine
 
 
 010独立短重观测：`CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_short_replan.py --interval 8 --seed 42`（物理GPU4/9444）或`--interval 16`（GPU5/9445）。每服务顺序运行alpha1/alpha0的两配置，单CPU物理worker；全部12条/7200步/最多678请求。`--dry-run`复核先决与配置/完整权重stat，0模型/物理；固定output已运行时拒绝覆盖。新入口只编排冻结的position执行器，alpha0改变模型参考、不是原始checkpoint成绩。启动前需完整005/006/007/009证据；完整协议见[010](../plans/v0.0.1/010_short_replan_wam_20261021.md)。
+
+011/013 state专项使用隔离的`run_wam_sampler_steps.py`与`run_wam_backend_screen.py`；先前者48份真实35-step全值exact，再在首次velocity前配对actual sampler state/conditions。`audit_wam_sampler_steps.py`为冻结严格入口，`audit_wam_sampler_steps_release.py`为显式窄退出旁证版；`audit_wam_backend_state.py --shutdown-supplement`同样明确内部finally收据不可得，原strict拒绝保留，不能冒称复原ledger。各入口的预算/先决见011/013计划；不自动扩大到物理或fresh。
+
+014的`wam_position_acceptance_checker.py`是seed与首query来源回调显式参数化的字面旧checker，`verify_wam_acceptance_seed_regression.py`只读回归旧27条。015的`audit_wam_seed43_qualification.py`独立验收三旧场景真实43 oracle；这些都不启动WAM或证明43模型任务能力。
+
+016新版本`run_wam_tracking_matrix.py --config configs/tracking_replan_qualification_20261021_v2.json --seed 42 --source oracle --variant position_hold --workers 2 --dry-run`会实际只读验证三条native参考，0环境步进/0模型。去掉dry-run的资格已有输出后拒绝覆盖。新`run_wam_tracking_service.py --seed 42 --gate <frozen-launch-gate.json> --gate-sha256 <sha>`只在完整独立资格与013正常释放等输入SHA门禁通过后启动物理GPU7/9597的一份8400和单物理worker，3条/1800步/max225请求；`--dry-run`也严格核门禁。所有CPU命令沿用空CUDA/LD前缀，原position/recovery入口字节保留；完整预算/算法见016计划。
