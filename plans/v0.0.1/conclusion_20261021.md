@@ -27,6 +27,6 @@
 
 12个新物理初态已仅按metadata/seed42预留并独立核验，未进行任何候选性能评测：每task4、12初态SHA唯一且与旧5real fixture无重叠、expert/model XML/initial与HDF来源一致、重现抽样完全相同。除9完整命令及1严格后缀匹配外，另2历史episode只有唯一全长XYZ+gripper部分匹配、旋转仍差约.0075；保守将这两个疑似来源也排除，不升级为完整控制/历史物理同步认证。源旋转、图像/pose/初态同步及预训练可见性未知继续保留。此为输入准备，不是新初态任务验收。
 
-新23源并非已知最佳checkpoint：validation关闭、15400仅latest complete；新加入源是FastUMI-eef，RoboMIND2旧run已有。LIBERO eef/joint合计名义packed-microbatch份额由200/10194=1.961938%降至10/10000=.1%（约19.62倍下降）；不是实际历史消费、token/loss份额或失败因果证明。两run当前LIBERO条件/clip/归一化审查未发现新run专属推理错接，完整数值一致性、历史消费字节和上游图像/pose物理同步仍未证实。
+新23源并非已知最佳checkpoint：validation关闭、15400是首次冻结时的latest complete；20:17UTC再查已有同run完整15600，已按[009](009_latest_state_screen_20261021.md)固定48次同输入state-only对照，0新物理，不自动提升latest为best。新加入源是FastUMI-eef，RoboMIND2旧run已有。LIBERO eef/joint合计名义packed-microbatch份额由200/10194=1.961938%降至10/10000=.1%（约19.62倍下降）；不是实际历史消费、token/loss份额或失败因果证明。两run当前LIBERO条件/clip/归一化审查未发现新run专属推理错接，完整数值一致性、历史消费字节和上游图像/pose物理同步仍未证实。
 
 仅允许物理GPU4–7，CPU/OSMesa禁CUDA，外部Cosmos/R1/R2只读。方案与决策见[002计划](002_wam_stability_20261021.md)及[实施记录](record_20261021.md)。上述数字为阶段进度，随完整结果追加更新；上一轮20261020报告/封存证据不覆盖。
