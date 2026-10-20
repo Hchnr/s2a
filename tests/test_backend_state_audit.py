@@ -157,3 +157,29 @@ def test_missing_shutdown_receipts_still_fail_without_explicit_supplement(audit,
     args = SimpleNamespace(shutdown_supplement=None)
     with pytest.raises(FileNotFoundError, match="closed.json"):
         audit.shutdown_observability(audit.Evidence(), args, {}, {}, {})
+
+
+def test_shutdown_http_witness_binds_requests_to_owned_ordered_lifetime(audit):
+    start = "Started server process [1234]\n"
+    requests = 'INFO: 127.0.0.1 - "POST /generate HTTP/1.1" 200 OK\n' * 48
+    end = "Shutting down\nWaiting for application shutdown.\nApplication shutdown complete.\nFinished server process [1234]\n"
+    log = start + requests + end
+    assert audit.http_lifetime_witness(log, 1234)["successful_http_requests"] == 48
+    for invalid, pid in (
+        (log, 1235),
+        (log.replace("200 OK", "500 Error", 1), 1234),
+        (log.replace("Finished server process [1234]", ""), 1234),
+        (start + end + requests, 1234),
+        (requests + start + end, 1234),
+        (start + requests + end.replace("Shutting down\n", "Shutting down\nShutting down\n"), 1234),
+        (
+            start
+            + requests
+            + end.replace(
+                "Shutting down\nWaiting for application shutdown.", "Waiting for application shutdown.\nShutting down"
+            ),
+            1234,
+        ),
+    ):
+        with pytest.raises(ValueError, match="HTTP|Uvicorn"):
+            audit.http_lifetime_witness(invalid, pid)

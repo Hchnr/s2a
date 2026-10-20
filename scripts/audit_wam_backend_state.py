@@ -358,6 +358,33 @@ def validate_shutdown_supplement(artifact, probe, names):
         raise ValueError("finite shutdown supplement/probe identity differs")
 
 
+def http_lifetime_witness(log, model_pid):
+    """Bind every successful request to the same ordered Uvicorn lifetime."""
+    requests = list(re.finditer(r'"POST /generate HTTP/1\.1" (\d{3})', log))
+    if [m.group(1) for m in requests] != ["200"] * 48:
+        raise ValueError("finite service log does not prove exactly48 successful HTTP requests")
+    markers = (
+        f"Started server process [{model_pid}]",
+        "Shutting down",
+        "Waiting for application shutdown.",
+        "Application shutdown complete.",
+        f"Finished server process [{model_pid}]",
+    )
+    if any(log.count(marker) != 1 for marker in markers):
+        raise ValueError("owned Uvicorn lifetime markers missing or ambiguous")
+    offsets = [log.index(marker) for marker in markers]
+    if offsets != sorted(offsets) or requests[0].start() <= offsets[0] or requests[-1].end() >= offsets[1]:
+        raise ValueError("HTTP requests or shutdown markers cross the owned Uvicorn lifetime")
+    return dict(
+        model_pid=model_pid,
+        successful_http_requests=48,
+        ordered_markers=list(markers),
+        marker_character_offsets=offsets,
+        first_post_character_offset=requests[0].start(),
+        final_post_end_character_offset=requests[-1].end(),
+    )
+
+
 def shutdown_observability(evidence, args, protocol, release, processes):
     closed_path, mask_path = STUDY / "service/closed.json", STUDY / "service/mask_evidence.json"
     if args.shutdown_supplement is None:
@@ -407,9 +434,7 @@ def shutdown_observability(evidence, args, protocol, release, processes):
             record = case[label]
             evidence.check(record["path"], record["sha256"])
     log = evidence.read(STUDY / "orchestration/run/service.log").decode()
-    statuses = re.findall(r'"POST /generate HTTP/1\.1" (\d{3})', log)
-    if statuses != ["200"] * 48:
-        raise ValueError("finite service log does not prove exactly48 successful HTTP requests")
+    lifetime = http_lifetime_witness(log, processes["model"]["pid"])
     return dict(
         mode="explicit_sigterm_shutdown_supplement",
         supplement_path=str(SHUTDOWN_SUPPLEMENT),
@@ -420,6 +445,7 @@ def shutdown_observability(evidence, args, protocol, release, processes):
         final_poisoned_memory_state=None,
         full_internal_ledger_audit=False,
         successful_http_requests=48,
+        observed_uvicorn_lifetime=lifetime,
         missing_values_reconstructed=False,
         limitation="Final in-memory poison/counter/pending state and initial-noise before/after RMS ledger were not saved; per-request trace/raw/mask/source and normal lifetime evidence support only the registered state-quality comparison.",
     )
