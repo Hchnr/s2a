@@ -122,6 +122,10 @@ def prepare(c, guidance_audit):
         "cosmos_framework/model/generator/mot/small_action_tower.py",
         "cosmos_framework/model/generator/mot/small_action_attention.py",
         "cosmos_framework/model/generator/mot/cosmos3_vfm_network.py",
+        "cosmos_framework/model/attention/frontend.py",
+        "cosmos_framework/model/attention/flash3/__init__.py",
+        "cosmos_framework/model/attention/flash3/functions.py",
+        "cosmos_framework/model/attention/flash3/checks.py",
     ):
         path = Path(c["cosmos_repo"]) / relative
         sources[str(path)] = sha256(path)
@@ -320,6 +324,9 @@ def main():
                 )
             ):
                 raise ValueError("013 serving identity differs")
+            device_uuid = info["acceptance_intervention"]["actual_backend_probe"]["cuda_device_uuid"]
+            if device_uuid.lower().removeprefix("gpu-") != uuid.strip().lower().removeprefix("gpu-"):
+                raise ValueError("actual CUDA device UUID differs from the registered physical GPU7")
             write_new(dest / "server_info.json", info)
             cmd = [
                 str(REPO / ".venv/bin/python"),

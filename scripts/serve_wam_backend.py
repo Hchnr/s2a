@@ -1,6 +1,7 @@
 """013 private flash3_video service with observed inputs paired to011 SDPA35."""
 
 import argparse
+import importlib
 import json
 import os
 import types
@@ -38,7 +39,9 @@ def main():
         raise ValueError("requires eval model")
     import flash_attn_3_nv
     import torch
-    from cosmos_framework.model.attention.flash3 import FLASH3_SUPPORTED
+    from cosmos_framework.model.attention.flash3 import FLASH3_SUPPORTED, flash3_attention
+
+    provider_interface = importlib.import_module("flash_attn_3_nv.flash_attn_interface")
 
     backend_probe = dict(
         network_backend=service.model.net.config.action_tower_attention_backend,
@@ -48,6 +51,11 @@ def main():
         provider_version=flash_attn_3_nv.__version__,
         provider_module=str(Path(flash_attn_3_nv.__file__).resolve()),
         provider_module_sha256=file_sha(flash_attn_3_nv.__file__),
+        provider_interface=str(Path(provider_interface.__file__).resolve()),
+        provider_interface_sha256=file_sha(provider_interface.__file__),
+        flash3_function_module=flash3_attention.__module__,
+        small_action_fixed_lengths=service.model.net.language_model.model.small_action_fixed_lengths,
+        small_action_und_short_tokens=service.model.net.language_model.model.small_action_und_short_tokens,
         cuda_device_uuid=str(torch.cuda.get_device_properties(0).uuid),
         hybrid_backend="VIDEO FA3; UND/ACTION Flex with its existing internal kernel compilation",
     )
@@ -56,6 +64,9 @@ def main():
         or backend_probe["language_backend"] != "flash3_video"
         or not backend_probe["flash3_supported"]
         or backend_probe["provider"] != "nv"
+        or backend_probe["flash3_function_module"] != "cosmos_framework.model.attention.flash3.functions"
+        or backend_probe["small_action_fixed_lengths"] is not None
+        or backend_probe["small_action_und_short_tokens"] != 0
     ):
         raise ValueError("actual network/backend/provider is not the registered flash3_video path")
     write_new_json(output / "actual_backend.json", backend_probe)
