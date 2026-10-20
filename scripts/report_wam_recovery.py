@@ -217,7 +217,7 @@ def make_report(audit_path, audit, cases, groups, data, plots, output):
         "",
         "四方案均使用已资格验证的 task-agnostic GripperIntentHold 和同一 response arm inverse/OSC 接口。adapter只使用当前/历史开度、真实motor目标和已生成参考，不输入对象、接触、任务标签或未来真值。motor达到闭合限位后command=0保持原闭合motor目标；观测开度在物体/机械阻塞下可以明显大于motor目标，不能将0命令解释为零握力，也不能把闭合目标当作实际夹爪开度/力。",
         "",
-        "alpha1保留每个raw WAM旋转增量；alpha0.5把每个增量的SO(3)对数乘0.5后重新积分，改变了模型参考。alpha0将每个旋转增量置为单位旋转：**只在该次query的实测TCP anchor朝向保持**，下一次query重新取当前实测anchor，绝非全episode固定朝向；平移和开度仍来自WAM。alpha0仅为部分输出分量消融，不能用于认证原checkpoint完整输出。raw/effective128及各query anchor均已保留并独立核验。",
+        "alpha1保留每个raw WAM旋转增量；alpha0.5把每个增量的SO(3)对数乘0.5后重新积分，改变了模型参考。alpha0将每个旋转增量置为单位旋转：**只在该次query的实测TCP anchor朝向保持**，下一次query重新取当前实测anchor，绝非全episode固定朝向。平移与开度slot仍来自WAM且数值不变，但local平移增量通过修改后的朝向积分，world位置轨迹也可以改变；不是在同一world位置轨迹上只换朝向。alpha0仅为部分输出分量消融，不能用于认证原checkpoint完整输出。raw/effective128及各query anchor均已保留并独立核验。",
         "",
         "`admitted`：实际状态相对governor本步允许执行的目标；`raw/effective model-clock`：相对当前已消费模型时间的原始/修改参考；`raw/effective nominal-clock`：相对该query后按物理20Hz推进、耗尽后夹到40端点末端的原始/修改参考。重定时会暂停/桥接/丢弃剩余suffix，因此admitted误差下降不能证明同一条名义WAM轨迹获得更好执行，也不能单靠低RMSE证明任务成功。不同variant闭环观测变化后会生成不同后续参考，并非全episode固定同一轨迹。",
         "",
