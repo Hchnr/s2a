@@ -81,6 +81,14 @@ def protocol(config_path, *, source, variant_name, checkpoint):
     if len(records) != len(fixture["records"]) or not set(c["records"]) <= set(records):
         raise ValueError("fixture has missing or duplicate record identities")
     selected = [records[name] for name in c["records"]]
+    if source == "oracle":
+        from s2a.stability_recovery_simulation import _read_oracle
+
+        if "oracle_reference_root" not in c:
+            raise ValueError("oracle qualification requires its explicit privileged reference root")
+        for record in selected:
+            for sampling_seed in seeds:
+                _read_oracle(c, record, sampling_seed)
     return c, root, selected, ck
 
 

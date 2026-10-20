@@ -88,8 +88,22 @@ def preflight(path, digest):
         if signatures.get(name) != digest_value:
             raise ValueError("launch gate omitted a qualification input")
     backend = gate["backend_release"]
-    if not backend["quality_complete"] or backend["queries"] != 48 or not backend["normally_released"]:
+    if sha256(backend["path"]) != backend["sha256"] or signatures.get(backend["path"]) != backend["sha256"]:
+        raise ValueError("013 canonical quality/release artifact is not source-bound")
+    checked_backend = json.loads(Path(backend["path"]).read_text())
+    if (
+        not checked_backend["quality_complete"]
+        or checked_backend["verified_queries"] != 48
+        or not checked_backend["owned_service_released_normally"]
+        or checked_backend["errors"]
+        or checked_backend["release"]["model_returncode"] != -15
+        or checked_backend["release"]["job_returncode"] != 0
+        or checked_backend["release"]["cleanup_errors"]
+    ):
         raise ValueError("013 quality budget or controlled release incomplete")
+    for name, digest_value in checked_backend["input_sha256"].items():
+        if signatures.get(name) != digest_value:
+            raise ValueError("launch gate omitted a013 audit input")
     for owned in backend["owned_processes"]:
         if process_record(owned["pid"], owned["cuda_visible_devices"], start_ticks=owned["start_ticks"])["present"]:
             raise RuntimeError("013 owned process is still live")
@@ -171,7 +185,7 @@ def main():
                     ["nvidia-smi", "--id=7", "--query-gpu=memory.used", "--format=csv,noheader,nounits"], text=True
                 ).strip()
             )
-            if memory >= 500:
+            if memory != 0:
                 raise RuntimeError("allowed GPU7 occupied; no other process stopped")
             with socket.socket() as sock:
                 sock.bind(("127.0.0.1", 9597))
@@ -230,6 +244,19 @@ def main():
                     Path(info["checkpoint_path"]).resolve() != expected.resolve()
                     or Path(info["config_file"]).resolve() != (Path(ck["run"]) / "config.yaml").resolve()
                     or info["port"] != 9597
+                    or info["attention_backend"] != "sdpa"
+                    or any(info[k] != 1 for k in ("world_size", "dp_shard_size", "cp_size", "cfgp_size"))
+                    or any(
+                        info[k]
+                        for k in (
+                            "compile",
+                            "fuse_qkv",
+                            "cuda_graphs",
+                            "reuse_small_action_und",
+                            "reuse_small_action_metadata",
+                            "fixed_training_buckets",
+                        )
+                    )
                     or info["ema_weights"]
                     or not intervention["active_slot_mask"]
                     or intervention["exact_published_caption"]

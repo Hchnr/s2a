@@ -15,3 +15,5 @@
 资格完整通过后，另3条WAM旧场景各600步，1800物理步、最多225个H40请求（每条最小8步→75）。首query的图像/anchor/原始及normalized输出精确回归同8400已有首query。模型只准物理GPU7/9597，在013完整48state/受控释放/自有PID退出/显存0及端口可用后再启动；如该卡已被他人使用则排队，不抢卡。最多1模型/1物理worker；CPU/OSMesa空CUDA/LD，外部源码及数据只读。启动前源码/配置/所有依赖与预算提交，模型输出拒覆盖。不会因中途成功停止、调阈值或扩大分母。
 
 新增资格和3条开发WAM分别全量报告，不和010或其它候选混算成功率。只有完整多任务证据支持后才另冻结唯一候选进行预留新初态验收；本计划不自动授权fresh性能或学习任务规划器。服务关闭须使用已知Uvicorn SIGTERM机制的独立外部release与trace旁证，缺失内部finally收据明确保留，不补造。
+
+首次资格准备勘误（0环境/0物理之后、任何模型之前）：初qualification配置遗漏oracle_reference_root，原三worker在make_environment前退出，原证据保留。使用独立`tracking_replan_qualification_20261021_v2.json`及新`tracking_replan_qualification_v2`根补明确native参考；matrix dryrun也实际验证oracle源。资格总量仍3/1800、门槛/算法不变，WAM配置不改。
