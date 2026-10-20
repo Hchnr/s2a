@@ -102,6 +102,7 @@ def figures(audit, output):
 def report(audit, audit_path, output):
     gate = audit["promotion"]
     selected = gate["selected_steps"]
+    checkpoint = json.loads((STUDY / "orchestration/prepared.json").read_text())["checkpoint"]
     lead = (
         "70/140均未达到预注册的更多步数state候选门槛，本轮不增加对应物理预算。"
         if selected is None
@@ -113,8 +114,9 @@ def report(audit, audit_path, output):
         f"**{lead}** 本次完成35/70/140各48个H40请求，共144个state请求、0物理步。先前缓存与新traced35的全部48个full40×128 raw/normalized逐值exact；70/140分别与新35的实际sampler初态和conditioning配对通过。结果描述单个checkpoint在历史开发样本上的state质量，不是闭环任务成功率。",
         "",
         "固定8400非EMA、guidance1、shift5、十槽active mask、20Hz、task-only、seed42/43。24个phase样本来自6条历史episode，包含22个独特anchor、44个独特anchor-seed组合；48请求包含重复phase，不能当48个独立episode或训练未见数据。",
+        f"Checkpoint：`{checkpoint}`。",
         "",
-        "API字段action按冻结发布合同解释为local Δstate与absolute opening，本轮直接比较source EEF state，未经过S2A/TCP重映射或控制器。位置展示单位mm，朝向为SO(3)弧度，夹爪为归一化opening MAE。每个设置H8/H16/H40有效未padding端点数分别384/768/1778。表中每格为位置RMSE / SO(3) RMSE / opening MAE。",
+        "API字段action按冻结发布合同解释为local Δstate与absolute opening，本轮直接比较source EEF state，未经过S2A/TCP重映射或控制器。opening按既有协议clip到[0,1]后计分。位置展示单位mm，朝向为SO(3)弧度，夹爪为归一化opening MAE。每个设置H8/H16/H40有效未padding端点数分别384/768/1778。表中每格为位置RMSE / SO(3) RMSE / opening MAE。",
         "",
         "| 前缀 | 35步 | 70步 | 140步 | hold | constant velocity |",
         "| --- | --- | --- | --- | --- | --- |",
@@ -178,6 +180,16 @@ def report(audit, audit_path, output):
     for pair, values in audit["generated_state_distance"].items():
         for h in PREFIXES:
             lines.append(f"| {pair} | H{h} | {triple(values[str(h)])} |")
+    comparisons = []
+    for h in PREFIXES:
+        before = audit["generated_state_distance"]["35_vs70"][str(h)]
+        after = audit["generated_state_distance"]["70_vs140"][str(h)]
+        comparisons.extend(after[k] < before[k] for k in METRIC_KEYS)
+    reduced = sum(comparisons)
+    lines += [
+        "",
+        f"35→70与70→140比较，九个prefix/指标组合中有{reduced}/9的生成距离缩小。这里只观察了两次步数细化；距离缩小、保持或增大都不等于已证明solver收敛，正确性仍需看独立GT误差及任务评测。",
+    ]
     lines += [
         "",
         "## 审计、来源与边界",
@@ -220,6 +232,15 @@ def main():
         raise ValueError("final report requires complete144 independent audit and resource release")
     for path, h in audit["input_sha256"].items():
         evidence.check(path, h)
+    prepared = evidence.json(STUDY / "orchestration/prepared.json")
+
+    def check_weight_stats():
+        for path, item in prepared["weight_files"].items():
+            stat = Path(path).stat()
+            if stat.st_size != item["bytes"] or stat.st_mtime_ns != item["mtime_ns"]:
+                raise ValueError("weight stat changed since the completed independent audit")
+
+    check_weight_stats()
     if audit["promotion"] != promotion({n: g["metrics"] for n, g in audit["groups"].items()}):
         raise ValueError("registered promotion gate recomputation differs")
     for role, registration in audit["processes"].items():
@@ -236,6 +257,7 @@ def main():
     outputs.append(args.report)
     evidence.read(__file__)
     evidence.recheck()
+    check_weight_stats()
     produced = {str(p.resolve()): hashlib.sha256(p.read_bytes()).hexdigest() for p in outputs}
     manifest = dict(
         audit_path=str(args.audit),
