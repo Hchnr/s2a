@@ -351,7 +351,9 @@ def main():
         logs = root / "logs"
         logs.mkdir(exist_ok=True)
         command = [
-            str(Path(config["simulation_python"]).resolve()),
+            # Resolving this symlink would invoke system Python and lose the
+            # simulator virtualenv's installed packages.
+            str(Path(config["simulation_python"]).absolute()),
             str(Path(__file__).resolve()),
             "--config",
             str(Path(args.config).resolve()),
