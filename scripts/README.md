@@ -69,3 +69,6 @@ wine补充执行诊断使用`run_wam_gripper_replay.py --config configs/wam_wine
 | `report_wam_position.py --audit <complete-audit.json> --gripper-diagnostic <complete-diagnostic.json> --output <new-directory>` | 仅005全部33项verified和24对诊断完整时生成正式报告/图；partial门禁不通过，不提前给全矩阵结论。 |
 
 `diagnose_wam_reference_geometry.py --seed 42`与`review_wam_reference_geometry.py`只读固定6条raw intent_hold、其旧baseline及两条恢复bowl，分别记录参考几何、实际提前闭合、model时间消费和对象指标；图像只覆盖已保存观测，不能推断连续接触机制。`qualify_osc_rotation.py`、`qualify_gripper_tracking.py`、`qualify_gripper_intent_hold.py`及`qualify_reference_recovery.py`属于独立物理资格，oracle/合成参考均不计入WAM成功率。完整协议、预算、资格失败和未执行项见[002计划](../plans/v0.0.1/002_wam_stability_20261021.md)、[003恢复对照](../plans/v0.0.1/003_wam_recovery_20261021.md)与[本轮记录](../plans/v0.0.1/record_20261021.md)。
+
+
+010独立短重观测：`CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_short_replan.py --interval 8 --seed 42`（物理GPU4/9444）或`--interval 16`（GPU5/9445）。每服务顺序运行alpha1/alpha0的两配置，单CPU物理worker；全部12条/7200步/最多678请求。`--dry-run`复核先决与配置/完整权重stat，0模型/物理；固定output已运行时拒绝覆盖。新入口只编排冻结的position执行器，alpha0改变模型参考、不是原始checkpoint成绩。启动前需完整005/006/007/009证据；完整协议见[010](../plans/v0.0.1/010_short_replan_wam_20261021.md)。
