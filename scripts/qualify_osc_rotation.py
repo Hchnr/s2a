@@ -328,7 +328,11 @@ def main():
         raise ValueError("seed or frozen fixture SHA differs")
     if args.worker:
         return run_worker(args, config, root)
-    root.mkdir(parents=True, exist_ok=False)
+    # load_config creates the output directory. Require it to be empty, and
+    # exclusively create each matrix artifact so a completed run cannot be
+    # silently reused or overwritten.
+    if any(root.iterdir()):
+        raise FileExistsError(f"qualification output directory is not empty: {root}")
     inputs = fingerprints(args.config, config)
     write_new(root / "frozen_config.json", config)
     write_new(root / "matrix_manifest.json", dict(files_sha256=inputs, seed=args.seed, created_unix=time.time()))
