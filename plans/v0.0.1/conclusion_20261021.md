@@ -32,3 +32,7 @@
 下一步已在完整005/006/009结果之后预注册[010短重观测](010_short_replan_wam_20261021.md)：同8400、无gov、每8/16步重query、raw与alpha0全部三旧任务，12条/7200步/最多678请求，物理GPU4/5；不改变控制器或按任务拼接方案。独立[011采样步数诊断](011_sampler_steps_state_20261021.md)固定8400/35、70、140各48次state请求，GPU6，0物理；先全部48份traced35输出exact准入，再以实际sampler入口SHA配对比较70/140。010已在GPU4/5运行：interval8/raw bowl已完整600步/75请求核验，原生尾262端点/13.1s连续成功；interval16 raw bowl/wine完整失败，其余仍待完整，不报多任务或新初态稳定。011在GPU6的48真实35已全部exact、70阶段实际noise/condition配对继续，尚无完整70/140性能结论。另[012](012_guidance_state_20261021.md)单guidance3/8400的48state-only已完整，不满足六项/10%门槛，不promote，[报告](../../reports/wam_guidance_state_20261021.md)。[013](013_attention_backend_state_20261021.md)在012释放与011完整35准入后，已GPU7启动48个actual-noise配对的flash3_video state对照；不改010/011。fresh性能继续未打开。
 
 仅允许物理GPU4–7，CPU/OSMesa禁CUDA，外部Cosmos/R1/R2只读。方案与决策见[002计划](002_wam_stability_20261021.md)及[实施记录](record_20261021.md)。上述数字为阶段进度，随完整结果追加更新；上一轮20261020报告/封存证据不覆盖。
+
+014新双种子审计接口的27条旧日志精确回归已完成，原checker保留；015真实seed43正确参考资格另独立核验中，不算WAM能力。[016按跟踪误差重观测](016_tracking_replan_20261021.md)已预注册：raw参考原样，正常最多执行40步，误差持续超界才在至少8步后重观测，先3条oracle资格、条件3条WAM旧场景。该方向待实现，未宣称能解决不断截断关闭后缀的问题。
+
+服务退出可观测性发现独立缺项：013的48原始输出完整、受控SIGTERM与PID退出保存，但actual Uvicorn重发信号绕过Python finally，两个仅finally写的内存终态收据缺失。已CPU因果复现；保留严格拒绝，另核逐request/trace/raw与外部关闭证据，不补造ledger或把退出旁证缺失当模型质量失败。011同类风险以相同窄旁证分开处理，结论等待完整144请求。
