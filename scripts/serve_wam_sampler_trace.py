@@ -35,6 +35,19 @@ def check_weight_stats(weights):
             raise ValueError(f"weight stat differs from existing byte fingerprint: {path}")
 
 
+def save_acceptance_input(prepared, batch, service_root):
+    # create_app passes the same service_root for every prepare. Stock prepare
+    # stores its separate generate_UUID directory in the prepared sample args.
+    directory = Path(prepared.sample_args["output_dir"]).resolve()
+    service_root = Path(service_root).resolve()
+    if directory == service_root or not directory.is_relative_to(service_root):
+        raise ValueError("prepared output must be a separate request directory within this service")
+    write_new_json(
+        directory / "acceptance_input.json",
+        dict(caption=batch["ai_caption"], exact_published_caption=False, active_slot_mask=True, seed=prepared.seed),
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--prepared", type=Path, required=True)
@@ -125,15 +138,7 @@ def main():
             if conditioning["image_sha256"] != record["image_sha256"]:
                 raise ValueError("source PNG changed")
             pending.update(name=request.name, stage=stage, prepared_id=id(prepared), conditioning=conditioning)
-            write_new_json(
-                output_dir / "acceptance_input.json",
-                dict(
-                    caption=batch["ai_caption"],
-                    exact_published_caption=False,
-                    active_slot_mask=True,
-                    seed=prepared.seed,
-                ),
-            )
+            save_acceptance_input(prepared, batch, output_dir)
             return prepared, batch
         except BaseException:
             poisoned = True

@@ -288,6 +288,30 @@ def test_exact35_checks_normalized_and_inactive_slots_without_tolerance():
         module.require_exact35(raw, different)
 
 
+def test_consecutive_prepare_acceptance_records_use_unique_request_directories(tmp_path):
+    import importlib.util
+
+    path = Path(__file__).resolve().parents[1] / "scripts/serve_wam_sampler_trace.py"
+    spec = importlib.util.spec_from_file_location("sampler_trace_service_prepare_test", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    prepared = []
+    for name in ("generate_first", "generate_second"):
+        directory = tmp_path / name
+        directory.mkdir()
+        item = types.SimpleNamespace(seed=42, sample_args={"output_dir": str(directory)})
+        module.save_acceptance_input(item, {"ai_caption": [name]}, tmp_path)
+        prepared.append(item)
+        assert (directory / "acceptance_input.json").is_file()
+    assert not (tmp_path / "acceptance_input.json").exists()
+    with pytest.raises(FileExistsError):
+        module.save_acceptance_input(prepared[0], {"ai_caption": ["replacement"]}, tmp_path)
+    with pytest.raises(ValueError, match="separate request directory"):
+        module.save_acceptance_input(
+            types.SimpleNamespace(seed=42, sample_args={"output_dir": str(tmp_path)}), {}, tmp_path
+        )
+
+
 def actual_unipc_cpu_smoke(output):
     """Run only from the actual Cosmos interpreter; no model/checkpoint loaded."""
     from cosmos_framework.model.generator.diffusion.samplers.unipc import UniPCSampler, UniPCSamplerConfig
