@@ -104,6 +104,15 @@ def preflight(path, digest):
     for name, digest_value in checked_backend["input_sha256"].items():
         if signatures.get(name) != digest_value:
             raise ValueError("launch gate omitted a013 audit input")
+    expected_owned = {
+        (item["pid"], item["registered_start_ticks"], "7" if role == "model" else "")
+        for role, item in checked_backend["processes"].items()
+    }
+    actual_owned = {
+        (item["pid"], item["start_ticks"], item["cuda_visible_devices"]) for item in backend["owned_processes"]
+    }
+    if len(backend["owned_processes"]) != 3 or actual_owned != expected_owned:
+        raise ValueError("013 three owned process identities differ from the independent canonical audit")
     for owned in backend["owned_processes"]:
         if process_record(owned["pid"], owned["cuda_visible_devices"], start_ticks=owned["start_ticks"])["present"]:
             raise RuntimeError("013 owned process is still live")
