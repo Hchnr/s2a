@@ -1,0 +1,58 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_checkpoint_acceptance_20261019v2/native_horizon40",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "r2_root": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef",
+  "training_catalog": "/share/project/liyue/data/parquet-data/action128-full-20261012/libero-eef/libero-eef.parquet",
+  "checkpoints": [
+    {
+      "name": "8800_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008800",
+      "gpu": 4,
+      "port": 8594
+    }
+  ],
+  "tasks": [
+    "put the bowl on the plate",
+    "put the wine bottle on the rack",
+    "put the cream cheese in the bowl"
+  ],
+  "offline_episodes_per_task": 4,
+  "offline_diagnostic_episodes_per_task": 2,
+  "offline_prompt_modes": [
+    "task_only",
+    "published_caption"
+  ],
+  "offline_horizons": [
+    16,
+    40
+  ],
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "sampling_steps": 35,
+  "guidance": 1.5,
+  "shift": 5.0,
+  "control_fps": 20,
+  "online_initial_states_per_task": 2,
+  "online_max_steps": 600,
+  "online_chunk_size": 40,
+  "online_execution_horizon": 8,
+  "arm": "response",
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "qualification_position_tolerance_m": 0.01,
+  "qualification_rotation_tolerance_rad": 0.05,
+  "notes": [
+    "Supplementary native-training-horizon diagnosis fixed before any H40 physics result.",
+    "Primary H16 four-checkpoint matrix remains unchanged; this H40 assessment is only for latest 8800.",
+    "Same 12 initial-state/seed pairs, 600 physics steps, execute first 8 of 40 predictions, no latency expiry.",
+    "Caption byte audit confirmed stock preparation is already identical; exact-caption hook is a no-op here.",
+    "No change to learned weights, task-only input, S2A parameters, or gripper strategy."
+  ]
+}
