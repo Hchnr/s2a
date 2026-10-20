@@ -16,6 +16,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/wam_independent_20261020.json")
     parser.add_argument("--seed", type=int, required=True)
+    parser.add_argument("--fingerprints", default="outputs/wam_independent_20261020/checkpoint_fingerprints.json")
     args = parser.parse_args()
     c, root = load_config(args.config)
     if args.seed != c["seed"]:
@@ -33,6 +34,27 @@ def main():
     records = fixture_data["records"]
     fixtures = {r["name"]: r for r in records}
     variants = {x["name"]: x for x in c["checkpoints"]}
+    weights_path = Path(args.fingerprints)
+    weights = {x["name"]: x for x in json.loads(weights_path.read_text())["checkpoints"]}
+    for name, checkpoint in variants.items():
+        expected_path = Path(checkpoint["run"]) / "checkpoints" / checkpoint["iteration"] / "model"
+        if Path(weights[name]["checkpoint"]).resolve() != expected_path.resolve():
+            raise ValueError("checkpoint fingerprint identity differs")
+        for path, signature in weights[name]["files"].items():
+            stat = Path(path).stat()
+            if stat.st_size != signature["bytes"] or stat.st_mtime_ns != signature["mtime_ns"]:
+                raise ValueError("checkpoint changed since full-file hashing")
+    source_audit = None
+    provenance = {}
+    if "fixture_source" not in c:
+        source_audit = root / "source_audit.json"
+        audit = json.loads(source_audit.read_text())
+        for path, signature in audit["files_sha256"].items():
+            if sha256(path) != signature:
+                raise ValueError("source-audit evidence changed")
+        provenance = {item["record"]: item for item in audit["cases"]}
+        if set(provenance) != set(fixtures):
+            raise ValueError("source audit does not cover the complete fixture set")
     labels = ["native", "oracle", *variants]
     expected = {(label, r["name"], s) for label in labels for r in records for s in c["sampling_seeds"]}
     paths = list((root / "simulation").glob("*/*/result.json"))
@@ -65,6 +87,8 @@ def main():
             outcome=outcome,
             object_progress=result["object_progress"],
         )
+        if provenance:
+            row["source_provenance"] = provenance[result["record"]]
         if result["source"] != "native":
             h = np.asarray(json.loads(Path(manifest["config"]["tool_contract"]).read_text())["source_from_tcp"])
             errors = pose_error(
@@ -117,10 +141,24 @@ def main():
             ),
         )
         groups[label] = group
+        if provenance:
+            group["source_strata"] = {}
+            for name, predicate in {
+                "prior_offline_overlap": lambda p: any(r["prior_offline_sample"] for r in p["r2"]),
+                "matched_without_prior_offline_overlap": lambda p: bool(p["r2"])
+                and not any(r["prior_offline_sample"] for r in p["r2"]),
+                "unresolved_source": lambda p: not p["r2"],
+            }.items():
+                subset = [r for r in selected if predicate(r["source_provenance"])]
+                group["source_strata"][name] = dict(
+                    trials=len(subset), stable=sum(r["outcome"]["stable"] for r in subset)
+                )
     report = dict(
         code=code_fingerprint(),
         config=c,
         fixtures_sha256=sha256(fixtures_path),
+        checkpoint_fingerprints_sha256=sha256(weights_path),
+        source_audit_sha256=sha256(source_audit) if source_audit else None,
         cases=cases,
         groups=groups,
         limitations=[
