@@ -38,3 +38,11 @@
 发布R2流没有由这些候选得到共同精确对应。在`state[frame]`下，三帧实际TCP与同frame发布state的位置差分别3.279/3.115/3.599mm，SO(3)差0.06676/0.07198/0.07413rad；这只是候选恢复与标签的差，不是WAM预测误差，也不能据此认定标签错误。[frame73/state73发布图对照](../outputs/wam_video_pose_restore_20261020/resolution256/frame0073_state0073/all_orientations.png)仍有腕部/机器人残差。多个候选和视角的像素差不能自动选出唯一真实offset；上游发布观测流与此HDF来源之间的对应关系仍未完整恢复。
 
 原始18项结果、144项比较、初始化计数、实际加载XML/资产及输入/产物SHA见 [stage2 summary](../outputs/wam_video_pose_restore_20261020/summary.json)与[manifest](../outputs/wam_video_pose_restore_20261020/manifest.json)。全部指纹已复核，重复执行按预期拒绝覆盖且原产物不变。两阶段均保留物理图像/标签同步`unresolved`，没有拟合位姿、修标签、改变模型输入或停止主矩阵；当前证据不能提升为历史训练消费或全数据物理同步认证。
+
+## 观测流上游追溯
+
+后续只读追溯定位到本地原始下载版（README声明为`nvidia/LIBERO_LeRobot_v3`）的`libero_goal episode304 → R1 episode683 → R2 episode1139`。原始下载版158行8维state与R1逐项相同（max_abs=0），frame index及timestamp均相同；两路完整MP4在原始下载版、R1、R2三处各自字节SHA一致，并与保留的merge记录匹配。当前merge代码也直接复制视频字节；R1变换writer和entrypoint的SHA与发布记录一致。
+
+这将已观察到的native HDF与发布流差异定位到该本地原始LeRobot发布边界，不能归因于本地合并重新执行物理或重编码视频。它没有恢复NVIDIA上游具体HDF版本/SHA、生成/重放代码或pose与像素的物理时刻合同，仍不能判断是否是同一HDF版本或相同commands的另一条重放。命令内容匹配不等于观测或物理轨迹相同。来源声明及记录的revision未在远端独立认证，历史训练实际消费亦未恢复。
+
+该专项绑定35项输入SHA，数值继承、视频SHA、原始源路径、脚本及具体行号保存在 [upstream_lineage_followup.json](../outputs/wam_tcp_time_alignment_20261020/upstream_lineage_followup.json)（SHA256 `807f57ca2fe083a3cfb310d040a04040da72eb03f1b40934cdc238d44347ce21`）。未改变旧审计或原始数据，也未发现需要停止主评测的已证实错误。

@@ -26,6 +26,8 @@ wine首初态8800/seed43整段TCP/SO(3)跟踪RMSE为4.690mm/0.02203rad，仍未�
 
 [同源图像与静态恢复专项](../../reports/wam_video_pose_timing_20261020.md)已完成6272项像素比较及18项CPU静态恢复。三个HDF样本的动作后端点对应得到更直接支持，状态刷新/render不推进time/qpos/qvel检查通过；发布R2图像与pose流仍未由这些候选共同精确恢复，保持unresolved，没有修标签或宣称checkpoint错误。该专项不计任务成功率。wine第三初态8800/seed43在2.05秒失去唯一接触时仍发送close，首个后续open始于2.10秒；不能将它与此前“先开再失联”的case混为同一原因，且其前5秒跟踪误差明显大于后段。
 
+更上游只读追溯确认：本地NVIDIA原始下载版libero_goal ep304的158行state、frame index、timestamp被R1原样保留，两路MP4在原始/R1/R2三处字节SHA一致。故已知HDF观测差异并非本地merge重放physics或重编码造成；原始发布使用的HDF版本及物理时刻生成合同仍未知，不能据此认证上游同步或唯一归因权重。
+
 已验证：
 
 - 12个新初态×2seed的原生命令正控全部完成600步，24/24末端成功、24/24最后40步稳定成功；独立复核见 outputs/wam_independent_20261020/native_integrity.json。
