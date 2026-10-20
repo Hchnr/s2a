@@ -40,3 +40,5 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/export_libero_effect_video.py --seed
 同步入口验证 HTTP 前后完整物理状态和仿真时间不变，全部前 8 个目标真实执行。分量干预在 world/source 点替换分量、保留 WAM 原始输出；含 oracle 的成功不计为纯 WAM 成功。独立汇总按冻结名单核对完整预算、逐目标执行、端点连续性、物理位姿、命令边界/变化率、模型反归一化与图像指纹；`--stage controls` 等仅保存阶段核验，不生成全量完成报告。
 
 效果专项最终55项/50739步与2010个响应核验通过，完整结果见 [报告](../reports/libero_wam_effect_20261019.md)。准静态 `--resume` 仅复用同配置/输入SHA不变的完整case；新运行已按300×12覆盖环境horizon。视频导出需可选 `imageio-ffmpeg`，当前环境已提供；输出来自真实输入相机，拒绝覆盖已有视频。核心源码应先提交，独立核验会按运行记录commit核对实际执行SHA。
+
+当前GPU限制以根AGENTS.md为准：只允许物理4–7，以上GPU0–3命令为历史记录。已完成初态的成对轨迹诊断可运行 `CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_wam_scene_diagnostics.py --record task0_init0 --seed 42`。入口先独立核验该初态所有checkpoint和seed的完整预算，输出TCP/SO(3)、夹爪、原生抓取接触和任务判定曲线及PNG/PDF和原始证据SHA，已有输出拒绝覆盖。前5秒几何图与分段误差是事后诊断窗口，整条30秒曲线和成功判定一并保留；场景图不代表全矩阵验收或因果证明。
