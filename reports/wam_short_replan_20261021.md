@@ -67,6 +67,8 @@ alpha0 改变局部旋转及其后积分得到的 world 位置，是分量诊断
 
 新独立 final 审计仅允许这个明确的历史权重可用性例外；实际8400、任何执行代码/数据 SHA 或其它权重 metadata 变化仍拒绝。它逐一确认全部 12 案例、7200 步、678 次模型请求，interval8 的 450 个和 interval16 的 228 个生成目录全集分别精确等于两 alpha 配置的案例来源，service.log 所有 POST 恰为对应数量的 `/generate` 200，无额外请求。模型、matrix、coordinator 和所有 physics 子进程均已退出，模型/物理预算没有重跑。
 
+另一审阅方固定 `763888e` 后独立完整 CPU 复跑也通过：`long_raw_service_review/010_final763888e_independent_rerun.json`，SHA `de21e08a1c6293cf079b38702f79bef6c57c99e2ed792472d6d103ae93088d62`。该复跑再次核验 6993 项来源、12/7200/678、最后 600 步机械重放、服务全集与外部释放，并保留原协调器门禁失败。其另外直接读取全部 7200 个原生 success 布尔值、绕过生产 outcome helper 复算 ever/terminal/末40 stable，唯一成功仍为 raw8 bowl；收据 `long_raw_service_review/010_final763888e_outcome_and_scope_review.json`，SHA `7c2ab5bb816477019c12ce2bbd6e4b59efea814e6ed1ccfcdb9f67cc7f77500e`。这些只读核验没有新增模型请求或物理步。
+
 最终 artifact 内嵌全部 12 条原生事件区间/末40、位置/朝向/opening 跟踪、饱和与速率限制、目标接触，以及参考和实际 TCP 相对目标中心的距离。参考偏离与执行约束可以同时存在；不凭单项误差唯一归因模型或控制器。只有 raw8 bowl 存在成功区间，其余11条全部原生成功标志均为 false。
 
 新 016 自适应重观测使用独立注册、实现与分母，不会改变本轮 600 步成功门槛。预留新初态仍未用于性能评测。
