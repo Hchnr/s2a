@@ -62,6 +62,9 @@ def old600(case, record, old_case, evidence):
     rows, previous_rows = lines(case / "steps.jsonl", evidence), lines(old_case / "steps.jsonl", evidence)
     prefix = exact_prefix(rows, previous_rows)
     assert prefix["all600_shared_rows_exact"], prefix
+    assert json.dumps(rows[:600], sort_keys=True, separators=(",", ":"), allow_nan=False) == json.dumps(
+        previous_rows, sort_keys=True, separators=(",", ":"), allow_nan=False
+    ), "old600 canonical JSON tokens differ, including numeric types or signed zero"
     chunks, previous_chunks = evidence.json(case / "chunks.json"), evidence.json(old_case / "chunks.json")
     assert [c["step"] for c in chunks] == list(range(0, 1200, 8))
     assert [c["step"] for c in previous_chunks] == list(range(0, 600, 8))
@@ -112,6 +115,7 @@ def old600(case, record, old_case, evidence):
             assert chunks[index][key] == previous_chunks[index][key]
     return dict(
         **prefix,
+        all600_canonical_json_tokens_exact=True,
         old_case=str(old_case),
         all75_png_bytes_exact=True,
         all75_full40x128_raw_and_normalized_exact=True,
