@@ -1,0 +1,38 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/screening/15400_g15",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoints": [
+    {
+      "name": "15400_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_23src_20261015_warm_start_from22src_i8800_run01/cosmos3_action/action128/action128_wam_nano_1b_23src_20261015_warm_start_from22src_20261012_i8800_from12src_e2aux345_i6200_videocap30_static_vae_aot_run1",
+      "iteration": "iter_000015400",
+      "gpu": 6,
+      "port": 8946
+    }
+  ],
+  "offline_horizons": [
+    40
+  ],
+  "offline_prompt_modes": [
+    "task_only"
+  ],
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "sampling_steps": 35,
+  "guidance": 1.5,
+  "shift": 5.0,
+  "control_fps": 20,
+  "source_samples_manifest": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_checkpoint_acceptance_20261019v2/samples/manifest.json",
+  "notes": [
+    "2026-10-21 model-side development screening only. Reuse exactly24 diagnostic phase samples from6 original episodes (2 per task); exclude all24 study-heldout samples. This is not a new task-success or pretraining-unseen assessment.",
+    "H40, task-only text, samplingseeds42/43,35denoising steps,shift5;48queries perconfig. Compare old8800/new15400 at guidance1.5/1.0 with identical selected observations.",
+    "Original sample manifest SHA256=0ffc7115c6af4f1b7c944b2572805956f6db229d2e63d602442e20a8e1cc1049; preserve source absolute arrays/image paths and SHA256. The observed sample catalog remains the20261012 development source, independently of checkpoint training data.",
+    "Explicit non-EMA checkpoint iter_000015400/model under its own saved run config; physicalGPU6,localhostport8946. Only root-owned orchestrator starts model services.",
+    "15400 belongs to a separate23-source20261015-catalog continuation warm-started from22-source8800; it is not a later iteration within the old22-source run. LIBERO routing/normalization is identical; load each checkpoint own full contract.",
+    "Checkpoint byte-fingerprint selection_config_sha256 records the pre-cleanup config snapshot; this documentation cleanup does not alter the explicit checkpoint path, weight bytes or sampling parameters."
+  ]
+}
