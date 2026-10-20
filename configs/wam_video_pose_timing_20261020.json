@@ -1,0 +1,133 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_video_pose_timing_20261020",
+  "reader_python": "outputs/libero_env311/bin/python",
+  "native_demo": "demo_4",
+  "native_record": "task1_init2",
+  "r1_episode": 683,
+  "r2_episode": 1139,
+  "frame_count": 158,
+  "expected_native_image_convention": "opengl",
+  "inputs": {
+    "native_hdf5": {
+      "path": "outputs/wam_checkpoint_acceptance_20261019v2/assets/put_the_wine_bottle_on_the_rack_demo.hdf5",
+      "sha256": "f9092aa70734fc4083e97fc58c3ba25f87c614d18326182ddc7a455f0ab4da2e"
+    },
+    "published_npz": {
+      "path": "outputs/wam_checkpoint_acceptance_20261019v2/samples/episode1139.npz",
+      "sha256": "95e371ffebad39fada3924264b0650f6e14c9657185673b4b353cb0db3e6173c"
+    },
+    "sample_manifest": {
+      "path": "outputs/wam_checkpoint_acceptance_20261019v2/samples/manifest.json",
+      "sha256": "0ffc7115c6af4f1b7c944b2572805956f6db229d2e63d602442e20a8e1cc1049"
+    },
+    "source_audit": {
+      "path": "outputs/wam_independent_20261020/source_audit.json",
+      "sha256": "fd7136ec8a8cdefbb22519931b2740b7a294b4a116bd9ffe7c834e38f8d71218"
+    },
+    "tcp_time_audit": {
+      "path": "outputs/wam_tcp_time_alignment_20261020/audit.json",
+      "sha256": "da7f2f02215d8ae496608bfae562c7f8cee6e9631ea140b10ac81f8e1764b51e"
+    },
+    "r2_episode_metadata": {
+      "path": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef/meta/episodes/chunk-000/file-000.parquet",
+      "sha256": "0ca787d2aa325360ed9a8d9bebc28f23a9958f272f8633d97ac9fb4207dcefce"
+    },
+    "r2_processing": {
+      "path": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef/processing/chunk-000/file-000.jsonl",
+      "sha256": "275b12c816f668651e8eadbf631a333660fe2a398d381c63d33ff3f332fea9a6"
+    },
+    "native_create_dataset_source": {
+      "path": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/LIBERO/scripts/create_dataset.py",
+      "sha256": "6ff09687a6ca8cb5df16b828cce2326467099da2b4dd6e5af557644d3e60f37f"
+    }
+  },
+  "r2_metadata_snapshot": {
+    "episode_index": 1139,
+    "fps": 20.0,
+    "source_row_start": 0,
+    "source_row_end": 158,
+    "source_episode_id": "{\"source_id\": \"/share/mixed/projset/eai_pwm/datasets/action_processed_r1/libero/v3_eef_droid:683\"}",
+    "video_views": [
+      {
+        "fps": 20.0,
+        "from_timestamp": 1846.2499999999995,
+        "height": 256,
+        "path": "videos/1c2e373d9c946d7b/observation.images.image/chunk-000/file-002.mp4",
+        "role": "auxiliary_0",
+        "source_key": "observation.images.image",
+        "to_timestamp": 1854.1499999999996,
+        "width": 256
+      },
+      {
+        "fps": 20.0,
+        "from_timestamp": 1846.2499999999995,
+        "height": 256,
+        "path": "videos/1c2e373d9c946d7b/observation.images.wrist_image/chunk-000/file-002.mp4",
+        "role": "left_wrist",
+        "source_key": "observation.images.wrist_image",
+        "to_timestamp": 1854.1499999999996,
+        "width": 256
+      }
+    ],
+    "view_mapping": {
+      "auxiliary_0": "observation.images.image",
+      "left_wrist": "observation.images.wrist_image"
+    },
+    "video_layout": "main_top_lr_wrist_bottom_v1"
+  },
+  "roles": [
+    {
+      "role": "auxiliary_0",
+      "native_rgb_dataset": "agentview_rgb",
+      "r2_source_key": "observation.images.image"
+    },
+    {
+      "role": "left_wrist",
+      "native_rgb_dataset": "eye_in_hand_rgb",
+      "r2_source_key": "observation.images.wrist_image"
+    }
+  ],
+  "orientation_hypotheses": [
+    "identity",
+    "vertical_flip",
+    "horizontal_flip",
+    "both_flip"
+  ],
+  "primary_orientation": "identity",
+  "published_index_minus_native_index_offsets": [
+    0,
+    -1,
+    1,
+    -2,
+    2
+  ],
+  "native_image_shape": [
+    128,
+    128,
+    3
+  ],
+  "published_image_shape": [
+    256,
+    256,
+    3
+  ],
+  "resize": {
+    "method": "Pillow.Image.Resampling.BILINEAR",
+    "target_width": 256,
+    "target_height": 256,
+    "purpose": "Deterministic comparison resize; does not claim historical R1 video encoding resize was reproduced."
+  },
+  "comparison_panel_frames": [
+    13,
+    73,
+    90
+  ],
+  "limitations": [
+    "HDF native RGB is stored observable pixels without an additional flip; HDF attrs state opengl. R2 metadata contains roles/PTS but no proven HDF-to-published orientation lineage.",
+    "HDF agentview/eye-in-hand to published auxiliary_0/left_wrist is a fixed nominal role correspondence, not independent proof of upstream pixel identity.",
+    "Four orientations and five offsets are preregistered competing descriptive hypotheses. All scores remain available; no automatic best orientation/offset is declared true.",
+    "The native128 RGB and published256 video frames may differ in rendering source, camera calibration, resize and lossy codec. Pixel score alone cannot establish physical TCP timing.",
+    "This is a current-byte image comparison, separate from unrecovered historical training consumption. No WAM, simulator, physical stepping or new video decoding is part of this stage."
+  ]
+}
