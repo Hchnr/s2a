@@ -1,7 +1,9 @@
 """Decision and evidence-contract tests for the independent backend audit."""
 
 import importlib.util
+from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -103,3 +105,55 @@ def test_partial_backend_audit_cannot_generate_a_final_report(audit, tmp_path, m
     with pytest.raises(ValueError, match="complete48"):
         module.main()
     assert not output.exists() and not target.exists()
+
+
+def shutdown_fixture():
+    names = [f"case{i}" for i in range(48)]
+    artifact = dict(
+        schema_version="s2a.readonly-shutdown-observability.v1",
+        normal_owned_process_release=True,
+        closed_json_exists=False,
+        mask_evidence_json_exists=False,
+        poisoned_final_memory_state_observed=None,
+        initial_noise_rms_ledger_observed=None,
+        completed_results_and_trace_pairs=48,
+        cases=[dict(name=name) for name in names],
+        new_model_requests=0,
+        new_physics_steps=0,
+    )
+    probe = dict(
+        cpu_only=True,
+        new_model_requests=0,
+        new_physics_steps=0,
+        returncode=-15,
+        entered_exists=True,
+        finally_exists=False,
+    )
+    return names, artifact, probe
+
+
+def test_narrow_shutdown_contract_preserves_unknown_memory_and_exact_coverage(audit):
+    names, artifact, probe = shutdown_fixture()
+    audit.validate_shutdown_supplement(artifact, probe, names)
+    for field, value in (
+        ("poisoned_final_memory_state_observed", False),
+        ("initial_noise_rms_ledger_observed", []),
+        ("completed_results_and_trace_pairs", 47),
+        ("normal_owned_process_release", False),
+        ("new_model_requests", 1),
+    ):
+        changed = deepcopy(artifact)
+        changed[field] = value
+        with pytest.raises(ValueError, match="supplement/probe identity"):
+            audit.validate_shutdown_supplement(changed, probe, names)
+    with pytest.raises(ValueError, match="supplement/probe identity"):
+        audit.validate_shutdown_supplement(artifact, dict(probe, finally_exists=True), names)
+    with pytest.raises(ValueError, match="supplement/probe identity"):
+        audit.validate_shutdown_supplement(artifact, probe, names[::-1])
+
+
+def test_missing_shutdown_receipts_still_fail_without_explicit_supplement(audit, tmp_path, monkeypatch):
+    monkeypatch.setattr(audit, "STUDY", tmp_path)
+    args = SimpleNamespace(shutdown_supplement=None)
+    with pytest.raises(FileNotFoundError, match="closed.json"):
+        audit.shutdown_observability(audit.Evidence(), args, {}, {}, {})

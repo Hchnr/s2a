@@ -83,6 +83,7 @@ def figures(audit, output):
 
 def report(audit, audit_path, output):
     gate = audit["promotion"]
+    shutdown = audit["shutdown_observability"]
     lead = "达到" if gate["passed"] else "未达到"
     backend = audit["actual_backend"]
     audit_digest = hashlib.sha256(audit_path.read_bytes()).hexdigest()
@@ -150,6 +151,9 @@ def report(audit, audit_path, output):
         "48对请求、actual sampler初态/clean/reference/mask/token/实际caption、分支、35次velocity求值及实际sigma/timestep均核验。每份raw/normalized full40×128响应与服务本地原始JSON、per-request receipt和trace绑定。独立Gram–Schmidt解码、local旋转/位移积分与hold/CV重算逐端点匹配保存指标。网络35NFE由冻结guidance1/单rank/无postprocess调用分支推导，未宣称直接hook全部网络模块。",
         "实际初态/clean/mask/token保留的是已观察值的digest witness，而非完整tensor原始字节；审计可核跨backend digest一致，无法从未保存tensor独立重新算该SHA。实际sigma/timestep保存了数值，已独立重建并复核字节SHA；参数/RNG无修改证据来自冻结observer的逐观察guard与CPU透明性测试。",
         "初版只读auditor将scheduler_config._use_default_values视为有序list，产生27条审计错误；原development_partial01完整保留。Diffusers configuration_utils.py明确用list(set(...))构造该默认字段名列表。最终审计仅对这一bookkeeping列表排序，仍要求完整键集合、默认名集合、全部有效scheduler参数、sigma/time数值exact；此为审计表示修正，不是模型/物理失败，不涉及运行源码或采样修改。",
+        f"state质量审计`quality_complete={audit['quality_complete']}`与退出可观测性分开：本次使用`{shutdown['mode']}`。服务最终`closed.json`可得：`{shutdown['closed_json_available']}`；initial_noise RMS内存ledger可得：`{shutdown['initial_noise_rms_ledger_available']}`；最终poison内存状态：`{shutdown['final_poisoned_memory_state']}`（None表示未知）。不声称full internal ledger audit。",
+        "原strict入口因缺失closed/mask_evidence而拒绝final；失败记录和启动字节保留。本次显式绑定预审查的shutdown supplement：实际home Uvicorn在退出capture_signals时恢复默认SIGTERM handler并重新raise信号，使OS终止先于外层Python finally；同解释器、无app/socket/model/physics的CPU复现得到return=-15、进入标记存在、finally标记缺失。未补造丢失文件、未重跑或修改冻结服务。",
+        "窄旁证核验48条HTTP200、全部raw/trace/actual mask合同和无silent backend fallback、完整预算和来源、登记PID/startticks消失及state0/model受控-15退出。这支持预注册state质量和有限生命周期结论；不能复原或独立验证最终pending/counter/poison内存值，也不能从未写出的initial_noise RMS ledger推断逐denoise所有中间值。mask_evidence原本仅记录initial_noise诊断。原始响应inactive槽为0、实际sampler输入跨backend digest exact及冻结mask实现的来源核验仍完整保留。",
         f"完成时独立重新核验`{len(audit['input_sha256'])}`份保存输入/source/snapshot SHA与163份已完整哈希权重的size/mtime，未再次全量读取32GB权重。登记协调器/模型/state worker均按PID/startticks正常退出；GPU/CVD/backend环境证据来自运行时保存快照，而非根据已退出进程推断。",
         "",
         "## 产物",
@@ -185,6 +189,7 @@ def main():
     audit = evidence.json(args.audit)
     if (
         not audit["complete"]
+        or not audit["quality_complete"]
         or audit["status"] != "complete"
         or audit["errors"]
         or audit["verified_queries"] != 48

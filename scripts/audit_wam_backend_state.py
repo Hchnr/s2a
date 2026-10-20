@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -33,6 +34,9 @@ HELPER_SHA = "12329768297939fe6b15b4127aa6b65e144578fd72b0e896dd306f9e88b10069"
 READY = BASE / "backend_runtime_review/services_ready_resource_snapshot.json"
 READY_SHA = "f126e8bf79c6fed8b9c44f2128bcadc51ae44fe38b015a0ec83f9f8341bc6634"
 PREFIXES = (8, 16, 40)
+SHUTDOWN_SUPPLEMENT = BASE / "backend_runtime_review/shutdown_observability.json"
+SHUTDOWN_SHA = "4c74e6c27e197ec50a4e1fbc3ca20ba9cfb23b0453531c929a5c20ff21c12c17"
+SIGNAL_PROBE_SHA = "ef8b5284017d429c678bd614c0b4a899c87bfe584c00b1f3cdfa7be239dbe46a"
 CONFIG_UTILS = Path(
     "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/.venv/lib/python3.13/site-packages/diffusers/configuration_utils.py"
 )
@@ -330,11 +334,106 @@ def state_distance(pairs):
     }
 
 
+def validate_shutdown_supplement(artifact, probe, names):
+    """Validate only finite saved evidence; never infer missing memory values."""
+    if (
+        artifact["schema_version"] != "s2a.readonly-shutdown-observability.v1"
+        or not artifact["normal_owned_process_release"]
+        or artifact["closed_json_exists"]
+        or artifact["mask_evidence_json_exists"]
+        or artifact["poisoned_final_memory_state_observed"] is not None
+        or artifact["initial_noise_rms_ledger_observed"] is not None
+        or artifact["completed_results_and_trace_pairs"] != 48
+        or len(artifact["cases"]) != 48
+        or [c["name"] for c in artifact["cases"]] != names
+        or artifact["new_model_requests"] != 0
+        or artifact["new_physics_steps"] != 0
+        or not probe["cpu_only"]
+        or probe["new_model_requests"] != 0
+        or probe["new_physics_steps"] != 0
+        or probe["returncode"] != -15
+        or not probe["entered_exists"]
+        or probe["finally_exists"]
+    ):
+        raise ValueError("finite shutdown supplement/probe identity differs")
+
+
+def shutdown_observability(evidence, args, protocol, release, processes):
+    closed_path, mask_path = STUDY / "service/closed.json", STUDY / "service/mask_evidence.json"
+    if args.shutdown_supplement is None:
+        closed, masks = evidence.json(closed_path), evidence.json(mask_path)
+        if (
+            closed != dict(completed=48, pending=None, poisoned=False)
+            or len(masks) != 48
+            or any(m["inactive_rms_after"] != 0 for m in masks)
+        ):
+            raise ValueError("final service receipts do not cover48 unpoisoned initial-noise masks")
+        return dict(
+            mode="strict_saved_shutdown_receipts",
+            closed_json_available=True,
+            initial_noise_rms_ledger_available=True,
+            final_poisoned_memory_state=closed["poisoned"],
+            full_internal_ledger_audit=False,
+        )
+    if (
+        args.shutdown_supplement.resolve() != SHUTDOWN_SUPPLEMENT
+        or args.shutdown_supplement_sha256 != SHUTDOWN_SHA
+        or closed_path.exists()
+        or mask_path.exists()
+    ):
+        raise ValueError("only the explicit pre-reviewed absent-ledger supplement is accepted")
+    evidence.check(SHUTDOWN_SUPPLEMENT, SHUTDOWN_SHA)
+    artifact = evidence.json(SHUTDOWN_SUPPLEMENT)
+    for path, digest in artifact["input_sha256"].items():
+        evidence.check(path, digest)
+    evidence.check(artifact["cpu_signal_probe_path"], SIGNAL_PROBE_SHA)
+    probe = evidence.json(artifact["cpu_signal_probe_path"])
+    for path, digest in probe["source_sha256"].items():
+        evidence.check(path, digest)
+    validate_shutdown_supplement(artifact, probe, protocol["request_order"])
+    if artifact["release"] != release:
+        raise ValueError("shutdown supplement belongs to another release")
+    for role, witness in artifact["processes"].items():
+        actual = processes["state" if role == "worker" else role]
+        if (
+            witness["pid"] != actual["pid"]
+            or witness["registered_start_ticks"] != actual["registered_start_ticks"]
+            or witness["present"]
+            or actual["present"]
+        ):
+            raise ValueError("shutdown supplement belongs to another process lifetime")
+    for case in artifact["cases"]:
+        for label in ("trace", "result", "response"):
+            record = case[label]
+            evidence.check(record["path"], record["sha256"])
+    log = evidence.read(STUDY / "orchestration/run/service.log").decode()
+    statuses = re.findall(r'"POST /generate HTTP/1\.1" (\d{3})', log)
+    if statuses != ["200"] * 48:
+        raise ValueError("finite service log does not prove exactly48 successful HTTP requests")
+    return dict(
+        mode="explicit_sigterm_shutdown_supplement",
+        supplement_path=str(SHUTDOWN_SUPPLEMENT),
+        supplement_sha256=SHUTDOWN_SHA,
+        cpu_signal_probe_sha256=SIGNAL_PROBE_SHA,
+        closed_json_available=False,
+        initial_noise_rms_ledger_available=False,
+        final_poisoned_memory_state=None,
+        full_internal_ledger_audit=False,
+        successful_http_requests=48,
+        missing_values_reconstructed=False,
+        limitation="Final in-memory poison/counter/pending state and initial-noise before/after RMS ledger were not saved; per-request trace/raw/mask/source and normal lifetime evidence support only the registered state-quality comparison.",
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--require-complete", action="store_true")
+    parser.add_argument("--shutdown-supplement", type=Path)
+    parser.add_argument("--shutdown-supplement-sha256")
     args = parser.parse_args()
+    if bool(args.shutdown_supplement) != bool(args.shutdown_supplement_sha256):
+        raise ValueError("explicit shutdown supplement requires its exact reviewed SHA")
     if (
         Path.cwd().resolve() != ROOT
         or os.environ.get("CUDA_VISIBLE_DEVICES") != ""
@@ -515,6 +614,7 @@ def main():
     complete = (
         len(rows) == 48 and released and complete_marker is not None and state_complete is not None and not errors
     )
+    shutdown = None
     if complete:
         if (
             complete_marker["requests"] != 48
@@ -529,14 +629,7 @@ def main():
         for name in expected:
             evidence.check(state_dir / name / "result.json", state_complete["result_files"][name])
             evidence.check(STUDY / "service/traces35" / f"{name}.json", complete_marker["trace_sha256"][name])
-        closed = evidence.json(STUDY / "service/closed.json")
-        masks = evidence.json(STUDY / "service/mask_evidence.json")
-        if (
-            closed != dict(completed=48, pending=None, poisoned=False)
-            or len(masks) != 48
-            or any(x["inactive_rms_after"] != 0 for x in masks)
-        ):
-            raise ValueError("service did not close with48 unpoisoned masked requests")
+        shutdown = shutdown_observability(evidence, args, protocol, release, processes)
         if len({r["parameters"]["metadata_sha256"] for r in rows}) != 1:
             raise ValueError("parameter identity changed across013 requests")
         if {str(p) for p in (STUDY / "service").glob("generate_*") if p.is_dir()} != {
@@ -563,6 +656,7 @@ def main():
         schema_version="s2a.backend-state-readonly-audit.v1",
         created_utc=datetime.now(timezone.utc).isoformat(),
         complete=complete,
+        quality_complete=complete,
         status="error" if errors else "complete" if complete else "partial",
         errors=errors,
         verified_queries=len(rows),
@@ -598,6 +692,7 @@ def main():
         processes=processes,
         release=release,
         owned_service_released_normally=released,
+        shutdown_observability=shutdown,
         observer_evidence_boundary="Actual initial/clean/mask/text value bytes are digest witnesses from frozen tested observer, not saved tensors for independent byte replay. Actual sigma/timestep values ARE independently reconstructed and byte-hashed. Network NFE is source-derived; velocity-call count is observed.",
         scheduler_bookkeeping_comparison="Only _use_default_values name order is sorted: frozen Diffusers configuration_utils.py creates list(set(...)). Every name, effective scheduler value, sigma and timestep remains exact; development_partial01 retained the initial strict-list-order audit failure.",
         input_sha256=evidence.hashes,
