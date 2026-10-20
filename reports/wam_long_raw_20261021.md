@@ -38,6 +38,8 @@ CPU 准备已核 literal1200 源差异、三个真实旧首 query 和 225 个既
 
 root 启动收据 `long_raw_preflight/wam_root_launch.json`，SHA `d1924433405afd1ee92093779fa2b9b00b0c388ec86901852d1ac5758e12ad2f`，固定登记上述三条/3600 步/450 请求。首次实际只读审计 `long_raw_audit/progress_00_launch.json`，SHA `e13d116b56fb472da9402e58ab70351b5a2f99f2251792ed511dbd40b21402c8`，9352 项来源 SHA 前后完全一致；三条均 partial、0 条完整独立验证，成功率 null。已核三份真实 server info、8400 权重 stat 与 12 个运行中登记 PID/ticks/CUDA 身份，模型仅绑定 GPU5/6/7，所有 CPU CUDA/LD 为空。该部分快照采样时 request 文件计数为 0，不将它解释为整个审计期间模型没有执行请求。
 
+下一份 `long_raw_audit/progress_01_ready.json`，SHA `78973db074522330fe4fe354a987ecbd301a697b210bebc9bb1f7b67b195d4cd`，绑定真实 ready 快照 `long_raw_review/actual_ready_resource_snapshot.json`，SHA `502b5c98ab7b225d66129a13ea12bd73f0626433a638ea0303b36150fef40dee`。12 个历史 PID/startticks、父子关系、完整 command、cwd 与环境逐项对应启动/执行记录，三个 GET info 精确等于保存的服务身份；9355 项来源 SHA 前后相同。此时三条仍 partial，case-loop 观察 36 个 request 文件，不给任务率或正常退出结论；没有推断 NVML 与本地 PID 命名空间的映射。
+
 本轮将回答旧场景下延长同一策略的物理执行时间是否改变原生任务结果；即使成功，也仍需另行冻结候选、完成未参与开发的新初态验收，不能直接宣称多任务稳定成功。
 
 所有生成产物路径相对 `outputs/wam_stability_20261021/`。
