@@ -1,0 +1,25 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_gripper_replay_20261020",
+  "source_config": "configs/wam_independent_20261020.json",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "workers": 3,
+  "steps": 600,
+  "stable_steps": 40,
+  "replay_atol": 1e-8,
+  "gripper_modes": ["intent", "position", "latch"],
+  "opening_latch": {"close_below": 0.8, "release_above": 0.9},
+  "cases": [
+    {"name": "8800_init0_s43", "checkpoint": "8800_masked", "record": "task0_init0", "sampling_seed": 43},
+    {"name": "8800_init1_s43", "checkpoint": "8800_masked", "record": "task0_init1", "sampling_seed": 43},
+    {"name": "8600_init2_s43", "checkpoint": "8600_masked", "record": "task0_init2", "sampling_seed": 43}
+  ],
+  "notes": [
+    "Post-hoc execution diagnosis using three completed source trajectories: stable success, early release failure, transient success.",
+    "Freeze saved world/source pose and opening references; never re-anchor saved deltas to counterfactual measured state.",
+    "Freeze arm algorithm, gains and limits, with causal feedback from each counterfactual environment; numerical arm commands can differ.",
+    "No model query, expert future or task-conditioned reference repair. Replay outcomes are not new closed-loop WAM task results.",
+    "Require original intent mode to reproduce commands, state, object positions, contacts and task predicates before alternatives.",
+    "Latch thresholds are inherited from prior configs; latch changes both closing and release, so it measures total gripper-policy effect."
+  ]
+}
