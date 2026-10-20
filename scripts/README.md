@@ -46,3 +46,5 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/export_libero_effect_video.py --seed
 `audit_wam_gripper_commands.py --seed 42 --output outputs/wam_independent_20261020/gripper_command_audit_<snapshot>.json`只读复核增量完整性SHA，比较实际夹爪命令/方向反转、接触和控制限制，区分command作用起点与endpoint；未完成项不计失败。`run_wam_gripper_replay.py --seed 42 --stage prepare/baseline/counterfactual/report`使用configs/wam_gripper_replay_20261020.json做三源×三夹爪的CPU固定参考重放；先通过原intent复现门槛再解释其他策略。命令均加`CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/`前缀，重放是事后执行反事实，不计作新WAM闭环成功。
 
 `report_wam_independent.py --seed 42`要求主144条、执行16/40各36条的完整summary/integrity，以及9条CPU重放完整证据；任一缺失拒绝生成正式报告。报告按目标原生双侧指垫接触及任务判定划分失败阶段，单列固定参考反事实并复核来源与结果SHA，不将阶段或跟踪统计写成唯一因果。
+
+`finalize_wam_independent.py --seed 42 --check-only`只读检查上述216条结果及当前分区/调度器退出门槛，pending不算模型失败。去掉`--check-only`会独占新建outputs/wam_independent_20261020/finalizer/，每30秒检测，全部就绪后CPU串行汇总和生成报告；stdout应重定向到该目录外。命令使用上述CUDA空及LD_LIBRARY_PATH空前缀；已有正式产物或旧finalizer目录、错误、取消、冻结输入变化均拒绝，需审阅保留证据后另行处理，不自动重试、覆盖或Git提交。
