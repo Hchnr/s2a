@@ -1,0 +1,92 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/recovery_development/8800_g10",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "fixture": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json",
+  "fixture_sha256": "f522ee333827d51ab66b5b8d1c2a7ebd8ceca3832403b3c54dfa56a821fb2a8e",
+  "records": [
+    "task0_init0",
+    "task1_init0",
+    "task2_init0"
+  ],
+  "sampling_seeds": [
+    42
+  ],
+  "online_max_steps": 600,
+  "online_chunk_size": 40,
+  "online_execution_horizon": 40,
+  "max_observation_interval_steps": 80,
+  "stable_success_last_steps": 40,
+  "control_fps": 20,
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "gripper_intent_hold": {
+    "reference_hysteresis": 0.02,
+    "release_margin": 0.04,
+    "release_excursion": 0.04,
+    "release_confirmation_s": 0.05,
+    "motor_limit_tolerance": 0.005,
+    "max_evidence_interval_s": 0.1
+  },
+  "reference_governor": {
+    "max_translation_speed_m_s": 0.2,
+    "max_rotation_speed_rad_s": 1.0,
+    "max_opening_speed_s": 2.0,
+    "position_soft_m": 0.01,
+    "position_stop_m": 0.04,
+    "rotation_soft_rad": 0.1,
+    "rotation_stop_rad": 0.4
+  },
+  "variants": [
+    {
+      "name": "intent_hold",
+      "rotation": "response",
+      "gripper": "intent_hold",
+      "governor": false,
+      "model_rotation_alpha": 1.0
+    },
+    {
+      "name": "recovering_intent_hold",
+      "rotation": "response",
+      "gripper": "intent_hold",
+      "governor": "recovering",
+      "model_rotation_alpha": 1.0
+    },
+    {
+      "name": "recovering_intent_hold_alpha05",
+      "rotation": "response",
+      "gripper": "intent_hold",
+      "governor": "recovering",
+      "model_rotation_alpha": 0.5
+    },
+    {
+      "name": "recovering_intent_hold_alpha0",
+      "rotation": "response",
+      "gripper": "intent_hold",
+      "governor": "recovering",
+      "model_rotation_alpha": 0.0
+    }
+  ],
+  "notes": [
+    "Pre-registered003 recovery development protocol: two checkpoint families at common guidance1.0, three old task init0 scenes, samplingseed42, four variants,600physicssteps;24trials/14400steps in the paired two-model batch. Full192 state screens motivated common guidance1.0 lower SO3 per family; no best-task setting claim. Original g1.5 raw pilots still finish separately.",
+    "Raw128 and effective128/absolute targets are saved. Alpha.5 is model-output rotation regularization, alpha0 is only a position/opening plus constant-orientation component diagnostic; neither is raw full-checkpoint performance.",
+    "Native success/contact/object state are metrics only. Controller inputs are current measured pose/twist, actuator goal, aperture/history and generated reference. No expert file or privileged future is opened in this WAM branch.",
+    "H40/20Hz, prefix40, max observation interval80physicalsteps,35denoisingsteps,shift5; model latency excluded. Non-governed variant naturally requeries on40prefix depletion; governed variants requery on retimed reference completion or80steps, whichever first. All variants retain equal600physicsstep budget.",
+    "Only experimental candidates, not a broad execution safety certification. Independent synthetic recovery mechanical-plateau gate remains false; reference-pause recovery and the new six-case chunked oracle qualification are reported with their respective limits. Fresh acceptance remains untouched."
+  ],
+  "checkpoints": [
+    {
+      "name": "8800_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008800",
+      "gpu": 5,
+      "port": 9045
+    }
+  ]
+}
