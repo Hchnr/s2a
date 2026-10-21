@@ -73,3 +73,6 @@
 
 
 025完整实现与独立CPU准入现完成：最终冻结758ca4c、整仓499 passed/1外部integration deselected、Ruff305文件通过，source SHA检查前后相同。真实12旧EP/48anchor/144teacher/96条件采样准备已经独立核验，prepared SHA `202b81afa0a2fc39d803c74b9430fb3d03e2d0a15ef403b60c1268d1b2d5d658`；实际owner dryrun及错SHA负控通过。当前只是运行准入，尚无025 teacher拟合或生成质量结果，不能视为稳定任务门槛改善。
+
+
+025实际features阶段已在唯一物理GPU6进程启动，先3份zero输出exact后144 teacher，预算249denoise；实际Python命令/parent/环境身份已核实。尚无完成或teacher门槛结论，2组fit及96条件完整采样仍未执行。
