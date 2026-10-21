@@ -76,3 +76,6 @@
 
 
 025实际features阶段已在唯一物理GPU6进程启动，先3份zero输出exact后144 teacher，预算249denoise；实际Python命令/parent/环境身份已核实。尚无完成或teacher门槛结论，2组fit及96条件完整采样仍未执行。
+
+
+025实际features已完整3zero+144teacher/249denoise，原模型参数冻结，3zero全raw/normalized exact；模型actual wait0/reap0。原owner的10秒资源观测超时导致False，该失败不修改；当前GPU6显存0/computeapps空及两原birth消失已独立核实，具体延迟原因未知。按[资源观测补充](025_release_observation_addendum_20261021.md)以新隔离入口继续尚未执行的CPU正式全组审计/原2fit/条件96采样，不重复NN或放宽质量门槛。此刻尚无adapter teacher/state质量结果。
