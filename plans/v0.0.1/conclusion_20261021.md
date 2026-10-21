@@ -110,3 +110,6 @@
 
 
 030同步训练数据阶段已事前登记、实现整合中；固定30条source隔离native示范、最多19200 CPU/OSMesa物理步，五anchor仅当前图像，0WAM/fit/fresh。source位置与朝向的SITE/BODY观测约定已在运行前澄清。root实际6项CPU子进程测试和worker7项几何时序fixture通过；整仓QA/独立来源准入及真实采集尚未执行，不能称已有30条成功数据。
+
+
+030最新状态：source409/快照409/30demo/150当前anchor及原fresh隔离已实际独立准入，整仓689 passed/1外部integration deselected、Ruff364通过；首次缺h5py在HDF解析前失败已保留，仅补本地venv依赖后成功准备。真实CPU/OSMesa唯一采集已启动（实际4980物理步预算），首case完整；全部30原生质量及最终审计尚待完成，0WAM/fit/fresh。不能将native数据资格或单例保存记为稳定WAM成功，后续031模型预算尚未授权。
