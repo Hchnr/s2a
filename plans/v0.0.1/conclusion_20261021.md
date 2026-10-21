@@ -6,7 +6,7 @@
 
 [018旋转漂移诊断](../../reports/wam_rotation_drift_diagnostic_20261021.md)固定19次拟合/六整episode留出及独立重算全部完成，但推广判定为False。H8/H16/H40旋转RMSE从.090896/.182583/.470659降至.081348/.143087/.320673rad；短窗口仍差于hold、历史外推及独立noWAM/shuffle对照。没有据此重调参数或追加模型、物理、fresh。下文早期“018未拟合”和“017运行中”是保留的时间记录。最近全仓289 passed / 1外部integration deselected、Ruff243文件通过，验证收据SHA `399ebbb6f28ab4399712e0fb53eb887328f492fb90c638d10007e7148465961d`；019新辅助入口另作针对性检查，尚未计入该全仓数字。
 
-019现已在物理GPU4/5/6按固定三旧任务seed43运行，12现场身份与三首query真实43来源核验通过；完整结果未定，pending不算失败。同时登记[020因果参考集成](020_causal_temporal_ensemble_20261021.md)，尝试消费旧预测中对同一未来时刻的运动；等权平均会改变参考，不能认证原始checkpoint。实际三条正确参考CPU资格现已启动，尚无020 WAM任务结果；先正确参考精确资格，之后仅在019完整释放后执行固定三项WAM。预留fresh保持未打开。
+019已完整独立核验，seed43的ever/terminal/stable全0/3；原raw8三旧场景的seed42为1/3，seed43为0/3，未建立重复性，不挑成功seed。其3/1800/225与全部12owned退出通过，[正式报告](../../reports/wam_raw8_seed43_20261021.md)。[020因果参考集成](020_causal_temporal_ensemble_20261021.md)尝试消费历史预测对同一未来时刻的运动；等权平均改变参考，不能认证原始checkpoint。实际三条正确参考各600步均成功，1800共同row/控制canonical精确，原物理门槛全部满足；原审计额外比较chunk标签时因float1.0与int1的表示差而qualified=False，原False保留，暂不启动020 WAM，待独立补充只核此元数据边界。预留fresh保持未打开。
 
 最新全仓检查已更新为335 passed / 1外部integration deselected、Ruff261文件通过，收据SHA `da32403e0fd58240bf5bb5f06bb586208896fccf8e826f8571d8852ec0cb050a`。020完整执行函数仅11处明确参考/来源/日志差异，其余初始化/控制/夹爪/物理/评分AST保持；旧007缓存1800目标全走数值identity且逐canonical相同。它是启动新物理资格的准备证据，不能代替实际资格或任务成功。
 
