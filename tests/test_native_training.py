@@ -232,3 +232,48 @@ def test_case_fixture_keeps_running_after_success_and_renders_only_current_ancho
         np.testing.assert_array_equal(arrays["sent_commands"][:43], native)
         assert not arrays["sent_commands"][43:, :6].any()
         assert len(arrays["state128"]) == 84 and not arrays["action_mask"][-1].any()
+
+
+def test_run_startup_receipt_matches_owned_child_contract_before_collection(tmp_path, monkeypatch):
+    """Run the real worker entry and deliberately stop before any physics call."""
+    module = collector()
+    for key, value in dict(CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONDONTWRITEBYTECODE="1").items():
+        monkeypatch.setenv(key, value)
+    prepared_path = tmp_path / "prepared.json"
+    prepared_path.write_text("{}\n")
+    prepared_sha = module.sha256(prepared_path)
+    prepared = dict(
+        schema_version="s2a.native-training-preparation.v1",
+        seed=42,
+        output_root=str(tmp_path / "new_output"),
+        records=[dict(name=f"case{index}", task_index=0) for index in range(10)],
+    )
+    observed = []
+
+    def read_prepared(path, digest):
+        assert path == prepared_path and digest == prepared_sha
+        return prepared
+
+    def stop_before_collection(*args):
+        observed.append(args[2]["name"])
+        raise RuntimeError("intentional fixture stop before collection; zero physics")
+
+    monkeypatch.setitem(sys.modules, "prepare_wam_native_training", SimpleNamespace(read_prepared=read_prepared))
+    monkeypatch.setattr(module, "collect_case", stop_before_collection)
+    code = module.run(SimpleNamespace(prepared=str(prepared_path), prepared_sha256=prepared_sha, task_index=0, seed=42))
+    directory = Path(prepared["output_root"]) / "collection/task0"
+    started = json.loads((directory / "worker_started.json").read_text())
+    # These exact top-level keys are consumed by owned_child.observe_started.
+    assert started["cuda"] == os.environ["CUDA_VISIBLE_DEVICES"] == ""
+    assert started["ld"] == os.environ["LD_LIBRARY_PATH"] == ""
+    assert started["actual_environment"] == dict(
+        CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONDONTWRITEBYTECODE="1"
+    )
+    assert started["pid"] == os.getpid() and started["ppid"] == os.getppid()
+    assert started["argv"] == sys.argv and started["task_index"] == 0
+    result = json.loads((directory / "result.json").read_text())
+    assert code == 1 and observed == ["case0"]
+    assert result["complete"] is result["passed"] is False and result["cases"] == []
+    assert "zero physics" in result["error"]["message"]
+    assert result["environment_initializations"] == result["physics_steps"] == result["current_canvas_images"] == 0
+    assert result["wam_initializations"] == result["denoise_calls"] == result["fits"] == result["fresh_cases"] == 0

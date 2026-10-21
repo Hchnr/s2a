@@ -306,6 +306,8 @@ def run(args):
             pid=os.getpid(),
             ppid=os.getppid(),
             argv=sys.argv,
+            cuda=environment["CUDA_VISIBLE_DEVICES"],
+            ld=environment["LD_LIBRARY_PATH"],
             actual_environment=environment,
             task_index=args.task_index,
         ),
