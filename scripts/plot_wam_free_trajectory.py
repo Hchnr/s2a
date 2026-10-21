@@ -207,7 +207,7 @@ def figures(prepared, diagnostics, output):
 
     with PdfPages(output / "free_trajectory_diagnostics.pdf") as pdf:
         fig, axes = plt.subplots(2, 3, figsize=(13, 7), constrained_layout=True)
-        for row, (branch, target) in enumerate((("teacher", "epsilon-x0"), ("free", "v_pull=(sample_FP32-x0)/sigma"))):
+        for row, branch in enumerate(("teacher", "free")):
             for col, (m, label) in enumerate(zip(metrics, labels, strict=True)):
                 ax = axes[row, col]
                 ax.bar(
@@ -215,9 +215,12 @@ def figures(prepared, diagnostics, output):
                     [m[f"velocity.{branch}.active10.{v}_error.mse"] for v in ("raw", "offline027")],
                     color=COLORS[:2],
                 )
-                ax.set(title=f"{branch}: {label}", ylabel=f"Active10 velocity MSE vs {target}")
+                ax.set(title=f"{branch}: {label}", ylabel="Velocity MSE (active10)")
                 ax.grid(axis="y", alpha=0.2)
-        fig.suptitle(CAPTION + "\nDifferent targets: compare variants within a branch, not teacher vs free as one loss")
+        fig.suptitle(
+            CAPTION
+            + "\nTeacher: epsilon-x0 | Free: v_pull=(sample_FP32-x0)/sigma; compare variants only within each branch"
+        )
         save(fig, "velocity_targets", pdf)
 
         fig, axes = plt.subplots(3, 4, figsize=(14, 10), constrained_layout=True)
