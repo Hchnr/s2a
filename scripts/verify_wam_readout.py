@@ -1,7 +1,7 @@
-"""Independent CPU audit of025 preparation, original-head features and two fits.
+"""Independent CPU audit of025 preparation, features, fits and paired sampling.
 
-No producer fit/apply/gate, Torch, Cosmos or dataloader is imported. The three
-phases are explicit; complete sampling and physical task success are excluded.
+No producer fit/apply/gate, Torch, Cosmos or dataloader is imported. The four
+phases are explicit; paired sampling scores reference states, not task success.
 """
 
 import argparse
@@ -358,6 +358,31 @@ def verify_preparation(path, evidence):
             evidence.check(source, expected)
     verify_admission(config, evidence)
     verify_quantization(evidence)
+    quantization = prepared["quantization_admission"]
+    quantization_root = REPO / "outputs/wam_stability_20261021/readout_quantization_gpu6"
+    for key, source in dict(
+        result=quantization_root / "result.json",
+        actual_outputs=quantization_root / "actual_outputs.npz",
+        launch=quantization_root / "launch.json",
+        owner_exit=quantization_root / "exit.json",
+        child_release=quantization_root / "ownership/release.json",
+        actual_child_identity=quantization_root / "actual_child_identity.json",
+        core_source=REPO / "src/s2a/wam_readout.py",
+        worker_source=quantization_root / "worker.py",
+        owner_source=quantization_root / "owner.py",
+    ).items():
+        require(
+            quantization[key] == dict(path=str(source), sha256=digest(evidence.check(source))),
+            "prepared synthetic quantization source reference differs",
+        )
+    require(
+        quantization["owner_and_child_births_terminal"] is True
+        and quantization["physical_gpu"] == 6
+        and quantization["actual_cpu_cuda_gold_bits_verified"] is True
+        and quantization["full_readout_cases"] == 3
+        and quantization["primitive_values"] == 10,
+        "prepared quantization numerical/lifecycle admission differs",
+    )
     fingerprint = evidence.json(REPO / config["source_checkpoint_fingerprints"], FINGERPRINT_SHA)
     actual = next(c for c in fingerprint["checkpoints"] if c["name"] == "8400_masked")
     expected_checkpoint = str(
@@ -1028,6 +1053,28 @@ def independent_state_gate(groups):
     )
 
 
+def sampling_execution_contract(actual, prepared, fit):
+    require(actual["schema_version"] == "s2a.frozen-readout-sampling.v1", "wrong sampling execution schema")
+    require(
+        actual["all_original_parameters_frozen"] is True and actual["head_call_counts"] == dict(raw=1680, adapt=1680),
+        "sampling original parameters/readout invocation counts differ",
+    )
+    require(actual["physics_steps"] == actual["fresh_cases"] == 0, "sampling used physical/fresh performance budget")
+    require(
+        actual["adapted_model_ref"] == fit["models"]["adapt"], "sampling did not bind the admitted adapted coefficients"
+    )
+    require(
+        actual["runtime"]["checkpoint_path"] == prepared["checkpoint"] and actual["runtime"]["ema_weights"] is False,
+        "sampling original checkpoint/EMA contract differs",
+    )
+
+
+def initial_record_identity(metadata, planned):
+    for key in ("generation_index", "name", "pair_id", "variant", "sampling_seed"):
+        require(metadata[key] == planned[key], f"actual initial {key} is bound to another generation")
+    require(metadata["inference_only_current_image"] is True, "initial inference used a noncurrent observation")
+
+
 def verify_sampling(prepared, anchors, spec, fit_path, fit_verification_path, path, evidence):
     actual = evidence.json(path)
     require(
@@ -1039,6 +1086,12 @@ def verify_sampling(prepared, anchors, spec, fit_path, fit_verification_path, pa
         "sampling consumed another fit",
     )
     fit_verified = evidence.json(fit_verification_path)
+    fit = evidence.json(fit_path)
+    require(
+        fit["complete"] is True and fit["passed"] is True and fit["eligible_for_sampling"] is True,
+        "sampling producer teacher gate was not passed",
+    )
+    sampling_execution_contract(actual, prepared, fit)
     require(
         fit_verified["phase"] == "fit"
         and fit_verified["passed"] is True
@@ -1092,6 +1145,7 @@ def verify_sampling(prepared, anchors, spec, fit_path, fit_verification_path, pa
         )
         actions = response_actions(response, planned["request"], prepared["checkpoint"], spec["transforms"][31])
         initial_meta, initial = bundle(recorded["initial"], evidence)
+        initial_record_identity(initial_meta, planned)
         signature = initial_signature(initial_meta, initial)
         require(signature["caption"] == condition["caption"], "actual initial text differs from response condition")
         pair_id = planned["pair_id"]

@@ -271,3 +271,41 @@ def test_explicit_cli_phases_require_exact_evidence_roster_and_never_ignore_extr
         changed[fields[0]] = None if values[fields[0]] is not None else Path("extra.json")
         with pytest.raises(ValueError, match="explicit audit phase"):
             checker.phase_arguments(SimpleNamespace(phase=phase, **changed))
+
+
+def test_sampling_execution_requires_actual_head_counts_frozen_weights_and_correct_adapted_model(checker):
+    model = dict(path="adapt.npz", sha256="a" * 64)
+    prepared, fit = dict(checkpoint="8400/model"), dict(models=dict(adapt=model))
+    actual = dict(
+        schema_version="s2a.frozen-readout-sampling.v1",
+        all_original_parameters_frozen=True,
+        head_call_counts=dict(raw=1680, adapt=1680),
+        physics_steps=0,
+        fresh_cases=0,
+        adapted_model_ref=model,
+        runtime=dict(checkpoint_path="8400/model", ema_weights=False),
+    )
+    checker.sampling_execution_contract(actual, prepared, fit)
+    for changed in (
+        dict(actual, all_original_parameters_frozen=False),
+        dict(actual, head_call_counts=dict(raw=1680, adapt=1679)),
+        dict(actual, adapted_model_ref=dict(model, sha256="b" * 64)),
+        dict(actual, physics_steps=1),
+        dict(actual, runtime=dict(checkpoint_path="8800/model", ema_weights=False)),
+    ):
+        with pytest.raises(ValueError):
+            checker.sampling_execution_contract(changed, prepared, fit)
+
+
+def test_sampling_initial_metadata_is_bound_to_the_actual_generation_pair_seed_and_variant(checker):
+    planned = dict(generation_index=3, name="anchor_adapt_s43", pair_id="anchor_s43", variant="adapt", sampling_seed=43)
+    metadata = dict(planned, inference_only_current_image=True)
+    checker.initial_record_identity(metadata, planned)
+    for changed in (
+        dict(metadata, sampling_seed=42),
+        dict(metadata, pair_id="other_s43"),
+        dict(metadata, variant="raw"),
+        dict(metadata, inference_only_current_image=False),
+    ):
+        with pytest.raises(ValueError):
+            checker.initial_record_identity(changed, planned)
