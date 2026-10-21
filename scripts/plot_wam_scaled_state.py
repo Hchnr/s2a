@@ -281,7 +281,7 @@ def figures(groups, gate, output):
                 )
                 ax.grid(axis="y", alpha=0.2)
                 ax.legend(fontsize=8)
-        fig.suptitle(CAPTION + "\nAt least 5/6 EPs and both seeds protected; the pooled 0.90 gate is not an EP gate")
+        fig.suptitle(CAPTION + "\nRequired: at least 5/6 EPs and both seeds protected; pooled 0.90 is not an EP gate")
         path = output / "episode_seed_ratios.png"
         fig.savefig(path, dpi=170)
         pdf.savefig(fig)
