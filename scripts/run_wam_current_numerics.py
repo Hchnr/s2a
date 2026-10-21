@@ -28,6 +28,14 @@ def interrupted(signum, frame):
     raise InterruptedError(f"024 owner received signal {signum}")
 
 
+def external_identity(repo):
+    head = subprocess.check_output(["git", "-C", repo, "rev-parse", "HEAD"], text=True).strip()
+    changed = subprocess.check_output(["git", "-C", repo, "status", "--porcelain", "--untracked-files=no"], text=True)
+    if changed.strip():
+        raise ValueError("024 requires the recorded external tracked source tree to be clean")
+    return dict(head=head, tracked_source_clean=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--prepared", type=Path, required=True)
@@ -57,6 +65,7 @@ def main():
     c = prepared["config"]
     if len(c["checkpoints"]) != 1 or c["checkpoints"][0]["gpu"] != 6 or c["denoise_budget"] != 27:
         raise ValueError("024 owner requires its registered singleGPU6/27-forward protocol")
+    cosmos_identity = external_identity(c["cosmos_repo"])
     root = Path(prepared["output_root"])
     if root != (REPO / c["output_dir"]).resolve() or not root.is_relative_to(REPO / "outputs"):
         raise ValueError("024 output identity differs")
@@ -116,6 +125,7 @@ def main():
                     environment={k: environment[k] for k in ("CUDA_VISIBLE_DEVICES", "LD_LIBRARY_PATH", "MASTER_PORT")},
                     prepared=reference(args.prepared),
                     source_peer=reference(args.source_peer),
+                    external_cosmos=cosmos_identity,
                     automatic_retry=False,
                     denoise_budget=27,
                     sampling_budget=0,
@@ -150,6 +160,10 @@ def main():
             write_once(directory / "exit.json", dict(returncode=code, actual_wait=True, automatic_retry=False))
             if code:
                 raise ChildProcessError(f"024 numerical worker returned {code}; evidence retained without retry")
+            final_cosmos = external_identity(c["cosmos_repo"])
+            write_once(directory / "external_cosmos_after.json", final_cosmos)
+            if final_cosmos != cosmos_identity:
+                raise ValueError("024 external tracked source identity changed during the worker")
     print(json.dumps(dict(exit=reference(directory / "exit.json"), release=reference(ownership / "release.json"))))
 
 
