@@ -309,3 +309,19 @@ def test_sampling_initial_metadata_is_bound_to_the_actual_generation_pair_seed_a
     ):
         with pytest.raises(ValueError):
             checker.initial_record_identity(changed, planned)
+
+
+def test_validation_generation_manifest_excludes_training_and_pairs_both_seeds_without_mutating_requests(checker):
+    anchors = [
+        dict(name="train", split="train", request=dict(seed=42)),
+        dict(name="val", split="validation", request=dict(seed=42)),
+    ]
+    entries = checker.validation_manifest(anchors)
+    assert [(e["generation_index"], e["variant"], e["sampling_seed"], e["pair_id"]) for e in entries] == [
+        (0, "raw", 42, "val_s42"),
+        (1, "adapt", 42, "val_s42"),
+        (2, "raw", 43, "val_s43"),
+        (3, "adapt", 43, "val_s43"),
+    ]
+    assert entries[-1]["request"]["seed"] == 43 and anchors[-1]["request"]["seed"] == 42
+    assert [e["name"] for e in entries] == ["val_raw_s42", "val_adapt_s42", "val_raw_s43", "val_adapt_s43"]

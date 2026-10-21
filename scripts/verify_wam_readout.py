@@ -172,6 +172,27 @@ def request_check(request, task, image_path):
         require(request[key] == expected, f"request {key} changed")
 
 
+def validation_manifest(anchors):
+    result = []
+    for anchor in anchors:
+        if anchor["split"] != "validation":
+            continue
+        for seed in (42, 43):
+            for variant in ("raw", "adapt"):
+                result.append(
+                    dict(
+                        generation_index=len(result),
+                        name=f"{anchor['name']}_{variant}_s{seed}",
+                        anchor_name=anchor["name"],
+                        pair_id=f"{anchor['name']}_s{seed}",
+                        sampling_seed=seed,
+                        variant=variant,
+                        request=dict(anchor["request"], seed=seed),
+                    )
+                )
+    return result
+
+
 def verify_admission(config, evidence):
     result_path = REPO / config["required_numerics_result"]
     verified = evidence.json(REPO / config["required_numerics_verification"])
@@ -537,6 +558,11 @@ def verify_preparation(path, evidence):
         for i, (a, sigma) in enumerate((a, s) for a in prepared["anchors"] for s in (0.2, 0.5, 0.8))
     ]
     require(prepared["teacher_calls"] == expected_teacher, "wrong144 teacher roster/order")
+    expected_generations = validation_manifest(prepared["anchors"])
+    require(
+        len(expected_generations) == 96 and prepared["validation_generations"] == expected_generations,
+        "wrong96 validation observation/seed/raw-adapt grid",
+    )
     return prepared, index, saved["action128_spec"]
 
 
