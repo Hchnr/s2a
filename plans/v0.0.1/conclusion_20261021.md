@@ -79,3 +79,6 @@
 
 
 025实际features已完整3zero+144teacher/249denoise，原模型参数冻结，3zero全raw/normalized exact；模型actual wait0/reap0。原owner的10秒资源观测超时导致False，该失败不修改；当前GPU6显存0/computeapps空及两原birth消失已独立核实，具体延迟原因未知。按[资源观测补充](025_release_observation_addendum_20261021.md)以新隔离入口继续尚未执行的CPU正式全组审计/原2fit/条件96采样，不重复NN或放宽质量门槛。此刻尚无adapter teacher/state质量结果。
+
+
+025本轮结束于teacher质量失败：[正式报告](../../reports/wam_frozen_readout_20261021.md)。249实际模型前向及2组固定fit、独立AugLS参数与全部量化评分已完整通过重算；留出开发EP总体标准化velocity MSE下降28.53%，但sigma=.8退化2.043倍，原保护门槛False。constant bias已解释大部分总体收益，readout只额外改善0.464%。原资源观测owner False保留，新隔离CPU接续正常完成，没有重复NN。实际sampling dryrun在模型加载前拒绝；96完整生成、物理/fresh均0。此负结果否定本固定适配方案的推广资格，未检验其state或任务成功率；下一方案须另登记，不修改025参数或阈值挽救原失败。稳定目标仍未达，fresh24验收继续未打开。
