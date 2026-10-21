@@ -24,6 +24,9 @@ CONFIG = REPO / "configs/wam_frozen_readout_20261021.json"
 CONFIG_SHA = "6534245a114d89167f6d8cd283e55de8685b4a02abca79706436309477860605"
 PLAN = REPO / "plans/v0.0.1/025_frozen_wam_readout_20261021.md"
 PLAN_SHA = "46b766356ef29c593c895a23130a0415cc83c892afcfc6bb66e07e5bab540dc6"
+ROUNDING = REPO / "plans/v0.0.1/025_bfloat16_rounding_addendum_20261021.md"
+ROUNDING_SHA = "210983ca27d51aaf4acdb0f6d179ffe991dd34a0ee04fbc9c1c09f930fc9f498"
+QUANTIZATION = REPO / "outputs/wam_stability_20261021/readout_quantization_gpu6"
 FRESH = REPO / "configs/wam_stability_fresh_reservation_20261021.json"
 ACTIVE = np.asarray([True] * 10 + [False] * 118)
 DOMAIN = "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1"
@@ -34,9 +37,16 @@ LOCAL_SOURCES = (
     "tests/test_wam_readout.py",
     "scripts/run_wam_readout_features.py",
     "scripts/fit_wam_readout.py",
+    "tests/test_wam_readout_fit.py",
     "scripts/run_wam_readout_sampling.py",
+    "tests/test_wam_readout_sampling.py",
     "scripts/run_wam_readout.py",
+    "tests/test_wam_readout_runner.py",
     "scripts/verify_wam_readout.py",
+    "tests/test_wam_readout_verification.py",
+    "scripts/audit_wam_sampler_steps.py",
+    "scripts/audit_wam_earlier_screen.py",
+    "plans/v0.0.1/025_bfloat16_rounding_addendum_20261021.md",
     "src/s2a/worker_handshake.py",
     "src/s2a/wam_runtime.py",
     "src/s2a/libero_simulation.py",
@@ -205,6 +215,161 @@ def absent_owned_birth(item):
     return actual["start_ticks"] != item["start_ticks"] or actual["proc_state"] in ("Z", "X")
 
 
+def quantization_gold_bits():
+    """Exact, already-BF16-representable gold values; no production quantizer."""
+    spacing = 2.0**-133
+    first10 = {
+        "normal_positive": [1, 1, 1 + 2**-7, 1 - 2**-8, 1 - 2**-8, 1 - 2**-8, 1 + 2**-7, 1 + 2**-6, 1 + 2**-6, 1],
+        "normal_negative": [
+            -1,
+            -1,
+            -1 - 2**-7,
+            -1 + 2**-8,
+            -1 + 2**-8,
+            -1 + 2**-8,
+            -1 - 2**-7,
+            -1 - 2**-6,
+            -1 - 2**-6,
+            -1,
+        ],
+        "subnormal": [0.0, 0.0, spacing, -0.0, -0.0, -spacing, 2 * spacing, 2 * spacing, 2.0**-126, 0.0],
+    }
+    gold = {}
+    for name, values in first10.items():
+        array = np.empty((2, 128), dtype=np.float32)
+        array[:, :10] = values
+        array[:, 10:] = np.arange(118, dtype=np.float32)
+        array[:, 10] = -0.0
+        gold[name] = (array.view(np.uint32) >> 16).astype(np.uint16).view(np.int16)
+    primitive = np.asarray(
+        [0.0, -0.0, 0.0, 0.0, spacing, -0.0, -0.0, -spacing, 1 + 2**-7, -1 - 2**-7], dtype=np.float32
+    )
+    gold["primitive"] = (primitive.view(np.uint32) >> 16).astype(np.uint16).view(np.int16)
+    return gold
+
+
+def verify_quantization_arrays(arrays):
+    gold = quantization_gold_bits()
+    expected = {f"{name}_{device}" for name in gold for device in ("cpu", "cuda_0")}
+    require(set(arrays) == expected, "quantization actual output roster differs")
+    for name, values in gold.items():
+        for device in ("cpu", "cuda_0"):
+            actual = arrays[f"{name}_{device}"]
+            require(
+                actual.dtype == np.int16 and np.array_equal(actual, values),
+                f"quantization actual BF16 gold bits differ: {name}/{device}",
+            )
+    return dict(actual_cpu_cuda_gold_bits_verified=True, full_readout_cases=3, primitive_values=10)
+
+
+def quantization_admission(evidence):
+    """Bind the actual GPU6 synthetic run, current core, gold bits and release."""
+    root = QUANTIZATION
+    result = evidence.json(root / "result.json")
+    require(
+        result.get("schema_version") == "s2a.readout-synthetic-cpu-cuda-quantization.v1"
+        and result.get("complete") is True
+        and result.get("passed") is True,
+        "025 requires its completed actual GPU6 quantization result",
+    )
+    require(
+        result["seed"] == 42
+        and result["physical_gpu"] == 6
+        and result["actual_cuda_index"] == 0
+        and result["cuda_visible_devices"] == "6"
+        and result["primitive_signed_zero_subnormal_midpoint_passed"] is True,
+        "quantization GPU6/seed/numerical contract differs",
+    )
+    for key in ("model_weights_loaded", "wam_denoise_calls", "fit_groups", "episode_reads", "physics_steps"):
+        require(result[key] == 0, f"quantization toy used unregistered real work: {key}")
+    flags = {
+        "bitwise_cpu_cuda_equal",
+        "actual_hook_matches_apply",
+        "other118_preserved",
+        "zero_original_object",
+        "other_domain_original_object",
+        "input_tensors_unchanged",
+    }
+    require(
+        [r["name"] for r in result["cases"]] == ["normal_positive", "normal_negative", "subnormal"],
+        "quantization case roster differs",
+    )
+    require(
+        all(set(r) == flags | {"name"} and all(r[k] is True for k in flags) for r in result["cases"]),
+        "quantization hook/identity protection failed",
+    )
+    core_path = REPO / "src/s2a/wam_readout.py"
+    evidence.check(core_path, result["core_sha256"])
+    require(result["actual_outputs"]["path"] == str(root / "actual_outputs.npz"), "quantization output path differs")
+    outputs = evidence.check(root / "actual_outputs.npz", result["actual_outputs"]["sha256"])
+    with np.load(outputs, allow_pickle=False) as source:
+        bits = verify_quantization_arrays({key: source[key] for key in source.files})
+    launch = evidence.json(root / "launch.json")
+    identity = evidence.json(root / "actual_child_identity.json")
+    exit_record = evidence.json(root / "exit.json")
+    release = evidence.json(root / "ownership/release.json")
+    require(launch["core_sha256"] == result["core_sha256"], "quantization launched another readout core")
+    evidence.check(root / "worker.py", result["worker_sha256"])
+    require(launch["worker_sha256"] == result["worker_sha256"], "quantization worker source differs")
+    evidence.check(root / "owner.py", launch["owner_sha256"])
+    expected_environment = dict(CUDA_VISIBLE_DEVICES="6", LD_LIBRARY_PATH="")
+    require(launch["selected_environment"] == expected_environment, "quantization actual launch environment differs")
+    require(
+        len(launch["command"]) == 2 and Path(launch["command"][1]).resolve() == root / "worker.py",
+        "quantization did not launch its recorded worker source",
+    )
+    require(
+        all(identity[k] == launch["child"][k] for k in ("pid", "start_ticks", "ppid"))
+        and identity["ppid"] == launch["owner"]["pid"]
+        and identity["command"] == launch["command"]
+        and identity["cwd"] == str(REPO)
+        and all(identity["environment"][k] == v for k, v in expected_environment.items()),
+        "quantization actual child birth/parent/command/environment differs",
+    )
+    require(
+        exit_record == dict(actual_wait=True, automatic_retry=False, returncode=0),
+        "quantization has no actual successful wait",
+    )
+    require(
+        all(release[k] == launch["child"][k] for k in ("pid", "start_ticks"))
+        and release["returncode"] == 0
+        and release["reaped"] is True
+        and release["original_error"] is None
+        and release["only_owned_child_signalled"] is True,
+        "quantization owned child was not released normally",
+    )
+    require(
+        absent_owned_birth(launch["owner"]) and absent_owned_birth(launch["child"]),
+        "quantization owned GPU6 birth is still live",
+    )
+    for filename in ("gpu_before.json", "gpu_after.json"):
+        gpu = evidence.json(root / filename)
+        physical, uuid, memory = (part.strip() for part in gpu["actual_nvidia_smi"].split(","))
+        require(
+            physical == "6"
+            and memory == "0"
+            and uuid.removeprefix("GPU-").lower() == result["actual_gpu_uuid"].removeprefix("GPU-").lower(),
+            "quantization actual GPU UUID or released memory differs",
+        )
+        if filename == "gpu_after.json":
+            require(gpu["memory_released"] is True, "quantization GPU memory was not released")
+    return dict(
+        result=reference(root / "result.json"),
+        actual_outputs=reference(outputs),
+        launch=reference(root / "launch.json"),
+        owner_exit=reference(root / "exit.json"),
+        child_release=reference(root / "ownership/release.json"),
+        actual_child_identity=reference(root / "actual_child_identity.json"),
+        core_source=reference(core_path),
+        worker_source=reference(root / "worker.py"),
+        owner_source=reference(root / "owner.py"),
+        owner_and_child_births_terminal=True,
+        physical_gpu=6,
+        actual_gpu_uuid=result["actual_gpu_uuid"],
+        **bits,
+    )
+
+
 def numerics_admission(config, evidence):
     result_path = REPO / config["required_numerics_result"]
     verification_path = REPO / config["required_numerics_verification"]
@@ -332,12 +497,14 @@ def prepare():
     )
     evidence = Evidence()
     evidence.check(PLAN, PLAN_SHA)
+    evidence.check(ROUNDING, ROUNDING_SHA)
     config = evidence.json(CONFIG, CONFIG_SHA)
     root = (REPO / config["output_dir"]).resolve()
     require(
         root.is_relative_to(REPO / "outputs") and not root.exists(), "025 output must be a fresh repository directory"
     )
     admission = numerics_admission(config, evidence)
+    quantization = quantization_admission(evidence)
     samples = evidence.json(REPO / config["source_samples_manifest"])
     require(samples["config"]["control_fps"] == 20, "source measured-state clock is not20Hz")
     selected = split_episodes(config, samples["cases"])
@@ -365,7 +532,14 @@ def prepare():
     require(not dirty.strip(), "external tracked source must be clean")
     require(head == admission["external_cosmos"]["head"], "external source differs from admitted024")
     sources = [REPO / p for p in LOCAL_SOURCES] + [cosmos / "cosmos_framework" / p for p in EXTERNAL_SOURCES]
-    sources += [CONFIG, PLAN, saved_path, REPO / config["policy_template"]]
+    sources += [
+        CONFIG,
+        PLAN,
+        saved_path,
+        REPO / config["policy_template"],
+        QUANTIZATION / "owner.py",
+        QUANTIZATION / "worker.py",
+    ]
     source_hashes = {str(p.resolve()): sha256(evidence.check(p)) for p in sources}
     templates, identity = {}, []
     for task in range(3):
@@ -483,6 +657,7 @@ def prepare():
             weight_files=actual["files"],
             domain=domain,
             numerics_admission=admission,
+            quantization_admission=quantization,
             external_cosmos=dict(head=head, tracked_source_clean=True),
             episodes=episodes,
             anchors=anchors,

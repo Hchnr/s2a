@@ -238,3 +238,111 @@ def test_prior_admission_requires_complete_actual_calls_independent_result_and_e
     write(verification_path, verification)
     with pytest.raises(ValueError, match="budget/order"):
         preparer.numerics_admission(config, preparer.Evidence())
+
+
+def test_quantization_gold_checks_both_devices_and_signed_zero_not_only_equal_flags(preparer):
+    gold = preparer.quantization_gold_bits()
+    assert gold["primitive"].view(np.uint16).tolist() == [0, 32768, 0, 0, 1, 32768, 32768, 32769, 16257, 49025]
+    recorded = {f"{name}_{device}": value.copy() for name, value in gold.items() for device in ("cpu", "cuda_0")}
+    assert preparer.verify_quantization_arrays(recorded)["full_readout_cases"] == 3
+    recorded["normal_positive_cuda_0"][0, 2] -= 1
+    with pytest.raises(ValueError, match="gold bits differ"):
+        preparer.verify_quantization_arrays(recorded)
+    recorded["normal_positive_cpu"][0, 2] -= 1
+    with pytest.raises(ValueError, match="gold bits differ"):
+        preparer.verify_quantization_arrays(recorded)
+    recorded["normal_positive_cpu"] = gold["normal_positive"].copy()
+    recorded["normal_positive_cuda_0"] = gold["normal_positive"].copy()
+    recorded["primitive_cpu"][1] = 0
+    with pytest.raises(ValueError, match="primitive/cpu"):
+        preparer.verify_quantization_arrays(recorded)
+
+
+def test_quantization_admission_binds_actual_core_output_worker_and_terminal_birth(preparer, monkeypatch, tmp_path):
+    root = tmp_path / "quantization"
+    (root / "ownership").mkdir(parents=True)
+    monkeypatch.setattr(preparer, "QUANTIZATION", root)
+    monkeypatch.setattr(preparer, "absent_owned_birth", lambda _: True)
+
+    def write(name, value):
+        (root / name).write_text(json.dumps(value))
+
+    for name in ("worker.py", "owner.py"):
+        (root / name).write_text("# Synthetic source fixture; never executed.\n")
+    gold = preparer.quantization_gold_bits()
+    outputs = root / "actual_outputs.npz"
+    np.savez(outputs, **{f"{name}_{device}": value for name, value in gold.items() for device in ("cpu", "cuda_0")})
+    child, owner = dict(pid=6001, start_ticks=123, ppid=6000), dict(pid=6000, start_ticks=122)
+    environment = dict(CUDA_VISIBLE_DEVICES="6", LD_LIBRARY_PATH="")
+    command = ["python", str(root / "worker.py")]
+    core = preparer.sha256(preparer.REPO / "src/s2a/wam_readout.py")
+    flags = dict(
+        bitwise_cpu_cuda_equal=True,
+        actual_hook_matches_apply=True,
+        other118_preserved=True,
+        zero_original_object=True,
+        other_domain_original_object=True,
+        input_tensors_unchanged=True,
+    )
+    result = dict(
+        schema_version="s2a.readout-synthetic-cpu-cuda-quantization.v1",
+        complete=True,
+        passed=True,
+        seed=42,
+        physical_gpu=6,
+        actual_cuda_index=0,
+        cuda_visible_devices="6",
+        primitive_signed_zero_subnormal_midpoint_passed=True,
+        model_weights_loaded=0,
+        wam_denoise_calls=0,
+        fit_groups=0,
+        episode_reads=0,
+        physics_steps=0,
+        core_sha256=core,
+        worker_sha256=preparer.sha256(root / "worker.py"),
+        actual_outputs=preparer.reference(outputs),
+        cases=[dict(name=name, **flags) for name in ("normal_positive", "normal_negative", "subnormal")],
+        actual_gpu_uuid="synthetic-uuid",
+    )
+    write("result.json", result)
+    write(
+        "launch.json",
+        dict(
+            child=child,
+            owner=owner,
+            command=command,
+            core_sha256=core,
+            worker_sha256=result["worker_sha256"],
+            owner_sha256=preparer.sha256(root / "owner.py"),
+            selected_environment=environment,
+        ),
+    )
+    write("actual_child_identity.json", dict(**child, command=command, cwd=str(preparer.REPO), environment=environment))
+    write("exit.json", dict(actual_wait=True, automatic_retry=False, returncode=0))
+    write(
+        "ownership/release.json",
+        dict(
+            pid=child["pid"],
+            start_ticks=child["start_ticks"],
+            returncode=0,
+            reaped=True,
+            original_error=None,
+            only_owned_child_signalled=True,
+        ),
+    )
+    write("gpu_before.json", dict(actual_nvidia_smi="6, GPU-synthetic-uuid, 0"))
+    write("gpu_after.json", dict(actual_nvidia_smi="6, GPU-synthetic-uuid, 0", memory_released=True))
+    assert preparer.quantization_admission(preparer.Evidence())["owner_and_child_births_terminal"] is True
+    monkeypatch.setattr(preparer, "absent_owned_birth", lambda _: False)
+    with pytest.raises(ValueError, match="still live"):
+        preparer.quantization_admission(preparer.Evidence())
+    monkeypatch.setattr(preparer, "absent_owned_birth", lambda _: True)
+    result["core_sha256"] = "0" * 64
+    write("result.json", result)
+    with pytest.raises(ValueError, match="SHA differs"):
+        preparer.quantization_admission(preparer.Evidence())
+    result["core_sha256"] = core
+    result["model_weights_loaded"] = 1
+    write("result.json", result)
+    with pytest.raises(ValueError, match="unregistered real work"):
+        preparer.quantization_admission(preparer.Evidence())
