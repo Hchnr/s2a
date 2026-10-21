@@ -1,0 +1,101 @@
+{
+  "seed": 42,
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoint": {
+    "name": "8400_masked",
+    "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+    "iteration": "iter_000008400",
+    "gpu": 6
+  },
+  "domain": {
+    "name": "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1",
+    "normalization_id": 31,
+    "projection_id": 0,
+    "active_slots": 10
+  },
+  "train_episodes": [
+    1172,
+    1098,
+    893,
+    1151,
+    898,
+    850
+  ],
+  "validation_episodes": [
+    1254,
+    1126,
+    868,
+    1139,
+    1209,
+    1176
+  ],
+  "anchors_per_episode": 4,
+  "sigma": [
+    0.2,
+    0.5,
+    0.8
+  ],
+  "noise_seed": 42,
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "horizon": 40,
+  "control_fps": 20,
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "hidden_size": 1280,
+  "ridge": 0.1,
+  "teacher_gate": {
+    "pooled_mse_ratio_max": 0.95,
+    "strictly_beat_bias": true,
+    "per_sigma_mse_ratio_max": 1.05
+  },
+  "state_gate": {
+    "short_joint_ratio_max": 0.9,
+    "strictly_beat_hold_and_constant_velocity": true,
+    "component_ratio_max": 1.05,
+    "position_additive_limit_m": 0.002,
+    "rotation_additive_limit_rad": 0.01,
+    "opening_additive_limit": 0.01,
+    "episode_short_ratio_max": 1.05,
+    "minimum_episodes_passing": 5,
+    "any_episode_short_ratio_max": 1.25,
+    "per_seed_short_ratio_max": 1.05
+  },
+  "parameterization": "delta_v=(-phi/actual_sigma)@W; preserve original velocity target and weights",
+  "residual_precision": "FP64 center_then_global_scale_then_append_bias_then_divide_sigma_then_matmul_then_base_sum; direct_BF16_RNE",
+  "output_dir": "outputs/wam_stability_20261021/scaled_readout_state",
+  "source_scaled_prepared": "outputs/wam_stability_20261021/train_scale_readout/preparation/prepared.json",
+  "source_scaled_prepared_sha256": "0491feacd77747c124f570aa7287e9790bb46e5c7e186750783b7bf4f5806d1c",
+  "source_scaled_fit": "outputs/wam_stability_20261021/train_scale_readout/fit/fit_result.json",
+  "source_scaled_fit_sha256": "9be9d1ce6587304f6bed7ba3c89dd839e2e70fb603e4e81ca4eafb7323298a90",
+  "source_scaled_fit_verification": "outputs/wam_stability_20261021/train_scale_readout/review/fit_verified.json",
+  "source_scaled_fit_verification_sha256": "d7a9502f4358eb48a8f06f8ad6c8e68ae0e8ec955860f7fcbb6e926e170c13c2",
+  "source_scaled_final_peer": "outputs/wam_stability_20261021/train_scale_readout/review/formal_final_peer.json",
+  "source_scaled_final_peer_sha256": "f36d7c0b4b48b322a19772e9b1a651dec6b5c65ce5dd3a8a7c51a93f5891ace0",
+  "source_scaled_owner": "outputs/wam_stability_20261021/train_scale_readout/orchestration/fit/result.json",
+  "source_scaled_owner_sha256": "f1125438f7ad46f77f4e5666f13626bc25a3048cb68b2932743fc47d6ce5a2ec",
+  "master_port": 31086,
+  "precision_actual_sigmas": [
+    0.20000000298023224,
+    0.5,
+    0.800000011920929,
+    0.12809006869792938,
+    0.9990000128746033
+  ],
+  "budget": {
+    "synthetic_precision_cases": 20,
+    "synthetic_primitive_cases": 10,
+    "new_teacher_calls": 0,
+    "new_candidate_fits": 0,
+    "independent_candidate_reconstructions": 0,
+    "wam_model_initializations": 1,
+    "zero_identity_generations": 3,
+    "validation_generations": 96,
+    "wam_denoise_calls": 3465,
+    "physics_steps": 0,
+    "fresh_cases": 0
+  }
+}
