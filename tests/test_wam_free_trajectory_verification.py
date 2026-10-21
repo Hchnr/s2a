@@ -3,6 +3,8 @@
 import copy
 import importlib.util
 import json
+import runpy
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -114,7 +116,7 @@ def test_fixed_cpu_scalar_gold_matches_actual_cpu_primitives_and_differs_from_cu
     assert different > 0
 
 
-def test_source110_sorted_snapshots_survive_json_sort_and_require_observer_entrypoint(checker, tmp_path):
+def test_source111_sorted_snapshots_survive_json_sort_and_require_observer_entrypoint(checker, tmp_path):
     inherited = {
         str(checker.HELPER): checker.HELPER_SHA,
         **{str(tmp_path / f"f{i}.py"): f"{i:064x}" for i in range(95)},
@@ -123,6 +125,7 @@ def test_source110_sorted_snapshots_survive_json_sort_and_require_observer_entry
     sources.update({str(checker.REPO / p): "a" * 64 for p in checker.NEW_SOURCES})
     sources.update({str(checker.CONFIG): checker.CONFIG_SHA, str(checker.PLAN): checker.PLAN_SHA})
     sources[str(checker.ADDENDUM)] = checker.ADDENDUM_SHA
+    sources[str(checker.SOURCE_ADDENDUM)] = checker.SOURCE_ADDENDUM_SHA
     path = tmp_path / "preparation/prepared.json"
     snapshots = {
         str(path.parent / "source_snapshot" / f"{i:03d}_{Path(p).name}"): sources[p]
@@ -132,13 +135,81 @@ def test_source110_sorted_snapshots_survive_json_sort_and_require_observer_entry
     checker.source_closure(prepared, dict(source_sha256=inherited), path)
     changed = copy.deepcopy(prepared)
     changed["source_sha256"].pop(str(checker.REPO / "src/s2a/wam_trajectory_capture.py"))
-    with pytest.raises(ValueError, match="exact110 source"):
+    with pytest.raises(ValueError, match="exact111 source"):
         checker.source_closure(changed, dict(source_sha256=inherited), path)
     changed = copy.deepcopy(prepared)
     first, second = list(changed["snapshot_sha256"])[:2]
     changed["snapshot_sha256"][first] = changed["snapshot_sha256"][second]
     with pytest.raises(ValueError, match="source snapshots"):
         checker.source_closure(changed, dict(source_sha256=inherited), path)
+
+
+def test_real_program_entry_binds_scoring_functions_before_main_and_old_order_fails(checker, tmp_path):
+    """Execute the real __main__ load order, stopping before argparse or data IO."""
+
+    class MainEntryObserved(Exception):
+        pass
+
+    def run_to_main(path):
+        def trace(frame, event, argument):
+            if event == "call" and frame.f_code.co_filename == str(path) and frame.f_code.co_name == "main":
+                assert all(callable(frame.f_globals.get(name)) for name in ("statistic", "point_diagnostics")), (
+                    "scoring functions unbound at actual main entry"
+                )
+                raise MainEntryObserved
+            return trace
+
+        previous = sys.gettrace()
+        try:
+            sys.settrace(trace)
+            runpy.run_path(str(path), run_name="__main__")
+        finally:
+            sys.settrace(previous)
+
+    real = Path(checker.__file__).resolve()
+    with pytest.raises(MainEntryObserved):
+        run_to_main(real)
+    guard = 'if __name__ == "__main__":\n    main()\n'
+    source = real.read_text()
+    assert source.count(guard) == 1
+    old_order = source.replace(guard, "").replace("def statistic(", guard + "\n\ndef statistic(", 1)
+    old_path = tmp_path / "former_entry_order.py"
+    old_path.write_text(old_order)
+    with pytest.raises(AssertionError, match="scoring functions unbound"):
+        run_to_main(old_path)
+
+
+def test_source_revision_accepts_only_declared_v2_root_and_rejects_old_prepare_before_admission(checker, monkeypatch):
+    config = json.loads(checker.CONFIG.read_text())
+    prepared = dict(
+        schema_version="s2a.free-trajectory-preparation.v1",
+        config=config,
+        config_ref=checker.reference(checker.CONFIG),
+        registration=checker.reference(checker.PLAN),
+        source_revision_ref=dict(path=str(checker.SOURCE_ADDENDUM), sha256=checker.SOURCE_ADDENDUM_SHA),
+        output_root=str(checker.REPO / (config["output_dir"] + "_source_v2")),
+    )
+
+    class RegistrationAccepted(Exception):
+        pass
+
+    def stop_after_registration(*args):
+        raise RegistrationAccepted
+
+    evidence = SimpleNamespace(
+        json=lambda path, *args: config if path == checker.CONFIG else prepared, check=lambda *args: None
+    )
+    monkeypatch.setattr(checker, "arithmetic_admission", stop_after_registration)
+    with pytest.raises(RegistrationAccepted):
+        checker.verify_preparation(Path("prepared.json"), evidence)
+    for root in (config["output_dir"], config["output_dir"] + "_source_v3"):
+        prepared["output_root"] = str(checker.REPO / root)
+        with pytest.raises(ValueError, match="registration/config/output changed"):
+            checker.verify_preparation(Path("prepared.json"), evidence)
+    prepared["output_root"] = str(checker.REPO / (config["output_dir"] + "_source_v2"))
+    prepared.pop("source_revision_ref")
+    with pytest.raises(ValueError, match="registration/config/output changed"):
+        checker.verify_preparation(Path("prepared.json"), evidence)
 
 
 def test_preparation_never_hashes_ep_or_any_png_in_inherited_maps(checker):

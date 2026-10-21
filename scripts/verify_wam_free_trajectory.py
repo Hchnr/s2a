@@ -24,6 +24,8 @@ PLAN = REPO / "plans/v0.0.1/029_free_trajectory_diagnostic_20261021.md"
 PLAN_SHA = "3616046f32d6baa6939b02ecab619c31297c9b187cc26b50520f9a38a8b4b731"
 ADDENDUM = REPO / "plans/v0.0.1/029_scalar_promotion_addendum_20261021.md"
 ADDENDUM_SHA = "a83792831cd9aefd31adfb3b6f92827171411b087cd91d084f8fd98a5142ca6d"
+SOURCE_ADDENDUM = REPO / "plans/v0.0.1/029_source_revision_addendum_20261021.md"
+SOURCE_ADDENDUM_SHA = "4abe4742eaee961d371f129031d79fa41d3c3a1ea8252defa5b37c4da74b7946"
 SCALAR_UNIT = (
     REPO / "outputs/wam_stability_20261021/free_trajectory_arithmetic_unit_observer/model_python_cpu_scalar.json"
 )
@@ -92,19 +94,22 @@ def metadata_hashes(mapping, forbidden, evidence):
 
 def source_closure(prepared, source, path):
     expected = (
-        set(source["source_sha256"]) | {str(REPO / p) for p in NEW_SOURCES} | {str(CONFIG), str(PLAN), str(ADDENDUM)}
+        set(source["source_sha256"])
+        | {str(REPO / p) for p in NEW_SOURCES}
+        | {str(CONFIG), str(PLAN), str(ADDENDUM), str(SOURCE_ADDENDUM)}
     )
     require(
         len(source["source_sha256"]) == 96
-        and len(expected) == 110
+        and len(expected) == 111
         and set(prepared["source_sha256"]) == expected
         and all(prepared["source_sha256"].get(k) == v for k, v in source["source_sha256"].items()),
-        "029 exact110 source closure changed or omitted required entrypoints",
+        "029 exact111 source closure changed or omitted required entrypoints",
     )
     require(
         prepared["source_sha256"][str(CONFIG)] == CONFIG_SHA
         and prepared["source_sha256"][str(PLAN)] == PLAN_SHA
         and prepared["source_sha256"][str(ADDENDUM)] == ADDENDUM_SHA
+        and prepared["source_sha256"][str(SOURCE_ADDENDUM)] == SOURCE_ADDENDUM_SHA
         and prepared["source_sha256"][str(HELPER)] == HELPER_SHA,
         "029 frozen registration/helper changed",
     )
@@ -113,7 +118,7 @@ def source_closure(prepared, source, path):
         str(Path(path).resolve().parent / "source_snapshot" / f"{i:03d}_{Path(p).name}"): prepared["source_sha256"][p]
         for i, p in enumerate(sorted(expected))
     }
-    require(prepared["snapshot_sha256"] == expected_snapshots, "029 source snapshots are not the110 exact sources")
+    require(prepared["snapshot_sha256"] == expected_snapshots, "029 source snapshots are not the111 exact sources")
 
 
 def inherited_state(values, refs):
@@ -211,15 +216,17 @@ def verify_preparation(path, evidence):
     config = evidence.json(CONFIG, CONFIG_SHA)
     evidence.check(PLAN, PLAN_SHA)
     evidence.check(HELPER, HELPER_SHA)
-    arithmetic_admission(prepared, evidence)
     require(
         prepared["schema_version"] == "s2a.free-trajectory-preparation.v1"
         and prepared["config"] == config
         and prepared["config_ref"] == reference(CONFIG)
         and prepared["registration"] == reference(PLAN)
-        and prepared["output_root"] == str(REPO / config["output_dir"]),
+        and prepared.get("source_revision_ref") == dict(path=str(SOURCE_ADDENDUM), sha256=SOURCE_ADDENDUM_SHA)
+        and prepared["output_root"] == str(REPO / (config["output_dir"] + "_source_v2")),
         "029 prepared registration/config/output changed",
     )
+    evidence.check(SOURCE_ADDENDUM, SOURCE_ADDENDUM_SHA)
+    arithmetic_admission(prepared, evidence)
     refs = {
         key: dict(path=str(REPO / config[f"source_state_{key}"]), sha256=config[f"source_state_{key}_sha256"])
         for key in STATE_REFS
@@ -1135,10 +1142,6 @@ def main():
         raise SystemExit(f"029 independent audit rejected: {error}")
 
 
-if __name__ == "__main__":
-    main()
-
-
 def statistic(values):
     values = numeric(values, "diagnostic values").astype(np.float64)
     return dict(
@@ -1214,3 +1217,7 @@ def point_diagnostics(free, teacher, x0, model, sigma, velocity_dtype="torch.bfl
                 {f"{prefix}.two_e_delta": cross, f"{prefix}.delta_squared": square, f"{prefix}.mse_change": change}
             )
     return metrics
+
+
+if __name__ == "__main__":
+    main()
