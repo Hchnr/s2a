@@ -15,8 +15,10 @@ from scipy.spatial.transform import Rotation
 
 from s2a.geometry import transform
 from s2a.native_training import (
+    gripper_cache_receipt,
     native_anchor_indices,
     native_command_schedule,
+    pack_gripper_caches,
     state_sha256,
     synchronous_labels,
     validate_physical_source,
@@ -140,6 +142,31 @@ def test_state_fingerprint_preserves_actual_bytes():
             state_sha256(invalid)
 
 
+def test_native_gripper_cache_preserves_ragged_values_without_padding_or_mutation():
+    caches = [np.array([-0.0]), np.array([-0.01, 0.01]), np.array([-0.02, 0.02])]
+    originals = [cache.copy() for cache in caches]
+    packed = pack_gripper_caches(caches)
+    flat, offsets = packed["gripper_current_action_flat"], packed["gripper_current_action_offsets"]
+    np.testing.assert_array_equal(offsets, np.array([0, 1, 3, 5], dtype=np.int64))
+    assert offsets.dtype == np.int64 and flat.dtype == np.float64
+    assert len(flat) == sum(cache.size for cache in caches)
+    for index, (cache, original) in enumerate(zip(caches, originals, strict=True)):
+        restored = flat[offsets[index] : offsets[index + 1]]
+        assert restored.shape == cache.shape and restored.tobytes() == original.tobytes() == cache.tobytes()
+        assert not np.shares_memory(flat, cache)
+        receipt = gripper_cache_receipt(cache)
+        assert receipt == dict(
+            gripper_current_action_shape=list(cache.shape),
+            gripper_current_action_dtype="float64",
+            gripper_current_action_sha256=hashlib.sha256(restored.tobytes()).hexdigest(),
+        )
+    for invalid in (np.array([]), np.ones(3), np.ones((1, 1)), np.ones(1, np.float32), np.array([np.nan])):
+        with pytest.raises(ValueError, match="native gripper cache"):
+            pack_gripper_caches([invalid])
+    with pytest.raises(ValueError, match="at least one"):
+        pack_gripper_caches([])
+
+
 def test_worker_cpu_guard_refuses_overwrite_and_has_real_cli(tmp_path, monkeypatch):
     module = collector()
     for key, value in dict(CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONDONTWRITEBYTECODE="1").items():
@@ -224,8 +251,13 @@ def test_case_fixture_keeps_running_after_success_and_renders_only_current_ancho
             sim_time=np.float64(index * 0.05),
             sim_states=state,
             native_success=np.bool_(index == 1),  # Success at step1 must not stop the loop.
+            gripper_current_action=np.zeros(1) if index == 0 else np.array([-0.01, 0.01]),
         )
-        return sample, dict(endpoint_step=index, sim_state_sha256=state_sha256(state))
+        return sample, dict(
+            endpoint_step=index,
+            sim_state_sha256=state_sha256(state),
+            **gripper_cache_receipt(sample["gripper_current_action"]),
+        )
 
     def render(env, index, sample, receipt, case_dir):
         assert index == counter["step"] and sample["sim_time"] == index * 0.05
@@ -253,6 +285,17 @@ def test_case_fixture_keeps_running_after_success_and_renders_only_current_ancho
         np.testing.assert_array_equal(arrays["sent_commands"][:43], native)
         assert not arrays["sent_commands"][43:, :6].any()
         assert len(arrays["state128"]) == 84 and not arrays["action_mask"][-1].any()
+        assert "gripper_current_action" not in arrays
+        offsets = arrays["gripper_current_action_offsets"]
+        np.testing.assert_array_equal(np.diff(offsets), np.array([1] + [2] * 83, dtype=np.int64))
+        flat = arrays["gripper_current_action_flat"]
+        assert len(flat) == 167 and flat.dtype == np.float64
+        receipts = [json.loads(line) for line in Path(result["endpoint_receipts"]["path"]).read_text().splitlines()]
+        for index, receipt in enumerate(receipts):
+            values = flat[offsets[index] : offsets[index + 1]]
+            assert receipt["gripper_current_action_shape"] == list(values.shape)
+            assert receipt["gripper_current_action_dtype"] == "float64"
+            assert receipt["gripper_current_action_sha256"] == hashlib.sha256(values.tobytes()).hexdigest()
 
 
 def test_run_startup_receipt_matches_owned_child_contract_before_collection(tmp_path, monkeypatch):

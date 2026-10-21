@@ -18,8 +18,10 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from s2a.artifacts import sha256  # noqa: E402
 from s2a.geometry import transform, validate_transform  # noqa: E402
 from s2a.native_training import (  # noqa: E402
+    gripper_cache_receipt,
     native_anchor_indices,
     native_command_schedule,
+    pack_gripper_caches,
     state_sha256,
     synchronous_labels,
     validate_physical_source,
@@ -124,6 +126,7 @@ def endpoint(env, index):
         sim_state_dtype=str(state.dtype),
         sim_state_shape=list(state.shape),
         native_success=bool(sample["native_success"]),
+        **gripper_cache_receipt(sample["gripper_current_action"]),
     )
     return sample, receipt
 
@@ -249,7 +252,10 @@ def collect_case(prepared, prepared_ref, record, case_dir, progress):
             if index in anchors:
                 rendered.append(render_anchor(env, index, sample, receipt, case_dir))
                 progress["current_canvas_images"] += 1
-        arrays = {key: np.stack([sample[key] for sample in samples]) for key in samples[0]}
+        arrays = {
+            key: np.stack([sample[key] for sample in samples]) for key in samples[0] if key != "gripper_current_action"
+        }
+        arrays.update(pack_gripper_caches([sample["gripper_current_action"] for sample in samples]))
         arrays["native_commands"] = native.copy()
         arrays["sent_commands"] = np.stack(sent)
         arrays.update(synchronous_labels(arrays["source_pose"], arrays["opening"], h, arrays["sim_time"]))

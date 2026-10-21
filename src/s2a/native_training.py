@@ -39,6 +39,34 @@ def state_sha256(raw_sim_state):
     return hashlib.sha256(np.ascontiguousarray(state).tobytes()).hexdigest()
 
 
+def gripper_cache_receipt(actual_cache):
+    """Describe an unmodified native cache, initially one value then two."""
+    cache = np.asarray(actual_cache)
+    if cache.shape not in ((1,), (2,)) or cache.dtype != np.float64 or not np.isfinite(cache).all():
+        raise ValueError("expected actual finite F64 native gripper cache of length one or two")
+    return dict(
+        gripper_current_action_shape=list(cache.shape),
+        gripper_current_action_dtype=str(cache.dtype),
+        gripper_current_action_sha256=hashlib.sha256(np.ascontiguousarray(cache).tobytes()).hexdigest(),
+    )
+
+
+def pack_gripper_caches(actual_caches):
+    """Store variable length endpoint caches with no padding or state mutation."""
+    values, offsets = [], [0]
+    for cache in actual_caches:
+        gripper_cache_receipt(cache)
+        value = np.asarray(cache)
+        values.append(value)
+        offsets.append(offsets[-1] + len(value))
+    if not values:
+        raise ValueError("at least one measured gripper cache required")
+    return dict(
+        gripper_current_action_flat=np.concatenate(values),
+        gripper_current_action_offsets=np.asarray(offsets, dtype=np.int64),
+    )
+
+
 def synchronous_labels(source_poses, openings, source_from_tcp, sim_times, *, dt=0.05):
     """Encode current TCP states and actual next-endpoint local motion labels.
 
