@@ -60,6 +60,11 @@ def test_actual_caption_pair_preserves_empty_renderer_plan_and_every_other_field
     for changed in alternatives:
         with pytest.raises(AssertionError):
             check(changed)
+    # Identical dict semantics with a reordered text representation still
+    # changes model tokens; actual CPU preparation proves the fixed order.
+    reordered = dict(reversed(list(right.items())))
+    with pytest.raises(AssertionError):
+        check(reordered)
 
 
 def response():
@@ -197,3 +202,18 @@ def test_global_gain_does_not_replace_task_episode_or_h40_gates(audit):
     assert not next(
         c for c in result["global_metric_checks"] if c["horizon"] == 40 and c["metric"] == "rotation_rmse_rad"
     )["passed"]
+
+
+def test_http_budget_requires_all96_successes_within_the_owned_lifetime(audit):
+    before = "Started server process [12]\nUvicorn running on http://127.0.0.1:10047\n"
+    posts = 'INFO: "POST /generate HTTP/1.1" 200 OK\n' * 96
+    after = "Shutting down\nWaiting for application shutdown.\nApplication shutdown complete.\nFinished server process [12]\n"
+    assert audit.http_lifetime(before + posts + after, 12)["successful_http_requests"] == 96
+    for changed in (
+        before + posts[:-1] + posts + after,
+        before + posts.replace("200 OK", "500 error", 1) + after,
+        posts + before + after,
+        before + posts + after.replace("[12]", "[13]"),
+    ):
+        with pytest.raises(AssertionError):
+            audit.http_lifetime(changed, 12)
