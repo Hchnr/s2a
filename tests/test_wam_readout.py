@@ -14,6 +14,7 @@ from s2a.wam_readout import (
     DomainContext,
     ReadoutHook,
     ResidualReadout,
+    _bfloat16_rne,
     features,
 )
 
@@ -125,6 +126,60 @@ def test_real_bfloat16_ties_and_inactive_slots_preserve_bytes(torch, libero):
     assert torch.equal(base.view(torch.int16), original_base.view(torch.int16))
     assert torch.equal(hidden.view(torch.int16), original_hidden.view(torch.int16))
     assert adapted is not base and adapted.dtype == base.dtype
+
+
+def test_actual_torch_direct_bfloat16_rounding_handles_midpoints_without_double_rounding(torch):
+    midpoint, epsilon = 1 + 2**-8, 2**-30
+    values = torch.tensor(
+        [midpoint - epsilon, midpoint, midpoint + epsilon, -midpoint + epsilon, -midpoint, -midpoint - epsilon],
+        dtype=torch.float64,
+    )
+    actual = _bfloat16_rne(values)
+    expected = torch.tensor([1, 1, 1 + 2**-7, -1, -1, -1 - 2**-7], dtype=torch.bfloat16)
+    assert torch.equal(actual.view(torch.int16), expected.view(torch.int16))
+    # Explicitly demonstrate the contract that a float32 intermediate loses.
+    assert values[2].float().to(torch.bfloat16).item() == 1
+    assert actual[2].item() == 1 + 2**-7
+
+
+def test_actual_torch_bfloat16_subnormal_ties_and_signed_zero(torch):
+    spacing, epsilon = 2**-133, 2**-160
+    midpoint = spacing / 2
+    values = torch.tensor(
+        [
+            0.0,
+            -0.0,
+            midpoint - epsilon,
+            midpoint,
+            midpoint + epsilon,
+            -midpoint + epsilon,
+            -midpoint,
+            -midpoint - epsilon,
+            1.5 * spacing,
+            2.5 * spacing,
+            2**-126 - midpoint,
+        ],
+        dtype=torch.float64,
+    )
+    actual = _bfloat16_rne(values)
+    expected = torch.tensor(
+        [0.0, -0.0, 0.0, 0.0, spacing, -0.0, -0.0, -spacing, 2 * spacing, 2 * spacing, 2**-126],
+        dtype=torch.bfloat16,
+    )
+    assert torch.equal(actual.view(torch.int16), expected.view(torch.int16))
+    with pytest.raises(ValueError, match="FP64"):
+        _bfloat16_rne(values.float())
+
+
+def test_readout_deployment_uses_single_bfloat16_rounding_after_fp64_sum(torch, libero):
+    weights = np.zeros((2, 10), dtype=np.float64)
+    weights[-1] = 2**-8 + 2**-30
+    base = torch.ones((1, 128), dtype=torch.bfloat16)
+    actual = ResidualReadout(weights).apply_torch(
+        torch.zeros((1, 1), dtype=torch.bfloat16), base, libero, torch.zeros(1, dtype=torch.long)
+    )
+    assert torch.equal(actual[:, :10], torch.full((1, 10), 1 + 2**-7, dtype=torch.bfloat16))
+    assert torch.equal(actual[:, 10:].view(torch.int16), base[:, 10:].view(torch.int16))
 
 
 def test_fp64_addition_casts_once_and_rejects_nonfinite_quantized_result(torch, libero):

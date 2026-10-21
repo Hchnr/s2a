@@ -81,6 +81,23 @@ def _fit_inputs(hidden, residual_target, weights):
     return phi, target, weights.copy()
 
 
+def _bfloat16_rne(value):
+    """Round FP64 directly to BF16, avoiding Torch CPU's FP32 intermediate.
+
+    BF16 has seven explicit fraction bits and minimum subnormal spacing2^-133.
+    Quantize in FP64 first; the final cast receives exactly representable BF16
+    values. torch.round implements ties to even and preserves signed zero.
+    """
+    import torch
+
+    if value.dtype != torch.float64:
+        raise ValueError("BF16 single rounding requires an FP64 input")
+    _, exponent = torch.frexp(value)
+    spacing = torch.ldexp(torch.ones_like(value), torch.clamp(exponent - 8, min=-133))
+    rounded = torch.round(value / spacing) * spacing
+    return rounded.to(torch.bfloat16)
+
+
 @dataclass(frozen=True)
 class ResidualReadout:
     """Zero-prior ridge coefficients, including a regularized final bias row."""
@@ -164,7 +181,8 @@ class ResidualReadout:
         )
         coefficients = torch.tensor(self.weights.copy(), dtype=torch.float64, device=base.device)
         residual = phi @ coefficients
-        active = (base[:, :ACTIVE_SLOTS].to(torch.float64) + residual).to(base.dtype)
+        summed = base[:, :ACTIVE_SLOTS].to(torch.float64) + residual
+        active = _bfloat16_rne(summed) if base.dtype == torch.bfloat16 else summed.to(base.dtype)
         if not bool(torch.isfinite(active).all()):
             raise ValueError("readout generated nonfinite output after deployment quantization")
         result = base.clone()
