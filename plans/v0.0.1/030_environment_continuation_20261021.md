@@ -8,7 +8,7 @@ CPU import-only探针SHA `69859318aee06076838721204b73b58a35805af41e825326bbdd4c
 
 ## 明确修复与来源
 
-新入口位于S2A，唯一新root为`outputs/wam_stability_20261021/synchronous_native_training_continuation`。继承原409源码/快照和49输入、30原record/expert/H/metadata peer；新增12个显式source（新plan/config、prepare/collect/owner/checker及各一个必要test），不调用原按当前tracked Python重算的`read_prepared`，避免新增入口被误作改写原闭包。新guard逐项核原409原字节、原快照/输入/stat、全部新源/快照与新登记。另固定当前cv2 loader/config.py/config-3.py及原三观测运行时源SHA。
+新入口位于S2A，唯一新root为`outputs/wam_stability_20261021/synchronous_native_training_continuation`。继承原409源码/快照和49输入、30原record/expert/H/metadata peer；新增12个显式source（新plan/config、prepare/collect/owner/checker及各一个必要test、可复用import环境守卫及其test），不调用原按当前tracked Python重算的`read_prepared`，避免新增入口被误作改写原闭包。新guard逐项核原409原字节、原快照/输入/stat、全部新源/快照与新登记。另固定当前cv2 loader/config.py/config-3.py及原三观测运行时源SHA。
 
 新collector进程启动时仍空CUDA/LD，在任何sim环境初始化前显式import cv2；记录import前后cwd/CUDA/LD、实际loader/source、PID/argv。只接受与已保存探针完全相同的LD附加串且cwd/CUDA不变，立即将本进程LD恢复为空并记录恢复后实际值。未知变化拒绝，不能泛化为忽略环境guard。然后才发布parent要求的startup receipt、配置OSMesa并采集；每case前后严格检查空CUDA/LD和S2A cwd，异常保存实际状态并停止。不得修改OpenCV/共享库/机器人内部状态或原源码；不得因guard失败重启原10例。
 
