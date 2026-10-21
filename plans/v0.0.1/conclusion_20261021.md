@@ -4,7 +4,7 @@
 
 最新完整结果：[027训练集尺度readout](../../reports/wam_train_scale_readout_20261021.md)**通过固定teacher门槛**，开发validation velocity MSE总体改善57.45%，sigma=.2/.5/.8分别为原模型的.3763/.6063/.9422，相对原026 bias额外改善17.82%。一个实际candidate fit及一个独立AugLS完成，mu/s差0、W最大差4.79e-15，bias预测逐位复现；两CPUchild实际wait0/reap、1256项SHA重核通过。全仓582 passed/1 integration deselected、Ruff331文件通过。它仅获得新路径GPU及完整生成资格研究的条件，实际`eligible_for_sampling=False`，0新WAM前向/完整生成/state评分/物理/fresh，尚无任务收益证明。下一步另登记GPU6数值资格、3zero完整复现和96成对state生成；原全部state与fresh24稳定门槛不变，025/026失败保持。下文027“尚未fit”为历史阶段记录。
 
-[028实际state生成](028_scaled_readout_state_20261021.md)现已另行登记并实现入口中，完全冻结027参数，预算GPU6合成20场景/10原语，条件3zero+96paired共3465 denoise，新fit/物理/fresh0。原027samplingFalse保留，须通过新运算路径精度及完整zero身份才运行原配对state诊断；当前尚未真实启动。本项teacher/state/task证据继续分层，不降低稳定目标。
+[028实际state生成](028_scaled_readout_state_20261021.md)已实现并通过source冻结QA614 passed/1 integration deselected、Ruff341文件及96源/快照独立准备。GPU6实际20场景/10原语精度资格与独立bits审计通过，toy子进程actualwait0/reap、显存0；实际已启动唯一WAM worker，先3zero完整identity后原96paired/3465 denoise，当前初始化及全组结果仍待核验。完全冻结027参数，原027samplingFalse保持，由新028精度资格另授生成诊断；新fit/参数重建/物理/fresh0。尚无新state/task质量结论，稳定目标不变。
 
 最新[026 flow时间readout](../../reports/wam_flow_consistent_readout_20261021.md)已完整完成纯合成GPU6精度资格、两组固定CPU fit及独立AugLS重建：开发validation teacher速度MSE总体改善49.79%，但sigma=.8退化13.23%，超过固定5%上限，gate False。量化预测逐值相同、参数最大差4.705e-15；实际sampling dryrun在模型加载前拒绝，0新WAM前向/完整生成/state评分/物理/fresh。新运算路径15组实际sigma CPU/CUDA全128位一致，owned正常退出/显存0；它只证明该计算实现一致，不是task成功。完整源码冻结QA546 passed/1 integration deselected、321文件Ruff通过。原025失败保持；下一项先只读诊断特征尺度与sigma残差结构，再登记新干预，fresh24稳定门槛不变。以下旧阶段的“正在实现/尚未fit”均为历史记录，以本段完整结果及正式报告为准。
 
