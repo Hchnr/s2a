@@ -1,0 +1,92 @@
+{
+  "seed": 42,
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoint": {
+    "name": "8400_masked",
+    "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+    "iteration": "iter_000008400",
+    "gpu": 6
+  },
+  "domain": {
+    "name": "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1",
+    "normalization_id": 31,
+    "projection_id": 0,
+    "active_slots": 10
+  },
+  "train_episodes": [
+    1172,
+    1098,
+    893,
+    1151,
+    898,
+    850
+  ],
+  "validation_episodes": [
+    1254,
+    1126,
+    868,
+    1139,
+    1209,
+    1176
+  ],
+  "anchors_per_episode": 4,
+  "sigma": [
+    0.2,
+    0.5,
+    0.8
+  ],
+  "noise_seed": 42,
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "horizon": 40,
+  "control_fps": 20,
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "hidden_size": 1280,
+  "ridge": 0.1,
+  "teacher_gate": {
+    "pooled_mse_ratio_max": 0.95,
+    "strictly_beat_bias": true,
+    "per_sigma_mse_ratio_max": 1.05
+  },
+  "state_gate": {
+    "short_joint_ratio_max": 0.9,
+    "strictly_beat_hold_and_constant_velocity": true,
+    "component_ratio_max": 1.05,
+    "position_additive_limit_m": 0.002,
+    "rotation_additive_limit_rad": 0.01,
+    "opening_additive_limit": 0.01,
+    "episode_short_ratio_max": 1.05,
+    "minimum_episodes_passing": 5,
+    "any_episode_short_ratio_max": 1.25,
+    "per_seed_short_ratio_max": 1.05
+  },
+  "output_dir": "outputs/wam_stability_20261021/flow_consistent_readout",
+  "source_prepared": "outputs/wam_stability_20261021/frozen_wam_readout/preparation/prepared.json",
+  "source_prepared_sha256": "202b81afa0a2fc39d803c74b9430fb3d03e2d0a15ef403b60c1268d1b2d5d658",
+  "source_features": "outputs/wam_stability_20261021/frozen_wam_readout/features/result.json",
+  "source_features_sha256": "b24be09d2d099f303b86492cf66b399e7445e01782b0b65cb07343c30412233b",
+  "source_features_verification": "outputs/wam_stability_20261021/frozen_wam_readout/review/features_verified.json",
+  "source_features_verification_sha256": "1582f5e37c4ff166da32483db3f30258ead410c136d15b9b96f24ed67cd84a83",
+  "source_failed_fit_verification": "outputs/wam_stability_20261021/frozen_wam_readout/review/fit_verified.json",
+  "source_failed_fit_verification_sha256": "3456708a75821a1c69afc20622aa8eaabd8c8c95a5569609b3d7d3efb12841bf",
+  "parameterization": "delta_v=(-phi/actual_solver_sigma)@W; W represents clean-action delta_x0",
+  "teacher_target": "active10(v_target-v_base); preserve FP32 target, do not reconstruct from BF16 xt",
+  "teacher_sigma": "stored FP32 sigma_action expanded exactly to FP64",
+  "sampling_sigma": "actual frozen UniPC instance sigmas[step]; never inferred from integer timestep",
+  "residual_precision": "FP64 design_matrix_then_matmul_then_base_sum; direct_BF16_RNE",
+  "bias_control": "same -1/actual_sigma design, ten parameters and same ridge/weights/labels",
+  "budget": {
+    "new_teacher_denoise_calls": 0,
+    "cpu_fits": 2,
+    "independent_reconstructions": 2,
+    "conditional_zero_identity_generations": 3,
+    "conditional_validation_generations": 96,
+    "conditional_total_denoise_calls": 3465,
+    "physics_steps": 0,
+    "fresh_cases": 0
+  }
+}
