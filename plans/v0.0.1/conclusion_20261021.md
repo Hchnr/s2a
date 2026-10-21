@@ -82,3 +82,6 @@
 
 
 025本轮结束于teacher质量失败：[正式报告](../../reports/wam_frozen_readout_20261021.md)。249实际模型前向及2组固定fit、独立AugLS参数与全部量化评分已完整通过重算；留出开发EP总体标准化velocity MSE下降28.53%，但sigma=.8退化2.043倍，原保护门槛False。constant bias已解释大部分总体收益，readout只额外改善0.464%。原资源观测owner False保留，新隔离CPU接续正常完成，没有重复NN。实际sampling dryrun在模型加载前拒绝；96完整生成、物理/fresh均0。此负结果否定本固定适配方案的推广资格，未检验其state或任务成功率；下一方案须另登记，不修改025参数或阈值挽救原失败。稳定目标仍未达，fresh24验收继续未打开。
+
+
+下一项[026 flow-consistent readout](026_flow_consistent_readout_20261021.md)已在新fit/NN前登记并开始实现：按实际UniPC公式delta_v=-delta_x0/actual_solver_sigma，保留原velocity监督/权重，不把BF16 xt量化误差偷换入clean标签，不用整数t反推sigma。仍只复用原144缓存、两固定fit；单一新prior研究，原025False保持。teacher通过后才3zero+96paired/3465次denoise，0物理/fresh，新模型阶段尚未执行。目标仍为完整多任务新初态稳定门槛，未因本轮负结果降低。
