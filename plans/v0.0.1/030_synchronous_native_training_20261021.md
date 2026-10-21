@@ -36,7 +36,7 @@ state128[k,:10]  = [T_tcp.p, T_tcp.R[:,0], T_tcp.R[:,1], opening[k]]
 
 实际实现及全仓CPU QA通过后冻结新source closure；已有029的111源不得修改。先metadata独立准入，再一次固定30例采集；所有worker显式`CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' PYTHONDONTWRITEBYTECODE=1`，仅CPU/OSMesa，模型进程0。owner保存实际Popen/birth/command/env、wait/reap/退出，拒重复case、已有输出和自动重试；不kill未知进程。可按task分三个owned CPU worker，每worker独立新环境/输出目录，模型GPU4–7也不使用。
 
-独立CPU先核source/roster/initial排除、30例完整预算及正常退出，再验证原native command与实际发送命令、40 hold命令、时间/state/render绑定、直接物理site姿态与观测一致、全SE3/rot6d几何、local delta独立重构、每anchor标签窗口与当前图像来源。保留每例完整success时序；30例全部无运行异常且末40端点原生success全True才给`eligible_for_model_training_registration=True`。只根据native数据质量准入，不看WAM。原生质量失败仍跑完预定其余例并报告全部分母；源码/协议/数值错误停止后续，保留False。任何失败不替换demo/追加spare/缩小训练集合或修改阈值。
+独立CPU先核source/roster/initial排除、30例完整预算及正常退出，再验证原native command与实际发送命令、40 hold命令、时间/state/render绑定、观测位置与实际grip site位置一致、观测朝向与实际EEF BODY朝向一致（分别核验；controller SITE完整SE3另存，不错误要求BODY/SITE旋转相同）、全SE3/rot6d几何、local delta独立重构、每anchor标签窗口与当前图像来源。保留每例完整success时序；30例全部无运行异常且末40端点原生success全True才给`eligible_for_model_training_registration=True`。只根据native数据质量准入，不看WAM。原生质量失败仍跑完预定其余例并报告全部分母；源码/协议/数值错误停止后续，保留False。任何失败不替换demo/追加spare/缩小训练集合或修改阈值。
 
 本项最多30环境初始化、19200物理步、150当前canvas，0WAM/denoise/fit/参数重建/fresh/真机。已有共享LIBERO和外部Cosmos/数据只读，新配置、代码、报告、数据和产物均在S2A。所有旧结果/原fresh文件原字节不变。
 
