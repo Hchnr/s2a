@@ -292,6 +292,22 @@ def verify_preparation(path, evidence):
         require(request["vision_path"] == sample["image_path"], "wrong request source image")
         for role in ("arrays", "image"):
             evidence.check(sample[f"{role}_path"], sample[f"{role}_sha256"])
+        with np.load(sample["arrays_path"], allow_pickle=False) as arrays:
+            frame = sample["anchor_frame"]
+            for role in ("auxiliary_0", "left_wrist"):
+                pixels = arrays[role][frame : frame + 41]
+                require(
+                    pixels.dtype == np.uint8 and pixels.shape == (41, 256, 256, 3),
+                    "missing actual41 future source frames",
+                )
+            labels = numeric(arrays["actions"][frame : frame + 40], "registered future labels")
+            require(labels.shape == (40, 128), "missing actual40 future action labels")
+            exact(arrays["action_valid"][frame : frame + 40], np.ones(40, bool), "registered future temporal mask")
+            exact(
+                arrays["action_mask"][frame : frame + 40],
+                np.broadcast_to(ACTIVE, (40, 128)),
+                "registered future slot mask",
+            )
     return prepared, config
 
 
@@ -791,6 +807,7 @@ def main():
     error = None
     try:
         prepared, _ = verify_preparation(args.prepared, evidence)
+        receipt["prepared"] = dict(path=str(args.prepared.absolute()), sha256=digest(args.prepared))
         if args.prepare_only:
             receipt.update(preparation_verified=True, new_denoise_calls=0, actual_forward_results_verified=False)
         else:

@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -236,3 +237,18 @@ def test_partial_actual_result_rejected_before_any_full_success_claim(checker, t
     )
     with pytest.raises(ValueError, match="partial/rejected"):
         checker.verify_result({}, path, checker.Evidence())
+
+
+def test_cli_refuses_existing_output_before_reading_or_replacing_evidence(checker, monkeypatch, tmp_path):
+    monkeypatch.setattr(checker, "REPO", tmp_path)
+    output = tmp_path / "outputs" / "existing.json"
+    output.parent.mkdir()
+    output.write_text("original evidence\n")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
+    monkeypatch.setenv("LD_LIBRARY_PATH", "")
+    monkeypatch.setattr(
+        sys, "argv", ["verify", "--prepared", "absent.json", "--prepare-only", "--seed", "42", "--output", str(output)]
+    )
+    with pytest.raises(ValueError, match="output must be new"):
+        checker.main()
+    assert output.read_text() == "original evidence\n"
