@@ -1,11 +1,13 @@
 """Audit cached native task0 and two isolated continuation tasks, without replay.
 
-Only the SHA-pinned original independent geometry/pixel checker is reused.
+The SHA-pinned independent geometry/pixel helpers are reused. Its full case
+contract is copied literally with the registered MountedPanda class constant.
 Its preparation routine and dynamic Git closure are never called. Original
 nonzero exits remain failures; native quality and evidence integrity differ.
 """
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
@@ -15,10 +17,14 @@ import numpy as np
 
 from s2a.artifacts import REPO, sha256
 
-CONFIG = REPO / "configs/wam_native_training_continuation_20261021.json"
-CONFIG_SHA = "75ad3ed9309785bd14be7cde6861ff8a5fb7f9f255fd7a22a7bb2341d8b88e5a"
-PLAN = REPO / "plans/v0.0.1/030_environment_continuation_20261021.md"
-PLAN_SHA = "53c73c219ede7fe93dc1b1274774a157f138b773fbda64a2ac8bbeaccc7859c7"
+CONFIG = REPO / "configs/wam_native_training_model_contract_20261021.json"
+CONFIG_SHA = "55721ffe9fe472b247a9ee4191754a2ecd5f49a107400b20d9254af5102f3f6f"
+PLAN = REPO / "plans/v0.0.1/030_mounted_panda_contract_20261021.md"
+PLAN_SHA = "7d558e5c25caa7c1f45db3ab90e1bff37cc6045de52cd16c590c7aa520d11741"
+FIRST_CONFIG = REPO / "configs/wam_native_training_continuation_20261021.json"
+FIRST_CONFIG_SHA = "75ad3ed9309785bd14be7cde6861ff8a5fb7f9f255fd7a22a7bb2341d8b88e5a"
+FIRST_PLAN = REPO / "plans/v0.0.1/030_environment_continuation_20261021.md"
+FIRST_PLAN_SHA = "53c73c219ede7fe93dc1b1274774a157f138b773fbda64a2ac8bbeaccc7859c7"
 OLD_CHECKER = REPO / "scripts/verify_wam_native_training.py"
 OLD_CHECKER_SHA = "7b244c8936082d0155ec8d6d034ad94e14ff16f6ecbb24e3cb281d44f6f1831f"
 NEW_SOURCES = (
@@ -34,6 +40,8 @@ NEW_SOURCES = (
     "tests/test_native_environment.py",
     "scripts/verify_wam_native_training_continuation.py",
     "tests/test_native_training_continuation_verification.py",
+    "plans/v0.0.1/030_mounted_panda_contract_20261021.md",
+    "configs/wam_native_training_model_contract_20261021.json",
 )
 REF_FIELDS = (
     "original_prepared",
@@ -42,6 +50,16 @@ REF_FIELDS = (
     "failed_owner",
     "tool_exit",
     "cv2_probe",
+    "first_continuation_prepared",
+    "failed_continuation_prefix",
+    "failed_continuation_owner",
+    "model_contract_failure_observation",
+)
+REVISED_SOURCES = (
+    "scripts/prepare_wam_native_training_continuation.py",
+    "tests/test_native_training_continuation_preparation.py",
+    "scripts/verify_wam_native_training_continuation.py",
+    "tests/test_native_training_continuation_verification.py",
 )
 F64_RUNTIME = ("robots/single_arm.py", "utils/binding_utils.py", "utils/transform_utils.py")
 INHERITED = (
@@ -94,10 +112,27 @@ class Evidence:
 
 
 def load_gold(evidence):
+    global \
+        numeric, \
+        close, \
+        load_arrays, \
+        verify_endpoint_geometry, \
+        state_hash, \
+        anchors_for, \
+        camera_contract, \
+        native_quality
     path = evidence.check(OLD_CHECKER, OLD_CHECKER_SHA)
     spec = importlib.util.spec_from_file_location("frozen_independent_native_continuation_gold", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    numeric = module.numeric
+    close = module.close
+    load_arrays = module.load_arrays
+    verify_endpoint_geometry = module.verify_endpoint_geometry
+    state_hash = module.state_hash
+    anchors_for = module.anchors_for
+    camera_contract = module.camera_contract
+    native_quality = module.native_quality
     return module
 
 
@@ -115,17 +150,17 @@ def source_closure(prepared, original, evidence):
         require(path not in expected, "new source overlaps original409")
         expected[path] = sha256(path)
     require(
-        len(expected) == 421
+        len(expected) == 423
         and prepared["source_sha256"] == expected
         and prepared["inherited_source_sha256"] == inherited
         and prepared["inherited_snapshot_sha256"] == original["snapshot_sha256"],
-        "continuation must preserve literal409 plus exact12 source closure",
+        "continuation must preserve literal409 plus exact14 source closure",
     )
     snapshots = dict(original["snapshot_sha256"])
     for index, source in enumerate(sorted(set(expected) - set(inherited))):
         target = Path(prepared["output_root"]) / "preparation/source_snapshot" / f"{index:04d}_{Path(source).name}"
         snapshots[str(target)] = expected[source]
-    require(prepared["snapshot_sha256"] == snapshots and len(snapshots) == 421, "421 snapshot/source mapping differs")
+    require(prepared["snapshot_sha256"] == snapshots and len(snapshots) == 423, "423 snapshot/source mapping differs")
     for mapping in (expected, snapshots):
         for path, digest in mapping.items():
             evidence.check(path, digest)
@@ -258,6 +293,149 @@ def verify_original_failure(prepared, original, evidence):
     return task, child
 
 
+def verify_first_continuation(prepared, original, payloads, evidence):
+    first, prefix, owner, observed = (
+        payloads[key]
+        for key in (
+            "first_continuation_prepared",
+            "failed_continuation_prefix",
+            "failed_continuation_owner",
+            "model_contract_failure_observation",
+        )
+    )
+    first_ref, root = prepared["first_continuation_prepared_ref"], Path(first["output_root"])
+    previous = (
+        ("previous_continuation_config_ref", FIRST_CONFIG, FIRST_CONFIG_SHA),
+        ("previous_continuation_registration_ref", FIRST_PLAN, FIRST_PLAN_SHA),
+    )
+    for key, path, digest in previous:
+        require(prepared[key] == dict(path=str(path), sha256=digest), "first continuation registration/config changed")
+        evidence.check(path, digest)
+    require(
+        first["schema_version"] == "s2a.native-training-continuation-preparation.v1"
+        and first["config_ref"] == prepared["previous_continuation_config_ref"]
+        and first["registration_ref"] == prepared["previous_continuation_registration_ref"]
+        and first["original_prepared_ref"] == prepared["original_prepared_ref"]
+        and first["original_prepared"] == original
+        and first["records"] == original["records"]
+        and first["cached_quality_verified"] is first["eligible_for_model_training_registration"] is False
+        and prepared["first_continuation_source_sha256"] == first["source_sha256"]
+        and prepared["first_continuation_snapshot_sha256"] == first["snapshot_sha256"]
+        and len(first["source_sha256"]) == len(first["snapshot_sha256"]) == 421,
+        "original first continuation421 and its unqualified cache must remain explicit",
+    )
+    expected_keys = set(original["source_sha256"]) | {str(REPO / relative) for relative in NEW_SOURCES[:-2]}
+    allowed = sorted(str(REPO / relative) for relative in REVISED_SOURCES)
+    require(
+        set(first["source_sha256"]) == expected_keys
+        and prepared["permitted_revision_sources"] == allowed
+        and all(first["source_sha256"][p] == d for p, d in original["source_sha256"].items())
+        and all(prepared["source_sha256"][p] == d for p, d in first["source_sha256"].items() if p not in allowed),
+        "only the registered four continuation Python sources may differ from first421",
+    )
+    snapshots = dict(original["snapshot_sha256"])
+    for index, source in enumerate(sorted(expected_keys - set(original["source_sha256"]))):
+        snapshots[str(root / "preparation/source_snapshot" / f"{index:04d}_{Path(source).name}")] = first[
+            "source_sha256"
+        ][source]
+    require(snapshots == first["snapshot_sha256"], "first421 snapshot mapping changed")
+    for source, digest in snapshots.items():
+        evidence.check(source, digest)
+    require(
+        prefix["schema_version"] == "s2a.native-training-continuation-independent-verification.v1"
+        and prefix["phase"] == "prefix"
+        and prefix["prepared"] == first_ref
+        and prefix["passed"] is prefix["prefix_verified"] is prefix["evidence_integrity_passed"] is False
+        and prefix["error"] == dict(type="ValueError", message="030 native robot/controller/site/clock differs")
+        and prefix["model_training_authorized"] is prefix["fresh_performance_authorized"] is False
+        and owner["schema_version"] == "s2a.native-training-continuation-owner.v1"
+        and owner["complete"] is owner["passed"] is False
+        and owner["prepared_ref"] == first_ref
+        and owner["original_prepared_ref"] == prepared["original_prepared_ref"]
+        and owner["cached_task_ref"] == prepared["failed_task_ref"]
+        and owner["owned_commands"] == []
+        and owner["automatic_retry"] is False
+        and len(owner["command_attempts"]) == 1
+        and owner["command_attempts"][0]["phase"] == "prefix_audit"
+        and owner["command_attempts"][0]["task_index"] is None,
+        "first failed prefix/owner cannot be promoted or treated as new physics",
+    )
+    life = owner["command_attempts"][0]["observed_lifecycle"]
+    require(prepared["first_continuation_lifecycle_refs"] == life, "failed prefix actual lifecycle binding differs")
+    child = owned_lifecycle(life, evidence, returncode=1)
+    require(
+        observed["schema_version"] == "s2a.native-training-model-contract-failure-observation.v1"
+        and observed["first_prepared_ref"] == first_ref
+        and observed["failed_prefix_ref"] == prepared["failed_continuation_prefix_ref"]
+        and observed["failed_continuation_owner_ref"] == prepared["failed_continuation_owner_ref"]
+        and observed["prefix_lifecycle_refs"] == life
+        and observed["actual_owner_tool_terminal_exit_code"] == observed["actual_prefix_wait_returncode"] == 1
+        and observed["actual_prefix_reaped"]
+        is observed["owner_pid_now_absent"]
+        is observed["prefix_pid_now_absent"]
+        is True
+        and observed["actual_prefix_signal_sent"] is observed["root_manual_popen_wait_claimed"] is False
+        and observed["prefix_pid"] == child["pid"]
+        and observed["prefix_start_ticks"] == child["start_ticks"]
+        and observed["old10_case_refs"] == prepared["cached_case_refs"]
+        and observed["first_case_ref"] == prepared["cached_case_refs"][0]
+        and observed["old409_checker_ref"] == prepared["original_checker_ref"]
+        and observed["original409_source_bytes_unchanged"] is observed["first421_snapshot_bytes_unchanged"] is True
+        and observed["controller_predicate_checks"]
+        == dict(
+            control_freq=True,
+            robot_model=False,
+            gripper_model=True,
+            controller_site=True,
+            control_frame=True,
+            model_timestep=True,
+        )
+        and observed["expected_by_old_checker"] == "Panda"
+        and observed["actual_controller_robot_model"] == "MountedPanda"
+        and all(
+            observed[key] == 0
+            for key in (
+                "new_environment_initializations",
+                "new_physics_steps",
+                "new_current_canvases",
+                "new_hdf_reads",
+                "new_model_calls",
+                "new_fits",
+                "fresh_cases",
+            )
+        )
+        and observed["automatic_retry"]
+        is observed["full30_collection_certified"]
+        is observed["independent_case_quality_verified"]
+        is False,
+        "first continuation must retain actual exit1, zero new physics and specific model-contract failure evidence",
+    )
+    for index in (1, 2):
+        require(
+            not (root / "collection" / f"task{index}").exists()
+            and not (root / "orchestration/collection" / f"task{index}").exists(),
+            "first continuation already started remaining tasks",
+        )
+    require(not (root / "collection/result.json").exists(), "first failed continuation unexpectedly published success")
+    require(
+        prepared["first_continuation_owner_passed"] is prepared["first_prefix_verified"] is False
+        and prepared["robot_model_contract"]
+        == dict(
+            expected_actual_class="MountedPanda",
+            actual_parent_class="ManipulatorModel",
+            comparison_class="Panda",
+            comparison_is_parent=False,
+            rename_actual_evidence=False,
+            accept_unmounted_panda=False,
+        )
+        and prepared["robot_runtime_source_refs"] == prepared["config"]["robot_runtime_source_refs"]
+        and len(prepared["robot_runtime_source_refs"]) == 6,
+        "mounted class proof must not imply an alias, rename evidence or accept unmounted Panda",
+    )
+    for ref in prepared["robot_runtime_source_refs"]:
+        evidence.check(ref["path"], ref["sha256"])
+
+
 def verify_preparation(path, expected_sha, evidence):
     config = evidence.json(CONFIG, CONFIG_SHA)
     evidence.check(PLAN, PLAN_SHA)
@@ -269,7 +447,7 @@ def verify_preparation(path, expected_sha, evidence):
         and prepared["config"] == config
         and prepared["config_ref"] == dict(path=str(CONFIG), sha256=CONFIG_SHA)
         and prepared["registration_ref"] == dict(path=str(PLAN), sha256=PLAN_SHA)
-        and root == REPO / "outputs/wam_stability_20261021/synchronous_native_training_continuation"
+        and root == REPO / "outputs/wam_stability_20261021/synchronous_native_training_continuation_model_contract"
         and prepared["output_root"] == str(root)
         and Path(path).resolve() == root / "preparation/prepared.json",
         "continuation preparation/config/registration/root binding differs",
@@ -324,10 +502,12 @@ def verify_preparation(path, expected_sha, evidence):
     require(original["runtime_source_refs"] == runtime, "original F64 physical observation source chain differs")
     verify_probe(payloads["cv2_probe"], prepared["cv2_runtime_source_refs"], evidence)
     require(
-        prepared["runtime_source_refs"] == runtime + prepared["cv2_runtime_source_refs"],
+        prepared["runtime_source_refs"]
+        == runtime + prepared["cv2_runtime_source_refs"] + prepared["robot_runtime_source_refs"],
         "actual runtime source roster differs",
     )
     task, child = verify_original_failure(prepared, original, evidence)
+    verify_first_continuation(prepared, original, payloads, evidence)
     expected_inputs = dict(original["input_sha256"])
     expected_inputs[str(CONFIG)] = CONFIG_SHA
     for ref in [
@@ -335,6 +515,10 @@ def verify_preparation(path, expected_sha, evidence):
         *prepared["original_lifecycle_refs"].values(),
         *task["cases"],
         *prepared["cv2_runtime_source_refs"],
+        *prepared["first_continuation_lifecycle_refs"].values(),
+        prepared["previous_continuation_config_ref"],
+        prepared["previous_continuation_registration_ref"],
+        *prepared["robot_runtime_source_refs"],
     ]:
         require(
             ref["path"] not in expected_inputs or expected_inputs[ref["path"]] == ref["sha256"],
@@ -394,6 +578,117 @@ def verify_preparation(path, expected_sha, evidence):
     return prepared, original, task, child
 
 
+# Literal frozen case_contract; AST regression permits only Panda -> MountedPanda.
+def case_contract(actual, record, prepared, native, evidence):
+    n, k = record["native_steps"], record["native_steps"] + 41
+    require(
+        actual["schema_version"] == "s2a.native-training-case.v1"
+        and actual["complete"] is actual["passed"] is True
+        and "error" not in actual
+        and actual["record"] == record
+        and actual["prepared_ref"] == reference(Path(prepared["output_root"]) / "preparation/prepared.json"),
+        "030 partial/wrong native case origin",
+    )
+    require(
+        actual["native_steps"] == n
+        and actual["physics_steps"] == n + 40
+        and actual["endpoint_count"] == k
+        and actual["environment_initializations"] == 1
+        and actual["current_canvas_images"] == 5
+        and actual["future_rgb_frames"] == actual["source_hdf5_reads"] == 0
+        and actual["stable_success_last_steps"] == 40
+        and actual["native_command_ref"] == dict(path=record["expert_path"], sha256=record["expert_sha256"]),
+        "030 fixed case budget/native source differs",
+    )
+    observation = actual["observation_contract"]
+    require(
+        observation["source_position"] == "robot0_eef_pos = actual grip-site position"
+        and observation["source_rotation"] == "robot0_eef_quat xyzw = actual robot EEF BODY orientation"
+        and observation["controller_state"] == "cached actual fields; no forced endpoint updates",
+        "030 actual source/controller frame convention differs",
+    )
+    require(
+        type(observation["actual_source_site_id"]) is int
+        and observation["actual_source_site_id"] >= 0
+        and type(observation["actual_eef_body_id"]) is int
+        and observation["actual_eef_body_id"] >= 0
+        and all(
+            isinstance(observation[key], str) and observation[key]
+            for key in ("actual_source_site_name", "actual_eef_body_name", "controller_site_name")
+        ),
+        "030 actual physical frame identities missing",
+    )
+    require(
+        observation["tool_contract_ref"] == prepared["tool_contract_ref"]
+        and observation["delta_convention"] == "inverse(T_tcp[k]) @ T_tcp[k+1], local right multiply"
+        and observation["units"] == dict(position="m", time="s", rotation="column rot6d")
+        and observation["labels_normalized"] is observation["camera_observables"] is False
+        and observation["initial_seed"] == 42
+        and observation["initial_trial"] == observation["pre_rollout_steps"] == 0
+        and observation["initial_controller_refreshed"] is True,
+        "030 task/control/normalization/pre-roll contract differs",
+    )
+    close(observation["source_from_tcp"], prepared["tool_source_from_tcp"], "030 actual canonical tool transform")
+    contract = actual["controller_contract"]
+    require(
+        contract["control_freq"] == 20
+        and contract["robot_model"] == "MountedPanda"
+        and contract["gripper_model"] == "PandaGripper"
+        and contract["controller_site"] == observation["controller_site_name"]
+        and contract["control_frame"] == "MuJoCo world"
+        and 0 < contract["model_timestep"] <= 0.05,
+        "030 native robot/controller/site/clock differs",
+    )
+    for key in ("input_min", "input_max", "output_min", "output_max", "kp", "kd"):
+        require(numeric(contract[key], key).shape == (6,), "030 actual controller dimension differs")
+    arrays = load_arrays(actual, evidence)
+    maxima = verify_endpoint_geometry(arrays, record, prepared["tool_source_from_tcp"], native)
+    receipts = [
+        json.loads(line)
+        for line in evidence.check(actual["endpoint_receipts"]["path"], actual["endpoint_receipts"]["sha256"])
+        .read_text()
+        .splitlines()
+    ]
+    require(len(receipts) == k, "030 endpoint receipts are partial/extra")
+    for index, receipt in enumerate(receipts):
+        offsets = arrays["gripper_current_action_offsets"]
+        cache = arrays["gripper_current_action_flat"][offsets[index] : offsets[index + 1]]
+        expected = dict(
+            endpoint_step=index,
+            sim_time=float(arrays["sim_time"][index]),
+            sim_state_sha256=state_hash(arrays["sim_states"][index]),
+            sim_state_dtype="float64",
+            sim_state_shape=list(arrays["sim_states"][index].shape),
+            native_success=bool(arrays["native_success"][index]),
+            gripper_current_action_shape=list(cache.shape),
+            gripper_current_action_dtype="float64",
+            gripper_current_action_sha256=hashlib.sha256(cache.tobytes()).hexdigest(),
+        )
+        require(receipt == expected, "030 physical endpoint time/state/success receipt differs")
+    require(
+        [anchor["frame_index"] for anchor in actual["anchors"]] == anchors_for(n),
+        "030 five fixed current anchors changed",
+    )
+    pixel_difference = max(
+        camera_contract(anchor, receipts[anchor["frame_index"]], arrays, anchor["frame_index"], evidence)
+        for anchor in actual["anchors"]
+    )
+    quality = native_quality(arrays["native_success"])
+    require(actual["native_quality_passed"] is quality, "030 native quality flag disagrees with full endpoint success")
+    return dict(
+        name=record["name"],
+        task_index=record["task_index"],
+        native_steps=n,
+        physics_steps=n + 40,
+        endpoints=k,
+        stable_native_success=quality,
+        stable_success_last_steps=40,
+        complete_native_success_sequence=arrays["native_success"].tolist(),
+        maximum_anchor_reconstruction_error=maxima,
+        maximum_canvas_channel_difference=pixel_difference,
+    )
+
+
 def audit_cases(refs, records, original, directory, evidence, gold):
     require(len(refs) == len(records) == 10, "each fixed task must contain all10 case refs")
     rows = []
@@ -409,7 +704,7 @@ def audit_cases(refs, records, original, directory, evidence, gold):
             and np.isfinite(native).all(),
             "original selected expert dtype/shape/nonfinite differs",
         )
-        rows.append(gold.case_contract(evidence.ref(ref), record, original, native, evidence))
+        rows.append(case_contract(evidence.ref(ref), record, original, native, evidence))
     return rows
 
 
@@ -708,6 +1003,11 @@ def main():
         prepared, original, task, child = verify_preparation(args.prepared, args.prepared_sha256, evidence)
         gold = load_gold(evidence)
         receipt["prepared"] = reference(args.prepared)
+        receipt["robot_model_contract"] = prepared["robot_model_contract"]
+        receipt["case_contract_frozen_source_ref"] = prepared["original_checker_ref"]
+        receipt["first_continuation_owner_passed"] = False
+        receipt["first_prefix_verified"] = False
+        receipt["preserved_failed_prefix_ref"] = prepared["failed_continuation_prefix_ref"]
         if args.phase == "prefix":
             receipt.update(verify_prefix(prepared, original, task, child, evidence, gold))
         else:

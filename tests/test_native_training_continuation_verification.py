@@ -1,6 +1,8 @@
 """Continuation evidence fixtures: failed cache, environment and full denominator."""
 
+import ast
 import copy
+import hashlib
 import importlib.util
 import json
 import runpy
@@ -199,7 +201,7 @@ def test_exact_import_probe_and_restore_reject_unknown_mutation(checker, tmp_pat
     assert probe["original_trigger_uniquely_identified"] is False
 
 
-def test_literal421_source_closure_survives_json_sorting_and_rejects_extra_source(checker, tmp_path, monkeypatch):
+def test_literal423_source_closure_survives_json_sorting_and_rejects_extra_source(checker, tmp_path, monkeypatch):
     monkeypatch.setattr(checker, "REPO", tmp_path)
     inherited, snapshots = {}, {}
     for index in range(409):
@@ -351,6 +353,7 @@ def collection_fixture(checker, tmp_path, monkeypatch, *, failed_case=False):
 
     frozen = checker.load_gold(checker.Evidence())
     gold = SimpleNamespace(case_contract=case_contract, quality_summary=frozen.quality_summary)
+    monkeypatch.setattr(checker, "case_contract", case_contract)
     old_task = dict(cases=case_refs[:10])
     prefix = checker.verify_prefix(prepared, original, old_task, dict(returncode=1), checker.Evidence(), gold)
     cached_bytes = oldroot / "collection/task0/cached_array_bytes.npz"
@@ -570,6 +573,8 @@ def test_real_script_entry_binds_all_phase_helpers_before_main_io():
                     "verify_collection",
                     "verified_prefix",
                     "case_environment",
+                    "case_contract",
+                    "verify_first_continuation",
                 )
             )
             raise StopBeforeIO
@@ -591,7 +596,8 @@ def test_late_consumed_input_change_revokes_native_registration(checker, tmp_pat
     monkeypatch.setenv("LD_LIBRARY_PATH", "")
     prepared_path = tmp_path / "prepared.json"
     prepared_path.write_text("{}")
-    monkeypatch.setattr(checker, "verify_preparation", lambda *args: ({}, {}, {}, {}))
+    preparation = dict(robot_model_contract={}, original_checker_ref={}, failed_continuation_prefix_ref={})
+    monkeypatch.setattr(checker, "verify_preparation", lambda *args: (preparation, {}, {}, {}))
     monkeypatch.setattr(checker, "load_gold", lambda *args: None)
     monkeypatch.setattr(
         checker,
@@ -634,3 +640,311 @@ def test_late_consumed_input_change_revokes_native_registration(checker, tmp_pat
         actual["passed"] is actual["collection_verified"] is actual["eligible_for_model_training_registration"] is False
     )
     assert actual["model_training_authorized"] is actual["fresh_performance_authorized"] is False
+
+
+def test_literal_case_contract_only_changes_actual_robot_class_constant(checker):
+    original = ast.parse(checker.OLD_CHECKER.read_text())
+    revised = ast.parse(Path(checker.__file__).read_text())
+    expected = next(
+        node for node in original.body if isinstance(node, ast.FunctionDef) and node.name == "case_contract"
+    )
+    actual = next(node for node in revised.body if isinstance(node, ast.FunctionDef) and node.name == "case_contract")
+    changed = 0
+    for node in ast.walk(expected):
+        if isinstance(node, ast.Constant) and node.value == "Panda":
+            node.value = "MountedPanda"
+            changed += 1
+    assert changed == 1
+    assert ast.dump(actual, include_attributes=False) == ast.dump(expected, include_attributes=False)
+    assert checker.sha256(checker.OLD_CHECKER) == checker.OLD_CHECKER_SHA
+
+
+def test_actual_mounted_panda_case_runs_all_frozen_geometry_pixels_and_success(checker, tmp_path):
+    gold = checker.load_gold(checker.Evidence())
+    frozen_test_path = Path(__file__).with_name("test_native_training_verification.py")
+    spec = importlib.util.spec_from_file_location("native_frozen_synthetic_geometry_fixture", frozen_test_path)
+    fixtures = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fixtures)
+    record, h, native, arrays = fixtures.trajectory_fixture(gold)
+    expert_path = tmp_path / "expert.npy"
+    np.save(expert_path, native, allow_pickle=False)
+    record.update(
+        name="mounted_synthetic", task_index=0, expert_path=str(expert_path), expert_sha256=checker.sha256(expert_path)
+    )
+    prepared = dict(
+        output_root=str(tmp_path),
+        tool_contract_ref=dict(path="synthetic tool", sha256="fixture"),
+        tool_source_from_tcp=h.tolist(),
+    )
+    prepared_ref = write_json(checker, tmp_path / "preparation/prepared.json", prepared)
+    arrays_path = tmp_path / "trajectory.npz"
+    np.savez(arrays_path, **arrays)
+    receipts = []
+    for index in range(len(arrays["sim_states"])):
+        offsets = arrays["gripper_current_action_offsets"]
+        cache = arrays["gripper_current_action_flat"][offsets[index] : offsets[index + 1]]
+        receipts.append(
+            dict(
+                endpoint_step=index,
+                sim_time=float(arrays["sim_time"][index]),
+                sim_state_sha256=gold.state_hash(arrays["sim_states"][index]),
+                sim_state_dtype="float64",
+                sim_state_shape=list(arrays["sim_states"][index].shape),
+                native_success=bool(arrays["native_success"][index]),
+                gripper_current_action_shape=list(cache.shape),
+                gripper_current_action_dtype="float64",
+                gripper_current_action_sha256=hashlib.sha256(cache.tobytes()).hexdigest(),
+            )
+        )
+    endpoints = tmp_path / "endpoints.jsonl"
+    endpoints.write_text("\n".join(json.dumps(receipt) for receipt in receipts) + "\n")
+    anchor, *_ = fixtures.camera_fixture(gold, tmp_path)
+    anchors = []
+    for index in gold.anchors_for(record["native_steps"]):
+        copied = copy.deepcopy(anchor)
+        copied.update(
+            frame_index=index,
+            current_endpoint=receipts[index],
+            current_source_pose=arrays["source_pose"][index].tolist(),
+            current_opening=float(arrays["opening"][index]),
+            render_before=dict(
+                sim_time=receipts[index]["sim_time"], sim_state_sha256=receipts[index]["sim_state_sha256"]
+            ),
+            render_after=dict(
+                sim_time=receipts[index]["sim_time"], sim_state_sha256=receipts[index]["sim_state_sha256"]
+            ),
+        )
+        anchors.append(copied)
+    observation = dict(
+        source_position="robot0_eef_pos = actual grip-site position",
+        source_rotation="robot0_eef_quat xyzw = actual robot EEF BODY orientation",
+        controller_state="cached actual fields; no forced endpoint updates",
+        actual_source_site_id=1,
+        actual_eef_body_id=2,
+        actual_source_site_name="grip_site",
+        actual_eef_body_name="eef_body",
+        controller_site_name="controller_site",
+        tool_contract_ref=prepared["tool_contract_ref"],
+        delta_convention="inverse(T_tcp[k]) @ T_tcp[k+1], local right multiply",
+        units=dict(position="m", time="s", rotation="column rot6d"),
+        labels_normalized=False,
+        camera_observables=False,
+        initial_seed=42,
+        initial_trial=0,
+        pre_rollout_steps=0,
+        initial_controller_refreshed=True,
+        source_from_tcp=h.tolist(),
+    )
+    controller = dict(
+        control_freq=20,
+        robot_model="MountedPanda",
+        gripper_model="PandaGripper",
+        controller_site="controller_site",
+        control_frame="MuJoCo world",
+        model_timestep=0.002,
+        **{key: [1.0] * 6 for key in ("input_min", "input_max", "output_min", "output_max", "kp", "kd")},
+    )
+    actual = dict(
+        schema_version="s2a.native-training-case.v1",
+        complete=True,
+        passed=True,
+        record=record,
+        prepared_ref=prepared_ref,
+        native_steps=len(native),
+        physics_steps=len(native) + 40,
+        endpoint_count=len(native) + 41,
+        environment_initializations=1,
+        current_canvas_images=5,
+        future_rgb_frames=0,
+        source_hdf5_reads=0,
+        stable_success_last_steps=40,
+        native_command_ref=dict(path=str(expert_path), sha256=record["expert_sha256"]),
+        observation_contract=observation,
+        controller_contract=controller,
+        arrays=checker.reference(arrays_path),
+        array_index={key: dict(shape=list(value.shape), dtype=str(value.dtype)) for key, value in arrays.items()},
+        original_dtypes={key: str(value.dtype) for key, value in arrays.items()},
+        endpoint_receipts=checker.reference(endpoints),
+        anchors=anchors,
+        native_quality_passed=True,
+    )
+    result = checker.case_contract(actual, record, prepared, native, checker.Evidence())
+    assert result["stable_native_success"] is True and result["maximum_canvas_channel_difference"] == 0
+    assert result["maximum_anchor_reconstruction_error"]["position"] < 1e-12
+    unchanged = copy.deepcopy(actual)
+    with pytest.raises(ValueError, match="native robot/controller/site/clock"):
+        gold.case_contract(actual, record, prepared, native, checker.Evidence())
+    assert actual == unchanged
+    wrong = copy.deepcopy(actual)
+    wrong["controller_contract"]["robot_model"] = "Panda"
+    with pytest.raises(ValueError, match="native robot/controller/site/clock"):
+        checker.case_contract(wrong, record, prepared, native, checker.Evidence())
+
+
+def test_first_failed421_is_preserved_as_snapshots_and_only_four_sources_can_change(checker, tmp_path):
+    original = dict(
+        source_sha256={f"/fixture/original_{i}.py": f"{i:064x}" for i in range(409)},
+        snapshot_sha256={f"/fixture/snap_{i}.py": f"{i:064x}" for i in range(409)},
+        records=[dict(name="saved")],
+    )
+    first_sources = dict(original["source_sha256"])
+    for index, relative in enumerate(checker.NEW_SOURCES[:-2]):
+        first_sources[str(checker.REPO / relative)] = f"{500 + index:064x}"
+    root = tmp_path / "first"
+    snapshots = dict(original["snapshot_sha256"])
+    for index, source in enumerate(sorted(set(first_sources) - set(original["source_sha256"]))):
+        snapshots[str(root / "preparation/source_snapshot" / f"{index:04d}_{Path(source).name}")] = first_sources[
+            source
+        ]
+
+    def ref(name):
+        return dict(path=str(tmp_path / name), sha256="a" * 64)
+
+    original_ref, first_ref, task_ref = ref("original.json"), ref("first.json"), ref("failed_task.json")
+    previous_config = dict(path=str(checker.FIRST_CONFIG), sha256=checker.FIRST_CONFIG_SHA)
+    previous_plan = dict(path=str(checker.FIRST_PLAN), sha256=checker.FIRST_PLAN_SHA)
+    first = dict(
+        schema_version="s2a.native-training-continuation-preparation.v1",
+        output_root=str(root),
+        config_ref=previous_config,
+        registration_ref=previous_plan,
+        original_prepared_ref=original_ref,
+        original_prepared=original,
+        records=original["records"],
+        cached_quality_verified=False,
+        eligible_for_model_training_registration=False,
+        source_sha256=first_sources,
+        snapshot_sha256=snapshots,
+    )
+    prefix = dict(
+        schema_version="s2a.native-training-continuation-independent-verification.v1",
+        phase="prefix",
+        prepared=first_ref,
+        passed=False,
+        prefix_verified=False,
+        evidence_integrity_passed=False,
+        error=dict(type="ValueError", message="030 native robot/controller/site/clock differs"),
+        model_training_authorized=False,
+        fresh_performance_authorized=False,
+    )
+    life = {key: ref(key + ".json") for key in ("launch", "exit", "release")}
+    launch = dict(
+        selected_environment=dict(CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH=""),
+        automatic_retry=False,
+        child=dict(pid=123, start_ticks=456),
+    )
+    ended = dict(actual_wait=True, automatic_retry=False, returncode=1)
+    release = dict(
+        pid=123,
+        start_ticks=456,
+        returncode=1,
+        reaped=True,
+        signal_sent=False,
+        only_owned_child_signalled=True,
+        original_error="failed with1",
+    )
+    owner = dict(
+        schema_version="s2a.native-training-continuation-owner.v1",
+        complete=False,
+        passed=False,
+        prepared_ref=first_ref,
+        original_prepared_ref=original_ref,
+        cached_task_ref=task_ref,
+        owned_commands=[],
+        automatic_retry=False,
+        command_attempts=[dict(phase="prefix_audit", task_index=None, observed_lifecycle=life)],
+    )
+    cached = [ref("cached_case.json")]
+    robot_refs = [ref(f"robot_source_{i}.py") for i in range(6)]
+    prepared = dict(
+        first_continuation_prepared_ref=first_ref,
+        original_prepared_ref=original_ref,
+        first_continuation_source_sha256=first_sources,
+        first_continuation_snapshot_sha256=snapshots,
+        source_sha256=dict(first_sources),
+        permitted_revision_sources=sorted(str(checker.REPO / p) for p in checker.REVISED_SOURCES),
+        previous_continuation_config_ref=previous_config,
+        previous_continuation_registration_ref=previous_plan,
+        failed_task_ref=task_ref,
+        first_continuation_lifecycle_refs=life,
+        cached_case_refs=cached,
+        failed_continuation_prefix_ref=ref("failed_prefix.json"),
+        failed_continuation_owner_ref=ref("failed_owner.json"),
+        original_checker_ref=dict(path=str(checker.OLD_CHECKER), sha256=checker.OLD_CHECKER_SHA),
+        first_continuation_owner_passed=False,
+        first_prefix_verified=False,
+        robot_model_contract=dict(
+            expected_actual_class="MountedPanda",
+            actual_parent_class="ManipulatorModel",
+            comparison_class="Panda",
+            comparison_is_parent=False,
+            rename_actual_evidence=False,
+            accept_unmounted_panda=False,
+        ),
+        robot_runtime_source_refs=robot_refs,
+        config=dict(robot_runtime_source_refs=robot_refs),
+    )
+    for path in prepared["permitted_revision_sources"]:
+        prepared["source_sha256"][path] = "b" * 64
+    observed = dict(
+        schema_version="s2a.native-training-model-contract-failure-observation.v1",
+        first_prepared_ref=first_ref,
+        failed_prefix_ref=prepared["failed_continuation_prefix_ref"],
+        failed_continuation_owner_ref=prepared["failed_continuation_owner_ref"],
+        prefix_lifecycle_refs=life,
+        actual_owner_tool_terminal_exit_code=1,
+        actual_prefix_wait_returncode=1,
+        actual_prefix_reaped=True,
+        owner_pid_now_absent=True,
+        prefix_pid_now_absent=True,
+        actual_prefix_signal_sent=False,
+        root_manual_popen_wait_claimed=False,
+        prefix_pid=123,
+        prefix_start_ticks=456,
+        old10_case_refs=cached,
+        first_case_ref=cached[0],
+        old409_checker_ref=prepared["original_checker_ref"],
+        original409_source_bytes_unchanged=True,
+        first421_snapshot_bytes_unchanged=True,
+        controller_predicate_checks=dict(
+            control_freq=True,
+            robot_model=False,
+            gripper_model=True,
+            controller_site=True,
+            control_frame=True,
+            model_timestep=True,
+        ),
+        expected_by_old_checker="Panda",
+        actual_controller_robot_model="MountedPanda",
+        new_environment_initializations=0,
+        new_physics_steps=0,
+        new_current_canvases=0,
+        new_hdf_reads=0,
+        new_model_calls=0,
+        new_fits=0,
+        fresh_cases=0,
+        automatic_retry=False,
+        full30_collection_certified=False,
+        independent_case_quality_verified=False,
+    )
+    payloads = dict(
+        first_continuation_prepared=first,
+        failed_continuation_prefix=prefix,
+        failed_continuation_owner=owner,
+        model_contract_failure_observation=observed,
+    )
+    documents = {
+        life[key]["path"]: payload
+        for key, payload in zip(("launch", "exit", "release"), (launch, ended, release), strict=True)
+    }
+    checked = []
+    evidence = SimpleNamespace(ref=lambda item: documents[item["path"]], check=lambda p, d: checked.append((p, d)))
+    checker.verify_first_continuation(prepared, original, payloads, evidence)
+    assert all((path, digest) in checked for path, digest in snapshots.items())
+    wrong = copy.deepcopy(prepared)
+    wrong["source_sha256"][str(checker.REPO / "scripts/collect_wam_native_training_continuation.py")] = "c" * 64
+    with pytest.raises(ValueError, match="registered four"):
+        checker.verify_first_continuation(wrong, original, payloads, evidence)
+    wrong = dict(prepared, first_continuation_owner_passed=True)
+    with pytest.raises(ValueError, match="mounted class proof"):
+        checker.verify_first_continuation(wrong, original, payloads, evidence)
