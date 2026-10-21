@@ -244,7 +244,9 @@ def test_production_owned_scope_reaps_after_parent_exception(tmp_path):
             environment=dict(os.environ, **EXPECTED_ENVIRONMENT),
             cwd=REPO,
             folder=tmp_path,
+            start_new_session=True,
         ) as (process, _):
+            assert os.getpgid(process.pid) == process.pid
             raise RuntimeError("admission failed")
     release = json.loads((tmp_path / "release.json").read_text())
     assert release["reaped"] and release["returncode"] == -15 and process.poll() == -15

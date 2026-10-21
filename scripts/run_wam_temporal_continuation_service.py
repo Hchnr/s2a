@@ -8,6 +8,7 @@ import signal
 import socket
 import subprocess
 import time
+from contextlib import ExitStack
 from pathlib import Path
 
 import requests
@@ -17,6 +18,7 @@ from run_wam_short_replan import cpu_environment, interrupted, process_record, s
 from run_wam_temporal_continuation_matrix import CONFIG, protocol
 
 from s2a.artifacts import REPO, sha256
+from s2a.worker_handshake import owned_child
 
 
 def preflight(gate_path, gate_sha):
@@ -95,6 +97,7 @@ def main():
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     model = job = None
     model_identity = job_identity = None
+    ownership = ExitStack()
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, interrupted)
     with lock_path.open("a") as lock:
@@ -138,14 +141,18 @@ def main():
         )
         try:
             verify_hashes(signatures)
+            model_ownership = directory / "model_ownership"
+            model_ownership.mkdir(exist_ok=False)
             with (directory / "service.log").open("x") as stream:
-                model = subprocess.Popen(
-                    model_command,
-                    cwd=REPO,
-                    env=model_environment,
-                    stdout=stream,
-                    stderr=subprocess.STDOUT,
-                    start_new_session=True,
+                model, _ = ownership.enter_context(
+                    owned_child(
+                        model_command,
+                        cwd=REPO,
+                        environment=model_environment,
+                        folder=model_ownership,
+                        stream=stream,
+                        start_new_session=True,
+                    )
                 )
             model_identity = process_record(model.pid, "6")
             if not model_identity["present"]:
@@ -175,14 +182,20 @@ def main():
                 raise ValueError("continuation service checkpoint/backend/mask differs")
             write_new(directory / "server_info.json", info)
             verify_hashes(signatures)
+            job_ownership = directory / "job_ownership"
+            job_ownership.mkdir(exist_ok=False)
             with (directory / "matrix.log").open("x") as stream:
-                job = subprocess.Popen(
-                    job_command,
-                    cwd=REPO,
-                    env=dict(os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONDONTWRITEBYTECODE="1"),
-                    stdout=stream,
-                    stderr=subprocess.STDOUT,
-                    start_new_session=True,
+                job, _ = ownership.enter_context(
+                    owned_child(
+                        job_command,
+                        cwd=REPO,
+                        environment=dict(
+                            os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONDONTWRITEBYTECODE="1"
+                        ),
+                        folder=job_ownership,
+                        stream=stream,
+                        start_new_session=True,
+                    )
                 )
                 job_identity = process_record(job.pid, "")
                 if not job_identity["present"]:
@@ -213,6 +226,10 @@ def main():
                     _, cleanup[label] = stop_owned(process, owned, cuda)
                 except BaseException as exc:
                     errors.append(dict(process=label, error=repr(exc)))
+            try:
+                ownership.close()
+            except BaseException as exc:
+                errors.append(dict(process="owned_handles", error=repr(exc)))
             write_new(
                 directory / "release.json",
                 dict(

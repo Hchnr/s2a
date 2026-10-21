@@ -257,14 +257,21 @@ def stop_and_reap(process, expected_birth, *, grace_s=5.0):
 
 
 @contextmanager
-def owned_child(command, *, environment, cwd, folder, stream=None):
+def owned_child(command, *, environment, cwd, folder, stream=None, start_new_session=False):
     """Shared real admission scope: failures after Popen cannot bypass reaping."""
     process = owned = None
     pidfd = None
     exception = None
     folder = Path(folder)
     try:
-        process = subprocess.Popen(command, env=environment, cwd=cwd, stdout=stream, stderr=subprocess.STDOUT)
+        process = subprocess.Popen(
+            command,
+            env=environment,
+            cwd=cwd,
+            stdout=stream,
+            stderr=subprocess.STDOUT,
+            start_new_session=start_new_session,
+        )
         if hasattr(os, "pidfd_open"):
             pidfd = os.pidfd_open(process.pid, 0)
         owned = birth(process.pid, allow_exited=True)
