@@ -8,6 +8,8 @@
 
 唯一改动是train-only的全局中心与尺度。对原训练权重w（sum w=1）和FP64扩展的原BF16 hidden，定义mu=sum(w*h)，s=sqrt(sum(w*||h-mu||²))；拒绝非有限或s<=0。新phi=[(h-mu)/s,1]，A=-phi/sigma_actual，目标仍为active10(v_target-v_base)，解sum(w*||A W-Y||²)+.1||W||²，bias同样正则。s是整个hidden向量的一个L2 RMS，不逐列白化、PCA、截断、加epsilon或按validation选尺度；不放大某个低方差列相对其它列的权重。sigma取缓存FP32无损扩为FP64，不用名义小数或整数t推算。
 
+因此训练集sum(w*||(h-mu)/s||²)=1，不再额外除sqrt1280。加上1/sigma后，hidden与bias的Gram交叉项一般仍非零；中心化不保证消除时间冲突。正则bias下，中心化本身也会改变prior，不能宣称惩罚不变或已证明尺度是原失败的唯一原因。
+
 只拟合一个1281×10 W，共12,810个系数；mu1280和s1亦作为训练得到的预处理参数保存，总14,091个数。与026相同数值lambda因预处理改变而改变prior，此为明确的新候选，不是修正已证实bug。此候选仍表示clean-action残差，保留实际velocity损失和-1/sigma形式；不从BF16 xt构造新clean标签。
 
 对照原样复用026已拟合、已独立核验的time-aware bias和原5760行实际量化预测，不重拟合。其hidden系数为0，中心/尺度对该对照无影响；必须逐值证明用原bias系数及本次实际sigma重算得到相同预测，并核其train/validation/权重/target身份。原026结果仍False，不因复用对照改写。新预算为**一个生产ridge solve及一个独立增广最小二乘重建**，不是两个生产fit，也没有控制组重试。
