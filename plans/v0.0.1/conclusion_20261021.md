@@ -104,3 +104,6 @@
 
 
 029追加独立复核：20场景实际数值与source/lifecycle完整通过，首2raw/6point的精确复现及CUDA转换通过且明确partial。唯一采集进程仍在运行，尚未形成完整轨迹诊断，不据此认证模型质量、拟合资格或任务成功。最新main冲突复核无待解决项；稳定成功目标及fresh24门槛不变。
+
+
+029现完整：[正式报告](../../reports/wam_free_trajectory_diagnostic_20261021.md)。48raw精确复现、144+144点和1824调用独立通过，模型/CPU正常退出、GPU6释放；额外2426SHA/7800组重核及五图/PDF已完成。固定027的teacher收益明显依赖seed：42改善55.06%、43反退51.42%；raw自由轨迹actualclean反事实总体+1.60%，三个sigma/两个seed均退化。原027 teacher通过不等于一般噪声或自由轨迹有效；本结果不唯一认定video/hidden/噪声因果。0新fit/物理/fresh，028False保持。下一阶段采用来源明确的同步多EP训练数据、与评测seed隔离的多样噪声、显式当前clean估计及自由上下文监督，并在fit前固定有限任务验证；最终仍须原fresh24稳定门槛。
