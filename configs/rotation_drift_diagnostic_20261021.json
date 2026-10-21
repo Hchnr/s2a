@@ -1,0 +1,21 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/rotation_drift_diagnostic",
+  "checkpoint": "8400_g10",
+  "ridge_seconds_squared": 0.1,
+  "maximum_bias_norm_rad_per_second": 0.25,
+  "control_fps": 20,
+  "maximum_horizon_seconds": 2.0,
+  "prefixes": [8, 16, 40],
+  "split": "leave_one_complete_episode_out",
+  "deduplicate": ["episode", "anchor_frame", "sampling_seed"],
+  "expected_unique_queries": 44,
+  "expected_common_h40_endpoints": 1398,
+  "registered_fit_count": 19,
+  "minimum_short_raw_relative_improvement": 0.1,
+  "minimum_nonregressing_short_episode_folds": 5,
+  "comparison_tolerance_rad": 1e-10,
+  "new_model_queries": 0,
+  "new_physics_steps": 0,
+  "physical_promotion_authorized": false
+}

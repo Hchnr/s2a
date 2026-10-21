@@ -18,7 +18,11 @@
 ```bash
 .venv/bin/ruff check src tests scripts
 .venv/bin/ruff format --check src tests scripts
-LD_LIBRARY_PATH='' .venv/bin/python -m pytest
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python -m pytest
 ```
 
 当前 NGC 环境执行 Python 时使用 `LD_LIBRARY_PATH=''` 前缀。本机已有 `/opt/venv/bin/python` 可用于验证，避免修改外部共享环境。
+
+## GPU 使用限制（用户于2026-10-20明确指定）
+
+后续实现和测试只允许使用物理 GPU 4、5、6、7，禁止在 GPU 0–3 启动任何任务。模型进程显式设置 CUDA_VISIBLE_DEVICES 为允许卡；CPU测试和OSMesa仿真设置为空。恢复/排队任务也必须遵守此限制，不沿用旧8卡映射。

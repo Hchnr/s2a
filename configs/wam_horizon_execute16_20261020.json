@@ -1,0 +1,64 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_horizon_diagnosis_20261020/execute16",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "r2_root": "/share/mixed/projset/eai_pwm/datasets/action_processed_r2/libero/eef",
+  "training_catalog": "/share/project/liyue/data/parquet-data/action128-full-20261012/libero-eef/libero-eef.parquet",
+  "checkpoints": [
+    {
+      "name": "8800_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008800",
+      "gpu": 6,
+      "port": 8806
+    }
+  ],
+  "tasks": [
+    "put the bowl on the plate",
+    "put the wine bottle on the rack",
+    "put the cream cheese in the bowl"
+  ],
+  "offline_episodes_per_task": 4,
+  "offline_diagnostic_episodes_per_task": 2,
+  "offline_prompt_modes": [
+    "task_only",
+    "published_caption"
+  ],
+  "offline_horizons": [
+    16,
+    40
+  ],
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "sampling_steps": 35,
+  "guidance": 1.5,
+  "shift": 5.0,
+  "control_fps": 20,
+  "online_initial_states_per_task": 2,
+  "online_max_steps": 600,
+  "online_chunk_size": 40,
+  "online_execution_horizon": 16,
+  "arm": "response",
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "qualification_position_tolerance_m": 0.01,
+  "qualification_rotation_tolerance_rad": 0.05,
+  "notes": [
+    "Development diagnosis on the six OLD initial states, not independent acceptance results.",
+    "Frozen before inspecting new checkpoint matrix outcomes. Compare execute8 historical H40 against execute16/40 with same latest8800 masked weights and sampling.",
+    "Run native and oracle controls under each protocol; do not attribute changes solely to WAM when execution degrades.",
+    "Keep the independent H40/execute8 matrix unchanged."
+  ],
+  "acceptance": {
+    "stable_success_last_steps": 40,
+    "reliable_overall_fraction": 0.8,
+    "reliable_each_task_fraction": 0.5,
+    "note": "Operational threshold fixed before results; report uncertainty over initial states, seeds are repeated trials not independent scenes."
+  },
+  "fixture_source": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json"
+}

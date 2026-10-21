@@ -1,0 +1,49 @@
+{
+  "seed": 42,
+  "protocol_version": 1,
+  "output_dir": "outputs/wam_stability_20261021/reference_recovery_qualification",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "fixture": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json",
+  "fixture_sha256": "f522ee333827d51ab66b5b8d1c2a7ebd8ceca3832403b3c54dfa56a821fb2a8e",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "records": ["task0_init0", "task1_init0"],
+  "methods": ["governor_v1", "governor_v2"],
+  "steps": 200,
+  "control_fps": 20,
+  "reference_endpoints": 40,
+  "reference_duration_s": 2.0,
+  "initial_world_translation_m": [0.0, 0.0, -0.35],
+  "requery_step": 100,
+  "requery_world_translation_m": [0.0, 0.0, 0.03],
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "workers": 2,
+  "governor": {
+    "max_translation_speed_m_s": 0.2,
+    "max_rotation_speed_rad_s": 1.0,
+    "max_opening_speed_s": 2.0,
+    "position_soft_m": 0.01,
+    "position_stop_m": 0.04,
+    "rotation_soft_rad": 0.1,
+    "rotation_stop_rad": 0.4
+  },
+  "diagnostics": {
+    "down_tail_steps": 20,
+    "blocked_tail_max_position_span_m": 0.005,
+    "blocked_tail_max_median_tracking_scale": 0.05,
+    "blocked_tail_min_median_preceding_error_m": 0.038,
+    "blocked_tail_max_model_progress_s": 0.05,
+    "endpoint_position_tolerance_m": 0.01,
+    "endpoint_rotation_tolerance_rad": 0.05
+  },
+  "notes": [
+    "CPU/OSMesa only, seed42, each case owns a fresh independent simulator worker, no CUDA devices visible.",
+    "First reference: fixed initial measured absolute world/TCP anchor and rotation, forty equally spaced endpoints moving down0.35m in2s. All generated opening endpoints equal the initial measured opening.",
+    "Exactly one new reference at pre-control step100: current measured TCP anchor and rotation, forty equally spaced endpoints moving up0.03m in2s. No query is triggered by governor.complete.",
+    "Original OSCStateToAction compensate=True, inverse_weight0.5, max_command_rate5/s; fixed controller gains and restored initial state are unchanged.",
+    "Native gripper input is zero at every control step, retaining gripper.current_action; actual motor controls must remain constant. Governor aperture is diagnostic and is never sent as a gripper command.",
+    "Only current measured source/TCP pose and twist, causal retained controller/governor state and generated reference enter control. No objects, contacts, task-success predicates, experts, models or future measured states enter control.",
+    "Down blockage is an operational observation from a fixed last20-step pose/progress/error criterion, not a proof of global kinematic unreachability. A scenario without observed blockage cannot qualify recovery from blockage.",
+    "Independent MuJoCo reference-recovery evidence only; no WAM task success or real-robot claim. All output files are new and existing directories are rejected."
+  ]
+}

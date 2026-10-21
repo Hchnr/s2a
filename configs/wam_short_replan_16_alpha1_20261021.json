@@ -1,0 +1,84 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/short_replan_development/8400_interval16_alpha1",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "fixture": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json",
+  "fixture_sha256": "f522ee333827d51ab66b5b8d1c2a7ebd8ceca3832403b3c54dfa56a821fb2a8e",
+  "records": [
+    "task0_init0",
+    "task1_init0",
+    "task2_init0"
+  ],
+  "sampling_seeds": [
+    42
+  ],
+  "online_max_steps": 600,
+  "online_chunk_size": 40,
+  "online_execution_horizon": 40,
+  "max_observation_interval_steps": 16,
+  "stable_success_last_steps": 40,
+  "control_fps": 20,
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "gripper_intent_hold": {
+    "reference_hysteresis": 0.02,
+    "release_margin": 0.04,
+    "release_excursion": 0.04,
+    "release_confirmation_s": 0.05,
+    "motor_limit_tolerance": 0.005,
+    "max_evidence_interval_s": 0.1
+  },
+  "reference_governor": {
+    "max_translation_speed_m_s": 0.2,
+    "max_rotation_speed_rad_s": 1.0,
+    "max_opening_speed_s": 2.0,
+    "position_soft_m": 0.01,
+    "position_stop_m": 0.04,
+    "rotation_soft_rad": 0.1,
+    "rotation_stop_rad": 0.4
+  },
+  "variants": [
+    {
+      "name": "position_hold",
+      "rotation": "response",
+      "gripper": "position_hold",
+      "governor": false,
+      "model_rotation_alpha": 1.0
+    }
+  ],
+  "notes": [
+    "Frozen010 development profile:physical reobservation interval16,model_rotation_alpha1,no governor. Same variant name position_hold in isolated config/output profiles; explicit alpha field and model_reference_label define model intervention identity.",
+    "H40 generation/execution horizon40,20Hz,600physicssteps,stablelast40,seed42,guidance1.0,35steps,shift5,OSC inverse.5/rate5 and physically qualified v3 gripper remain fixed. Requery on8/16physical steps discards unused suffix, without governor bridge/reset starvation.",
+    "All three originaltask/init0 scenes retained. Across four profiles12trials/7200physicssteps,max678H40 queries (six75-query interval8 cases and six38-query interval16 cases). No fresh performance or calibration model.",
+    "Checkpoint8400 selected after complete005/006 and009 state screen; best short-prefix state metrics and component stability in original/current gripper studies. Latest15600 does not dominate and is not silently substituted.",
+    "Raw alpha1 is full-checkpoint reference; alpha0 changes local rotations to identity and also changes integrated world position paths. It holds each query measured anchor orientation, not whole-episode fixed orientation, and does not certify full WAM orientation.",
+    "Same raw first query compared with old8400 intent_hold; model-input image/full40x128 raw and normalized values/physics anchor must be exact. Later closed-loop inputs differ. Native success/object/contact are post-step metrics only.",
+    "Interval8/16 paired configs may share one private owned model service:serving inference/condition/weight parameters identical; model_rotation_alpha is applied only in the CPU executor after saved raw response. One physics worker per service; no0-3 usage."
+  ],
+  "checkpoints": [
+    {
+      "name": "8400_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008400",
+      "gpu": 5,
+      "port": 9445
+    }
+  ],
+  "gripper_position_hold": {
+    "reference_hysteresis": 0.02,
+    "release_margin": 0.04,
+    "release_excursion": 0.04,
+    "release_confirmation_s": 0.05,
+    "motor_limit_tolerance": 0.005,
+    "max_evidence_interval_s": 0.1,
+    "close_threshold": 0.6,
+    "motor_deadband": 0.07
+  },
+  "model_reference_label": "raw_alpha1"
+}

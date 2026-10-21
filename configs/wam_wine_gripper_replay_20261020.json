@@ -1,0 +1,26 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_wine_gripper_replay_20261020",
+  "report_path": "reports/wam_wine_gripper_replay_20261020.md",
+  "source_config": "configs/wam_independent_20261020.json",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "workers": 2,
+  "steps": 600,
+  "stable_steps": 40,
+  "replay_atol": 1e-8,
+  "gripper_modes": ["intent", "position", "latch"],
+  "opening_latch": {"close_below": 0.8, "release_above": 0.9},
+  "cases": [
+    {"name": "8800_wine_init0_s42", "checkpoint": "8800_masked", "record": "task1_init0", "sampling_seed": 42},
+    {"name": "8800_wine_init0_s43", "checkpoint": "8800_masked", "record": "task1_init0", "sampling_seed": 43}
+  ],
+  "notes": [
+    "Post-hoc CPU execution diagnosis on two completed wine task1_init0 references from latest8800, seeds42/43; not independent acceptance.",
+    "Source selection contrasts some smaller-aperture predictions in unexecuted suffixes for seed42 with brief target contact followed by opening and contact loss in seed43; these observations do not establish a unique cause.",
+    "Freeze saved world/source pose and opening references; never re-anchor saved deltas to counterfactual measured state.",
+    "Freeze arm algorithm, gains and limits, with causal feedback from each counterfactual environment; numerical arm commands can differ.",
+    "No model query, expert future or task-conditioned reference repair. Replay outcomes are not new closed-loop WAM task results and do not alter the frozen independent study.",
+    "Require original intent mode to reproduce commands, state, object positions, contacts and task predicates before alternatives.",
+    "Use the same steps, stability tail, replay tolerance and latch thresholds as the prior nine CPU replays. Latch changes both closing and release; position changes the gripper interface, so neither uniquely isolates release timing."
+  ]
+}

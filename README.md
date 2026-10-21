@@ -2,6 +2,18 @@
 
 S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接收的 action，使执行后的实际状态接近目标。
 
+2026-10-21继续以**稳定成功**为目标。完整WAM曾在旧初态成功，但尚未达到多任务、新初态的稳定门槛：新v3夹爪8800/15400共24条稳定0/24；8400完整12条稳定1/12，仅alpha0/cream（修改了生成参考）。[010短闭环](plans/v0.0.1/010_short_replan_wam_20261021.md)目前raw每8步三个旧任务稳定1/3，仅bowl尾13.1s成功且保留完整模型旋转；每16步raw/alpha0均0/3，8步alpha0三条也完整0/3；全12/7200步/678请求已独立补核。原收尾发现未使用历史权重15400外部缺失，错误保留，未伪造原门禁成功。单例不算整体达标。见[本轮结论](plans/v0.0.1/conclusion_20261021.md)和[记录](plans/v0.0.1/record_20261021.md)。
+
+state对照不支持盲目更换推理配置：[latest15600](reports/wam_latest_state_screen_20261021.md)九项误差均差于8400及15400；[guidance3](reports/wam_guidance_state_20261021.md)和[训练attention backend](reports/wam_backend_state_20261021.md)各48次完整诊断均未通过事先规定的改善门槛，不追加其物理任务评测。[011采样步数](reports/wam_sampler_steps_state_20261021.md)的144次已完整核验：35步48次全部精确复现原输出，70/140步九项误差均更差，不推广。模型实际只使用物理GPU4–7；CPU/OSMesa空CUDA/LD，外部Cosmos及发布数据只读。
+
+[020/021同端点因果集成](reports/wam_temporal_equal_20261021.md)完整三任务稳定1/3（cream），原raw8/seed42也是1/3（bowl），不按任务拼接；seed43的raw8为0/3。集成参考跟踪仍有45–162mm误差，不能将失败全归WAM。[022固定扩展文本](plans/v0.0.1/022_static_command_state_20261021.md)96请求完整、原48输出exact，扩展文本未过state门槛；[023局部参考校正](reports/wam_generated_reference_calibration_20261021.md)19组fit及独立重算完整，短期共同误差改善11%–14%但组件与跨episode门槛失败，均不推广到物理或fresh。最新已提交Python快照414 passed / 1外部integration deselected，Ruff check与289文件format通过；未提交的024 runner草稿不计入该PR范围。[024当前训练—推理数值桥接](plans/v0.0.1/024_current_training_inference_numerics_20261021.md)另登记8400/真实future RGB及action/正确三任务的27次denoise专项，GPU6、0完整采样/物理；尚未执行，不能以数值桥接代替任务验收。
+
+执行侧[短重观测正确参考](reports/short_replan_qualification_20261021.md)12/12、[真实seed43正确参考](reports/wam_seed43_execution_qualification_20261021.md)3/3通过；[双种子日志检查器](reports/wam_seed_aware_checker_20261021.md)旧27条精确回归。这些不计WAM成功。[016](plans/v0.0.1/016_tracking_replan_20261021.md)保持所有raw pose/opening，以实测误差决定8–40步重新观测，WAM完整0/3稳定。[017持续效果](reports/wam_long_raw_20261021.md)三条1200步/450请求全部独立核验：仍仅bowl成功，稳定1/3；bowl尾43.1秒连续成功，wine/cream追加30秒仍0成功，后半TCP跟踪约1.9mm。不能只归因时间不足，也未达到多任务稳定。[019第二seed复测](reports/wam_raw8_seed43_20261021.md)已完整3/1800步/225请求核验，seed43三任务均未成功；原30秒raw8的42/43各1/3、0/3，不能挑成功seed拼策略。所有自有服务正常释放；12个预留新初态未做性能评测，无真机，已有产物拒绝覆盖。
+
+2026-10-20 独立物理评测及窗口对照已完成：主矩阵四份checkpoint统一H40/执行8，稳定成功为warm6200 0/24、8400 0/24、8600 0/24、8800 1/24；native与oracle＋冻结S2A均24/24稳定。旧集合8800执行8/16/40分别1/12、0/12、1/12稳定，成功病例不同，未观察到总体提升。全部216条评测＋27条固定参考诊断共243条/145800步完成并独立审计；能完成部分任务，稳定能力仍未达预注册门槛，不能将全部失败唯一归于权重或转换。详见[正式报告](reports/wam_independent_20261020.md)、[最终结论](plans/v0.0.1/conclusion_20261020.md)和[实施记录](plans/v0.0.1/record_20261020.md)。来源独立性仅限已记录物理评测/控制调参，并非预训练未见；历史训练消费及上游图像/pose物理同步仍未知。
+
+后续模型实现和测试仅允许物理GPU4、5、6、7；旧八卡运行已取消并归档。当前编排入口 `run_wam_independent_partition.py` 固定partition0–3分别使用GPU4–7，本轮执行窗口对照沿用该映射且已完成。CPU测试和OSMesa仿真显式设置 `CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH=''`；历史配置保留原始字节，不沿用其中旧GPU映射启动任务。
+
 ```text
 已生成的期望 delta chunk → 带时间的 SE(3) 参考轨迹
                                   ↓
@@ -21,18 +33,18 @@ S2A 把世界模型给出的期望 state/delta_state 转成固定控制器可接
 入口配置为 `configs/libero_followup_20261019.json`。依赖此前冻结的来源bridge和基线初始图像/预测，路径与指纹随结果保存；复跑请另设output_dir，已有结果不覆盖。以下命令均从本仓库执行，模拟器和模型服务仍是可选环境：
 
 ```bash
-LD_LIBRARY_PATH='' .venv/bin/python scripts/prepare_libero_followup.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_libero_alignment.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_libero_release_revision.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/prepare_libero_followup.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_libero_alignment.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_libero_release_revision.py --seed 42
 # 独立终端运行本轮自有模型服务；结束后只停止其记录的进程组
-LD_LIBRARY_PATH='' .venv/bin/python scripts/serve_libero_policy.py --config outputs/libero_followup_20261019/serving_config.json --seed 42 --gpu 0 --port 8380
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/probe_libero_training_images.py --seed 42
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/verify_libero_camera_capture.py --seed 42
+CUDA_VISIBLE_DEVICES=4 LD_LIBRARY_PATH='' .venv/bin/python scripts/serve_libero_policy.py --config outputs/libero_followup_20261019/serving_config.json --seed 42 --gpu 4 --port 8380
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/probe_libero_training_images.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/verify_libero_camera_capture.py --seed 42
 # 编排器从显式simulation_python启动物理worker；live串行避免服务排队混淆延迟
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_async.py --seed 42 --stage synthetic
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_async.py --seed 42 --stage live
-LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_followup.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_followup.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_async.py --seed 42 --stage synthetic
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_async.py --seed 42 --stage live
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_followup.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_followup.py --seed 42
 ```
 
 WAM 效果专项已完成55项完整物理实验/50739步：不计推理延迟，两种纯WAM转换均0/5，共享解码正控均5/5；独立几何证据确认当前生成参考与任务不符，不能只归因为缺少转换。详见 [效果报告](reports/libero_wam_effect_20261019.md)。本专项暂停物理等待推理、不使用参考过期判断，用于判断效果。`configs/libero_wam_effect_20261019.json` 冻结共享 Action128 解码的 oracle/真实 WAM 对照，`configs/libero_wam_components_20261019.json` 冻结有特权的分量干预。完整请求、原始/有效参考、物理时钟、状态摘要与实际发送命令均保留。复现入口见 [scripts](scripts/README.md)，本专项运行结果追加于本轮记录及结论。
@@ -59,12 +71,12 @@ outputs/                  数据子集、参数、完整指标及图（Git 忽�
 Python 3.11+，从本仓库执行：
 
 ```bash
-LD_LIBRARY_PATH='' python3 -m venv .venv
-LD_LIBRARY_PATH='' .venv/bin/python -m pip install -e '.[dev,report]'
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' python3 -m venv .venv
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python -m pip install -e '.[dev,report]'
 .venv/bin/ruff check src tests scripts
 .venv/bin/ruff format --check src tests scripts
-LD_LIBRARY_PATH='' .venv/bin/python -m pytest
-LD_LIBRARY_PATH='' .venv/bin/python -m build --no-isolation --wheel --outdir outputs/dist
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python -m pytest
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python -m build --no-isolation --wheel --outdir outputs/dist
 ```
 
 当前 NGC 主机也可用 `/opt/venv/bin/python -m venv --system-site-packages .venv` 继承系统 runtime 包；只向本仓库 venv 安装开发依赖，不修改共享环境。实际运行版本保存于 manifest，版本快照见 [constraints](configs/constraints_20261016.txt)；它不是跨平台完整锁文件。基础依赖只有 NumPy/SciPy/PyArrow，绘图需 `report` extra。
@@ -73,16 +85,16 @@ LD_LIBRARY_PATH='' .venv/bin/python -m build --no-isolation --wheel --outdir out
 
 ```bash
 # 完整 P0–P3：只读数据、参数选择、模型内 rollout、报告与曲线
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_experiment.py --config configs/droid_episode0.json --seed 42 --stage all --plots
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_experiment.py --config configs/droid_episode0.json --seed 42 --stage all --plots
 
 # 可单独运行 extract / analytic / calibrate；报告重绘不重新拟合或打开 test
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_experiment.py --seed 42 --stage report --plots
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_experiment.py --seed 42 --stage report --plots
 
 # 产物/实验源码指纹与 70 个 test rollout 最终命令约束（不重新拟合）
-LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_artifacts.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_artifacts.py --seed 42
 
 # 显式读取外部发布数据的集成测试
-LD_LIBRARY_PATH='' .venv/bin/python -m pytest tests -m integration --data-config configs/droid_episode0.json
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python -m pytest tests -m integration --data-config configs/droid_episode0.json
 ```
 
 默认测试不读取外部数据，集成测试标为 deselected，不算通过。显式运行时，文件缺失或契约不符会失败。所有测试临时产物位于 `outputs/pytest/`。实验产物位于 `outputs/droid_episode0/`，包括 sample/manifest/audit、analytic commands、geometry/calibration/closed-loop metrics、adapter/PID 参数、完整 traces、report、figures 和 SHA256 清单。
@@ -110,7 +122,7 @@ canonical TCP 的局部 delta 在 SE(3) 上右乘积分，再完整转换到 fla
 同型号跨数据集的解析验证入口：
 
 ```bash
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_cross_dataset.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_cross_dataset.py --seed 42
 ```
 
 名单在 [cross_dataset_franka.json](configs/cross_dataset_franka.json) 冻结，分别评估 RoboMIND-v1 的30条真实Panda日志，以及 M1/A1 的20/10条仿真日志。各自使用原始TCP/方向约定与 source row provenance，不迁移DROID控制器参数。RoboMIND master joint 另经名义Panda FK作命令代理诊断；所有结果仍属于日志验证，未执行真机或独立仿真控制。设计见 [扩展计划](plans/v0.0.1/cross_dataset_franka_plan.md)，最终指标见 `reports/cross_dataset_franka.md`。
@@ -119,15 +131,12 @@ LIBERO 的仿真入口使用独立 Python 3.11 环境，固定 MuJoCo2.3.7、rob
 
 ```bash
 # 原生expert正控、相同oracle轨迹与独立小幅运动（CPU物理仿真）
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage qualification
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage qualification
 # 旧checkpoint已保存预测的固定参考回放，不重新查询模型
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage prediction_replay
-# 先在空闲GPU上启动5个独立副本（gpu=0..4，端口8180..8184）
-LD_LIBRARY_PATH='' .venv/bin/python scripts/serve_libero_policy.py --seed 42 --gpu 0
-# 5个副本就绪后执行真实图像闭环，每trial两候选用同一副本
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage policy
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_libero_matrix.py --seed 42 --stage prediction_replay
+# 历史五副本policy启动映射已归档；后续模型任务使用上文GPU4–7编排
 # 检查所有物理步、控制约束、成对输入与指纹，再生成报告/曲线
-LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_simulation.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_simulation.py --seed 42
 ```
 
 单trial可直接用 `outputs/libero_env311/bin/python scripts/run_libero_simulation.py --seed 42 --stage oracle --candidate compensated --trial 0`，Python前仍加 `LD_LIBRARY_PATH=''`。新增仿真不读取Cosmos训练dataloader、不修改外部仓库；只有policy服务通过显式路径只读加载Cosmos推理实现和权重。policy仿真不读取专家未来状态。重跑矩阵可复用完全相同配置的已完成项；完整目录已存在但执行中断时需先归档该项，避免覆盖证据。
@@ -136,32 +145,32 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_simulation.py --see
 
 ```bash
 # 65项已见场景的时间/缓存/夹爪/arm因子对照；从clean commit执行
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --seed 42 --workers 4
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --seed 42 --workers 4
 
 # metadata预先冻结的额外10条：70项普通对照，120项压力，70项完整轨迹/终态
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_libero_holdout.py --seed 42
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_holdout_20261019.json --seed 42
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_stress_20261019.json --seed 42
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_terminal_20261019.json --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_libero_holdout.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_holdout_20261019.json --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_stress_20261019.json --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_terminal_20261019.json --seed 42
 
 # h5py和PyArrow使用各自兼容的解释器，通过outputs中的数字bridge核对R1/R2来源
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/audit_libero_provenance.py --seed 42 --stage export
-LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_libero_provenance.py --seed 42 --stage verify
-LD_LIBRARY_PATH='' .venv/bin/python scripts/prepare_libero_published.py --seed 42
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_published_20261019.json --seed 42
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_published_terminal_20261019.json --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/audit_libero_provenance.py --seed 42 --stage export
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_libero_provenance.py --seed 42 --stage verify
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/prepare_libero_published.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_published_20261019.json --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_published_terminal_20261019.json --seed 42
 
 # 保存模型目标的独立前向回放：需先完成本轮实时baseline，和实时图像闭环分开报告
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_policy_replay_20261019.json --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/run_libero_audit.py --config configs/libero_policy_replay_20261019.json --seed 42
 
 # 完整性/相同参考前缀/成对模型输入、报告及PNG/PDF
-LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_audit.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_audit.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_libero_audit.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_libero_audit.py --seed 42
 ```
 
 每个新矩阵拒绝覆盖已有目录；`--resume`仅复用配置一致、无错误且预算完整的结果。未完成目录先归档再重跑，任务失败的完整结果同样保留。`--allow-incomplete`的报告明确标记未完成，不能作为完整验收通过。
 
-新模型服务沿用 `serve_libero_policy.py`，显式传入 `--config configs/libero_policy_20261019.json --gpu 0 --port 8280 --seed 42`，其余4个副本依次对应GPU1..4/端口8281..8284；执行命令为 `run_libero_matrix.py --config configs/libero_policy_20261019.json --stage policy --seed 42`。检查模型输出合同用 `audit_libero_predictions.py --policy-config configs/libero_policy_20261019.json --seed 42`。同步推理期间暂停物理时钟，不将该评测当作真实延迟下的实时控制证明。
+2026-10-19的历史模型服务使用 `serve_libero_policy.py` 和 `configs/libero_policy_20261019.json`，当时五副本GPU/端口映射仅保留为实验记录，不能直接用于后续启动。当前模型任务使用上文GPU4–7编排。检查历史模型输出合同用 `audit_libero_predictions.py --policy-config configs/libero_policy_20261019.json --seed 42`。同步推理期间暂停物理时钟，不将该评测当作真实延迟下的实时控制证明。
 
 ### WAM checkpoint 四层验收（2026-10-19 v2）
 
@@ -177,27 +186,27 @@ mask缺陷的源码定位、已执行回归和生产移植边界见 [serving合�
 
 ```bash
 # 固定离线episode与多阶段输入；下载并校验新任务的官方数据
-LD_LIBRARY_PATH='' .venv/bin/python scripts/prepare_wam_acceptance.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/fetch_libero_acceptance_assets.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/prepare_wam_acceptance.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/fetch_libero_acceptance_assets.py --seed 42
 # 固定6个独立物理初态；执行专家command与真实state正控、独立运动参考
-LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_wam_simulation.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py --seed 42 --stage native
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py --seed 42 --stage oracle
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py --seed 42 --stage probe
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' outputs/libero_env311/bin/python scripts/prepare_wam_simulation.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py --seed 42 --stage native
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py --seed 42 --stage oracle
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py --seed 42 --stage probe
 # 对应冻结服务就绪后，每个checkpoint分别运行；一个HTTP服务只接收一个请求
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_state_matrix.py \
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_state_matrix.py \
   --config configs/wam_checkpoint_masked_20261019v2.json --seed 42 --checkpoint 8800_masked
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py \
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py \
   --config configs/wam_checkpoint_masked_20261019v2.json --seed 42 --stage wam --checkpoint 8800_masked
 # 无GPU的来源与标签检查，以及明确标注是否完整的汇总
-LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_wam_training_history.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_wam_state_labels.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/analyze_wam_acceptance.py --seed 42 --partial
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_wam_training_history.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/audit_wam_state_labels.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/analyze_wam_acceptance.py --seed 42 --partial
 # 仅在全部预注册矩阵预算完成且完整性校验通过后生成最终汇总
-LD_LIBRARY_PATH='' .venv/bin/python scripts/analyze_wam_acceptance.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/analyze_wam_acceptance.py --seed 42
 ```
 
-模型服务`serve_wam_acceptance.py`和数值审计`audit_wam_numerics.py`使用外部Cosmos的Python解释器，仅只读加载模型实现；`PYTHONPATH`显式包含外部Cosmos根目录和本仓库`src`，并设置`LD_LIBRARY_PATH=''`、`PYTHONDONTWRITEBYTECODE=1`、独立的`CUDA_VISIBLE_DEVICES`及`MASTER_PORT`。编译缓存通过`TORCHINDUCTOR_CACHE_DIR`放在本仓库`outputs`。服务参数为`--seed 42 --checkpoint 8800 --port 8594 --active-slot-mask --exact-published-caption`；数值审计参数为`--seed 42 --horizon 40 --published-caption`，`--training-backend`额外复算保存的attention和固定padding配置，需要独占GPU显存。`audit_wam_caption_contract.py`在同一外部解释器中只做CPU输入准备核验。
+模型服务`serve_wam_acceptance.py`和数值审计`audit_wam_numerics.py`使用外部Cosmos的Python解释器，仅只读加载模型实现；`PYTHONPATH`显式包含外部Cosmos根目录和本仓库`src`，并设置`LD_LIBRARY_PATH=''`、`PYTHONDONTWRITEBYTECODE=1`、显式指定单张允许物理卡4/5/6/7的`CUDA_VISIBLE_DEVICES`及独立`MASTER_PORT`。编译缓存通过`TORCHINDUCTOR_CACHE_DIR`放在本仓库`outputs`。服务参数为`--seed 42 --checkpoint 8800 --port 8594 --active-slot-mask --exact-published-caption`；数值审计参数为`--seed 42 --horizon 40 --published-caption`，`--training-backend`额外复算保存的attention和固定padding配置，需要独占GPU显存。`audit_wam_caption_contract.py`在同一外部解释器中只做CPU输入准备核验。
 
 在线只输入当前图像和简短任务指令，physics在推理期间暂停；成功以LIBERO原生谓词判定，分别报告曾成功、末端成功和抓取接触/高度/位移等连续进度。完整caption属于离线特权诊断。Study-heldout仅表示本次实验整episode隔离，当前没有证据可将其称为预训练未见数据。
 
@@ -205,21 +214,21 @@ LD_LIBRARY_PATH='' .venv/bin/python scripts/analyze_wam_acceptance.py --seed 42
 
 ```bash
 # 完整权重哈希只执行一次；DCP存储核验使用具备相同torch版本的外部模型解释器
-LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_wam_acceptance.py --seed 42 --stage fingerprint
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_wam_acceptance.py --seed 42 --stage fingerprint
 # 主矩阵全量完成、生成summary.json之后核对每条已保存响应和执行目标
-LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_wam_acceptance.py --seed 42 --stage verify
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_wam_acceptance.py --seed 42 --stage verify
 # 以下prepare仅用于全新补充输出目录，复用主实验的固定fixture和权重指纹
-LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_wam_native_horizon.py --seed 42 --prepare
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_wam_native_horizon.py --seed 42 --prepare
 # 独占同权重masked HTTP服务后，40步生成、仍执行前8步，完整12个用例
-LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py \
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/run_wam_simulation_matrix.py \
   --config configs/wam_checkpoint_native_h40_20261019v2.json --seed 42 --stage wam --checkpoint 8800_masked
-LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_wam_native_horizon.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_wam_acceptance.py \
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/summarize_wam_native_horizon.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/verify_wam_acceptance.py \
   --config configs/wam_checkpoint_native_h40_20261019v2.json --seed 42 --stage verify
-LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_wam_acceptance.py --seed 42
-LD_LIBRARY_PATH='' .venv/bin/python scripts/report_wam_checkpoint_acceptance.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/plot_wam_acceptance.py --seed 42
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python scripts/report_wam_checkpoint_acceptance.py --seed 42
 ```
 
-H16是四checkpoint的同协议主对照，H40是最新8800的训练原生窗口诊断；二者分开报告。`--job-indices`只分割不重叠的用例集合，`--server-port`可接入已验证逐项复现相同输出的服务副本，不改变采样和控制参数。`scripts/schedule_wam_replica.py`是本轮已记录进程与分组的专用资源调度入口，不作为新机器上的通用启动器。
+H16是四checkpoint的同协议主对照，H40是最新8800的训练原生窗口诊断；二者分开报告。`--job-indices`只分割不重叠的用例集合，`--server-port`可接入已验证逐项复现相同输出的服务副本，不改变采样和控制参数。`scripts/schedule_wam_replica.py`与`scripts/schedule_wam_native_horizon.py`保留历史八卡分片，后续不可直接启动；复跑须先制定并记录只用物理4–7的新资源编排，不能只改卡号而遗漏用例。
 
 最终报告入口要求主矩阵和H40补充的完整汇总及独立完整性检查均完成，重新核对已保存文件指纹和90条/51480物理步预算，拒绝覆盖报告。任务谓词、参考跟踪及目标物体接触/高度/位移分别呈现，不能将位移或接触自动计作成功。

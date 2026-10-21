@@ -1,0 +1,34 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/sampler_steps_state/8400_steps140",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoints": [
+    {
+      "name": "8400_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008400",
+      "gpu": 6,
+      "port": 9566
+    }
+  ],
+  "offline_horizons": [
+    40
+  ],
+  "offline_prompt_modes": [
+    "task_only"
+  ],
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "sampling_steps": 140,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "control_fps": 20,
+  "source_samples_manifest": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_checkpoint_acceptance_20261019v2/samples/manifest.json",
+  "notes": [
+    "011 frozen state-only sampler-step study: 140 steps, unchanged8400/g1/shift5/H40, original24 cases/seeds42/43,48requests.",
+    "Shared single traced service on physicalGPU6/9566;35 exact admission precedes70/140 and actual sampler state SHA must pair. No physics/fresh."
+  ]
+}

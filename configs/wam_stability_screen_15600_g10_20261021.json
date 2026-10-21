@@ -1,0 +1,37 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/screening/15600_g10",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoints": [
+    {
+      "name": "15600_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_23src_20261015_warm_start_from22src_i8800_run01/cosmos3_action/action128/action128_wam_nano_1b_23src_20261015_warm_start_from22src_20261012_i8800_from12src_e2aux345_i6200_videocap30_static_vae_aot_run1",
+      "iteration": "iter_000015600",
+      "gpu": 6,
+      "port": 9166
+    }
+  ],
+  "offline_horizons": [
+    40
+  ],
+  "offline_prompt_modes": [
+    "task_only"
+  ],
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "control_fps": 20,
+  "source_samples_manifest": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_checkpoint_acceptance_20261019v2/samples/manifest.json",
+  "notes": [
+    "Frozen009 latest-complete discovery screen:23-source FastUMI continuation iter15600 nonEMA; latest is a discovered timestamped identity, never a best-weight designation.",
+    "Exactly the original24 diagnostic samples/6episodes/22distinct anchors,task-only,H40,seed42/43,35steps,guidance1.0,shift5,20Hz;48new model queries and0physics steps. No fresh initial-state performance or training.",
+    "Same run/action128/domain/camera/TCP contract as15400; complete checkpoint bytes/config/save_complete must be fingerprinted and stat-checked before model start. Input arrays/PNGs identical to prior screens.",
+    "Only physicalGPU6/port9166,CPU coordinator CUDA/LD empty. Existing GPU4/5/7 model pilots complete unchanged; no0-3 use.",
+    "No automatic task pilot or short-replan promotion follows this screen. Compare complete state results before selecting another model candidate."
+  ]
+}

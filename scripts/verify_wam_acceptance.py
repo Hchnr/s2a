@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -43,6 +44,65 @@ def fingerprint(c, root):
     write_json(destination, dict(code=code_fingerprint(), checkpoints=weights))
 
 
+def verify_object_progress(result, steps):
+    """Bind each recorded object's progress to its endpoint log, not geometry."""
+    summary_fields = {"grasp_contact_steps", "max_height_gain_m", "max_displacement_m"}
+    step_fields = {"position", "grasp_contact", "height_gain_m", "displacement_m"}
+    summaries = result.get("object_progress")
+    if not steps or not isinstance(summaries, dict) or not summaries:
+        raise ValueError("object progress requires nonempty summaries and endpoint logs")
+
+    def finite_number(value):
+        try:
+            return type(value) in (int, float) and math.isfinite(value)
+        except OverflowError:
+            return False
+
+    observed = {
+        name: dict(grasp_contact_steps=0, max_height_gain_m=-math.inf, max_displacement_m=-math.inf)
+        for name in summaries
+    }
+    for row in steps:
+        objects = row.get("objects")
+        if not isinstance(objects, dict) or set(objects) != set(summaries):
+            raise ValueError("object progress object set differs between summaries and endpoint logs")
+        for name, obj in objects.items():
+            if not isinstance(obj, dict) or set(obj) != step_fields:
+                raise ValueError(f"object progress endpoint schema differs: {name}")
+            position = obj["position"]
+            if (
+                not isinstance(position, list)
+                or len(position) != 3
+                or not all(finite_number(value) for value in position)
+                or type(obj["grasp_contact"]) is not bool
+                or not finite_number(obj["height_gain_m"])
+                or not finite_number(obj["displacement_m"])
+                or obj["displacement_m"] < 0
+            ):
+                raise ValueError(f"object progress endpoint has invalid boolean/finite physical fields: {name}")
+            accumulated = observed[name]
+            accumulated["grasp_contact_steps"] += obj["grasp_contact"]
+            accumulated["max_height_gain_m"] = max(accumulated["max_height_gain_m"], obj["height_gain_m"])
+            accumulated["max_displacement_m"] = max(accumulated["max_displacement_m"], obj["displacement_m"])
+    for name, summary in summaries.items():
+        if (
+            not isinstance(summary, dict)
+            or set(summary) != summary_fields
+            or type(summary["grasp_contact_steps"]) is not int
+            or not 0 <= summary["grasp_contact_steps"] <= len(steps)
+            or not finite_number(summary["max_height_gain_m"])
+            or not finite_number(summary["max_displacement_m"])
+            or summary["max_displacement_m"] < 0
+        ):
+            raise ValueError(f"object progress summary schema or boolean/finite fields differ: {name}")
+        expected = observed[name]
+        if summary["grasp_contact_steps"] != expected["grasp_contact_steps"] or any(
+            not math.isclose(summary[key], expected[key], rel_tol=0, abs_tol=1e-12)
+            for key in ("max_height_gain_m", "max_displacement_m")
+        ):
+            raise ValueError(f"object progress summary differs from endpoint logs: {name}")
+
+
 def verify_case(path, c, fixtures, variants):
     """Reject inconsistent protocol, response identity, target decoding or budget."""
     result = json.loads(path.read_text())
@@ -50,6 +110,20 @@ def verify_case(path, c, fixtures, variants):
     config = manifest["config"]
     record = fixtures[result["record"]]
     source = result["source"]
+    if source not in ("native", "oracle", "wam", "probe"):
+        raise ValueError("unknown physics source")
+    if source == "wam":
+        label = result["checkpoint"]
+        if label not in variants:
+            raise ValueError("unknown physics checkpoint")
+    else:
+        if result["checkpoint"] is not None:
+            raise ValueError("non-WAM physics case has a checkpoint")
+        label = source
+        if source == "probe":
+            label += "_" + manifest["probe"]["name"]
+    if path.parent.parent.name != label or path.parent.name != f"{record['name']}_s{result['sampling_seed']}":
+        raise ValueError("physics directory source/checkpoint or case identity differs")
     if manifest["record"] != record or manifest["source"] != source:
         raise ValueError("physics fixture/source identity changed")
     if result["error"] is not None or result["steps"] != result["expected_steps"]:
@@ -76,6 +150,7 @@ def verify_case(path, c, fixtures, variants):
     np.testing.assert_allclose([r["actual_dt"] for r in steps], 1 / c["control_fps"], atol=1e-10, rtol=0)
     if result["success"] != any(r["success"] for r in steps) or result["terminal_success"] != steps[-1]["success"]:
         raise ValueError("success summary differs from native step predicates")
+    verify_object_progress(result, steps)
     files = {
         str(p): sha256(p)
         for p in (
@@ -123,13 +198,39 @@ def verify_case(path, c, fixtures, variants):
                 response_path = path.with_name(f"response_{i:04d}.json")
                 request = json.loads(request_path.read_text())
                 response = json.loads(response_path.read_text())
-                if request["prompt"] != record["task"] or request["seed"] != result["sampling_seed"]:
-                    raise ValueError("online input task/seed differs")
-                if (
-                    request["action_chunk_size"] != c["online_chunk_size"]
-                    or request["extra"]["action128"]["task_title"] != record["task"]
-                ):
-                    raise ValueError("online conditioning differs")
+                expected_request = dict(
+                    name=f"s2a_{path.parent.name}_{i}",
+                    model_mode="wam",
+                    prompt=record["task"],
+                    domain_name="franka_panda__parallel_gripper",
+                    image_size=960,
+                    action_chunk_size=c["online_chunk_size"],
+                    fps=c["control_fps"],
+                    num_frames=c["online_chunk_size"] + 1,
+                    seed=result["sampling_seed"],
+                    num_steps=c["sampling_steps"],
+                    guidance=c["guidance"],
+                    shift=c["shift"],
+                    extra={
+                        "action128": dict(
+                            action_domain=config["action_domain"],
+                            action_dim_mask=[True] * 10 + [False] * 118,
+                            action_fps=c["control_fps"],
+                            task_title=record["task"],
+                            selected_roles=["auxiliary_0", "left_wrist"],
+                            camera_layout=[["auxiliary_0", "top", 640, 480], ["left_wrist", "bottom", 640, 480]],
+                            return_video=config.get("return_video", True),
+                        )
+                    },
+                )
+                if set(request) != set(expected_request) | {"vision_path"}:
+                    raise ValueError("online conditioning fields differ")
+                for key, value in expected_request.items():
+                    if request.get(key) != value:
+                        raise ValueError(f"online conditioning differs: {key}")
+                image_path = path.with_name(f"input_{i:04d}.png")
+                if Path(request["vision_path"]).resolve() != image_path.resolve():
+                    raise ValueError("online input does not reference the current chunk image")
                 if response["status"] != "success":
                     raise ValueError("online response failed")
                 content = response["outputs"][0]["content"]
@@ -139,10 +240,12 @@ def verify_case(path, c, fixtures, variants):
                 ):
                     raise ValueError("online response checkpoint/seed differs")
                 np.testing.assert_array_equal(content["action"], chunk["actions"])
-                pixels = np.asarray(Image.open(path.with_name(f"input_{i:04d}.png")))
+                pixels = np.asarray(Image.open(image_path))
+                if pixels.shape != (960, 640, 3) or pixels.dtype != np.uint8:
+                    raise ValueError("online input is not a 960x640 RGB uint8 canvas")
                 if sha256_bytes(pixels.tobytes()) != chunk["image_sha256"]:
                     raise ValueError("online input pixels changed")
-                for p in (request_path, response_path, path.with_name(f"input_{i:04d}.png")):
+                for p in (request_path, response_path, image_path):
                     files[str(p)] = sha256(p)
         files[str(path.with_name("chunks.json"))] = sha256(path.with_name("chunks.json"))
     return dict(

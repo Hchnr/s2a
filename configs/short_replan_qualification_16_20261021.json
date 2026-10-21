@@ -1,0 +1,87 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/short_replan_qualification/interval16",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "fixture": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json",
+  "fixture_sha256": "f522ee333827d51ab66b5b8d1c2a7ebd8ceca3832403b3c54dfa56a821fb2a8e",
+  "records": [
+    "task0_init0",
+    "task1_init0",
+    "task2_init0"
+  ],
+  "sampling_seeds": [
+    42
+  ],
+  "oracle_reference_root": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/native",
+  "online_max_steps": 600,
+  "online_chunk_size": 40,
+  "online_execution_horizon": 40,
+  "max_observation_interval_steps": 16,
+  "stable_success_last_steps": 40,
+  "control_fps": 20,
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "gripper_intent_hold": {
+    "reference_hysteresis": 0.02,
+    "release_margin": 0.04,
+    "release_excursion": 0.04,
+    "release_confirmation_s": 0.05,
+    "motor_limit_tolerance": 0.005,
+    "max_evidence_interval_s": 0.1
+  },
+  "reference_governor": {
+    "max_translation_speed_m_s": 0.2,
+    "max_rotation_speed_rad_s": 1.0,
+    "max_opening_speed_s": 2.0,
+    "position_soft_m": 0.01,
+    "position_stop_m": 0.04,
+    "rotation_soft_rad": 0.1,
+    "rotation_stop_rad": 0.4
+  },
+  "variants": [
+    {
+      "name": "position_hold",
+      "rotation": "response",
+      "gripper": "position_hold",
+      "governor": false,
+      "model_rotation_alpha": 1
+    },
+    {
+      "name": "recovering_position_hold",
+      "rotation": "response",
+      "gripper": "position_hold",
+      "governor": "recovering",
+      "model_rotation_alpha": 1
+    }
+  ],
+  "notes": [
+    "Frozen007 CPU-only qualification interval16: position_hold and recovering_position_hold,three originaltask/init0/s42 scenes each;six600-step oracle trials,zero model calls.",
+    "H40 and execution horizon40 remain unchanged. Only physical reobservation interval changes from80 to8/16. Independent source/clock/controller/motor replay required; every case stablelast40 and canonical TCP<=10mm/SO3<=.05rad.",
+    "No WAM performance budget or fresh initial-state evaluation is authorized by this qualification config. Preserve original004/005/006 source and protocol bytes; same physical executor."
+  ],
+  "gripper_position_hold": {
+    "reference_hysteresis": 0.02,
+    "release_margin": 0.04,
+    "release_excursion": 0.04,
+    "release_confirmation_s": 0.05,
+    "motor_limit_tolerance": 0.005,
+    "max_evidence_interval_s": 0.1,
+    "close_threshold": 0.6,
+    "motor_deadband": 0.07
+  },
+  "qualification": {
+    "workers": 2,
+    "expected_cases": 6,
+    "expected_physics_steps": 3600,
+    "position_rmse_max_m": 0.01,
+    "rotation_rmse_max_rad": 0.05,
+    "timing_reference_interval_steps": 80,
+    "preexisting_qualification": "outputs/wam_stability_20261021/gripper_position_hold_qualification/qualification_independent_verification.json"
+  }
+}

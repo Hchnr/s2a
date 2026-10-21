@@ -1,0 +1,217 @@
+{
+  "seed": 42,
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "tasks": [
+    "put the bowl on the plate",
+    "put the wine bottle on the rack",
+    "put the cream cheese in the bowl"
+  ],
+  "simulation_sources": [
+    "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/data/put_the_bowl_on_the_plate_demo.hdf5",
+    "outputs/wam_checkpoint_acceptance_20261019v2/assets/put_the_wine_bottle_on_the_rack_demo.hdf5",
+    "outputs/wam_checkpoint_acceptance_20261019v2/assets/put_the_cream_cheese_in_the_bowl_demo.hdf5"
+  ],
+  "output_dir": "outputs/wam_stability_20261021/fresh_acceptance_reservation",
+  "online_initial_states_per_task": 4,
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "online_max_steps": 600,
+  "stable_success_last_steps": 40,
+  "acceptance": {
+    "stable_success_last_steps": 40,
+    "reliable_overall_fraction": 0.8,
+    "reliable_each_task_fraction": 0.5,
+    "note": "Operational threshold fixed before results; report uncertainty over initial states, seeds are repeated trials not independent scenes."
+  },
+  "excluded_demos_by_task": [
+    [
+      "demo_0",
+      "demo_3",
+      "demo_4",
+      "demo_7",
+      "demo_9",
+      "demo_12",
+      "demo_13",
+      "demo_15",
+      "demo_16",
+      "demo_18",
+      "demo_22",
+      "demo_26",
+      "demo_27",
+      "demo_30",
+      "demo_32",
+      "demo_33",
+      "demo_34",
+      "demo_37",
+      "demo_38",
+      "demo_39",
+      "demo_41",
+      "demo_43",
+      "demo_44",
+      "demo_47",
+      "demo_49"
+    ],
+    [
+      "demo_2",
+      "demo_4",
+      "demo_9",
+      "demo_21",
+      "demo_24",
+      "demo_26",
+      "demo_27",
+      "demo_32",
+      "demo_49"
+    ],
+    [
+      "demo_4",
+      "demo_7",
+      "demo_14",
+      "demo_24",
+      "demo_25",
+      "demo_27",
+      "demo_33",
+      "demo_34",
+      "demo_38"
+    ]
+  ],
+  "previous_simulation_fixtures": [
+    "outputs/wam_checkpoint_acceptance_20261019v2/native_horizon40/simulation/fixtures.json",
+    "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json",
+    "outputs/wam_horizon_diagnosis_20261020/execute16/simulation/fixtures.json",
+    "outputs/wam_horizon_diagnosis_20261020/execute40/simulation/fixtures.json",
+    "outputs/wam_independent_20261020/simulation/fixtures.json"
+  ],
+  "exclusion_sources": [
+    "configs/libero_audit_20261019.json",
+    "configs/libero_followup_20261019.json",
+    "configs/libero_holdout_20261019.json",
+    "configs/libero_policy_20261019.json",
+    "configs/libero_policy_replay_20261019.json",
+    "configs/libero_provenance_20261019.json",
+    "configs/libero_published_20261019.json",
+    "configs/libero_published_terminal_20261019.json",
+    "configs/libero_simulation.json",
+    "configs/libero_stress_20261019.json",
+    "configs/libero_terminal_20261019.json",
+    "configs/libero_wam_components_20261019.json",
+    "configs/libero_wam_effect_20261019.json",
+    "configs/libero_wam_state_comparison_20261019.json",
+    "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json",
+    "outputs/wam_checkpoint_acceptance_20261019v2/native_horizon40/simulation/fixtures.json",
+    "outputs/wam_horizon_diagnosis_20261020/execute16/simulation/fixtures.json",
+    "outputs/wam_horizon_diagnosis_20261020/execute40/simulation/fixtures.json",
+    "outputs/wam_independent_20261020/simulation/fixtures.json",
+    "configs/wam_independent_20261020.json",
+    "plans/v0.0.1/002_wam_stability_20261021.md",
+    "plans/v0.0.1/003_wam_recovery_20261021.md",
+    "outputs/wam_stability_20261021/fresh_offline_episode_exclusion/matches.json",
+    "outputs/wam_stability_20261021/fresh_offline_episode_exclusion/strict_subsequence_followup.json",
+    "outputs/wam_stability_20261021/fresh_offline_episode_exclusion/partial_native_four_column_identity.json",
+    "outputs/wam_stability_20261021/fresh_offline_episode_exclusion/draft_before_conservative_exclusion.json"
+  ],
+  "scope": "Metadata-only reservation of new physical initial states. No model inference, physics evaluation, candidate selection or task-success claim.",
+  "candidate_status": "Not selected; no evaluation allowed before a frozen candidate protocol and independent source review. No claim of pretraining-unseen data.",
+  "qualification_and_wam_evaluation_not_started": true,
+  "pretraining_visibility": "Unknown: exclusion is from prior S2A development/evaluation only.",
+  "offline_source_exclusion_records": [
+    {
+      "r1_episode": 716,
+      "task_index": 0,
+      "demo": "demo_44",
+      "basis": "unique full10 projected native commands",
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 642,
+      "task_index": 0,
+      "demo": "demo_41",
+      "basis": "unique full10 projected native commands",
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 801,
+      "task_index": 0,
+      "demo": "demo_32",
+      "basis": "unique full10 projected native commands",
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 670,
+      "task_index": 0,
+      "demo": "demo_16",
+      "basis": "unique full10 projected native commands",
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 429,
+      "task_index": 1,
+      "demo": "demo_2",
+      "basis": "unique full10 projected native commands",
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 695,
+      "task_index": 1,
+      "demo": "demo_24",
+      "basis": "unique full10 projected native commands",
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 403,
+      "task_index": 1,
+      "demo": "demo_27",
+      "basis": "unique full10 projected native commands",
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 683,
+      "task_index": 1,
+      "demo": "demo_4",
+      "basis": "unique full10 projected native commands",
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 756,
+      "task_index": 2,
+      "demo": "demo_14",
+      "basis": "unique full10 projected native commands",
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 434,
+      "task_index": 2,
+      "demo": "demo_25",
+      "basis": "unique strict full-command continuous subsequence; initial identity remains unproven",
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 384,
+      "task_index": 2,
+      "demo": "demo_27",
+      "basis": "conservatively excluded suspected source: unique full-length XYZ+gripper match, rotation identity unproven",
+      "rotation_max_abs": 0.007499593805587586,
+      "initial_sync_certified": false
+    },
+    {
+      "r1_episode": 720,
+      "task_index": 2,
+      "demo": "demo_24",
+      "basis": "conservatively excluded suspected source: unique full-length XYZ+gripper match, rotation identity unproven",
+      "rotation_max_abs": 0.007499929517507553,
+      "initial_sync_certified": false
+    }
+  ],
+  "offline_source_evidence_sha256": {
+    "outputs/wam_stability_20261021/fresh_offline_episode_exclusion/matches.json": "d82b21ef391c97f79a009899afdd3752d78b5c1bc1fe0cfb301d41155b80d413",
+    "outputs/wam_stability_20261021/fresh_offline_episode_exclusion/strict_subsequence_followup.json": "d9543efbc344ee433be245cfef684d13fe772b35c6bd5f4e494804509369c382",
+    "outputs/wam_stability_20261021/fresh_offline_episode_exclusion/partial_native_four_column_identity.json": "3c6df9fa3fa1478510406573eb3c99eae4a96c58e8dd778fcd7a067600cca90c",
+    "outputs/wam_stability_20261021/fresh_offline_episode_exclusion/draft_before_conservative_exclusion.json": "fc4780050e6b187897ffa7a22c0bbdfc92e8a46f01b032c279b9731ced52b8fc"
+  },
+  "source_exclusion_scope": "Previous physical initial-state SHA plus conservative exclusion of all uniquely linked or suspected historical offline source demos. Two rotation identities and historical image/pose/initial physical synchronization remain unproven.",
+  "full_native_rotation_identity_complete": false,
+  "historical_initial_physical_synchronization_certified": false,
+  "preparation_scope": "Metadata-only fixture reservation, no performance-based selection. No WAM query or physics steps. Candidate/acceptance configuration is frozen later before any qualification/evaluation here."
+}

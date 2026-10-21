@@ -1,0 +1,13 @@
+# 8400 连续开度映射对照 — 2026-10-21（Asia/Shanghai）
+
+状态：条件预算冻结，原8400十二条完整独立审计和GPU4正常释放前不启动。本计划追加12条，不改变正在GPU5/7执行的005原24条及其分母。
+
+8400在相同六episode/22 distinct anchors的state诊断中H8/H16三指标最低；此前已据此冻结四variant×三旧场景的12条任务对照。最后alpha0/cream的原始result现记录末40稳定成功，完整批次审计尚在执行；raw alpha1各组前述六条仍无成功。这支持检验同一8400对新夹爪映射的响应，不支持整体稳定或完整WAM朝向能力结论。
+
+采用已通过004九条oracle资格的相同执行函数、固定GripperPositionHold参数和005四variant，不以这次成功的cream任务单独选择场景：position_hold、recovering_position_hold、recovering_position_hold_alpha05、recovering_position_hold_alpha0，全部保留bowl/wine/cream init0、sampling42。权重仅旧22源iter8400，guidance1.0，H40/20Hz、execute40、maxobs80、600实际步、stablelast40、35采样步/shift5、OSC inverse_weight.5/rate5不变。原生task/contact仅作为事后指标，不参与控制或停止。
+
+预算共12条/7200物理步，最多180个H40模型请求。只在物理GPU4/port9344启动自有单卡模型，CPU编排/OSMesa空CUDA与LD_LIBRARY_PATH，GPU6继续空闲。原8400十二条必须完整审计通过且自有模型PID/startticks退出、release正常、GPU4空闲；004主核验与qpos补核及其434输入SHA必须再次通过。配置/执行源码/权重绑定现有完整指纹；使用已冻结的position执行器，不修改其依赖。若上述任一门禁失败，保留失败证据并不启动。
+
+与同8400原v2四方式逐scene比较，首个query输入PNG及完整40×128原始预测须精确相同；后续闭环输入会因夹爪/机器人状态变化而分叉。alpha.5/0仍明确为模型参考干预，alpha0保持每query实测anchor朝向，不是全episode固定朝向，也不是raw full-checkpoint成绩。
+
+这12条是旧初态开发对照，不能代替预留新初态验收，不依据单个成功seed拼接候选。全部12完成后独立审计、完整报告；后续是否冻结到新初态仍取决于一致的多任务能力证据，不自动追加其他预算。
