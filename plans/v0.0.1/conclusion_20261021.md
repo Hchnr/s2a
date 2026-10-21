@@ -65,3 +65,8 @@
 
 
 017现已完成前600可比性里程碑：三任务1800实际端点及225完整query图像/raw/normalized与旧raw8全部canonical精确，30秒仍1/3（仅bowl），1200结果未定。并行[018角漂移缓存诊断](018_rotation_drift_diagnostic_20261021.md)只研究六旧episode的三参数世界旋转偏置，19fit/0模型/0物理，需整episode留出优于无WAM/打乱/保持/历史外推才有进一步验证资格；模块6项几何测试已通过，真实拟合尚未开始。它改变模型参考，不能认证原checkpoint，且不改正在跑的017。
+
+
+024当前8400/正确三任务task-only/H40/mask10专项现完整通过：27个实际前向及18组真实future训练loss独立重算，匹配训练/推理conditional的有效velocity逐值相同。实际wait0、owned reaped、GPU6显存0及外部tracked源码身份未变均确认，见[正式报告](../../reports/wam_current_training_inference_numerics_20261021.md)。这补上当前覆盖的数值一致性证据；只检查三个已查看样本和三sigma，不认证完整历史训练、生成质量或任务稳定性。
+
+下一干预[025冻结主体readout](025_frozen_wam_readout_20261021.md)已事前登记、正在完成实现，真实feature/fit/完整采样尚未执行：固定6训练EP/6开发验证EP、12,810参数LIBERO专用输出残差及bias对照，先量化teacher门槛，后条件96次完整state生成。原WAM冻结，不修改26其它domain共享的projection0；新adapter是模型适配，不把潜在收益记为原checkpoint或S2A转换有效。TorchFP64→BF16双舍入已按[数值补充](025_bfloat16_rounding_addendum_20261021.md)实现数学单次ties-even，指定GPU6的真实合成CPU/CUDA bitwise对照通过；这不是任务成功证据。当前稳定目标仍未达，预留新12初态×2seed性能继续未打开。

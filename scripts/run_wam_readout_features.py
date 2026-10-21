@@ -163,9 +163,8 @@ def teacher_anchor(service, prepared, anchor, entries, directory, counter, hook,
         raise ValueError("025 teacher actual domain/task condition differs")
     with np.load(anchor["arrays_path"], allow_pickle=False) as source:
         frame = anchor["anchor_frame"]
-        frames = np.stack(
-            [canvas([source[role][j] for role in ("auxiliary_0", "left_wrist")]) for j in range(frame, frame + 41)]
-        )
+        cameras = {role: source[role][frame : frame + 41].copy() for role in ("auxiliary_0", "left_wrist")}
+        frames = np.stack([canvas([cameras[role][j] for role in ("auxiliary_0", "left_wrist")]) for j in range(41)])
         physical = source["actions"][frame : frame + 40].copy()
         valid_np = source["action_mask"][frame : frame + 40] & source["action_valid"][frame : frame + 40, None]
     if physical.shape != (40, 128) or not np.array_equal(valid_np, np.broadcast_to(ACTIVE_MASK, (40, 128))):
