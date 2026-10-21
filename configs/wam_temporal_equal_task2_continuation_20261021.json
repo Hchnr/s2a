@@ -1,0 +1,86 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/temporal_equal_development/task2_continuation",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "fixture": "outputs/wam_checkpoint_acceptance_20261019v2/simulation/fixtures.json",
+  "fixture_sha256": "f522ee333827d51ab66b5b8d1c2a7ebd8ceca3832403b3c54dfa56a821fb2a8e",
+  "records": [
+    "task2_init0"
+  ],
+  "sampling_seeds": [
+    42
+  ],
+  "online_max_steps": 600,
+  "online_chunk_size": 40,
+  "online_execution_horizon": 40,
+  "max_observation_interval_steps": 8,
+  "stable_success_last_steps": 40,
+  "control_fps": 20,
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "inverse_weight": 0.5,
+  "max_command_rate": 5.0,
+  "opening_hysteresis": 0.02,
+  "gripper_intent_hold": {
+    "reference_hysteresis": 0.02,
+    "release_margin": 0.04,
+    "release_excursion": 0.04,
+    "release_confirmation_s": 0.05,
+    "motor_limit_tolerance": 0.005,
+    "max_evidence_interval_s": 0.1
+  },
+  "reference_governor": {
+    "max_translation_speed_m_s": 0.2,
+    "max_rotation_speed_rad_s": 1.0,
+    "max_opening_speed_s": 2.0,
+    "position_soft_m": 0.01,
+    "position_stop_m": 0.04,
+    "rotation_soft_rad": 0.1,
+    "rotation_stop_rad": 0.4
+  },
+  "variants": [
+    {
+      "name": "temporal_equal",
+      "rotation": "response",
+      "gripper": "position_hold",
+      "governor": false,
+      "model_rotation_alpha": 1.0
+    }
+  ],
+  "notes": [
+    "020 fixed causal equal-weight world references for identical absolute physical endpoints; raw128 preserved; this changes the reference, not pure checkpoint output.",
+    "600steps/H40/requery8/20Hz; v3/noGov/.5inverse/rate5 unchanged;0fit/no hyperparameter grid/no task/object/contact inputs.",
+    "Three privileged oracle qualifications first, then conditional3 WAM only after019 normal completion/release. No automatic retry/overwrite/fresh.",
+    "021 explicit one-time continuation of task2 startup failure before any environment or generation; original errors retained; same effect parameters and remaining600steps/75queries; GPU6/9946/new output; no automatic retry."
+  ],
+  "checkpoints": [
+    {
+      "name": "8400_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008400",
+      "gpu": 6,
+      "port": 9946
+    }
+  ],
+  "gripper_position_hold": {
+    "reference_hysteresis": 0.02,
+    "release_margin": 0.04,
+    "release_excursion": 0.04,
+    "release_confirmation_s": 0.05,
+    "motor_limit_tolerance": 0.005,
+    "max_evidence_interval_s": 0.1,
+    "close_threshold": 0.6,
+    "motor_deadband": 0.07
+  },
+  "model_reference_label": "causal_temporal_equal_ensemble",
+  "reference_ensemble": {
+    "horizon_steps": 40,
+    "query_interval_steps": 8,
+    "identity_atol": 1e-12,
+    "minimum_singular_value": 1e-06,
+    "method": "uniform_chordal_world_same_endpoint"
+  }
+}
