@@ -1,0 +1,36 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/static_command_state/expanded",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoints": [
+    {
+      "name": "8400_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008400",
+      "gpu": 7,
+      "port": 10047
+    }
+  ],
+  "offline_horizons": [
+    40
+  ],
+  "offline_prompt_modes": [
+    "published_caption"
+  ],
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "control_fps": 20,
+  "source_samples_manifest": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_checkpoint_acceptance_20261019v2/samples/manifest.json",
+  "notes": [
+    "022 fixed8400/g1 static command diagnosis;6old development episodes/24phase samples/22anchors;no fresh.",
+    "Reproduce48 task-only queries exactly before48 static expanded-command queries;seed42/43/H40/s35/shift5/SDPA/mask10;0physics/fit;GPU7only/10047.",
+    "Expanded prompt contains one fixed command per task, selected as first original manifest published H40 command; no task_plan/current_subtask/phase selection. Actual caption ledger must prove command is the only condition difference.",
+    "No automatic retry, condition grid, physical trial or fresh performance in this state-only protocol."
+  ]
+}
