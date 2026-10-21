@@ -19,6 +19,8 @@ PLAN = REPO / "plans/v0.0.1/029_free_trajectory_diagnostic_20261021.md"
 PLAN_SHA = "3616046f32d6baa6939b02ecab619c31297c9b187cc26b50520f9a38a8b4b731"
 ADDENDUM = REPO / "plans/v0.0.1/029_scalar_promotion_addendum_20261021.md"
 ADDENDUM_SHA = "a83792831cd9aefd31adfb3b6f92827171411b087cd91d084f8fd98a5142ca6d"
+SOURCE_ADDENDUM = REPO / "plans/v0.0.1/029_source_revision_addendum_20261021.md"
+SOURCE_ADDENDUM_SHA = "4abe4742eaee961d371f129031d79fa41d3c3a1ea8252defa5b37c4da74b7946"
 UNIT = REPO / "outputs/wam_stability_20261021/free_trajectory_arithmetic_unit_observer/model_python_cpu_scalar.json"
 UNIT_SHA = "20622da8808d62e8d45db32993dcf138593f34b8d97404bbf3c5d9db758eb018"
 BACKEND_CONTRACT = dict(
@@ -173,11 +175,13 @@ def read_prepared(path, digest):
         and prepared["numerical_addendum_ref"] == dict(path=str(ADDENDUM), sha256=ADDENDUM_SHA)
         and prepared["scalar_promotion_unit_ref"] == dict(path=str(UNIT), sha256=UNIT_SHA)
         and prepared["backend_arithmetic_contract"] == BACKEND_CONTRACT
-        and len(prepared["source_sha256"]) == len(prepared["snapshot_sha256"]) == 110,
+        and prepared.get("source_revision_ref") == dict(path=str(SOURCE_ADDENDUM), sha256=SOURCE_ADDENDUM_SHA)
+        and len(prepared["source_sha256"]) == len(prepared["snapshot_sha256"]) == 111,
         "029 preparation/registration/source closure differs",
     )
     evidence.check(PLAN, PLAN_SHA)
     evidence.check(ADDENDUM, ADDENDUM_SHA)
+    evidence.check(SOURCE_ADDENDUM, SOURCE_ADDENDUM_SHA)
     for key in ("input_sha256", "source_sha256", "snapshot_sha256"):
         for filename, expected in prepared[key].items():
             evidence.check(filename, expected)
@@ -186,7 +190,10 @@ def read_prepared(path, digest):
         external_identity(prepared["config"]["cosmos_repo"]) == prepared["external_cosmos"],
         "029 external source differs",
     )
-    require(Path(prepared["output_root"]) == REPO / prepared["config"]["output_dir"], "029 output root differs")
+    require(
+        Path(prepared["output_root"]) == REPO / (prepared["config"]["output_dir"] + "_source_v2"),
+        "029 registered source_v2 output root differs",
+    )
     return prepared
 
 
@@ -200,6 +207,7 @@ def prepare():
     config = evidence.json(CONFIG, CONFIG_SHA)
     evidence.check(PLAN, PLAN_SHA)
     evidence.check(ADDENDUM, ADDENDUM_SHA)
+    evidence.check(SOURCE_ADDENDUM, SOURCE_ADDENDUM_SHA)
     unit = evidence.json(UNIT, UNIT_SHA)
     require(
         unit["torch_version"] == "2.10.0+cu130"
@@ -229,7 +237,7 @@ def prepare():
             "include/ATen/OpMathType.h",
         )
     ]
-    root = REPO / config["output_dir"]
+    root = REPO / (config["output_dir"] + "_source_v2")
     require(root.is_relative_to(REPO / "outputs") and not root.exists(), "029 refuses existing/non-output root")
     refs = {k: reference(REPO / config[f"source_state_{k}"]) for k in STATE_REFS}
     values = {k: evidence.json(refs[k]["path"], config[f"source_state_{k}_sha256"]) for k in STATE_REFS}
@@ -258,10 +266,10 @@ def prepare():
     )
     anchors, free, teacher, nodes = rosters(source, values["sampling"], config, evidence)
     sources = dict(source["source_sha256"])
-    for name in (*NEW_SOURCES, str(CONFIG), str(PLAN), str(ADDENDUM)):
+    for name in (*NEW_SOURCES, str(CONFIG), str(PLAN), str(ADDENDUM), str(SOURCE_ADDENDUM)):
         p = REPO / name
         sources[str(p.resolve())] = sha256(evidence.check(p))
-    require(len(sources) == 110, "029 requires original96 plus new11, plan/config and numerical addendum")
+    require(len(sources) == 111, "029 requires original96 plus new11, plan/config and two addenda")
     weight_stats(source["weight_files"])
     require(external_identity(config["cosmos_repo"]) == source["external_cosmos"], "029 external source differs")
     directory = root / "preparation"
@@ -292,6 +300,7 @@ def prepare():
         config_ref=reference(CONFIG),
         registration=reference(PLAN),
         numerical_addendum_ref=reference(ADDENDUM),
+        source_revision_ref=reference(SOURCE_ADDENDUM),
         scalar_promotion_unit_ref=reference(UNIT),
         torch_arithmetic_inputs=arithmetic_inputs,
         backend_arithmetic_contract=BACKEND_CONTRACT,
