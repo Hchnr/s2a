@@ -6,6 +6,8 @@
 
 原WAM保持22-source non-EMA8400/H40/20Hz/guidance1/35steps/shift5/SDPA/active10，原参数及其它domain共享head不变。只复用025已独立核验的144份原hidden/base/target/sigma缓存，无新teacher前向、future图像编码或新EP读取。保持原六train/六开发validation、四anchor、三个sigma、noise seed42及所有逐层等权；validation及原raw结果已经看过，明确属于开发验证，fresh未打开。
 
+读取范围按阶段固定：prepare/fit/teacher审计不重新打开原EP像素/state文件，旧episode ref只继承冻结来源证明，本次实际input SHA只登记确实读取的缓存与源码。若后续完整生成获准，模型只读取原当前PNG；生成完成后的独立CPU state评分可核SHA并只读原六validation EP的真实未来state作为标签，不能把这些标签传给模型或fit。这里不新增EP或改变48个anchor，不以从BF16 action反推的状态代替真实state标签。
+
 单一新候选定义：phi=[h/sqrt1280,1]，A=-phi/sigma_actual，Y=active10(v_target-v_base)，解sum(w*||A W-Y||²)+.1||W||²。W为1281×10共12,810参数，bias同样正则。另解只用A=-1/sigma_actual的10参数对照，同样标签/权重/lambda，共两个生产fit，无网格或调参。保留原velocity MSE目标，不换成sigma²加权目标。lambda数值相同，但W单位变为clean-action残差，先验已改变，应在结果中披露。
 
 Teacher的sigma_actual取已保存sigma_action FP32值无损扩为FP64，不用JSON名义小数代替。监督保留v_target-v_base，不拟合字面的x0_true-(BF16_xt-sigma*v_base)；后者会额外引入xt量化误差/sigma，属于不同目标。旧xt/target/hidden均保持原字节。
