@@ -95,3 +95,6 @@
 
 
 下一项[026 flow-consistent readout](026_flow_consistent_readout_20261021.md)已在新fit/NN前登记并开始实现：按实际UniPC公式delta_v=-delta_x0/actual_solver_sigma，保留原velocity监督/权重，不把BF16 xt量化误差偷换入clean标签，不用整数t反推sigma。仍只复用原144缓存、两固定fit；单一新prior研究，原025False保持。teacher通过后才3zero+96paired/3465次denoise，0物理/fresh，新模型阶段尚未执行。目标仍为完整多任务新初态稳定门槛，未因本轮负结果降低。
+
+
+[028完整生成state](../../reports/wam_scaled_readout_state_20261021.md)现已结束并双重独立核验：3zero/96paired/3465denoise及模型/CPU正常wait/reap/资源释放全部通过。H8/H16 pooled joint改善10.64%/16.14%，但H16 opening、H40位置及seed42短窗保护失败，最终gate=False；EP6/6与seed43改善不能抵消这些失败。原027 teacher57.45%改善只部分传递，不能认证稳定任务能力；不追加本候选物理/fresh，下一项须另登记。独立来源peer及完整图表已保存，模型只用了物理GPU6，原96源与163权重stat不变。后续优先有限比较同actual sigma下的自由轨迹与真future加噪输入，而非在已失败的028上改阈值或重拟合。
