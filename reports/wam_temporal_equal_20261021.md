@@ -2,7 +2,7 @@
 
 三条 WAM 仿真已完整独立核验，稳定成功 **1/3**，仅 cream cheese→bowl；bowl 曾短暂成功，末端未保持，wine 未成功。相同旧初态/seed42 的原 raw8 也是稳定1/3，但成功的是bowl；不能按任务选择策略拼成2/3，当前候选未建立多任务稳定收益，不提升为默认或打开fresh。
 
-本报告是独立LIBERO/MuJoCo/OSMesa Panda仿真，没有真机。每任务一个旧init0、sampling42、600步/30物理秒/75次H40请求；20Hz、35去噪步/g1/shift5/SDPA/十有效槽mask/非EMA8400、每8步重观测、v3夹爪/noGov/response inverse .5/rate5固定。等待推理时物理state/time不变，不计推理延迟。checkpoint身份见[注册配置](../configs/wam_temporal_equal_task0_20261021.json:68)，为旧22-source warm-start run的iter_000008400，非新23-source的15400/15600。
+本报告是独立LIBERO/MuJoCo/OSMesa Panda仿真，没有真机。每任务一个旧init0、sampling42、600步/30物理秒/75次H40请求；20Hz、35去噪步/g1/shift5/SDPA/十有效槽mask/非EMA8400、每8步重观测、v3夹爪/noGov/response inverse .5/rate5固定。等待推理时物理state/time不变，不计推理延迟。checkpoint身份见[注册配置](../configs/wam_temporal_equal_task0_20261021.json#L61)，为旧22-source warm-start run的iter_000008400，非新23-source的15400/15600。
 
 | 任务 | ever | terminal | 最后40步稳定 | 成功端点数 | 末尾连续成功 |
 | --- | --- | --- | --- | ---: | ---: |
@@ -38,4 +38,4 @@ task2原启动在创建环境和任何生成前发生身份观察异常，0物�
 | `temporal_equal_continuation_preflight/root_launch.json` | `5bb2349d9610d660c7a562fa4f65d1182a4d1741e1bb3e749b83378e0dbd1c1a` |
 | `temporal_equal_continuation_review/actual_ready_snapshot.json` | `9b848c0139f3449c97c901a4cea9d660021acd6fbf3a8882d2310b653ede027b` |
 
-注册为7025c45，物理函数49778dd；接续登记ea3f26d、准入/收尾497591c、独立审计01cf52c。实现依据：[同端点贡献](../src/s2a/temporal_ensemble.py:70)、[等权/SO(3)集成](../src/s2a/temporal_ensemble.py:92)、[独立物理执行](../src/s2a/temporal_ensemble_simulation.py:103)、[接续独立审计](../scripts/audit_wam_temporal_continuation.py:562)。本组没有新初态、额外seed或真机证据，不根据本组结果调集成权重再拼组。后续独立022文本state对照和023生成参考校正均须各自完整验收，当前稳定成功目标未达到。
+注册为7025c45，物理函数49778dd；接续登记ea3f26d、准入/收尾497591c、独立审计01cf52c。实现依据：[同端点贡献](../src/s2a/temporal_ensemble.py#L70)、[等权/SO(3)集成](../src/s2a/temporal_ensemble.py#L92)、[独立物理执行](../src/s2a/temporal_ensemble_simulation.py#L103)、[接续独立审计](../scripts/audit_wam_temporal_continuation.py#L562)。本组没有新初态、额外seed或真机证据，不根据本组结果调集成权重再拼组。后续独立022文本state对照和023生成参考校正均须各自完整验收，当前稳定成功目标未达到。
