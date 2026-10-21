@@ -160,7 +160,7 @@ def prepare():
         configs={mode: dict(path=str(path), sha256=sha256(path)) for mode, path in CONFIGS.items()},
         commands=prompts,
         requests=requests_list,
-        weight_files=weights,
+        actual_checkpoint_stat=weights,
         query_budget=dict(reproduction=48, expanded=48, physics_steps=0, fresh_initial_states=0),
         input_sha256=signatures,
         model_started=False,
@@ -192,7 +192,7 @@ def run(prepared_path, prepared_sha, dry_run):
     assert protocol["schema_version"] == "s2a.static-command-preparation.v1"
     verify_hashes(protocol["input_sha256"])
     config = json.loads(CONFIGS["reproduction"].read_text())
-    assert weight_stats(config["checkpoints"][0]) == protocol["weight_files"]
+    assert weight_stats(config["checkpoints"][0]) == protocol["actual_checkpoint_stat"]
     model_command = [
         str(Path(config["cosmos_repo"]) / ".venv/bin/python"),
         "scripts/serve_wam_static_command.py",
@@ -297,7 +297,7 @@ def run(prepared_path, prepared_sha, dry_run):
                 if mode == "reproduction":
                     reproduction_admission(protocol)
             verify_hashes(protocol["input_sha256"])
-            assert weight_stats(config["checkpoints"][0]) == protocol["weight_files"]
+            assert weight_stats(config["checkpoints"][0]) == protocol["actual_checkpoint_stat"]
         write_new(
             directory / "complete.json",
             dict(
