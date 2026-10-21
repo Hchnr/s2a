@@ -30,6 +30,11 @@ def read_prepared(path, digest):
     )
     for key in ("input_sha256", "source_sha256", "snapshot_sha256"):
         check_hashes(prepared[key])
+    require(
+        prepared["source_sha256"].get(str(CONFIG)) == CONFIG_SHA
+        and prepared["source_sha256"].get(str(PLAN)) == PLAN_SHA,
+        "027 source closure omitted registered config/plan",
+    )
     root = Path(prepared["output_root"])
     require(
         root == (REPO / prepared["config"]["output_dir"]).resolve() and root.is_relative_to(REPO / "outputs"),
