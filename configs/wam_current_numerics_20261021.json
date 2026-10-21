@@ -1,0 +1,36 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/current_training_inference_numerics",
+  "policy_template": "configs/libero_wam_effect_20261019.json",
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoints": [
+    {
+      "name": "8400_masked",
+      "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+      "iteration": "iter_000008400",
+      "gpu": 6,
+      "port": 10046
+    }
+  ],
+  "source_samples_manifest": "outputs/wam_checkpoint_acceptance_20261019v2/samples/manifest.json",
+  "source_sampler_prepared": "outputs/wam_stability_20261021/sampler_steps_state/orchestration/prepared.json",
+  "source_checkpoint_fingerprints": "outputs/wam_independent_20261020/checkpoint_fingerprints.json",
+  "horizon": 40,
+  "control_fps": 20,
+  "sigma": [0.2, 0.5, 0.8],
+  "iteration": 8400,
+  "guidance": 1.0,
+  "sampling_steps": 35,
+  "shift": 5.0,
+  "denoise_budget": 27,
+  "sampling_budget": 0,
+  "physics_budget": 0,
+  "comparison": {
+    "conditional_active_max_abs": 0.0,
+    "conditioning_latent_max_abs": 0.0,
+    "loss_rtol": 1e-5,
+    "loss_atol": 1e-6,
+    "flow_rtol": 1e-6,
+    "flow_atol": 1e-7
+  }
+}

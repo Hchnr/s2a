@@ -4,7 +4,11 @@
 
 最新完整物理结论：[020/021同端点因果集成](../../reports/wam_temporal_equal_20261021.md)三任务全核验，ever2/3、terminal/stable1/3（仅cream，尾303端点/15.15秒）。原raw8/seed42也是stable1/3，但仅bowl，不能拼成两任务成功；该候选未建立多任务收益，不promote。225请求/1800步/225HTTP、14128输入SHA与全部owned正常释放通过，原task2零步启动故障不算任务失败、4次服务初始化与3评分轨迹明确分开。其集成参考TCP误差45–162mm，不能把失败全归checkpoint；正确参考3/3只证明已验证运动范围内的执行链可用。
 
-022全48对actual CPU caption/pixel准备通过；GPU7上48原始输出已全部full128 raw/normalized exact复现，才进入固定完整任务描述的48请求对照，实际准备/预测caption持久留证。结果仍待全部完成。023已事前登记对生成state直接拟合局部残差校正，只有旧缓存/六整episode交叉诊断、0新模型/物理/fresh，算法和7项CPU/独立sourcepeer通过，真实19组fit尚未执行。两项均不使用task阶段或成功谓词规划参考，后续通过state门槛也仍需闭环验证。
+022已完整96次state请求并独立核验：48份基线full128精确复现、48对实际caption仅command变化，全部4个owned身份正常释放。扩展文本的H8/H16位置24.384→24.371mm、44.623→46.298mm，H40位置85.521→88.331mm，未通过组件/10%改善/episode门槛，不推广。不能将短任务文本认定为主因。完整证据SHA `010e404aa1df40b2daaaeab0e93675e51029f8c1503e32cf11fd446bcc40c456`。
+
+[023局部生成参考校正](../../reports/wam_generated_reference_calibration_20261021.md)固定19组fit及206输入的独立增广LS重算已完成。H8/H16共同状态分数改善11.07%/14.36%，且优于四对照，说明存在部分可利用结构；但H8开度、H16/H40位置退化、仅4/6 episode双短窗口不退化，未通过固定推广门槛。0新推理/物理/fresh，不部署第19组参数、不改变失败门槛，不能将校正收益当原checkpoint成绩。完整独立证据SHA `224d60eef89a4b19361de2bad0d50d8dac7a6e1dfd8e3c0d53e2bebc174662ba`。
+
+当前全仓CPU验证410 passed/1外部integration deselected，Ruff check与format均通过，收据SHA `76ac70f2be4c3484fc7633da0b252784534ee862a3a0cbaad41d429c658c0591`。上述运行均已释放；本次收尾现场八卡均0MiB。后续仍只允许物理4–7。新登记[024当前训练—推理数值桥接](024_current_training_inference_numerics_20261021.md)：GPU6、8400/H40/mask10/正确三任务，真实未来RGB/action下published训练目标、task-only训练目标与同xt在线conditional共9组三路/27次denoise；0完整采样/物理。此处仅登记，尚未运行。它补具体联合覆盖缺口，不替代任务验收。以下“运行中/未fit/旧全仓数字”为历史进度，以上完整结果为准。
 
 最新进度：020前两项已完成完整独立核验，bowl仅34端点短暂成功、末端未保持，wine未成功，均未达稳定。021第三项零步故障接续已在GPU6/9946正常运行，新四身份与ready/go门禁现场通过；尚无全组完成率。[022](022_static_command_state_20261021.md)另行检查当前8400是否受简短任务与训练扩写command差异影响，仅96次state请求预算/0物理；启动前已纠正空task_plan占位的条件隔离问题，正在核全部48对真实CPU预处理。它不改变020/021，不提供示范阶段信息，不能预先宣布模型或新策略成功。最新完整CPU基础检查384 passed/1外部integration deselected、Ruff277文件通过，后续新增定向测试另列记录，未冒称新全仓数字。
 
