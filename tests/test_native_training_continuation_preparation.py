@@ -27,9 +27,13 @@ def save(path, value):
 def synthetic(preparer, tmp_path, monkeypatch):
     """A complete409/49/30 fixture, not a permissive mock of the source guard."""
     config = json.loads(preparer.CONFIG.read_text())
+    actual_repo = preparer.REPO
+    for key, _ in preparer.REF_FIELDS:
+        if Path(config[key]).is_absolute():
+            config[key] = str(tmp_path / Path(config[key]).relative_to(actual_repo))
     monkeypatch.setattr(preparer, "REPO", tmp_path)
-    config_path = tmp_path / "configs/wam_native_training_continuation_20261021.json"
-    plan = tmp_path / "plans/v0.0.1/030_environment_continuation_20261021.md"
+    config_path = tmp_path / "configs/wam_native_training_model_contract_20261021.json"
+    plan = tmp_path / "plans/v0.0.1/030_mounted_panda_contract_20261021.md"
     monkeypatch.setattr(preparer, "CONFIG", config_path)
     monkeypatch.setattr(preparer, "PLAN", plan)
     monkeypatch.chdir(tmp_path)
@@ -213,6 +217,177 @@ def synthetic(preparer, tmp_path, monkeypatch):
         root_original_worker_replayed=False,
     )
     save(tmp_path / config["cv2_probe"], probe)
+    previous_path = tmp_path / preparer.PREVIOUS_SOURCES[1]
+    previous_plan = tmp_path / preparer.PREVIOUS_SOURCES[0]
+    previous_config = {
+        key: copy.deepcopy(value)
+        for key, value in config.items()
+        if key
+        not in {
+            "robot_model_contract",
+            "robot_runtime_source_refs",
+            "previous_continuation_config_ref",
+            "previous_continuation_registration_ref",
+        }
+        and not key.startswith(("first_continuation_", "failed_continuation_", "model_contract_failure_"))
+    }
+    previous_config["output_dir"] = "outputs/wam_stability_20261021/synchronous_native_training_continuation"
+    save(previous_path, previous_config)
+    config["previous_continuation_config_ref"] = preparer.reference(previous_path)
+    config["previous_continuation_registration_ref"] = preparer.reference(previous_plan)
+    firstroot = tmp_path / previous_config["output_dir"]
+    first_sources = dict(sources)
+    new_first_paths = sorted(str(tmp_path / relative) for relative in preparer.PREVIOUS_SOURCES)
+    first_snapshots = dict(snapshots)
+    for index, path in enumerate(new_first_paths):
+        first_sources[path] = preparer.sha256(path)
+        snapshot = firstroot / "preparation/source_snapshot" / f"{index:04d}_{Path(path).name}"
+        snapshot.parent.mkdir(parents=True, exist_ok=True)
+        snapshot.write_bytes(Path(path).read_bytes())
+        first_snapshots[str(snapshot)] = preparer.sha256(snapshot)
+    first = dict(
+        schema_version="s2a.native-training-continuation-preparation.v1",
+        seed=42,
+        config=previous_config,
+        config_ref=config["previous_continuation_config_ref"],
+        registration_ref=config["previous_continuation_registration_ref"],
+        output_root=str(firstroot),
+        original_prepared_ref=original_ref,
+        original_prepared=original,
+        **{key: original[key] for key in preparer.INHERITED},
+        remaining_tasks=[1, 2],
+        remaining_records=records[10:],
+        cached_records=records[:10],
+        cached_case_refs=case_refs,
+        metadata_admission=True,
+        cached_quality_verified=False,
+        eligible_for_model_training_registration=False,
+        model_training_authorized=False,
+        fresh_performance_authorized=False,
+        source_sha256=first_sources,
+        snapshot_sha256=first_snapshots,
+        original_checker_ref=dict(
+            path=str(tmp_path / "scripts/verify_wam_native_training.py"),
+            sha256=sources[str(tmp_path / "scripts/verify_wam_native_training.py")],
+        ),
+    )
+    first_path = save(Path(config["first_continuation_prepared"]), first)
+    first_ref = preparer.reference(first_path)
+    prefix = dict(
+        schema_version="s2a.native-training-continuation-independent-verification.v1",
+        phase="prefix",
+        prepared=first_ref,
+        passed=False,
+        prefix_verified=False,
+        evidence_integrity_passed=False,
+        eligible_for_model_training_registration=False,
+        model_training_authorized=False,
+        fresh_performance_authorized=False,
+        error=dict(type="ValueError", message="030 native robot/controller/site/clock differs"),
+        **{
+            key: 0
+            for key in (
+                "new_physics_steps",
+                "new_wam_calls",
+                "new_fits",
+                "new_parameter_reconstructions",
+                "hdf_datasets_read",
+                "fresh_action_datasets_read",
+            )
+        },
+    )
+    prefix_path = save(Path(config["failed_continuation_prefix"]), prefix)
+    first_lifecycle = {}
+    for key, payload in (
+        (
+            "launch",
+            dict(
+                child=dict(pid=456, start_ticks=789),
+                selected_environment=dict(CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH=""),
+            ),
+        ),
+        ("exit", dict(actual_wait=True, returncode=1)),
+        ("release", dict(returncode=1, reaped=True, signal_sent=False, pid=456, start_ticks=789)),
+    ):
+        target = (
+            firstroot
+            / "orchestration/collection/prefix"
+            / ("ownership/release.json" if key == "release" else f"{key}.json")
+        )
+        first_lifecycle[key] = preparer.reference(save(target, payload))
+    first_owner = dict(
+        schema_version="s2a.native-training-continuation-owner.v1",
+        complete=False,
+        passed=False,
+        prepared_ref=first_ref,
+        original_prepared_ref=original_ref,
+        cached_task_ref=preparer.reference(task_path),
+        original_owner_passed=False,
+        original_task_passed=False,
+        owned_commands=[],
+        automatic_retry=False,
+        eligible_for_model_training_registration=False,
+        model_training_authorized=False,
+        fresh_performance_authorized=False,
+        command_attempts=[dict(phase="prefix_audit", task_index=None, observed_lifecycle=first_lifecycle)],
+    )
+    first_owner_path = save(Path(config["failed_continuation_owner"]), first_owner)
+    first_observed = dict(
+        schema_version="s2a.native-training-model-contract-failure-observation.v1",
+        first_prepared_ref=first_ref,
+        failed_prefix_ref=preparer.reference(prefix_path),
+        failed_continuation_owner_ref=preparer.reference(first_owner_path),
+        prefix_lifecycle_refs=first_lifecycle,
+        actual_owner_tool_terminal_exit_code=1,
+        actual_prefix_wait_returncode=1,
+        actual_prefix_reaped=True,
+        actual_prefix_signal_sent=False,
+        root_manual_popen_wait_claimed=False,
+        owner_pid_now_absent=True,
+        prefix_pid_now_absent=True,
+        prefix_pid=456,
+        prefix_start_ticks=789,
+        old10_case_refs=case_refs,
+        first_case_ref=case_refs[0],
+        original409_source_bytes_unchanged=True,
+        first421_snapshot_bytes_unchanged=True,
+        expected_by_old_checker="Panda",
+        actual_controller_robot_model="MountedPanda",
+        controller_predicate_checks=dict(
+            control_freq=True,
+            robot_model=False,
+            gripper_model=True,
+            controller_site=True,
+            control_frame=True,
+            model_timestep=True,
+        ),
+        old409_checker_ref=first["original_checker_ref"],
+        full30_collection_certified=False,
+        independent_case_quality_verified=False,
+        **{
+            key: 0
+            for key in (
+                "new_environment_initializations",
+                "new_physics_steps",
+                "new_current_canvases",
+                "new_hdf_reads",
+                "new_model_calls",
+                "new_fits",
+                "fresh_cases",
+            )
+        },
+    )
+    save(Path(config["model_contract_failure_observation"]), first_observed)
+    config["robot_runtime_source_refs"] = []
+    for index in range(6):
+        robot_path = tmp_path / "robot_runtime_sources" / f"robot{index}.py"
+        robot_path.parent.mkdir(parents=True, exist_ok=True)
+        robot_path.write_text("# Synthetic MountedPanda/ManipulatorModel/Panda mapping source.\n")
+        config["robot_runtime_source_refs"].append(preparer.reference(robot_path))
+    # The four revised source versions intentionally differ from first421. The
+    # old bytes stay in the old snapshots; owner/worker/old plan/config cannot change.
+    for relative in preparer.PERMITTED_REVISIONS:
+        (tmp_path / relative).write_text("# Registered v2 fixture source revision.\n")
     for key, _ in preparer.REF_FIELDS:
         config[key + "_sha256"] = preparer.sha256(tmp_path / config[key])
     save(config_path, config)
@@ -234,6 +409,10 @@ def synthetic(preparer, tmp_path, monkeypatch):
         owner=owner,
         observed=observed,
         probe=probe,
+        first=first,
+        prefix=prefix,
+        first_owner=first_owner,
+        first_observed=first_observed,
         oldroot=oldroot,
         refs={
             field: dict(path=str(tmp_path / config[key]), sha256=config[key + "_sha256"])
@@ -242,10 +421,13 @@ def synthetic(preparer, tmp_path, monkeypatch):
     )
 
 
-def test_full_synthetic_continuation_roundtrip_preserves409_and_only_new12(preparer, synthetic):
+def test_full_synthetic_continuation_roundtrip_preserves409_and_failed421(preparer, synthetic):
     path = preparer.prepare(synthetic["config_path"])
     prepared = preparer.read_prepared(path, preparer.sha256(path))
-    assert len(prepared["source_sha256"]) == len(prepared["snapshot_sha256"]) == 421
+    assert len(prepared["source_sha256"]) == len(prepared["snapshot_sha256"]) == 423
+    assert len(prepared["first_continuation_snapshot_sha256"]) == 421
+    assert len(prepared["robot_runtime_source_refs"]) == 6 and len(prepared["runtime_source_refs"]) == 12
+    assert not prepared["first_prefix_verified"] and not prepared["first_continuation_owner_passed"]
     assert prepared["original_prepared"] == synthetic["original"]
     assert len(prepared["records"]) == 30 and len(prepared["remaining_records"]) == 20
     assert [r["task_index"] for r in prepared["remaining_records"]] == [1] * 10 + [2] * 10
@@ -259,9 +441,9 @@ def test_full_synthetic_continuation_roundtrip_preserves409_and_only_new12(prepa
         preparer.prepare(synthetic["config_path"])
 
 
-def test_literal_closure_requires_tracked_twelve_without_dynamic_expansion(preparer, synthetic, monkeypatch):
+def test_literal_closure_requires_tracked_fourteen_without_dynamic_expansion(preparer, synthetic, monkeypatch):
     monkeypatch.setattr(preparer, "tracked_new_sources", lambda: set(preparer.NEW_SOURCES[:-1]))
-    with pytest.raises(ValueError, match="twelve.*tracked"):
+    with pytest.raises(ValueError, match="fourteen.*tracked"):
         preparer.source_closure(synthetic["original"])
     monkeypatch.setattr(preparer, "tracked_new_sources", lambda: set(preparer.NEW_SOURCES))
     unrelated = preparer.REPO / "scripts/unrelated_new.py"
@@ -336,3 +518,63 @@ def test_cpu_budget_guards_and_real_cli_help(preparer, monkeypatch):
         check=False,
     )
     assert command.returncode == 0 and "--config" in command.stdout and "--seed" in command.stdout
+
+
+def test_failed421_cannot_promote_or_change_unregistered_sources(preparer, synthetic):
+    def admit(first=None, prefix=None, owner=None, observed=None):
+        return preparer.first_attempt_admission(
+            synthetic["config"],
+            synthetic["original"],
+            synthetic["refs"],
+            synthetic["first"] if first is None else first,
+            synthetic["prefix"] if prefix is None else prefix,
+            synthetic["first_owner"] if owner is None else owner,
+            synthetic["first_observed"] if observed is None else observed,
+            synthetic["task"]["cases"],
+            {},
+        )
+
+    # Permitted current source revisions are already present in this fixture;
+    # evidence of their original versions is still the preserved421 snapshot.
+    assert len(admit()["first_continuation_snapshot_sha256"]) == 421
+    bad = copy.deepcopy(synthetic["prefix"])
+    bad["passed"] = True
+    with pytest.raises(ValueError, match="first prefix"):
+        admit(prefix=bad)
+    bad = copy.deepcopy(synthetic["first_owner"])
+    bad["passed"] = True
+    with pytest.raises(ValueError, match="first owner"):
+        admit(owner=bad)
+    bad = copy.deepcopy(synthetic["first_observed"])
+    bad["new_physics_steps"] = 1
+    with pytest.raises(ValueError, match="actual tool"):
+        admit(observed=bad)
+    snapshot = next(
+        Path(path)
+        for path in synthetic["first"]["snapshot_sha256"]
+        if Path(path).name.endswith("prepare_wam_native_training_continuation.py")
+    )
+    original_bytes = snapshot.read_bytes()
+    snapshot.write_text("# Corrupted old bytes, even though this source may be revised.\n")
+    with pytest.raises(ValueError, match="preserved snapshot"):
+        admit()
+    snapshot.write_bytes(original_bytes)
+    unchanged_owner = preparer.REPO / "scripts/run_wam_native_training_continuation.py"
+    unchanged_owner.write_text("# Unregistered owner modification.\n")
+    with pytest.raises(ValueError, match="unpermitted first421"):
+        admit()
+
+
+def test_mounted_panda_is_neither_an_alias_nor_a_panda_subclass(preparer):
+    config = json.loads(preparer.CONFIG.read_text())
+    assert config["robot_model_contract"]["actual_parent_class"] == "ManipulatorModel"
+    for field, value in (
+        ("expected_actual_class", "Panda"),
+        ("comparison_is_parent", True),
+        ("rename_actual_evidence", True),
+        ("accept_unmounted_panda", True),
+    ):
+        bad = copy.deepcopy(config)
+        bad["robot_model_contract"][field] = value
+        with pytest.raises(ValueError, match="MountedPanda"):
+            preparer.assert_config(bad)
