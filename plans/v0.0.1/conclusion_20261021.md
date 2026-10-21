@@ -101,3 +101,6 @@
 
 
 [029自由轨迹诊断](029_free_trajectory_diagnostic_20261021.md)在028完整失败后另行登记：同六开发EP/两seed/三个实际solver节点、不拟合，目的是量化true-future noising与自由轨迹的差异；网络时间和actual sigma分开匹配。实现及13项独立checker回归包含真实入口顺序正负控，全仓649 passed/1integration deselected、Ruff353文件；111源/快照和2023安全输入已复核。GPU6的20实际算子场景各CPU/CUDA预定gold通过，跨backend product/x0有4/20不同，属于已登记数值顺序，未当模型错误。新模型的48raw+144teacher/1824预算已在唯一GPU6进程启动，首raw已full128精确复现；完整诊断与任务收益尚无结论，0新fit/物理/fresh，稳定目标继续进行。
+
+
+029追加独立复核：20场景实际数值与source/lifecycle完整通过，首2raw/6point的精确复现及CUDA转换通过且明确partial。唯一采集进程仍在运行，尚未形成完整轨迹诊断，不据此认证模型质量、拟合资格或任务成功。最新main冲突复核无待解决项；稳定成功目标及fresh24门槛不变。
