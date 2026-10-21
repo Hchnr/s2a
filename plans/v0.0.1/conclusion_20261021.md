@@ -2,13 +2,23 @@
 
 状态：实施中，稳定成功目标尚未达标。上一轮完整结论见conclusion_20261020.md，不覆盖其历史原字节。
 
+最新完整结果：[027训练集尺度readout](../../reports/wam_train_scale_readout_20261021.md)**通过固定teacher门槛**，开发validation velocity MSE总体改善57.45%，sigma=.2/.5/.8分别为原模型的.3763/.6063/.9422，相对原026 bias额外改善17.82%。一个实际candidate fit及一个独立AugLS完成，mu/s差0、W最大差4.79e-15，bias预测逐位复现；两CPUchild实际wait0/reap、1256项SHA重核通过。全仓582 passed/1 integration deselected、Ruff331文件通过。它仅获得新路径GPU及完整生成资格研究的条件，实际`eligible_for_sampling=False`，0新WAM前向/完整生成/state评分/物理/fresh，尚无任务收益证明。下一步另登记GPU6数值资格、3zero完整复现和96成对state生成；原全部state与fresh24稳定门槛不变，025/026失败保持。下文027“尚未fit”为历史阶段记录。
+
+[028实际state生成](028_scaled_readout_state_20261021.md)已实现并通过source冻结QA614 passed/1 integration deselected、Ruff341文件及96源/快照独立准备。GPU6实际20场景/10原语精度资格与独立bits审计通过，toy子进程actualwait0/reap、显存0；实际已启动唯一WAM worker，先3zero完整identity后原96paired/3465 denoise，当前初始化及全组结果仍待核验。完全冻结027参数，原027samplingFalse保持，由新028精度资格另授生成诊断；新fit/参数重建/物理/fresh0。尚无新state/task质量结论，稳定目标不变。
+
+028目前已独立验证3zero完整raw/normalized exact及首4项validation的两对真实初态和7条实际sigma trace（245委托）。这是明确partial的运行协议证据，尚未读取future state标签或评分；原GPU6 worker与owner仍live，继续同一运行至完整99/3465及退出/资源释放后再独立判state门槛，未重复模型或修改冻结源。不能据teacher通过或zero复现宣布稳定成功。
+
+最新[026 flow时间readout](../../reports/wam_flow_consistent_readout_20261021.md)已完整完成纯合成GPU6精度资格、两组固定CPU fit及独立AugLS重建：开发validation teacher速度MSE总体改善49.79%，但sigma=.8退化13.23%，超过固定5%上限，gate False。量化预测逐值相同、参数最大差4.705e-15；实际sampling dryrun在模型加载前拒绝，0新WAM前向/完整生成/state评分/物理/fresh。新运算路径15组实际sigma CPU/CUDA全128位一致，owned正常退出/显存0；它只证明该计算实现一致，不是task成功。完整源码冻结QA546 passed/1 integration deselected、321文件Ruff通过。原025失败保持；下一项先只读诊断特征尺度与sigma残差结构，再登记新干预，fresh24稳定门槛不变。以下旧阶段的“正在实现/尚未fit”均为历史记录，以本段完整结果及正式报告为准。
+
+纯统计支持继续检查hidden尺度与正则prior的匹配，但没有证明该因素足以解释任务失败。[027训练集尺度readout](027_train_scale_readout_20261021.md)已另登记：仅train计算中心和整体L2 RMS，保留原时间函数/监督/权重/λ及质量门槛，一个新fit加一个独立重建，原026bias复用不重拟合。正在实现，真实fit尚未执行；不同时增加三个sigma头。本项无GPU/WAM生成或物理授权，后续先有teacher证据再单独验证新路径的实际GPU运算和完整state生成，稳定目标不变。
+
 最新完整物理结论：[020/021同端点因果集成](../../reports/wam_temporal_equal_20261021.md)三任务全核验，ever2/3、terminal/stable1/3（仅cream，尾303端点/15.15秒）。原raw8/seed42也是stable1/3，但仅bowl，不能拼成两任务成功；该候选未建立多任务收益，不promote。225请求/1800步/225HTTP、14128输入SHA与全部owned正常释放通过，原task2零步启动故障不算任务失败、4次服务初始化与3评分轨迹明确分开。其集成参考TCP误差45–162mm，不能把失败全归checkpoint；正确参考3/3只证明已验证运动范围内的执行链可用。
 
 022已完整96次state请求并独立核验：48份基线full128精确复现、48对实际caption仅command变化，全部4个owned身份正常释放。扩展文本的H8/H16位置24.384→24.371mm、44.623→46.298mm，H40位置85.521→88.331mm，未通过组件/10%改善/episode门槛，不推广。不能将短任务文本认定为主因。完整证据SHA `010e404aa1df40b2daaaeab0e93675e51029f8c1503e32cf11fd446bcc40c456`。
 
 [023局部生成参考校正](../../reports/wam_generated_reference_calibration_20261021.md)固定19组fit及206输入的独立增广LS重算已完成。H8/H16共同状态分数改善11.07%/14.36%，且优于四对照，说明存在部分可利用结构；但H8开度、H16/H40位置退化、仅4/6 episode双短窗口不退化，未通过固定推广门槛。0新推理/物理/fresh，不部署第19组参数、不改变失败门槛，不能将校正收益当原checkpoint成绩。完整独立证据SHA `224d60eef89a4b19361de2bad0d50d8dac7a6e1dfd8e3c0d53e2bebc174662ba`。
 
-最新已提交Python快照75521ad已重新完整验证：414 passed/1外部integration deselected，Ruff check与289文件format均通过，收据SHA `f35c73791c5717f57bf0c4659861265ad9117969c8905293996ed1fd47a8956b`。未提交的024 runner草稿不在PR源码范围，当前模型数值专项未执行。上述运行均已释放；本次收尾现场八卡均0MiB。后续仍只允许物理4–7。新登记[024当前训练—推理数值桥接](024_current_training_inference_numerics_20261021.md)：GPU6、8400/H40/mask10/正确三任务，真实未来RGB/action下published训练目标、task-only训练目标与同xt在线conditional共9组三路/27次denoise；0完整采样/物理。此处仅登记，尚未运行。它补具体联合覆盖缺口，不替代任务验收。以下“运行中/未fit/旧全仓数字”为历史进度，以上完整结果为准。
+024入口f8c2e3a、独立审计e7691cf及自有进程入口8a501df已提交。最新完整CPU验证433 passed/1外部integration deselected，Ruff check与292文件format通过；收据SHA `dfa25ec0aa92ae549deb07bdd5cd5d3d956ea9e27d461acb8d957ec570b0fd58`。真实future准备SHA `7a412c0fe6c1cbc1760e788dd065627ffd16e5acc84b3c518af5a6c1cdad804b`、两方独立CPU准入SHA `edcccddcd6620bf57711416117127660495e222357cd70ddb5ba476185b58beb`均通过，当前27次模型前向尚未执行。上述运行均已释放；本次收尾现场八卡均0MiB。后续仍只允许物理4–7。新登记[024当前训练—推理数值桥接](024_current_training_inference_numerics_20261021.md)：GPU6、8400/H40/mask10/正确三任务，真实未来RGB/action下published训练目标、task-only训练目标与同xt在线conditional共9组三路/27次denoise；0完整采样/物理。模型专项待实际执行。它补具体联合覆盖缺口，不替代任务验收。以下“运行中/未fit/旧全仓数字”为历史进度，以上完整结果为准。
 
 最新进度：020前两项已完成完整独立核验，bowl仅34端点短暂成功、末端未保持，wine未成功，均未达稳定。021第三项零步故障接续已在GPU6/9946正常运行，新四身份与ready/go门禁现场通过；尚无全组完成率。[022](022_static_command_state_20261021.md)另行检查当前8400是否受简短任务与训练扩写command差异影响，仅96次state请求预算/0物理；启动前已纠正空task_plan占位的条件隔离问题，正在核全部48对真实CPU预处理。它不改变020/021，不提供示范阶段信息，不能预先宣布模型或新策略成功。最新完整CPU基础检查384 passed/1外部integration deselected、Ruff277文件通过，后续新增定向测试另列记录，未冒称新全仓数字。
 
@@ -65,3 +75,50 @@
 
 
 017现已完成前600可比性里程碑：三任务1800实际端点及225完整query图像/raw/normalized与旧raw8全部canonical精确，30秒仍1/3（仅bowl），1200结果未定。并行[018角漂移缓存诊断](018_rotation_drift_diagnostic_20261021.md)只研究六旧episode的三参数世界旋转偏置，19fit/0模型/0物理，需整episode留出优于无WAM/打乱/保持/历史外推才有进一步验证资格；模块6项几何测试已通过，真实拟合尚未开始。它改变模型参考，不能认证原checkpoint，且不改正在跑的017。
+
+
+024当前8400/正确三任务task-only/H40/mask10专项现完整通过：27个实际前向及18组真实future训练loss独立重算，匹配训练/推理conditional的有效velocity逐值相同。实际wait0、owned reaped、GPU6显存0及外部tracked源码身份未变均确认，见[正式报告](../../reports/wam_current_training_inference_numerics_20261021.md)。这补上当前覆盖的数值一致性证据；只检查三个已查看样本和三sigma，不认证完整历史训练、生成质量或任务稳定性。
+
+下一干预[025冻结主体readout](025_frozen_wam_readout_20261021.md)已事前登记、正在完成实现，真实feature/fit/完整采样尚未执行：固定6训练EP/6开发验证EP、12,810参数LIBERO专用输出残差及bias对照，先量化teacher门槛，后条件96次完整state生成。原WAM冻结，不修改26其它domain共享的projection0；新adapter是模型适配，不把潜在收益记为原checkpoint或S2A转换有效。TorchFP64→BF16双舍入已按[数值补充](025_bfloat16_rounding_addendum_20261021.md)实现数学单次ties-even，指定GPU6的真实合成CPU/CUDA bitwise对照通过；这不是任务成功证据。当前稳定目标仍未达，预留新12初态×2seed性能继续未打开。
+
+
+025完整实现与独立CPU准入现完成：最终冻结758ca4c、整仓499 passed/1外部integration deselected、Ruff305文件通过，source SHA检查前后相同。真实12旧EP/48anchor/144teacher/96条件采样准备已经独立核验，prepared SHA `202b81afa0a2fc39d803c74b9430fb3d03e2d0a15ef403b60c1268d1b2d5d658`；实际owner dryrun及错SHA负控通过。当前只是运行准入，尚无025 teacher拟合或生成质量结果，不能视为稳定任务门槛改善。
+
+
+025实际features阶段已在唯一物理GPU6进程启动，先3份zero输出exact后144 teacher，预算249denoise；实际Python命令/parent/环境身份已核实。尚无完成或teacher门槛结论，2组fit及96条件完整采样仍未执行。
+
+
+025实际features已完整3zero+144teacher/249denoise，原模型参数冻结，3zero全raw/normalized exact；模型actual wait0/reap0。原owner的10秒资源观测超时导致False，该失败不修改；当前GPU6显存0/computeapps空及两原birth消失已独立核实，具体延迟原因未知。按[资源观测补充](025_release_observation_addendum_20261021.md)以新隔离入口继续尚未执行的CPU正式全组审计/原2fit/条件96采样，不重复NN或放宽质量门槛。此刻尚无adapter teacher/state质量结果。
+
+
+025本轮结束于teacher质量失败：[正式报告](../../reports/wam_frozen_readout_20261021.md)。249实际模型前向及2组固定fit、独立AugLS参数与全部量化评分已完整通过重算；留出开发EP总体标准化velocity MSE下降28.53%，但sigma=.8退化2.043倍，原保护门槛False。constant bias已解释大部分总体收益，readout只额外改善0.464%。原资源观测owner False保留，新隔离CPU接续正常完成，没有重复NN。实际sampling dryrun在模型加载前拒绝；96完整生成、物理/fresh均0。此负结果否定本固定适配方案的推广资格，未检验其state或任务成功率；下一方案须另登记，不修改025参数或阈值挽救原失败。稳定目标仍未达，fresh24验收继续未打开。
+
+
+下一项[026 flow-consistent readout](026_flow_consistent_readout_20261021.md)已在新fit/NN前登记并开始实现：按实际UniPC公式delta_v=-delta_x0/actual_solver_sigma，保留原velocity监督/权重，不把BF16 xt量化误差偷换入clean标签，不用整数t反推sigma。仍只复用原144缓存、两固定fit；单一新prior研究，原025False保持。teacher通过后才3zero+96paired/3465次denoise，0物理/fresh，新模型阶段尚未执行。目标仍为完整多任务新初态稳定门槛，未因本轮负结果降低。
+
+
+[028完整生成state](../../reports/wam_scaled_readout_state_20261021.md)现已结束并双重独立核验：3zero/96paired/3465denoise及模型/CPU正常wait/reap/资源释放全部通过。H8/H16 pooled joint改善10.64%/16.14%，但H16 opening、H40位置及seed42短窗保护失败，最终gate=False；EP6/6与seed43改善不能抵消这些失败。原027 teacher57.45%改善只部分传递，不能认证稳定任务能力；不追加本候选物理/fresh，下一项须另登记。独立来源peer及完整图表已保存，模型只用了物理GPU6，原96源与163权重stat不变。后续优先有限比较同actual sigma下的自由轨迹与真future加噪输入，而非在已失败的028上改阈值或重拟合。
+
+
+[029自由轨迹诊断](029_free_trajectory_diagnostic_20261021.md)在028完整失败后另行登记：同六开发EP/两seed/三个实际solver节点、不拟合，目的是量化true-future noising与自由轨迹的差异；网络时间和actual sigma分开匹配。实现及13项独立checker回归包含真实入口顺序正负控，全仓649 passed/1integration deselected、Ruff353文件；111源/快照和2023安全输入已复核。GPU6的20实际算子场景各CPU/CUDA预定gold通过，跨backend product/x0有4/20不同，属于已登记数值顺序，未当模型错误。新模型的48raw+144teacher/1824预算已在唯一GPU6进程启动，首raw已full128精确复现；完整诊断与任务收益尚无结论，0新fit/物理/fresh，稳定目标继续进行。
+
+
+029追加独立复核：20场景实际数值与source/lifecycle完整通过，首2raw/6point的精确复现及CUDA转换通过且明确partial。唯一采集进程仍在运行，尚未形成完整轨迹诊断，不据此认证模型质量、拟合资格或任务成功。最新main冲突复核无待解决项；稳定成功目标及fresh24门槛不变。
+
+
+029现完整：[正式报告](../../reports/wam_free_trajectory_diagnostic_20261021.md)。48raw精确复现、144+144点和1824调用独立通过，模型/CPU正常退出、GPU6释放；额外2426SHA/7800组重核及五图/PDF已完成。固定027的teacher收益明显依赖seed：42改善55.06%、43反退51.42%；raw自由轨迹actualclean反事实总体+1.60%，三个sigma/两个seed均退化。原027 teacher通过不等于一般噪声或自由轨迹有效；本结果不唯一认定video/hidden/噪声因果。0新fit/物理/fresh，028False保持。下一阶段采用来源明确的同步多EP训练数据、与评测seed隔离的多样噪声、显式当前clean估计及自由上下文监督，并在fit前固定有限任务验证；最终仍须原fresh24稳定门槛。
+
+
+030同步训练数据阶段已事前登记、实现整合中；固定30条source隔离native示范、最多19200 CPU/OSMesa物理步，五anchor仅当前图像，0WAM/fit/fresh。source位置与朝向的SITE/BODY观测约定已在运行前澄清。root实际6项CPU子进程测试和worker7项几何时序fixture通过；整仓QA/独立来源准入及真实采集尚未执行，不能称已有30条成功数据。
+
+
+030最新状态：source409/快照409/30demo/150当前anchor及原fresh隔离已实际独立准入，整仓689 passed/1外部integration deselected、Ruff364通过；首次缺h5py在HDF解析前失败已保留，仅补本地venv依赖后成功准备。真实CPU/OSMesa唯一采集已启动（实际4980物理步预算），首case完整；全部30原生质量及最终审计尚待完成，0WAM/fit/fresh。不能将native数据资格或单例保存记为稳定WAM成功，后续031模型预算尚未授权。
+
+
+最新冲突复核（HEAD `40e4878`）：fetch 后 main 仍为 `c4c5cd6`，本地历史已包含；本地及远端分支分别试合并均无内容冲突，索引无待解决项，GitHub 当前无 open PR。本次只记录核验结果，不生成空合并或推送91个本地提交。364份已跟踪 Python 与原689 passed完整 QA 快照逐文件相同；四份接续草稿保留且不计入该 QA，未启动新实验。详细收据及边界见本轮记录末尾；此结果不改变 WAM 稳定任务能力尚未达标的结论。
+
+
+030当前以真实终态更正此前live记录：原首task已保存10条/1328步/50canvas后在末尾环境guard拒绝，原worker与owner exit1，原False不追认成功。cv2 import-only仅证明已登记LD变更足以触发guard，原结束环境未保存，原触发项未知。隔离接续保留原10，新增实际环境记录/准确恢复与prefix→剩20→最终审计编排，正在完成全仓QA及独立checker。原10数据独立质量及剩20采集尚未完成；0新WAM/fit/fresh，最终稳定成功仍未达标。
+
+
+030接续首次前置审计已真实失败（owner55372 exit1），新增物理仍0：实际MountedPanda与旧独立checker硬写Panda不符。10份真实controller合同一致，源码证明MountedPanda与Panda为不同兄弟类；不伪改数据型号。独立新型号修订已事前登记，原409与两次失败快照完整保留，改为精确MountedPanda并拒Panda，其余几何/像素/质量门槛不变。原735 passed只证明第一版源码的已覆盖测试；新修订QA及全30数据资格仍待执行，稳定目标继续。

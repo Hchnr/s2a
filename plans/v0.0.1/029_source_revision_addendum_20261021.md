@@ -1,0 +1,11 @@
+# 029 运行前源码修订与隔离准备
+
+2026-10-21，在本项任何实际scheduler/GPU/WAM运行前登记。原029计划/config及标量提升补充原字节保留；预算20场景/40实际conversion、48raw+144teacher/1824denoise/init1、0fit/物理/fresh不变。
+
+原源码7371b3d的647项CPU回归与353文件Ruff完整通过，收据`free_trajectory_source_validation/validation.json` SHA `01b81373edb588cb827753be944ed2dbb7cf7ef044fb17e75bcb55ef8cd587e9`如实保留。原cache-only prepared已成功，`free_trajectory_diagnostic/preparation/prepared.json` SHA `6a175b8a05d00a508f0c001451611dc8b2f2a304c67b6b6323f732eb08cd6ed5`，没有EP/PNG读取、模型或GPU。
+
+第三方静态审查发现真实执行缺陷：独立checker的程序入口位于`statistic`和`point_diagnostics`定义之前，import式测试会加载完整文件，真实collection CLI却可能在这些定义绑定前调用，导致NameError。原CPU回归只证明其覆盖范围，不足以准许1824前向后的完整CLI；不修改原通过记录，不把该缺陷当模型问题。GPU/模型阶段尚未启动，无任何NN需要重跑。
+
+修复只把checker程序入口放到全部定义之后，并增加执行入口顺序回归；按原源码合同重新冻结。为保留原prepared与实际source身份，新的运行输出目录固定为原config的`output_dir`追加`_source_v2`，即`outputs/wam_stability_20261021/free_trajectory_diagnostic_source_v2`。prepared的原config内容与SHA不改，另存本补充ref显式授权该唯一目录映射；读入与独立checker均核对这项映射，不能借此接受任意输出目录或参数变化。
+
+新完整来源为原110再加本补充，共111源/111快照。原110-source prepared保留且不得获得后续模型准入，新源码读入应在GPU前拒绝它；在新目录重新执行CPU准备、独立prepare及sourcepeer、完整CPU检查，再唯一执行原登记20场景资格及有条件1824前向。已有输出不覆盖、没有模型自动重试，不新增sigma/seed/候选或改变质量阈值。

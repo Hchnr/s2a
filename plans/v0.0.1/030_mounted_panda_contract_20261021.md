@@ -1,0 +1,25 @@
+# 030独立型号合同修订：实际MountedPanda
+
+本修订在任何新增环境/physics前登记，只修正独立验证器的错误型号假设。原030数据、原10条case、原409源码及第一版接续的plan/config、421份执行快照和False产物均保持原字节；不得改写实际机器人型号或重采原10条。
+
+第一版接续实际prepare SHA `fcf9a3aa929a4824ddbeb820acc12181504f3bf2a2e2be80e35e4c2c8324e341`，源码QA735 passed / 1 integration deselected、Ruff374份通过，收据SHA `0aa7c318e48554cadb8479ddb1f8d237da15245d34637add18dd287dc6c6c839`。唯一owner工具55372实际exit1，prefix独立child实际wait1/reap/noSignal，新增环境/physics/HDF/WAM/fit均0。失败prefix SHA `db57a1d4f5afc375b4d496d7ffb51e651826f520539b2fb36ef6e908c36970e2`，owner SHA `fcc9065020b0856d0851fc72c8f36b4ea56097fda4e12d87f624ba739460b457`，工具观察SHA `93cadfa991101ad08a8634c87d3caa36e8657096b8fcd22f14592a411eb216b4`。
+
+原冻结checker `verify_wam_native_training.py:806`要求实际`robot_model == Panda`。真实`controller_contract`按`type(robot_model).__name__`记录，首条及全部10条均为`MountedPanda`。原拒绝条件中的其他五项（20Hz、PandaGripper、controller site、world frame、model timestep）均符合；该次失败具体由型号常量造成，不是已经查出几何、同步或任务质量错误。此前合成fixture同样写Panda，735测试通过未覆盖这一真实类名差异，不能将它称作实际数据资格通过。
+
+LIBERO `env_wrapper.py`默认配置Panda，tabletop任务将其映射为MountedPanda，再路由到SingleArm。实际`MountedPanda`与比较类`Panda`都直接继承`ManipulatorModel`，二者是兄弟类，初始化关节位姿等不相同；不能称为字符串别名或把实际数据改成Panda。新配置固定这两个类、真实父类及三处映射源码的六个SHA，只读外部参考，不修改共享安装或外部仓库。
+
+## 修订实现及来源
+
+新root固定为`outputs/wam_stability_20261021/synchronous_native_training_continuation_model_contract`，新配置`configs/wam_native_training_model_contract_20261021.json`。沿用原30条roster、cached10/1328/50与remaining20/3652/100、全套30/4980/150，原geometry/mask/时间/像素容差/末40原生成功门槛全不变。只允许已完成接续preparer/checker及各自测试修订；worker、环境守卫、owner继续原字节。第一版421源的旧字节以其已保存421快照核验，不冒称修订后的工作树仍与第一版源码相同。旧409当前字节仍必须严格相同。
+
+新闭包为原409＋既有12个明确来源的当前修订版＋本plan和新config，共423。快照原409原路径保持；当前14个新来源在新root独立保存。新增实际机器人类/映射六源码作为runtime input refs，与原三观测源及cv2三源分别披露。新preparer必须核验第一版prepared、失败prefix/owner/真实tool exit、421旧快照及0新增physics事实，不调用第一版基于当前源码的read_prepared，拒绝把失败改作正常退出。旧三个HDF继续仅继承原SHA并检查原stat，不重新打开内容。
+
+新checker复制原独立`case_contract`完整函数到新模块，严格只将型号常量Panda修为MountedPanda；其余原几何、时序、delta、opening、mask、像素和native质量检查逐字保持，纯helper从SHA固定的旧独立gold绑定。必要AST对照证明函数体仅此常量差异；新fixture明确MountedPanda接受、未挂载Panda拒绝。禁止改输入case数据骗过旧checker，禁止AST动态执行或跳过整段controller检查。新checker来源合同只扩展新登记/root/423/失败证据/runtime refs，不改变原native质量定义。
+
+## 顺序与验收
+
+1. 必要测试、重新整仓QA、423源及快照准备完整后，以同一owner运行prefix→task1→task2→final四个owned CPU child。旧55372失败保留，不覆盖或重启旧owner目录。
+2. prefix重新审计尚未通过资格的原10条已保存数据；没有重新执行任何物理。协议完整通过才补剩余20条。所有task/result明确case原prepared_ref与新continuation_prepared_ref，实际cv2导入/准确LD恢复/逐case环境证据继续严格检查。
+3. 两剩余worker实际wait0/reap/noSignal后完整审计。native质量False保留全30分母，只有全30末40原生成功才允许登记模型训练；本阶段model_training_authorized/fresh_performance_authorized始终False，0WAM/fit/fresh。
+
+原10仍不重采，不替换demo或调成功门槛；新source修复不是模型效果改善。最终目标仍为冻结适配WAM＋冻结S2A在预留12初态×2seed的24条稳定门槛，native数据资格不计WAM成功，031模型阶段须另登记。

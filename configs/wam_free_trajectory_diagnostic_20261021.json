@@ -1,0 +1,108 @@
+{
+  "seed": 42,
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoint": {
+    "name": "8400_masked",
+    "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+    "iteration": "iter_000008400",
+    "gpu": 6
+  },
+  "domain": {
+    "name": "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1",
+    "normalization_id": 31,
+    "projection_id": 0,
+    "active_slots": 10
+  },
+  "validation_episodes": [
+    1254,
+    1126,
+    868,
+    1139,
+    1209,
+    1176
+  ],
+  "anchors_per_episode": 4,
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "horizon": 40,
+  "control_fps": 20,
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "hidden_size": 1280,
+  "ridge": 0.1,
+  "output_dir": "outputs/wam_stability_20261021/free_trajectory_diagnostic",
+  "source_scaled_prepared": "outputs/wam_stability_20261021/train_scale_readout/preparation/prepared.json",
+  "source_scaled_prepared_sha256": "0491feacd77747c124f570aa7287e9790bb46e5c7e186750783b7bf4f5806d1c",
+  "source_scaled_fit": "outputs/wam_stability_20261021/train_scale_readout/fit/fit_result.json",
+  "source_scaled_fit_sha256": "9be9d1ce6587304f6bed7ba3c89dd839e2e70fb603e4e81ca4eafb7323298a90",
+  "source_scaled_fit_verification": "outputs/wam_stability_20261021/train_scale_readout/review/fit_verified.json",
+  "source_scaled_fit_verification_sha256": "d7a9502f4358eb48a8f06f8ad6c8e68ae0e8ec955860f7fcbb6e926e170c13c2",
+  "source_scaled_final_peer": "outputs/wam_stability_20261021/train_scale_readout/review/formal_final_peer.json",
+  "source_scaled_final_peer_sha256": "f36d7c0b4b48b322a19772e9b1a651dec6b5c65ce5dd3a8a7c51a93f5891ace0",
+  "source_scaled_owner": "outputs/wam_stability_20261021/train_scale_readout/orchestration/fit/result.json",
+  "source_scaled_owner_sha256": "f1125438f7ad46f77f4e5666f13626bc25a3048cb68b2932743fc47d6ce5a2ec",
+  "master_port": 31087,
+  "budget": {
+    "synthetic_precision_cases": 20,
+    "wam_model_initializations": 1,
+    "free_generations": 48,
+    "free_denoise_calls": 1680,
+    "free_saved_points": 144,
+    "teacher_calls": 144,
+    "teacher_saved_points": 144,
+    "wam_denoise_calls": 1824,
+    "new_candidate_fits": 0,
+    "independent_candidate_reconstructions": 0,
+    "train_episodes_read": 0,
+    "physics_steps": 0,
+    "fresh_cases": 0
+  },
+  "scope": "No-fit diagnostic; raw free trajectories versus true-future noising with matched actual sigma and packed network timestamps",
+  "selected_step_indices": [
+    19,
+    29,
+    33
+  ],
+  "selected_actual_sigmas": [
+    0.8077949285507202,
+    0.5081728100776672,
+    0.2323688119649887
+  ],
+  "precision_step_indices": [
+    0,
+    19,
+    29,
+    33,
+    34
+  ],
+  "precision_velocity_dtypes": [
+    "torch.bfloat16",
+    "torch.float32"
+  ],
+  "precision_payloads": [
+    "signed_normal",
+    "boundaries_subnormal"
+  ],
+  "train_episodes_used": [],
+  "inherited_train_episodes": [
+    1172,
+    1098,
+    893,
+    1151,
+    898,
+    850
+  ],
+  "source_state_prepared": "outputs/wam_stability_20261021/scaled_readout_state/preparation/prepared.json",
+  "source_state_prepared_sha256": "291d1bc924c933bcabb01101b31ad7672359348e726973fd47055f79ad4f2ab6",
+  "source_state_sampling": "outputs/wam_stability_20261021/scaled_readout_state/sampling/result.json",
+  "source_state_sampling_sha256": "43c49000ea31b211af6d5d898df96878de0cc87ad038b7b8b4a086d82ab8ac77",
+  "source_state_verification": "outputs/wam_stability_20261021/scaled_readout_state/review/sampling_verified.json",
+  "source_state_verification_sha256": "bf3c349b7eeb243178066d8d42ba366d7b24ef663dad6c895c522b72c2c9b7af",
+  "source_state_owner": "outputs/wam_stability_20261021/scaled_readout_state/orchestration/sampling/result.json",
+  "source_state_owner_sha256": "065dac4e1ac29a7efd5585b61a1c5295870e620fb751e0fa910c6ff173ade530",
+  "source_state_final_peer": "outputs/wam_stability_20261021/scaled_readout_state/review/formal_final_peer.json",
+  "source_state_final_peer_sha256": "4c9d5a6d9340a6fd845bb79ea21795746eea8226d44ce3474d49e293e3f45924"
+}
