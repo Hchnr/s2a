@@ -99,3 +99,18 @@ def test_actual_handoff_and_complete_reproduction_gate(modules, tmp_path):
     assert service.calls == 48
     assert not (directory / "request48.predict.json").exists()
     assert len(list(directory.glob("*.predict.json"))) == 48
+
+
+def test_preparation_cannot_reset_an_inference_attempt(modules, tmp_path, monkeypatch):
+    runner, _ = modules
+    monkeypatch.setattr(runner, "ROOT", tmp_path)
+    configurations = {"reproduction": {}, "expanded": {}}
+    samples = {mode: {"cases": [mode]} for mode in configurations}
+    for mode in configurations:
+        folder = tmp_path / mode / "samples"
+        folder.mkdir(parents=True)
+        (folder / "manifest.json").write_text(json.dumps(samples[mode]))
+    assert runner.preparation_only_root(samples, configurations) == []
+    (tmp_path / "orchestration").mkdir()
+    with pytest.raises(AssertionError):
+        runner.preparation_only_root(samples, configurations)

@@ -70,7 +70,27 @@ def same_actions(current, original):
             raise ValueError(f"022 full128 reproduction differs: {name}")
 
 
-def prepare():
+def preparation_only_root(samples_by_mode, configurations):
+    """Allow another immutable preparation only while no inference has begun."""
+    previous = []
+    if ROOT.exists():
+        for entry in ROOT.iterdir():
+            if entry.name in configurations:
+                assert entry.is_dir() and sorted(p.name for p in entry.iterdir()) == ["samples"]
+                assert sorted(p.name for p in (entry / "samples").iterdir()) == ["manifest.json"]
+                assert json.loads((entry / "samples/manifest.json").read_text()) == samples_by_mode[entry.name]
+            else:
+                assert entry.is_file() and entry.name.startswith("prepared") and entry.suffix == ".json"
+                old = json.loads(entry.read_text())
+                assert old["schema_version"] == "s2a.static-command-preparation.v1"
+                assert old["model_started"] is False and old["physics_started"] is False
+                previous.append(dict(path=str(entry), sha256=sha256(entry)))
+    return sorted(previous, key=lambda item: item["path"])
+
+
+def prepare(output_path):
+    assert output_path.parent == ROOT and output_path.name.startswith("prepared") and output_path.suffix == ".json"
+    assert not output_path.exists()
     signatures = {}
     for relative in (PLAN, *(str(path.relative_to(REPO)) for path in CONFIGS.values())):
         frozen = subprocess.check_output(["git", "show", f"{REGISTRATION}:{relative}"], cwd=REPO)
@@ -146,12 +166,12 @@ def prepare():
     ):
         path = cosmos / relative
         signatures[str(path)] = sha256(path)
-    if ROOT.exists():
-        raise FileExistsError("022 preparation refuses an existing experiment root; no retry")
-    ROOT.mkdir(parents=True)
+    previous = preparation_only_root(samples_by_mode, configurations)
+    ROOT.mkdir(parents=True, exist_ok=True)
     for mode, samples in samples_by_mode.items():
         path = REPO / configurations[mode]["output_dir"] / "samples/manifest.json"
-        write_new(path, samples)
+        if not path.exists():
+            write_new(path, samples)
         signatures[str(path)] = sha256(path)
     protocol = dict(
         schema_version="s2a.static-command-preparation.v1",
@@ -165,10 +185,10 @@ def prepare():
         input_sha256=signatures,
         model_started=False,
         physics_started=False,
+        previous_immutable_preparations=previous,
     )
-    path = ROOT / "prepared.json"
-    write_new(path, protocol)
-    print(json.dumps(dict(path=str(path), sha256=sha256(path), query_budget=protocol["query_budget"])))
+    write_new(output_path, protocol)
+    print(json.dumps(dict(path=str(output_path), sha256=sha256(output_path), query_budget=protocol["query_budget"])))
 
 
 def reproduction_admission(protocol):
@@ -187,7 +207,7 @@ def reproduction_admission(protocol):
 
 
 def run(prepared_path, prepared_sha, dry_run):
-    assert prepared_path.resolve() == ROOT / "prepared.json" and sha256(prepared_path) == prepared_sha
+    assert prepared_path.resolve().parent == ROOT and sha256(prepared_path) == prepared_sha
     protocol = json.loads(prepared_path.read_text())
     assert protocol["schema_version"] == "s2a.static-command-preparation.v1"
     verify_hashes(protocol["input_sha256"])
@@ -315,6 +335,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed", type=int, choices=(42,), required=True)
     parser.add_argument("--prepare", action="store_true")
+    parser.add_argument("--preparation-output", type=Path)
     parser.add_argument("--prepared", type=Path)
     parser.add_argument("--prepared-sha256")
     parser.add_argument("--dry-run", action="store_true")
@@ -322,9 +343,9 @@ def main():
     cpu_environment()
     if args.prepare:
         assert not args.prepared and not args.prepared_sha256 and not args.dry_run
-        prepare()
+        prepare((args.preparation_output or ROOT / "prepared.json").absolute())
     else:
-        assert args.prepared and args.prepared_sha256
+        assert args.prepared and args.prepared_sha256 and not args.preparation_output
         run(args.prepared, args.prepared_sha256, args.dry_run)
 
 
