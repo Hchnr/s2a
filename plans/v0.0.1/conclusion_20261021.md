@@ -98,3 +98,6 @@
 
 
 [028完整生成state](../../reports/wam_scaled_readout_state_20261021.md)现已结束并双重独立核验：3zero/96paired/3465denoise及模型/CPU正常wait/reap/资源释放全部通过。H8/H16 pooled joint改善10.64%/16.14%，但H16 opening、H40位置及seed42短窗保护失败，最终gate=False；EP6/6与seed43改善不能抵消这些失败。原027 teacher57.45%改善只部分传递，不能认证稳定任务能力；不追加本候选物理/fresh，下一项须另登记。独立来源peer及完整图表已保存，模型只用了物理GPU6，原96源与163权重stat不变。后续优先有限比较同actual sigma下的自由轨迹与真future加噪输入，而非在已失败的028上改阈值或重拟合。
+
+
+[029自由轨迹诊断](029_free_trajectory_diagnostic_20261021.md)在028完整失败后另行登记：同六开发EP/两seed/三个实际solver节点、不拟合，目的是量化true-future noising与自由轨迹的差异；网络时间和actual sigma分开匹配。实现及13项独立checker回归包含真实入口顺序正负控，全仓649 passed/1integration deselected、Ruff353文件；111源/快照和2023安全输入已复核。GPU6的20实际算子场景各CPU/CUDA预定gold通过，跨backend product/x0有4/20不同，属于已登记数值顺序，未当模型错误。新模型的48raw+144teacher/1824预算已在唯一GPU6进程启动，首raw已full128精确复现；完整诊断与任务收益尚无结论，0新fit/物理/fresh，稳定目标继续进行。
