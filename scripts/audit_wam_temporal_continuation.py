@@ -30,6 +30,13 @@ ORIGINAL_HASHES = dict(
     zero_effect="bc117d00bcf2ed79f28356faf78c1cc8ce6a2744b6bfd54e2158e39f876d1528",
 )
 CROSSCHECK_SHA = "0006f3da0694cadbdb537483a792009bb90b7dc169db27bfe8136a2b279b993b"
+CONTINUATION_BUDGET = dict(
+    continuation_wam_trials=1,
+    physics_steps=600,
+    maximum_h40_queries=75,
+    new_oracle_trials=0,
+    fresh_initial_states=0,
+)
 
 
 def registered(relative, evidence):
@@ -328,6 +335,47 @@ def continuation_commands(config):
     return model, matrix
 
 
+def gate_metadata(gate, launch, old_gate, review):
+    """Check the separate one-trial launch contract, never replace the full budget."""
+    assert gate["schema_version"] == "s2a.temporal-zero-step-continuation-gate.v1"
+    assert gate["all_prerequisites_passed"] and gate["registered_budget"] == CONTINUATION_BUDGET
+    assert (gate["partition"], gate["physical_gpu"], gate["port"]) == (2, 6, 9946)
+    assert gate["config_path"] == launch["config_path"] == str(REPO / CONFIG)
+    assert gate["config_sha256"] == launch["config_sha256"] == sha256(REPO / CONFIG)
+    assert gate["original_evidence"] == launch["original_evidence"]
+    assert gate["source_review"] == launch["source_review"] and review["review_passed"] is True
+    assert gate["original020_gate"] == dict(
+        path=old_gate["prerequisite_gate_path"], sha256=old_gate["prerequisite_gate_sha256"]
+    )
+    assert gate["model_started"] is False and gate["physics_started"] is False
+    assert gate["new_model_requests"] == gate["new_physics_steps"] == 0 and gate["automatic_retry"] is False
+    for name, digest in review["input_sha256"].items():
+        assert gate["input_sha256"][name] == digest
+    checkpoint = gate["actual_checkpoint_stat"]
+    assert checkpoint == dict(
+        files_stat_rechecked=163,
+        original_full_fingerprint_sha256="624ba2dd93b49fd76629f7a6c6905b2813b6605d48da8fc7c3f05a026da413a8",
+        weight_rehashed=False,
+    )
+    return True
+
+
+def coordinator_command(launch):
+    command = launch["command"]
+    assert command[0] == str(REPO / ".venv/bin/python")
+    assert Path(command[1]).resolve() == REPO / "scripts/run_wam_temporal_continuation_service.py"
+    expected = {
+        "--partition": "2",
+        "--seed": "42",
+        "--gate": str(Path(launch["prerequisite_gate_path"]).resolve()),
+        "--gate-sha256": launch["prerequisite_gate_sha256"],
+    }
+    assert len(command) == 2 + 2 * len(expected)
+    assert set(command[2::2]) == set(expected)
+    assert all(command[command.index(flag) + 1] == value for flag, value in expected.items())
+    return True
+
+
 def continuation_resources(config, launch, ready, evidence):
     assert ready["schema_version"] == "s2a.temporal-zero-step-continuation-ready.v1"
     assert ready["concurrent_scope"] == "continuation partition2 only"
@@ -351,6 +399,11 @@ def continuation_resources(config, launch, ready, evidence):
     assert manifest["schema_version"] == "s2a.temporal-zero-step-continuation-service.v1"
     assert manifest["partition"] == 2 and manifest["physical_gpu"] == 6 and manifest["config"] == config
     assert manifest["config_sha256"] == sha256(REPO / CONFIG)
+    gate = evidence.json(launch["prerequisite_gate_path"])
+    assert manifest["source_review"] == launch["source_review"]
+    assert manifest["original_evidence"] == launch["original_evidence"]
+    assert manifest["actual_checkpoint_stat"] == gate["actual_checkpoint_stat"]
+    assert manifest["automatic_retry"] is False and manifest["external_sources_readonly"] is True
     assert roles["coordinator"]["pid"] == manifest["coordinator"]["pid"] == launch["coordinator"]["pid"]
     assert (
         roles["coordinator"]["start_ticks"]
@@ -361,7 +414,7 @@ def continuation_resources(config, launch, ready, evidence):
     assert manifest["model_command"] == roles["model"]["command"] == model_command
     assert manifest["job_command"] == roles["matrix"]["command"] == matrix_command
     assert roles["coordinator"]["command"] == launch["command"]
-    assert Path(launch["command"][1]).resolve() == REPO / "scripts/run_wam_temporal_continuation_service.py"
+    coordinator_command(launch)
     for role, item in roles.items():
         assert type(item["pid"]) is int and type(item["start_ticks"]) is int and item["start_ticks"] > 0
         assert item["cwd"] == str(REPO) and item["proc_state"] not in ("Z", "X")
@@ -543,7 +596,8 @@ def main():
     gate_path, gate_sha = launch["prerequisite_gate_path"], launch["prerequisite_gate_sha256"]
     evidence.check(gate_path, gate_sha)
     gate = evidence.json(gate_path)
-    assert gate["all_prerequisites_passed"]
+    gate_metadata(gate, launch, old_launch["partitions"][2], evidence.json(review["path"]))
+    assert gate["qualification"] == gates[2]["qualification"] and gate["prior_seed43"] == gates[2]["prior_seed43"]
     for name, digest in gate["input_sha256"].items():
         evidence.check(name, digest)
     for relative in (
@@ -552,7 +606,9 @@ def main():
         "src/s2a/worker_handshake.py",
         "scripts/run_wam_temporal_continuation_matrix.py",
         "scripts/run_wam_temporal_continuation_service.py",
+        "scripts/prepare_wam_temporal_continuation.py",
         "scripts/capture_wam_temporal_continuation_ready.py",
+        "scripts/capture_wam_long_ready.py",
     ):
         assert gate["input_sha256"][str(REPO / relative)] == sha256(REPO / relative)
     for item in launch["original_evidence"].values():

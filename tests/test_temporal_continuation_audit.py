@@ -244,3 +244,81 @@ def test_case_mechanics_and_whole_ready_contract_remain_the_frozen_independent_c
     assert audit.original.BUDGET == dict(
         wam_trials=3, physics_steps=1800, maximum_h40_queries=225, fresh_initial_states=0
     )
+
+
+def gate_metadata(audit):
+    refs = {key: dict(path=f"/old/{key}.json", sha256=value) for key, value in audit.ORIGINAL_HASHES.items()}
+    launch = dict(
+        config_path=str(audit.REPO / audit.CONFIG),
+        config_sha256=audit.sha256(audit.REPO / audit.CONFIG),
+        original_evidence=refs,
+        source_review=dict(path="/review.json", sha256="r" * 64),
+    )
+    old_gate = dict(prerequisite_gate_path="/old/gate.json", prerequisite_gate_sha256="g" * 64)
+    review = dict(review_passed=True, input_sha256={"/actual/source": "s" * 64})
+    gate = dict(
+        schema_version="s2a.temporal-zero-step-continuation-gate.v1",
+        all_prerequisites_passed=True,
+        partition=2,
+        physical_gpu=6,
+        port=9946,
+        registered_budget=audit.CONTINUATION_BUDGET.copy(),
+        **copy.deepcopy(launch),
+        original020_gate=dict(path="/old/gate.json", sha256="g" * 64),
+        model_started=False,
+        physics_started=False,
+        new_model_requests=0,
+        new_physics_steps=0,
+        automatic_retry=False,
+        input_sha256=review["input_sha256"].copy(),
+        actual_checkpoint_stat=dict(
+            files_stat_rechecked=163,
+            original_full_fingerprint_sha256="624ba2dd93b49fd76629f7a6c6905b2813b6605d48da8fc7c3f05a026da413a8",
+            weight_rehashed=False,
+        ),
+    )
+    return [gate, launch, old_gate, review]
+
+
+def test_continuation_gate_cannot_substitute_budget_review_or_prior_source(audit):
+    values = gate_metadata(audit)
+    assert audit.gate_metadata(*values)
+    for index, key, changed in (
+        (0, "registered_budget", audit.original.BUDGET),
+        (0, "physical_gpu", 3),
+        (0, "automatic_retry", True),
+        (0, "original_evidence", {}),
+        (0, "original020_gate", dict(path="/different", sha256="g" * 64)),
+        (0, "input_sha256", {"/actual/source": "x" * 64}),
+        (3, "review_passed", False),
+    ):
+        bad = copy.deepcopy(values)
+        bad[index][key] = changed
+        with pytest.raises(AssertionError):
+            audit.gate_metadata(*bad)
+
+
+def test_coordinator_command_uses_the_actual_registered_gate_only(audit):
+    launch = dict(prerequisite_gate_path="/gate.json", prerequisite_gate_sha256="g" * 64)
+    launch["command"] = [
+        str(audit.REPO / ".venv/bin/python"),
+        "scripts/run_wam_temporal_continuation_service.py",
+        "--partition",
+        "2",
+        "--seed",
+        "42",
+        "--gate",
+        "/gate.json",
+        "--gate-sha256",
+        "g" * 64,
+    ]
+    assert audit.coordinator_command(launch)
+    for index, changed in ((3, "1"), (5, "43"), (7, "/old-gate.json"), (9, "wrong")):
+        bad = copy.deepcopy(launch)
+        bad["command"][index] = changed
+        with pytest.raises(AssertionError):
+            audit.coordinator_command(bad)
+    bad = copy.deepcopy(launch)
+    bad["command"].append("--dry-run")
+    with pytest.raises(AssertionError):
+        audit.coordinator_command(bad)
