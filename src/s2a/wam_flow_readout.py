@@ -232,8 +232,10 @@ class SolverSigmaBridge:
             if current["sampler_calls"] != 1 or len(current["steps"]) != 35 or current["scheduler"].step_index != 35:
                 raise ValueError("flow request did not complete its single35-step solver")
             check_sources(self.sources)
-            if parameters_identity(self.model) != current["parameters_before"]:
+            current["parameters_after"] = parameters_identity(self.model)
+            if current["parameters_after"] != current["parameters_before"]:
                 raise ValueError("original model parameter identity changed")
+            current["source_sha256"] = self.sources.copy()
             current["complete"] = True
         finally:
             self.last = {k: v for k, v in current.items() if k != "scheduler"}
@@ -327,6 +329,7 @@ class SolverSigmaBridge:
             raise ValueError("requires registered35/shift5/single-seed sampling")
         with observation_guard(self.model):
             self._generator_guard(velocity_fn, noise)
+        current["actual_sampler_arguments"] = kwargs.copy()
         current["sampler_calls"] += 1
 
         def velocity(actual_noise, timestep):
