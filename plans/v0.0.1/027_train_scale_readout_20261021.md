@@ -2,7 +2,7 @@
 
 在任何本候选fit或模型运行前登记。原025与026均保持teacher gate False，原参数/缓存/配置/源/门槛不修改。稳定成功仍要求统一冻结候选在预留12初态×seed42/43中至少20/24、每task至少4/8、末40端点连续native成功；fresh性能尚未打开。本项是向该目标推进的CPU学习诊断，不是缩小目标或认证原checkpoint。
 
-只读缓存统计提示当前prior强烈压缩hidden变化：025消去bias后的hidden有效自由度约.316、026约2.60；026 readout相对bias额外改善3.02%，但sigma=.8仍退化13.23%。这些结果支持检查输入尺度，不证明hidden有足够任务信息。为区分原因，本项不同时添加独立sigma头、更多EP或新时间函数。
+只读缓存统计提示当前prior强烈压缩hidden变化：025消去正则bias后的hidden Schur谱收缩指标约.316、026约2.60；它不是全模型hat matrix的精确有效自由度。026 readout相对bias额外改善3.02%，但sigma=.8仍退化13.23%。这些结果支持检查输入尺度，不证明hidden有足够任务信息。为区分原因，本项不同时添加独立sigma头、更多EP或新时间函数。
 
 只复用025已核验的144份原teacher缓存、026实际fit/独立重算及时间参数化bias。WAM保持8400 non-EMA/H40/20Hz/g1/35步/shift5/SDPA/active10。六train EP1172/1098/893/1151/898/850，六开发validation EP1254/1126/868/1139/1209/1176，原48anchor/3sigma/seed42/全部endpoint与逐层等权不变。validation已查看，是开发诊断，不称预训练未见或新无偏验证。
 
