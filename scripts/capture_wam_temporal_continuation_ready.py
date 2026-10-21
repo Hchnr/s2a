@@ -41,7 +41,8 @@ def capture(launch, evidence):
     identities.append(live_identity("model", model, "6", manifest["model_command"], launch["coordinator"]["pid"]))
     identities.append(live_identity("matrix", matrix, "", manifest["job_command"], launch["coordinator"]["pid"]))
     logs = root / "simulation/logs/8400_masked_temporal_equal"
-    worker = evidence.json(logs / "task2_init0_s42.process.json")
+    worker_path = logs / "task2_init0_s42.process.json"
+    worker = evidence.json(worker_path)
     identities.append(live_identity("physics", worker, "", worker["command"], matrix["pid"]))
     snapshot = evidence.json(logs / "execution_snapshot.json")
     assert snapshot["coordinator_pid"] == matrix["pid"] and snapshot["cpu_workers"] == 1
@@ -58,8 +59,18 @@ def capture(launch, evidence):
     assert child_ready["schema_version"] == "s2a.cpu-worker-ready.v1"
     assert child_go["schema_version"] == "s2a.cpu-worker-go.v1"
     assert child_ready["identity"] == worker["identity"] == child_go["identity"]
+    assert worker["identity"] == {
+        key: identities[-1][key] for key in ("pid", "start_ticks", "ppid", "command", "cwd", "environment")
+    }
     assert child_ready["token"] == child_go["token"]
     assert child_go["ready_sha256"] == sha256(ready_path)
+    assert Path(child_go["registry_path"]) == worker_path
+    assert child_go["registry_sha256"] == sha256(worker_path)
+    assert Path(child_ready["config_path"]) == config_path
+    assert child_ready["config_sha256"] == child_go["config_sha256"] == sha256(config_path)
+    assert Path(child_ready["snapshot_path"]) == logs / "execution_snapshot.json"
+    assert child_ready["snapshot_sha256"] == child_go["snapshot_sha256"] == sha256(child_ready["snapshot_path"])
+    assert child_ready["experiment_work_started"] is False
     assert child_go["parent_identity"] == child_ready["parent_identity"]
     assert child_ready["parent_identity"] == {key: matrix[key] for key in ("pid", "start_ticks")}
     saved = evidence.json(directory / "server_info.json")
