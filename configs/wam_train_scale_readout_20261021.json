@@ -1,0 +1,98 @@
+{
+  "seed": 42,
+  "cosmos_repo": "/share/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm",
+  "checkpoint": {
+    "name": "8400_masked",
+    "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+    "iteration": "iter_000008400",
+    "gpu": 6
+  },
+  "domain": {
+    "name": "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1",
+    "normalization_id": 31,
+    "projection_id": 0,
+    "active_slots": 10
+  },
+  "train_episodes": [
+    1172,
+    1098,
+    893,
+    1151,
+    898,
+    850
+  ],
+  "validation_episodes": [
+    1254,
+    1126,
+    868,
+    1139,
+    1209,
+    1176
+  ],
+  "anchors_per_episode": 4,
+  "sigma": [
+    0.2,
+    0.5,
+    0.8
+  ],
+  "noise_seed": 42,
+  "sampling_seeds": [
+    42,
+    43
+  ],
+  "horizon": 40,
+  "control_fps": 20,
+  "sampling_steps": 35,
+  "guidance": 1.0,
+  "shift": 5.0,
+  "hidden_size": 1280,
+  "ridge": 0.1,
+  "teacher_gate": {
+    "pooled_mse_ratio_max": 0.95,
+    "strictly_beat_bias": true,
+    "per_sigma_mse_ratio_max": 1.05
+  },
+  "state_gate": {
+    "short_joint_ratio_max": 0.9,
+    "strictly_beat_hold_and_constant_velocity": true,
+    "component_ratio_max": 1.05,
+    "position_additive_limit_m": 0.002,
+    "rotation_additive_limit_rad": 0.01,
+    "opening_additive_limit": 0.01,
+    "episode_short_ratio_max": 1.05,
+    "minimum_episodes_passing": 5,
+    "any_episode_short_ratio_max": 1.25,
+    "per_seed_short_ratio_max": 1.05
+  },
+  "output_dir": "outputs/wam_stability_20261021/train_scale_readout",
+  "source_flow_prepared": "outputs/wam_stability_20261021/flow_consistent_readout/preparation/prepared.json",
+  "source_flow_prepared_sha256": "8fa485451c906a55f83a485f08df15ec253779ec8d6046d8ccd677e7b3f8fb56",
+  "source_flow_preparation_verification": "outputs/wam_stability_20261021/flow_consistent_readout/review/preparation_verified.json",
+  "source_flow_preparation_verification_sha256": "476045cb0c5f628b3c1b7902cc39d4c448cd18400b83744d4b36aa4a5fb74c49",
+  "source_flow_fit": "outputs/wam_stability_20261021/flow_consistent_readout/fit/fit_result.json",
+  "source_flow_fit_sha256": "78177d5e9f72fda1bf9a3b068a9d64eaf81dfdeb1bf28828ea2e08b6d2b30fa1",
+  "source_flow_fit_verification": "outputs/wam_stability_20261021/flow_consistent_readout/review/fit_verified.json",
+  "source_flow_fit_verification_sha256": "bbdbab1157bd5b3f4734b5192ebd467baecb4a1be13954ddb853a3fa58fd0733",
+  "source_flow_final_peer": "outputs/wam_stability_20261021/flow_consistent_readout/review/formal_final_peer.json",
+  "source_flow_final_peer_sha256": "604f1463a500529bced224c81c4e991c9eea214d2f703921dccb3c96231a65c7",
+  "preprocessing": "train-only mu=sum(w*h); s=sqrt(sum(w*sum((h-mu)^2))); phi=[(h-mu)/s,1]; one global scalar, no column whitening/epsilon",
+  "parameterization": "delta_v=(-phi/actual_sigma)@W; preserve original velocity target and weights",
+  "teacher_target": "active10(v_target-v_base); preserve original FP32 target and BF16 expansion",
+  "residual_precision": "FP64 center_then_global_scale_then_append_bias_then_divide_sigma_then_matmul_then_base_sum; direct_BF16_RNE",
+  "bias_control": "reuse exact admitted026 bias coefficients and actual quantized teacher outputs; no control refit",
+  "preprocessing_train_rows": 2880,
+  "validation_rows": 2880,
+  "coefficient_parameters": 12810,
+  "preprocessing_parameters": 1281,
+  "total_learned_numbers": 14091,
+  "budget": {
+    "production_candidate_fits": 1,
+    "reused_control_models": 1,
+    "independent_candidate_reconstructions": 1,
+    "new_teacher_calls": 0,
+    "new_wam_denoise_calls": 0,
+    "conditional_generations": 0,
+    "physics_steps": 0,
+    "fresh_cases": 0
+  }
+}
