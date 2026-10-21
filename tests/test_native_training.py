@@ -110,6 +110,27 @@ def test_physical_source_uses_site_position_and_body_rotation():
         validate_physical_source(site, site, body)
 
 
+def test_physical_source_f64_observation_chain_rejects_nanometre_and_rotation_mismatch():
+    body_rotation = Rotation.from_euler("xyz", [0.41, -0.67, 1.13])
+    body = transform([0.4, -0.5, 0.7], body_rotation.as_matrix())
+    site = transform([0.3, 0.1, -0.2], Rotation.from_euler("z", 0.6).as_matrix())
+    # Actual robosuite single_arm.eef_quat -> get_body_xquat is F64 wxyz;
+    # transform_utils.convert_quat only reorders it to xyzw, without mat2quat.
+    actual_wxyz = body_rotation.as_quat()[[3, 0, 1, 2]]
+    observed_xyzw = actual_wxyz[[1, 2, 3, 0]]
+    observed = transform(site[:3, 3], Rotation.from_quat(observed_xyzw).as_matrix())
+    assert observed_xyzw.dtype == np.float64
+    np.testing.assert_allclose(validate_physical_source(observed, site, body), observed, atol=2e-15, rtol=0)
+    wrong_position = observed.copy()
+    wrong_position[0, 3] += 1e-9
+    with pytest.raises(ValueError, match="actual grip-site/BODY"):
+        validate_physical_source(wrong_position, site, body)
+    wrong_rotation = observed.copy()
+    wrong_rotation[:3, :3] = Rotation.from_rotvec([0, 0, 1e-9]).as_matrix() @ observed[:3, :3]
+    with pytest.raises(ValueError, match="actual grip-site/BODY"):
+        validate_physical_source(wrong_rotation, site, body)
+
+
 def test_state_fingerprint_preserves_actual_bytes():
     state = np.array([0.0, -0.0, 0.1], dtype=np.float64)
     assert state_sha256(state) == hashlib.sha256(state.tobytes()).hexdigest()

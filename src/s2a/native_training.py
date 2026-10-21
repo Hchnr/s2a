@@ -86,7 +86,8 @@ def validate_physical_source(observed_source, actual_source_site_pose, actual_ee
     """LIBERO EEF observes grip-site position and EEF BODY orientation.
 
     This deliberately does not equate the controller site's orientation with
-    the source observation's orientation.
+    the source observation's orientation. The actual single_arm sensor reads
+    MuJoCo xquat directly; convert_quat only reorders its F64 components.
     """
     observed = validate_transform(observed_source)
     site = validate_transform(actual_source_site_pose)
@@ -95,6 +96,6 @@ def validate_physical_source(observed_source, actual_source_site_pose, actual_ee
         raise ValueError("expected individual observed/site/body SE3 poses")
     physical = body.copy()
     physical[:3, 3] = site[:3, 3]
-    if not np.allclose(observed, physical, atol=1e-7, rtol=0):
+    if not np.allclose(observed, physical, atol=1e-10, rtol=0):
         raise ValueError("source observation differs from actual grip-site/BODY pose")
     return physical
