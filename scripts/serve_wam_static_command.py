@@ -12,6 +12,23 @@ from s2a.artifacts import REPO, sha256
 from s2a.wam_runtime import install_active_slot_mask, load_service
 
 
+def align_empty_plan(batch, *, expanded):
+    """Retain only the baseline's empty schema placeholder, never a plan."""
+    if len(batch["ai_caption"]) != 1:
+        raise ValueError("022 requires exactly one caption")
+    caption = json.loads(batch["ai_caption"][0])
+    if "current_subtask" in caption or caption.get("task_plan", []) != []:
+        raise ValueError("022 forbids demonstration plans or current subtasks")
+    if not expanded:
+        if caption.get("task_plan") != []:
+            raise ValueError("022 baseline lacks the registered empty plan placeholder")
+        return False
+    changed = "task_plan" not in caption
+    caption["task_plan"] = []
+    batch["ai_caption"] = [json.dumps(caption, ensure_ascii=False)]
+    return changed
+
+
 def install_ledger(service, protocol, directory):
     """Bind the actual prepare→predict handoff without changing either value."""
     original_prepare, original_predict = service.prepare, service.predict
@@ -36,6 +53,7 @@ def install_ledger(service, protocol, directory):
         if prepared.action_dim_mask != [True] * 10 + [False] * 118:
             poisoned = True
             raise ValueError("022 requires the ten active LIBERO slots")
+        aligned = align_empty_plan(batch, expanded=expected["mode"] == "expanded")
         receipt = dict(
             name=request.name,
             seed=prepared.seed,
@@ -45,6 +63,7 @@ def install_ledger(service, protocol, directory):
             active_slot_mask=True,
             actual_action_dim_mask=prepared.action_dim_mask,
             stage="actual_prepare_return_before_predict",
+            empty_plan_schema_alignment=aligned,
         )
         write_new(directory / f"{request.name}.prepare.json", receipt)
         pending.update(name=request.name, prepared_id=id(prepared), batch_id=id(batch), receipt=receipt)

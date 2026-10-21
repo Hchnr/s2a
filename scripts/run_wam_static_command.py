@@ -26,8 +26,10 @@ ROOT = REPO / "outputs/wam_stability_20261021/static_command_state"
 BASELINE = REPO / "outputs/wam_stability_20261021/earlier_screening/8400_g10"
 CONFIGS = {mode: REPO / f"configs/wam_static_command_{mode}_20261021.json" for mode in ("reproduction", "expanded")}
 SOURCES = (
+    "plans/v0.0.1/022_static_command_condition_addendum_20261021.md",
     "scripts/run_wam_static_command.py",
     "scripts/serve_wam_static_command.py",
+    "scripts/audit_wam_static_command_preparation.py",
     "scripts/run_wam_state_matrix.py",
     "scripts/run_wam_short_replan.py",
     "scripts/run_wam_long_service.py",

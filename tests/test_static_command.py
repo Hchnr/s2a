@@ -65,14 +65,18 @@ def test_actual_handoff_and_complete_reproduction_gate(modules, tmp_path):
     directory = tmp_path / "ledger"
     directory.mkdir()
     inputs = [dict(name=f"request{i}", seed=42, vision_path=str(image)) for i in range(49)]
-    protocol = dict(requests=[dict(request=item) for item in inputs])
+    protocol = dict(
+        requests=[dict(request=item, mode="reproduction" if i < 48 else "expanded") for i, item in enumerate(inputs)]
+    )
 
     class Service:
         def __init__(self):
             self.calls = 0
 
         def prepare(self, request, output_dir):
-            return SimpleNamespace(seed=42, action_dim_mask=[True] * 10 + [False] * 118), dict(ai_caption=["actual"])
+            return SimpleNamespace(seed=42, action_dim_mask=[True] * 10 + [False] * 118), dict(
+                ai_caption=[json.dumps(dict(command="actual", task_plan=[]))]
+            )
 
         def predict(self, prepared, batch):
             self.calls += 1
@@ -114,3 +118,15 @@ def test_preparation_cannot_reset_an_inference_attempt(modules, tmp_path, monkey
     (tmp_path / "orchestration").mkdir()
     with pytest.raises(AssertionError):
         runner.preparation_only_root(samples, configurations)
+
+
+def test_empty_placeholder_preserves_all_other_caption_fields(modules):
+    _, server = modules
+    original = dict(task_title="goal", command="long command", fps=20.0)
+    batch = dict(ai_caption=[json.dumps(original)])
+    assert server.align_empty_plan(batch, expanded=True)
+    assert json.loads(batch["ai_caption"][0]) == dict(original, task_plan=[])
+    for extra in (dict(task_plan=["future demonstration"]), dict(current_subtask="grasp now")):
+        batch = dict(ai_caption=[json.dumps(dict(original, **extra))])
+        with pytest.raises(ValueError, match="forbids demonstration"):
+            server.align_empty_plan(batch, expanded=True)
