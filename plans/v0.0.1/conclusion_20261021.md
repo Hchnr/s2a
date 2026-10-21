@@ -4,6 +4,8 @@
 
 最新[026 flow时间readout](../../reports/wam_flow_consistent_readout_20261021.md)已完整完成纯合成GPU6精度资格、两组固定CPU fit及独立AugLS重建：开发validation teacher速度MSE总体改善49.79%，但sigma=.8退化13.23%，超过固定5%上限，gate False。量化预测逐值相同、参数最大差4.705e-15；实际sampling dryrun在模型加载前拒绝，0新WAM前向/完整生成/state评分/物理/fresh。新运算路径15组实际sigma CPU/CUDA全128位一致，owned正常退出/显存0；它只证明该计算实现一致，不是task成功。完整源码冻结QA546 passed/1 integration deselected、321文件Ruff通过。原025失败保持；下一项先只读诊断特征尺度与sigma残差结构，再登记新干预，fresh24稳定门槛不变。以下旧阶段的“正在实现/尚未fit”均为历史记录，以本段完整结果及正式报告为准。
 
+纯统计支持继续检查hidden尺度与正则prior的匹配，但没有证明该因素足以解释任务失败。[027训练集尺度readout](027_train_scale_readout_20261021.md)已另登记：仅train计算中心和整体L2 RMS，保留原时间函数/监督/权重/λ及质量门槛，一个新fit加一个独立重建，原026bias复用不重拟合。正在实现，真实fit尚未执行；不同时增加三个sigma头。本项无GPU/WAM生成或物理授权，后续先有teacher证据再单独验证新路径的实际GPU运算和完整state生成，稳定目标不变。
+
 最新完整物理结论：[020/021同端点因果集成](../../reports/wam_temporal_equal_20261021.md)三任务全核验，ever2/3、terminal/stable1/3（仅cream，尾303端点/15.15秒）。原raw8/seed42也是stable1/3，但仅bowl，不能拼成两任务成功；该候选未建立多任务收益，不promote。225请求/1800步/225HTTP、14128输入SHA与全部owned正常释放通过，原task2零步启动故障不算任务失败、4次服务初始化与3评分轨迹明确分开。其集成参考TCP误差45–162mm，不能把失败全归checkpoint；正确参考3/3只证明已验证运动范围内的执行链可用。
 
 022已完整96次state请求并独立核验：48份基线full128精确复现、48对实际caption仅command变化，全部4个owned身份正常释放。扩展文本的H8/H16位置24.384→24.371mm、44.623→46.298mm，H40位置85.521→88.331mm，未通过组件/10%改善/episode门槛，不推广。不能将短任务文本认定为主因。完整证据SHA `010e404aa1df40b2daaaeab0e93675e51029f8c1503e32cf11fd446bcc40c456`。
