@@ -35,7 +35,7 @@ def decisions(passed):
         eligible_for_sampling=False,
     )
     audit = dict(
-        independent_model_reconstructions=1,
+        independent_candidate_reconstructions=1,
         fit_verified=True,
         teacher_gate=gate,
         eligible_for_runtime_qualification=passed,

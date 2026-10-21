@@ -83,7 +83,7 @@ def fit_admission(producer, audit):
     require(
         producer["candidate_fits"] == producer["fit_attempts"] == producer["producer_fit_groups"] == 1
         and producer["reused_controls"] == 1
-        and audit["independent_model_reconstructions"] == 1,
+        and audit["independent_candidate_reconstructions"] == 1,
         "027 single-fit/reused-control budget differs",
     )
     require(
