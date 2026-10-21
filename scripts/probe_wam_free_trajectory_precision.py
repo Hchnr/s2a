@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 from prepare_wam_flow_readout import GPU_UUID, reference, require
-from prepare_wam_free_trajectory import read_prepared
+from prepare_wam_free_trajectory import BACKEND_CONTRACT, read_prepared
 
 from s2a.artifacts import sha256
 from s2a.worker_handshake import write_once
@@ -107,7 +107,14 @@ def main():
             actual_uuid.removeprefix("GPU-").lower() == GPU_UUID.removeprefix("GPU-").lower(),
             "029 precision actualGPU UUID differs",
         )
-        result.update(actual_gpu_uuid=actual_uuid, torch_version=torch.__version__)
+        result.update(
+            actual_gpu_uuid=actual_uuid,
+            torch_version=torch.__version__,
+            torch_git_version=torch.version.git_version,
+            cuda_version=torch.version.cuda,
+            backend_arithmetic_contract=BACKEND_CONTRACT,
+            numerical_addendum_ref=prepared["numerical_addendum_ref"],
+        )
         source = (
             Path(prepared["config"]["cosmos_repo"])
             / "cosmos_framework/model/generator/diffusion/samplers/fm_solvers_unipc.py"
@@ -159,14 +166,15 @@ def main():
                             sigma_device=str(sigma.device),
                             actual_input_unchanged=True,
                         )
-                    for suffix in ("velocity", "product", "x0", "sigma"):
-                        require(
+                    metadata["cpu_cuda_bits_equal"] = {
+                        suffix: bool(
                             np.array_equal(
                                 arrays[f"{name}_cpu_{suffix}"].view(np.uint32),
                                 arrays[f"{name}_cuda_{suffix}"].view(np.uint32),
-                            ),
-                            f"029 actual CPU/CUDA {suffix} bits differ",
+                            )
                         )
+                        for suffix in ("velocity", "product", "x0", "sigma")
+                    }
                     result["cases"].append(metadata)
         require(len(result["cases"]) == 20, "029 synthetic20 coverage differs")
         archive = output / "actual_outputs.npz"
@@ -178,7 +186,7 @@ def main():
             worker_source=reference(__file__),
             scheduler_source=reference(source),
             actual_scheduler_conversion_calls=40,
-            cpu_cuda_full128_bitwise_equal=True,
+            cpu_cuda_full128_bitwise_equal=all(all(case["cpu_cuda_bits_equal"].values()) for case in result["cases"]),
         )
     except BaseException as error:
         result["error"] = dict(type=type(error).__name__, message=str(error))

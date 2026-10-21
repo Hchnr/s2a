@@ -2,6 +2,7 @@
 
 import argparse
 import importlib
+import json
 from pathlib import Path
 
 import pytest
@@ -82,3 +83,45 @@ def test_collection_missing_precision_rejected_before_stage_creation(module, tmp
     with pytest.raises(FileNotFoundError):
         module.execute(a)
     assert not root.exists()
+
+
+@pytest.mark.parametrize("backend_gold", [True, False])
+def test_backend_specific_gold_controls_admission_with_cross_backend_difference(
+    module, tmp_path, monkeypatch, backend_gold
+):
+    prepared_path = tmp_path / "prepared.json"
+    prepared_path.write_text("{}")
+    p, a = tmp_path / "precision.json", tmp_path / "audit.json"
+    addendum = dict(path="/registered_addendum.md", sha256="pinned")
+    prepared = dict(output_root=str(tmp_path), numerical_addendum_ref=addendum)
+    precision = dict(
+        schema_version="s2a.free-trajectory-synthetic-precision.v1",
+        complete=True,
+        passed=True,
+        prepared_ref=module.reference(prepared_path),
+        cases=[{}] * 20,
+        backend_arithmetic_contract=module.BACKEND_CONTRACT,
+        numerical_addendum_ref=addendum,
+        cpu_cuda_full128_bitwise_equal=False,
+    )
+    p.write_text(json.dumps(precision))
+    precision_sha = module.sha256(p)
+    audit = dict(
+        schema_version="s2a.free-trajectory-independent-verification.v1",
+        passed=True,
+        precision_verified=True,
+        phase="precision",
+        prepared=module.reference(prepared_path),
+        input_sha256={str(p): precision_sha},
+        backend_gold_verified=backend_gold,
+        eligible_for_fit=False,
+        physics_authorized=False,
+    )
+    monkeypatch.setattr(module, "read", lambda path, digest: precision if path == p else audit)
+    monkeypatch.setattr(module, "owner_completed", lambda *args: {})
+    if backend_gold:
+        actual, _ = module.precision_admission(prepared, prepared_path, p, precision_sha, a, "a-sha")
+        assert actual["cpu_cuda_full128_bitwise_equal"] is False
+    else:
+        with pytest.raises(ValueError, match="independent synthetic"):
+            module.precision_admission(prepared, prepared_path, p, precision_sha, a, "a-sha")

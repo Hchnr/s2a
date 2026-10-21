@@ -48,3 +48,19 @@ def test_observer_rejects_a_repeated_product_in_real_method(module):
 
     with pytest.raises(ValueError, match="one observed"):
         module.observe_conversion(Repeated(), torch.zeros(2, 128), torch.ones(2, 128))
+
+
+def test_cpu_scalar_promotion_quantizes_sigma_before_bfloat16_product(module):
+    import torch
+    from verify_wam_readout import quantize_bfloat16
+
+    _, value = module.precision_payload("signed_normal")
+    velocity = torch.tensor(value).to(torch.bfloat16)
+    sigma = np.float32(0.8077949285507202)
+    actual = (torch.tensor(sigma) * velocity).float().numpy()
+    v = velocity.float().numpy().astype(np.float64)
+    sigma_bf16 = float(quantize_bfloat16(np.asarray(sigma, np.float64)))
+    cpu_gold = quantize_bfloat16((v * sigma_bf16).astype(np.float32))
+    different_order = quantize_bfloat16((v * float(sigma)).astype(np.float32))
+    np.testing.assert_array_equal(actual.view(np.uint32), cpu_gold.view(np.uint32))
+    assert np.max(np.abs(actual - different_order)) == 0.015625

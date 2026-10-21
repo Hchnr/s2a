@@ -9,7 +9,7 @@ import socket
 from pathlib import Path
 
 from prepare_wam_flow_readout import reference, require
-from prepare_wam_free_trajectory import read_prepared
+from prepare_wam_free_trajectory import BACKEND_CONTRACT, read_prepared
 from run_wam_flow_readout import check_hashes, completed, environment, read, resource_observation, wait_release
 from run_wam_flow_readout import verified as verified_receipt
 from run_wam_readout import owned_command
@@ -53,7 +53,8 @@ def precision_admission(prepared, prepared_path, precision_path, precision_sha, 
         and precision["complete"] is precision["passed"] is True
         and precision["prepared_ref"] == reference(prepared_path)
         and len(precision["cases"]) == 20
-        and precision["cpu_cuda_full128_bitwise_equal"] is True,
+        and precision["backend_arithmetic_contract"] == BACKEND_CONTRACT
+        and precision["numerical_addendum_ref"] == prepared["numerical_addendum_ref"],
         "029 synthetic qualification absent or unrelated",
     )
     require(
@@ -62,6 +63,7 @@ def precision_admission(prepared, prepared_path, precision_path, precision_sha, 
         and audit["phase"] == "precision"
         and audit["prepared"] == reference(prepared_path)
         and audit["input_sha256"].get(str(Path(precision_path).resolve())) == precision_sha
+        and audit["backend_gold_verified"] is True
         and audit["eligible_for_fit"] is audit["physics_authorized"] is False,
         "029 independent synthetic qualification absent or unrelated",
     )
