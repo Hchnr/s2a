@@ -1,0 +1,40 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/settled_native_training",
+  "motor_prepared_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_motor_hold_diagnostic/preparation/prepared.json",
+    "sha256": "57ce8bb2466d182d7674d5578ca5eb64effc9b429889cbbb14990c8c1445739b"
+  },
+  "motor_verified_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_motor_hold_diagnostic/review/verified.json",
+    "sha256": "676ba0e941f382bea48f5593ebc0f8469d35f497cd304f8e47b2d7c11b53582f"
+  },
+  "native_prepared_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/synchronous_native_training_continuation_model_contract/preparation/prepared.json",
+    "sha256": "c4ead93d1c86566eccd857167c4ad574d9309215873b85bf1713920b2b2e841e"
+  },
+  "native_collection_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/synchronous_native_training_continuation_model_contract/collection/result.json",
+    "sha256": "40f018538100f87dc55a82f6b713eda648a865cf483f3f51c530261e4cc3ca3e"
+  },
+  "native_verified_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/synchronous_native_training_continuation_model_contract/review/collection_verified.json",
+    "sha256": "57d42311c9f0127121626f6139e353faafc104bd15119e4dd69236a0b6ab0114"
+  },
+  "cv2_probe_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/local_python_environment_repair_20261022/native_cv2_probe.json",
+    "sha256": "8cdc8f2c8b85946e911813d2375b46a005e73d94a13f232e37f4e85586eedaa7"
+  },
+  "cv2_runtime_refs_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/local_python_environment_repair_20261022/native_cv2_runtime_source_refs.json",
+    "sha256": "08508f11caef1e083438446a93e87562e73be548c454f92200e48b5fdb420667"
+  },
+  "environment_initializations": 30,
+  "physics_steps": 6180,
+  "current_canvases": 150,
+  "settling_steps": 40,
+  "terminal_verification_steps": 40,
+  "model_training_authorized": false,
+  "fresh_performance_authorized": false,
+  "automatic_retry": false
+}

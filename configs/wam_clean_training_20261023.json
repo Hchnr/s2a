@@ -1,0 +1,149 @@
+{
+  "schema_version": "s2a.clean-training-config.v1",
+  "seed": 42,
+  "bindings_complete": true,
+  "preparation_only": true,
+  "execution_authorized": false,
+  "output_dir": "outputs/wam_stability_20261021/clean_residual_training_20261023",
+  "plan_path": "plans/v0.0.1/038_clean_residual_training_20261023.md",
+  "refs": {
+    "settled_prepared": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/settled_native_training/preparation/prepared.json",
+      "sha256": "f957af1e8dec6bfe24a104d98ecfbe24145375370d79671931ed4df162533d8c"
+    },
+    "settled_collection": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/settled_native_training/collection/result.json",
+      "sha256": "bd4a8f10e23073d0f40ebfd2b5effe11521d4531603c5314b0c7b7e6fb616521"
+    },
+    "settled_audit": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/settled_native_training/audit_addendum/review/verified.json",
+      "sha256": "d5f0da94769de82ccd622638ac2177918f859db7fd0adb7940e06e3fa7dbe971"
+    },
+    "settled_owner": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/settled_native_training/audit_addendum/result.json",
+      "sha256": "2f7a5cb96681bb5da5700588a317fb38b863bc9113571e6b551cb0f18f55dca1"
+    },
+    "settled_peer": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/settled_native_training/final_peer/verified.json",
+      "sha256": "bd61e6350cbdabdbbac3d046b1762860bf90a79c81f2c9e4ec01ae060430124e"
+    },
+    "bridge_prepared": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/preparation/prepared.json",
+      "sha256": "88dfed133bcbf073dd81b90f7ebf89c6829d1a191c3bce1891f7341488753c09"
+    },
+    "bridge_qualification": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/qualification/result.json",
+      "sha256": "e35e68f83fbe83ccbf6a1c13e09f7c16b413cfdde88380b5885fed8bc7cca4e5"
+    },
+    "bridge_failed_owner": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/orchestration/result.json",
+      "sha256": "44f5473d98909e16c627aee16da2ba1a97aafc03eacd192ac03579b8f716180f"
+    },
+    "bridge_gpu_after": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/orchestration/gpu_after.json",
+      "sha256": "7360580e2c104163df38b8c975fe96822e7e929e2a686976e80c5c1d129bb862"
+    },
+    "native_mask_prepared": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_native_mask_audit_20261023/preparation/prepared.json",
+      "sha256": "f2d191b13606b416f871f342f259aa4b60c41dc33160fb00b21529f04002c881"
+    },
+    "native_mask_review": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_native_mask_audit_20261023/review/verified.json",
+      "sha256": "1e7597ed4ee416d5155ab628ad2113b38a4c991fbd07657ab96f7f992603c66f"
+    },
+    "native_mask_owner": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_native_mask_audit_20261023/orchestration/result.json",
+      "sha256": "247f9c541dd4bcfa8c6bf7a5b00633a2427fc0ce90664875180cf4a254ffa788"
+    },
+    "native_mask_peer": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_native_mask_audit_20261023/peer/final_peer_completed.json",
+      "sha256": "cc78cf1aa825f2a893bf201c8cdaf3f67e3a29cc02aee8ff3fe7915bfabc8fe7"
+    }
+  },
+  "budget": {
+    "raw_training_requests": 300,
+    "w1_training_requests": 300,
+    "state_zero_requests": 3,
+    "state_paired_requests": 96,
+    "training_and_state_requests": 699,
+    "training_and_state_denoise": 24465,
+    "development_requests": 900,
+    "development_denoise": 31500,
+    "total_requests": 1599,
+    "total_denoise": 55965,
+    "model_initializations": 4,
+    "producer_fits": 2,
+    "independent_reconstructions": 2,
+    "development_physics_steps": 7200,
+    "new_teacher_calls": 0,
+    "future_rgb_frames": 0,
+    "fresh_cases": 0
+  },
+  "resources": {
+    "d0_timeout_s": 86400,
+    "d1_timeout_s": 86400,
+    "state_timeout_s": 43200,
+    "development_timeout_s": 172800,
+    "fit_timeout_s": 7200,
+    "independent_fit_timeout_s": 7200,
+    "audit_timeout_s": 1800,
+    "http_timeout_s": 300,
+    "gpu_release_timeout_s": 120,
+    "blas_threads": 8,
+    "maximum_fit_block_rows": 1400
+  },
+  "noise_roots": [
+    101,
+    102
+  ],
+  "evaluation_seeds": [
+    42,
+    43
+  ],
+  "validation_episodes": [
+    1254,
+    1126,
+    868,
+    1139,
+    1209,
+    1176
+  ],
+  "ridge": 0.1,
+  "feature_terms": [],
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "automatic_retry": false,
+  "source_paths": [
+    "scripts/prepare_wam_clean_training.py",
+    "tests/test_clean_training_preparation.py",
+    "src/s2a/clean_training_data.py",
+    "tests/test_clean_training_data.py",
+    "src/s2a/wam_clean_compact.py",
+    "tests/test_wam_clean_compact.py",
+    "src/s2a/wam_clean_capture.py",
+    "src/s2a/wam_clean_readout.py",
+    "src/s2a/wam_clean_streaming.py",
+    "src/s2a/relocated_artifacts.py",
+    "src/s2a/streaming_ridge_qr.py",
+    "tests/test_streaming_ridge_qr.py"
+  ],
+  "execution_entrypoints": {
+    "collect": "scripts/collect_wam_clean_training.py",
+    "fit": "scripts/fit_wam_clean_training.py",
+    "independent_fit": "scripts/verify_wam_clean_training_fit.py",
+    "state_sampling": "scripts/sample_wam_clean_training_state.py",
+    "state_audit": "scripts/verify_wam_clean_training_state.py",
+    "development_service": "scripts/serve_wam_clean_training.py",
+    "development_owner": "scripts/run_wam_clean_training_development.py",
+    "independent_prepare": "scripts/verify_wam_clean_training_preparation.py"
+  },
+  "numerical_contract": {
+    "features": "hidden1280_then_C0active10",
+    "actual_sample": "original_FP32",
+    "C0": "sample-sigma*raw_velocity",
+    "target": "normalized_native_x0-C0",
+    "loss": "direct_clean_no_sigma_weight",
+    "center_scale": "train_only_global_vector_L2_RMS",
+    "bias_regularized": true
+  },
+  "note": "All034/037/039 SHA bindings are actual completed artifacts. This is metadata-only preparation; entrypoint existence is not execution admission. No real prepare/model has been run by creating this config."
+}

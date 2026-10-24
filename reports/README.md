@@ -2,6 +2,20 @@
 
 这里保存 Git 内的精简报告、指标摘要和完成状态，完整产物位于 `outputs/`。
 
+[当前实现进度与总目标](status_current_20261023.md)汇总已实现、已验证和未完成项；总目标与20/24、各任务4/8的完整验收口径见[036](../plans/v0.0.1/036_project_goal_20261023.md)。下列按日期保留历史推进记录。
+
+2026-10-23最新接续：[041准入与实际启动](wam_clean_training_continuation_20261023.md)。730 passed/1 skipped、Ruff、484源码/快照及完整独立metadata/执行审查通过；真实D0 dry通过，独立session supervisor在短launcher退出后PPID1存活并持有新D0实际模型。原失败不改、不用于fit，仍无整轮采集/实际fit/任务/fresh成绩。下列准备与旧启动为此前快照。
+
+2026-10-23中断核查：[D0中断与独立接续准备](wam_clean_training_interruption_20261023.md)。原进程消失、20完整＋partial25节点、无wait/reap/exit资格；失败原址保留不用于fit，041新根/明确累计预算及持久化owner准备中，尚无新模型/fit/任务/fresh。下列D0启动段为此前快照；[最终验收差距](wam_final_acceptance_gap_audit_20261023.md)仍未闭合。
+
+2026-10-23执行推进：[040准入与D0启动](wam_clean_training_execution_20261023.md)已完成613 passed/1 skipped、Ruff及独立完整执行审查，462源/快照冻结。原63位seed不可执行问题在模型调用前以新31位seed-plan明确修订，原metadata保留；D0唯一模型已启动，尚无整轮采集、候选fit、开发或fresh成绩。下列训练准备状态保留为此前快照。
+
+2026-10-23训练准备：[038实现与准备](wam_clean_training_preparation_20261023.md)的150当前锚点/300独立noise及24 validation锚点/96矩阵已完成独立metadata审查，执行仍未就绪。新软件不计作实际训练、任务或fresh收益。
+
+2026-10-23最新阶段：[真实clean桥接联合资格通过](wam_clean_bridge_20261023.md)。037实际7请求/245节点及039严格原生mask CPU补充审计、独立peer均完成；原False和准备/peer失败保留，0fit/任务/fresh收益。下一阶段为038有限训练与开发协议的实现/准备。
+
+2026-10-23 10:51+08历史快照见[实现进度核查](status_review_20261023.md)，总体目标及验收见[036计划](../plans/v0.0.1/036_project_goal_20261023.md)。当时034新数据30/30合格，035缺完整结果和退出收据；后续037＋039联合桥接资格见上列新报告。以下内容按历史阶段保留。
+
 当前稳定成功阶段的完整结果见下表。结果均为开发集证据；尚未执行预留新初态验收，无真机。
 
 | 报告 | 已完成范围 | 主要结果 |

@@ -1,0 +1,46 @@
+{
+  "schema_version": "s2a.clean-training-execution-config.v1",
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/clean_residual_training_20261023/execution",
+  "plan_path": "plans/v0.0.1/040_clean_training_execution_20261023.md",
+  "prepared_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/preparation/prepared.json",
+    "sha256": "b55c214ffec328ee94f2074007c15dfe62486512aeb660b251fdb21f38e970f7"
+  },
+  "metadata_verification_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/aux/independent_metadata/verified.json",
+    "sha256": "eb51208123f6a3bd3f63fef19d44d37de62c52459431cbfcd7f27dbb630b8570"
+  },
+  "development_control_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_preflight_20261023/dependency_addendum.json",
+    "sha256": "106f45543f8bc0aa0e336c0ad9b5c01e0bce252a5e5dad0ec3ebbba349e5fda0"
+  },
+  "disk_required_bytes": 214748364800,
+  "ram_required_bytes": 137438953472,
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "master_port": 31338,
+  "development_port": 31339,
+  "automatic_retry": false,
+  "fresh_performance_authorized": false,
+  "required_test_paths": [
+    "tests/test_clean_training_preparation.py",
+    "tests/test_clean_training_preparation_verification.py",
+    "tests/test_clean_training_data.py",
+    "tests/test_streaming_ridge_qr.py",
+    "tests/test_wam_clean_compact.py",
+    "tests/test_clean_training_collection.py",
+    "tests/test_clean_training_capture_verification.py",
+    "tests/test_clean_training_fit.py",
+    "tests/test_clean_training_owner.py",
+    "tests/test_clean_training_state_sampling.py",
+    "tests/test_clean_training_state_verification.py",
+    "tests/test_clean_training_state_owner.py",
+    "tests/test_clean_training_development.py",
+    "tests/test_clean_training_service.py",
+    "tests/test_clean_execution_proof.py",
+    "tests/test_clean_training_execution_preparation.py",
+    "tests/test_clean_training_execution_verification.py",
+    "tests/test_native_environment.py",
+    "tests/test_worker_handshake.py"
+  ]
+}

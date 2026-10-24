@@ -2,7 +2,7 @@
 
 先读 `README.md` 和 `plans/v0.0.1/001_state_to_action.md`。本仓库研究：世界模型输出期望 state/delta_state，经 S2A 反解 action，再通过固定控制器和机器人得到期望状态。
 
-- 后续实现、测试、配置、报告及实验产物都在 `/share/project/eai_pwm/home/hcr/repos/s2a` 下维护；命令从本仓库执行。
+- 用户于2026-10-22明确指定后续实现、测试、配置、报告及实验产物全部在 `/share-mixed/project/eai_pwm/home/hcr/repos/s2a` 下维护；命令从本仓库执行。旧 `/share/project/eai_pwm/home/hcr/repos/s2a` 正被外部清理，不向其写入或恢复；历史引用保留原声明和SHA，通过明确的路径迁移记录定位安全副本。
 - `src/s2a/` 放可复用算法，`scripts/` 放实验入口，`tests/` 放测试，`configs/` 放显式配置，`plans/` 与 `reports/` 保留在 Git 范围内，生成产物写 `outputs/`。
 - Cosmos 仓库与 R1/R2 发布数据是外部只读参考。S2A 不引入 Cosmos 训练 dataloader、也不要求从 Cosmos 工作目录运行。数据路径通过配置传入。
 - 主要评价命令经过前向控制系统后的 state error；不要把 pose 重建精确或 action RMSE 小等同于闭环控制成功。
@@ -26,3 +26,7 @@ CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python -m pytest
 ## GPU 使用限制（用户于2026-10-20明确指定）
 
 后续实现和测试只允许使用物理 GPU 4、5、6、7，禁止在 GPU 0–3 启动任何任务。模型进程显式设置 CUDA_VISIBLE_DEVICES 为允许卡；CPU测试和OSMesa仿真设置为空。恢复/排队任务也必须遵守此限制，不沿用旧8卡映射。
+
+### 最新限制（用户2026-10-22确认，覆盖旧四卡许可）
+
+只允许当前容器可见GPU2、3；已用驱动PCI/UUID/Device Minor交叉核实为设备minor6、7。允许UUID分别为`GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f`、`GPU-7a163b30-e2cd-f747-6075-3265058ad0b8`。模型入口按UUID显式设置CUDA_VISIBLE_DEVICES，不沿用旧配置数字4–7或容器数字6、7；当前可见0、1禁止使用。恢复/排队同样遵守，CPU/OSMesa仍显式空CUDA/LD。
