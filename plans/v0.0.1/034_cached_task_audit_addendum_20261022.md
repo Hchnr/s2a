@@ -1,0 +1,9 @@
+# 034只读审计补充：保留历史task0失败及其独立数据资格
+
+034实际30环境/6180步/150canvas已全部采集，worker正常wait0/reap。原独立checker在任何新数组评分前拒绝historical_cases：它错误要求原030缓存task0的task-level passed/complete为True。实际原task0保存十条完整case后在末尾环境guard失败；原False有SHA保留，接续已通过prefix_verification_ref逐case核验并在原全30审计明确使用其十条。不得把原task0改成True、回写034False owner或重采物理。
+
+本补充只登记一个新CPU只读入口，固定034prepared/collection/原失败owner及checker SHA；检查原完整collection的prefix_verification_ref必须passed/prefix_verified/evidence_integrity_passed，prepared关联和十个cached_case_refs逐值匹配原失败task0，并核原失败类型/环境guard消息、固定1328步/50canvas、0WAM/fit/fresh。原task1/2继续要求完整通过，每case仍完整通过。
+
+随后复用原034独立checker的所有数组、控制目标、前缀、相机、mask、20Hz/末40质量和worker生命周期检查。仅替换其历史任务封套的准入函数，并将最终publish写到新的audit_addendum/review/verified.json、追加本补充及所有SHA，原函数在finally恢复。旧034plan/config/8源/False owner与失败log原字节不改；原030的28/30 False保持。
+
+新owner使用owned_command等待唯一CPU审计子进程，actualwait/reap独立保存；新物理/仿真初始化/图像/HDF/WAM/fit/fresh均0，不覆盖或自动重试。先做真实历史元数据和错配prefix负控测试，再冻结补充三源快照并执行一次。质量资格只有完整三十条审计结束后产生，不由本封套补充预先判断。

@@ -1,0 +1,37 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/native_terminal_pose_hold_diagnostic",
+  "static_prepared_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_terminal_predicate_diagnostic_registry_v2/preparation/prepared.json",
+    "sha256": "e6892b9d88b2b6546d494ee296093c29c89bbda9e05291e42748d3b73c6ad766"
+  },
+  "static_collection_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_terminal_predicate_diagnostic_registry_v2/collection/result.json",
+    "sha256": "556df24760d19963641b400cd4317d21a765e688506b99066c478c676c023a2c"
+  },
+  "static_verified_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_terminal_predicate_diagnostic_registry_v2/review/verified.json",
+    "sha256": "b6b05f8f7ef4b0cae79645e82053438572c03f6d309f85218a40c1978fb4e748"
+  },
+  "static_owner_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_terminal_predicate_diagnostic_registry_v2/orchestration/run/result.json",
+    "sha256": "e3872b6b234e6fddb77f6081abb0704ef7e7c4adbce8a0e8047a10bc722dbf94"
+  },
+  "methods": [
+    "baseline",
+    "latched_pose"
+  ],
+  "cases": [
+    "task1_native_demo_1",
+    "task1_native_demo_35",
+    "task1_native_demo_12",
+    "task1_native_demo_13"
+  ],
+  "environment_initializations": 8,
+  "physics_steps": 1648,
+  "current_canvases": 40,
+  "hold_steps": 40,
+  "training_authorized": false,
+  "fresh_authorized": false,
+  "automatic_retry": false
+}

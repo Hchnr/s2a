@@ -122,3 +122,8 @@
 
 
 030接续首次前置审计已真实失败（owner55372 exit1），新增物理仍0：实际MountedPanda与旧独立checker硬写Panda不符。10份真实controller合同一致，源码证明MountedPanda与Panda为不同兄弟类；不伪改数据型号。独立新型号修订已事前登记，原409与两次失败快照完整保留，改为精确MountedPanda并拒Panda，其余几何/像素/质量门槛不变。原735 passed只证明第一版源码的已覆盖测试；新修订QA及全30数据资格仍待执行，稳定目标继续。
+
+
+2026-10-22用户明确改用share-mixed仓库；外部清理导致canonical源码环境丢失，50组关键记录全备份、14缺失源恢复/396逐SHA同，见reports/workspace_relocation_20261022.md。新路径相关60测试通过，395文件Ruff通过；完整QA的旧路径1F/12E保留。032新8条/1648步/40canvas与原缓存合并成16因子案例，独立审计通过；baseline2/4、pose3/4、motor2/4、pose+motor3/4，demo35新两法均0/40。41200子步、完整native前缀/控制cache/标签/图像和actualwait0/reap核验通过，不推广motor保持，原30训练资格False。clean残差CPU原语已实现并合成验证，0真实fit/WAM/fresh。GPU仅当前可见2/3 UUID，所有本轮工作CPU空CUDA/LD。下一步应另登记完整30来源的native/释放/稳定数据合同，最终24条验收门槛不变。详见reports/native_motor_hold_20261022.md。
+
+034现已完整30环境/6180步/150当前canvas，新固定native＋实测SITE pose保持40＋40协议三任务各10/10稳定；全部native前缀/控制cache/20Hz标签与图像独立审核通过。原03028/30 False及原034历史封套checker False都保留；按034只读补充精确核已审task0缓存后完成新审计，0重采物理。eligible_for_model_training_registration=True只代表新数据资格，0真实fit/WAM/fresh，不认证总目标。新支持子集950P/1skip/3deselected及补充56P；原迁移完整1F/12E不追改。下一项035真实clean桥接资格7请求/245denoise已登记、尚未执行；仍须后续实际任务达到原24条门槛。见reports/settled_native_training_20261022.md及reports/status_audit_20261022.md。

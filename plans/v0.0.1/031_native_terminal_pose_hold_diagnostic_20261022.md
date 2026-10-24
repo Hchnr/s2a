@@ -1,0 +1,13 @@
+# 原生末端位姿保持的有限配对诊断
+
+在新增环境或积分前登记。030原生训练数据仍28/30，训练资格False；静态registry_v2诊断16端点完整复现，demo1越过区域y边界、demo35短暂失去接触。尚未证明控制原因。本项编号031仅为保持诊断，不是此前拟议的模型适配031。
+
+固定原wine案例demo1/35和原正控demo12/13，各完整重放原native前缀，随后40步保持。两个方法统一全四例：baseline原零arm＋末夹爪命令；latched_pose保持同一命令、仅在末40步通过OSC已存在的set_pos/set_ori接口指定native结束时实测controller SITE位姿。锁存发生在首个保持命令之前、仅使用当前实测值；不调用任务谓词生成控制、不用物体位置/接触/未来标签。原固定S2A不改，这是native控制正控诊断，不是WAM成绩或候选S2A部署。
+
+实际单方法824步，两方法8环境/1648积分步，40当前canvas，0future图像/HDF/WAM/fit/fresh。每个方法与原案例相同initial/XML、seed42、native命令、观测与五anchor渲染时刻，不预滚动、不按成功停止。使用原冻结collect_case保存完整实测标签及控制命令；仅本worker包装make_environment/返回环境step与controller.set_goal，完整记录所有实际目标及绝对覆盖参数。外部源码、既有423/431快照不改。CPU/OSMesa显式空CUDA/LD，cv2准确导入恢复，清理仅owned子进程，无自动重试/输出覆盖。
+
+运行前prepare验证原静态诊断完整成功、原30来源/质量及全部原源码/快照，固定四条既有expert命令文件SHA和OSC源码SHA。只读取已选缓存，不打开HDF或fresh。冻结新plan/config、三个入口与必要测试，先QA再唯一worker与独立CPU checker。新root为outputs/wam_stability_20261021/native_terminal_pose_hold_diagnostic。
+
+必要验证：包装不改变native前缀，目标只在N后的40步覆盖、绝对目标来源于当前SITE、夹爪命令完全相同、baseline完整原轨迹及canvas逐位复现、两方法native前缀state及controller缓存逐位相同、实际env与20Hz、输出拒覆盖、正常wait/reap及全部8案例分母。独立checker从NPZ与目标记录复算，baseline精确保护失败时拒绝作控制因果结论；质量失败保留完整分母。比较末40原生成功、TCP/开度及最终物体条件，只能支持本四例上的干预结果。
+
+新结果不更改原030资格，不自动训练、不替换原示范或评fresh。若干预有效，还需独立统一的新数据协议及全量资格；若无效，保留负结果并转向其他有证据的问题，不反复调本项目标或门槛。

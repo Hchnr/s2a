@@ -1,0 +1,69 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/clean_bridge_qualification",
+  "source_repository": "/share/project/eai_pwm/repos/cosmos-framework-pwm",
+  "source_commit": "8ec9484b9a6dadb9467b990ae89e80d604d47224",
+  "cosmos_source_root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification/source/cosmos",
+  "model_python": "/share-mixed/project/eai_pwm/home/hcr/repos/cosmos-framework-pwm/.venv/bin/python",
+  "python_version": [
+    3,
+    13,
+    14
+  ],
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "allowed_gpu_uuids": [
+    "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+    "GPU-7a163b30-e2cd-f747-6075-3265058ad0b8"
+  ],
+  "master_port": 31335,
+  "checkpoint": {
+    "name": "8400_masked",
+    "run": "/share/project/eai_pwm/repos/cosmos-framework-pwm/outputs/action128_wam_21src_20261012_warm_start_run01/cosmos3_action/action128/action128_wam_nano_1b_22src_20261012_warm_start_videocap30_static_vae_aot_run1_from6k",
+    "iteration": "iter_000008400"
+  },
+  "historical_prepared_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/external_deletion_recovery_20261022/free_trajectory_diagnostic/preparation/prepared.json",
+    "sha256": "6a175b8a05d00a508f0c001451611dc8b2f2a304c67b6b6323f732eb08cd6ed5"
+  },
+  "historical_generation_indices": [
+    0,
+    16,
+    32
+  ],
+  "noise_roster": {
+    "training_seeds": [
+      101,
+      102
+    ],
+    "evaluation_seeds": [
+      42,
+      43
+    ]
+  },
+  "feature_terms": [],
+  "nonzero_clean_residual_active10": [
+    1e-05,
+    1e-05,
+    1e-05,
+    1e-05,
+    1e-05,
+    1e-05,
+    1e-05,
+    1e-05,
+    1e-05,
+    1e-05
+  ],
+  "nonzero_request_name": "task0_ep1254_a0_f0_raw_s42",
+  "mask_policy": "native_and_registered_active_slot_wrapper",
+  "budget": {
+    "requests": 7,
+    "denoise_calls": 245,
+    "model_initializations": 1,
+    "fit_groups": 0,
+    "physics_steps": 0,
+    "fresh_cases": 0
+  },
+  "model_training_authorized": false,
+  "fresh_performance_authorized": false,
+  "automatic_retry": false
+}

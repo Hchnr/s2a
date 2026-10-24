@@ -1,0 +1,116 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/native_terminal_predicate_diagnostic_registry_v2",
+  "simulation_python": "outputs/libero_env311/bin/python",
+  "native_prepared_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/synchronous_native_training_continuation_model_contract/preparation/prepared.json",
+    "sha256": "c4ead93d1c86566eccd857167c4ad574d9309215873b85bf1713920b2b2e841e"
+  },
+  "native_collection_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/synchronous_native_training_continuation_model_contract/collection/result.json",
+    "sha256": "40f018538100f87dc55a82f6b713eda648a865cf483f3f51c530261e4cc3ca3e"
+  },
+  "native_verification_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/synchronous_native_training_continuation_model_contract/review/collection_verified.json",
+    "sha256": "57d42311c9f0127121626f6139e353faafc104bd15119e4dd69236a0b6ab0114"
+  },
+  "native_owner_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/synchronous_native_training_continuation_model_contract/orchestration/collection/result.json",
+    "sha256": "32e0bc71404a07260b219afefdcc356cc5cab62eac60c6954c6e22a578006e38"
+  },
+  "native_tool_exit_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_training_runtime_observer/model_contract_owner_tool_exit.json",
+    "sha256": "f5e911a962bfdd5ee681182a8f05fd1aa228d7e5885ba1058e931658abe29b50"
+  },
+  "native_failure_diagnostic_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_training_failure_diagnostic/diagnostic.json",
+    "sha256": "877b1dcf0e6d92af163322ad334ce88ef5c6059483eabae5e0d5c01139d4ede3"
+  },
+  "cases": [
+    {
+      "name": "task1_native_demo_1",
+      "role": "failure",
+      "frame_indices": [
+        174,
+        175,
+        176,
+        177
+      ]
+    },
+    {
+      "name": "task1_native_demo_35",
+      "role": "failure",
+      "frame_indices": [
+        158,
+        159,
+        160,
+        161
+      ]
+    },
+    {
+      "name": "task1_native_demo_12",
+      "role": "matched_positive",
+      "frame_indices": [
+        177,
+        178,
+        179,
+        180
+      ]
+    },
+    {
+      "name": "task1_native_demo_13",
+      "role": "matched_positive",
+      "frame_indices": [
+        155,
+        156,
+        157,
+        158
+      ]
+    }
+  ],
+  "predicate_runtime_root": "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/LIBERO/libero/libero",
+  "predicate_runtime_extensions": [
+    ".py",
+    ".bddl"
+  ],
+  "budget": {
+    "environment_initializations": 4,
+    "installed_saved_endpoints": 16,
+    "additional_atomic_predicate_calls_max": 64,
+    "mj_step_calls": 0,
+    "mj_step2_calls": 0,
+    "setup_mj_step1_calls_max": 64,
+    "static_mj_step1_calls": 0,
+    "integrated_physics_steps": 0,
+    "source_hdf5_reads": 0,
+    "render_calls": 0,
+    "current_canvases": 0,
+    "wam_initializations": 0,
+    "denoise_calls": 0,
+    "fits": 0,
+    "fresh_cases": 0,
+    "static_official_success_calls": 16,
+    "setup_official_success_calls_max": 16,
+    "total_official_success_calls_max": 32
+  },
+  "original_native_quality_passed": false,
+  "eligible_for_model_training_registration": false,
+  "model_training_authorized": false,
+  "fresh_performance_authorized": false,
+  "automatic_retry": false,
+  "reset_contract": "single_delegate_no_retry_process_local",
+  "extra_runtime_source_paths": [
+    "outputs/libero_env311/lib/python3.11/site-packages/robosuite/environments/base.py",
+    "outputs/libero_env311/lib/python3.11/site-packages/robosuite/environments/robot_env.py",
+    "outputs/libero_env311/lib/python3.11/site-packages/robosuite/utils/binding_utils.py",
+    "outputs/libero_env311/lib/python3.11/site-packages/robosuite/utils/sim_utils.py",
+    "outputs/libero_env311/lib/python3.11/site-packages/robosuite/models/base.py",
+    "outputs/libero_env311/lib/python3.11/site-packages/robosuite/models/objects/objects.py",
+    "outputs/libero_env311/lib/python3.11/site-packages/robosuite/utils/mjcf_utils.py",
+    "outputs/libero_env311/lib/python3.11/site-packages/mujoco/__init__.py",
+    "outputs/libero_env311/lib/python3.11/site-packages/mujoco/_functions.cpython-311-x86_64-linux-gnu.so",
+    "outputs/libero_env311/lib/python3.11/site-packages/mujoco/_structs.cpython-311-x86_64-linux-gnu.so",
+    "outputs/libero_env311/lib/python3.11/site-packages/mujoco/libmujoco.so.2.3.7",
+    "outputs/libero_env311/lib/python3.11/site-packages/mujoco/include/mujoco/mujoco.h"
+  ]
+}

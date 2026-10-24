@@ -1,0 +1,47 @@
+{
+  "schema_version": "s2a.clean-bridge-native-mask-audit-config.v1",
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/clean_bridge_native_mask_audit_20261023",
+  "prepared_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/preparation/prepared.json",
+    "sha256": "88dfed133bcbf073dd81b90f7ebf89c6829d1a191c3bce1891f7341488753c09"
+  },
+  "qualification_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/qualification/result.json",
+    "sha256": "e35e68f83fbe83ccbf6a1c13e09f7c16b413cfdde88380b5885fed8bc7cca4e5"
+  },
+  "original_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/orchestration/result.json",
+    "sha256": "44f5473d98909e16c627aee16da2ba1a97aafc03eacd192ac03579b8f716180f"
+  },
+  "gpu_after_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/orchestration/gpu_after.json",
+    "sha256": "7360580e2c104163df38b8c975fe96822e7e929e2a686976e80c5c1d129bb862"
+  },
+  "original_checker_exit_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/orchestration/independent/exit.json",
+    "sha256": "06bc82811a76aeacd289ab37671b1de45bf96c9669da6f43c4d9525bb1997b6b"
+  },
+  "original_checker_release_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/orchestration/independent/ownership/release.json",
+    "sha256": "41da950de617551dbd055f57f5821789157267d5f6d27f34c73b01c9861ea6a3"
+  },
+  "original_checker_log_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/orchestration/independent/command.log",
+    "sha256": "0e5c16d94530dfd20e0bcc25d870a0459fa0661ef3932abaf31f8aa8d11c7492"
+  },
+  "diagnosis_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_bridge_qualification_20261023/aux/initial_native_mask_diagnosis.json",
+    "sha256": "829b3d4eb321d1b17647e56dc8207eb69e268c47ac0d5b492f673b85e07ea6c2"
+  },
+  "new_budget": {
+    "model_initializations": 0,
+    "denoise_calls": 0,
+    "fit_groups": 0,
+    "physics_steps": 0,
+    "fresh_cases": 0
+  },
+  "automatic_retry": false,
+  "model_training_authorized": false,
+  "fresh_performance_authorized": false
+}

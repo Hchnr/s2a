@@ -1,0 +1,45 @@
+{
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/native_motor_hold_diagnostic",
+  "pose_prepared_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_terminal_pose_hold_diagnostic/preparation/prepared.json",
+    "sha256": "e47573afecd8512f82912c1c0c2dcc28275b345ac51beda3d47641b3e605829a"
+  },
+  "pose_collection_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_terminal_pose_hold_diagnostic/collection/result.json",
+    "sha256": "1e52112ec8d3139a85b7259056ec3181088e4fb96710b9a7785a8b69ccfa8eb6"
+  },
+  "pose_verified_ref": {
+    "path": "/share/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/native_terminal_pose_hold_diagnostic/canvas_addendum/verified.json",
+    "sha256": "af3aaa0938c32dc0e0956f2d353d021dd8eba1d60db265d9b284f0898235d3bb"
+  },
+  "cv2_probe_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/local_python_environment_repair_20261022/native_cv2_probe.json",
+    "sha256": "8cdc8f2c8b85946e911813d2375b46a005e73d94a13f232e37f4e85586eedaa7"
+  },
+  "cv2_runtime_refs_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/local_python_environment_repair_20261022/native_cv2_runtime_source_refs.json",
+    "sha256": "08508f11caef1e083438446a93e87562e73be548c454f92200e48b5fdb420667"
+  },
+  "environment_migration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/local_python_environment_repair_20261022/environment_change_assessment.json",
+    "sha256": "761d008369d62c38e2044529acb82ada83ad548f38ea8c0e648a5abb581191cd"
+  },
+  "methods": [
+    "motor_hold",
+    "pose_motor_hold"
+  ],
+  "cases": [
+    "task1_native_demo_1",
+    "task1_native_demo_35",
+    "task1_native_demo_12",
+    "task1_native_demo_13"
+  ],
+  "environment_initializations": 8,
+  "physics_steps": 1648,
+  "current_canvases": 40,
+  "grip_action_calls": 41200,
+  "training_authorized": false,
+  "fresh_authorized": false,
+  "automatic_retry": false
+}

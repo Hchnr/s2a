@@ -1,0 +1,96 @@
+{
+  "schema_version": "s2a.clean-training-continuation-config.v1",
+  "seed": 42,
+  "output_dir": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023",
+  "plan_path": "plans/v0.0.1/041_clean_training_continuation_20261023.md",
+  "original_prepared_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/preparation/prepared.json",
+    "sha256": "b55c214ffec328ee94f2074007c15dfe62486512aeb660b251fdb21f38e970f7"
+  },
+  "original_metadata_verification_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/aux/independent_metadata/verified.json",
+    "sha256": "eb51208123f6a3bd3f63fef19d44d37de62c52459431cbfcd7f27dbb630b8570"
+  },
+  "original_execution_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/execution/admitted.json",
+    "sha256": "7f4d099f65e6bd98fa671f1d76e35fe9f68bc8fc411718e67d0590422271033b"
+  },
+  "original_execution_verification_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/execution/verified.json",
+    "sha256": "702033dd0271897affc372e5c95b0e75a23a623916195b682f78e0ef77d20267"
+  },
+  "incident_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_interruption_audit_20261023/audit.json",
+    "sha256": "1dae52e558257aafa93b798bb3f9d737f44d0ab93d3d310d3c27db011db46d6a"
+  },
+  "interrupted_inventory_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_recovery_design_20261023/interrupted_artifact_inventory.json",
+    "sha256": "ebc805542a25d165fe58ed8ebf685774382228deb606f4dc0c4c4d1ed5442906"
+  },
+  "recovery_design_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_recovery_design_20261023/review.json",
+    "sha256": "5b154a17478f1f034930407b0341ac3a45a1bfa58bc9a39ac421607da5c53d90"
+  },
+  "development_control_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_preflight_20261023/dependency_addendum.json",
+    "sha256": "106f45543f8bc0aa0e336c0ad9b5c01e0bce252a5e5dad0ec3ebbba349e5fda0"
+  },
+  "disk_required_bytes": 214748364800,
+  "ram_required_bytes": 137438953472,
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "master_port": 31338,
+  "development_port": 31339,
+  "automatic_retry": false,
+  "fresh_performance_authorized": false,
+  "old_data_used_for_fit": false,
+  "aggregate_budget": {
+    "original_complete_requests": 20,
+    "original_partial_requests": 1,
+    "original_saved_denoise": 725,
+    "original_denoise_lower_bound": 725,
+    "original_denoise_upper_bound": 735,
+    "original_model_initializations": 1,
+    "new_request_attempts": 1599,
+    "new_denoise": 55965,
+    "new_model_initializations": 4,
+    "total_request_attempts_upper_bound": 1620,
+    "total_denoise_upper_bound": 56700,
+    "total_model_initializations_upper_bound": 5,
+    "producer_fits": 2,
+    "independent_qr_rebuilds": 2,
+    "physics_steps": 7200
+  },
+  "stage_timeouts_s": {
+    "D0": 88400,
+    "W1": 15000,
+    "D1": 88400,
+    "W2": 15000,
+    "STATE": 45500,
+    "DEVELOPMENT": 175000
+  },
+  "required_test_paths": [
+    "tests/test_clean_training_preparation.py",
+    "tests/test_clean_training_preparation_verification.py",
+    "tests/test_clean_training_data.py",
+    "tests/test_streaming_ridge_qr.py",
+    "tests/test_wam_clean_compact.py",
+    "tests/test_clean_training_collection.py",
+    "tests/test_clean_training_capture_verification.py",
+    "tests/test_clean_training_fit.py",
+    "tests/test_clean_training_owner.py",
+    "tests/test_clean_training_state_sampling.py",
+    "tests/test_clean_training_state_verification.py",
+    "tests/test_clean_training_state_owner.py",
+    "tests/test_clean_training_development.py",
+    "tests/test_clean_training_service.py",
+    "tests/test_clean_execution_proof.py",
+    "tests/test_clean_training_execution_preparation.py",
+    "tests/test_clean_training_execution_verification.py",
+    "tests/test_native_environment.py",
+    "tests/test_worker_handshake.py",
+    "tests/test_clean_training_continuation_bundle.py",
+    "tests/test_durable_stage_supervisor.py",
+    "tests/test_clean_training_continuation_verification.py",
+    "tests/test_clean_training_continuation_preparation.py"
+  ]
+}
