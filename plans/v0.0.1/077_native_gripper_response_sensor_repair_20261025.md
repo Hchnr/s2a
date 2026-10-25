@@ -1,0 +1,9 @@
+# 077 076速度传感器重复forward修复与完整新采集
+
+076首条baseline在第9个已执行物理周期后因额外current_observation调用forward改变4个raw state分量、最大2.22e-16而断言失败；9个有效端点（index0–8）、partial现场、worker/owner实际wait1/reap记录保留。0干预试验、0完整baseline，不宣称原始native失配，原因是采集读传感器多调用了一次forward。
+
+新collector_v2只将endpoint已完成forward之后的速度读取改为env.env._get_observations(force_update=True)，不再额外forward；原始raw state读取前后逐值完全相同断言保留，不放宽基线或速度容差。不修改算法、命令、初态、seed、native末段SettledGoalEnvironment或原12条1568步预算。
+
+原失败partial不会恢复或覆写；新configs/native_gripper_response_interventions_20261025_v2.json引用原incident SHA，新_v2输出重新从三个原初态各跑baseline，再按076固定顺序运行9干预。此为显式修复后的全新数据采集，不是自动重试。原9步单独计入实际支出，不算新完整1568步的一部分。
+
+启动前完成新/旧采集器全AST比较，证明只有输出/配置namespace和上述只读传感器调用改变；六项schedule检查、12条实际3.11 dry、审查器导入与新来源冻结全部通过才启动。原076的状态、motor、时间、qvel独立检查、三baseline gate及owner实际wait要求全部保留。0fit/模型/fresh，不改变074/075性能失败或原最终目标。

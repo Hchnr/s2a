@@ -1,0 +1,29 @@
+# 076/077 受控夹爪响应采集进行中
+
+076固定原fit三demo、首次闭合后打开anchor78/157/85，12条1568物理步；每demo原native baseline与打开/保持/闭合8周期干预加16周期原命令。复用原SettledGoalEnvironment native末段实测SITE保持协议，防止把同一sent_commands误当作相同有效臂控制条件。
+
+新采集入口和独立检查器已实现：记录实际endpoint、完整sim state、当前finger qvel传感器/直接sim速度一致性、已知motor cache和实际发送命令。独立从实际model.xml重建qpos/qvel索引，复算每周期25子步motor累计、时钟、source/TCP实际标签和baseline原native逐周期一致性。原型的6项命令干预测试、12条实际3.11 dry和checker导入通过，来源冻结后开始首条baseline；未运行干预。
+
+首条baseline在第9周期额外读速度时中止：endpoint已forward，新增current_observation再次forward使4个raw状态分量有2.22e-16变化，触发读观测前后逐值相同断言。保存9个有效endpoint（0–8）和原失败现场；worker及execution owner均实际wait1/reap且无自动重试，原输出sensor_read_incident.json记录9个实际物理步、0干预。此为采集器传感器读取问题，不是native baseline性能或资产失配的证明。
+
+077新_v2采集器改用已完成forward后的env.env._get_observations(force_update=True)，保留逐值不变断言及所有baseline/速度容差。全采集器AST恢复比较通过，证明仅namespace与上述读取调用改变；加原schedule共7项实际测试通过。新配置引用原incident，新的完整1568步与旧partial9步分开计数，不恢复或覆盖旧案例。新owner保持先3baseline及独立核验、后9干预；等待包装进程保存owner实际wait结果，未以根进程消失合成正常退出证明。当前重新执行完整准入与新目录启动，尚无完整baseline结论。
+
+0新fit/模型请求/fresh；不自动使用新数据拟合，也不改变074/075失败或原WAM/fresh门槛。总目标未完成。
+
+## 077完成物理后元数据失败与078修复
+
+077_v2首条baseline已跑完102物理步，103端点NPZ完整保存，传感器读取前后raw state逐值相同检查通过。结束json.dump控制器合同ndarray时报TypeError，collection_result.json部分写入；worker/owner实际wait1及现场、serialization_incident.json均保留。只读raw_baseline_comparison.json核对完整sim_states/source_pose/opening/gripper_qpos与原native最大差全部0；这是原始数据一致性证据，不是正常退出或完整采集资格。
+
+078_v3改为既有write_once完整序列化后exclusive创建文件，原source/初态/命令/物理/传感器/基线门槛不变。两项真实NumPy控制器合同序列化与失败无残留测试、全采集器AST对照，加原命令/传感器对照共10项通过，Ruff通过。旧partial9步与本次完整但元数据失败102步共111实际物理步单列，不覆写、不用于跳过新baseline；新_v3仍从头完整固定12条1568步，新准入正在执行。0干预试验、0新fit/模型/fresh。
+
+## 078实际启动，首条完整baseline资格通过
+
+_v3完整准入（10项检查、12条实际3.11 dry及checker导入）通过后已实际启动。等待包装进程PID3525958/start_ticks583243815、execution owner3525966/start_ticks583243867及首worker3525974/start_ticks583243903均已核对；CPU空CUDA/LD。case00完成102步，metadata正常写入、worker正常wait0/reap，独立实际标签/原始native逐周期等价/motor累计/当前qvel索引及来源审查全部通过，baseline_native_match=True。case04完成181步正由原owner独立审查；case08及所有干预仍等待原三baseline gate。不作任务成功或新控制性能声明。
+
+## 078完整12条采集资格通过
+
+_v3全部12条1568步和逐条独立审查完成，三条native baseline均逐周期匹配原始实际sim state/source pose/opening/gripper qpos及motor；固定9个干预分支也全部验证命令、前缀、25子步cache累计、时钟、当前速度/完整状态索引和实际标签。24个collect/verify子进程均actualwait0/reap/无signal，execution owner亦由等待包装进程实际wait0/reap，原PID/start_ticks身份全部消失。closure_verified.json完整来源和资产SHA前后核验通过，collection_qualified=True、owner_normal_wait_verified=True、verified_cases=12。
+
+这是响应数据采集资格，不是新控制器或任务成功。新完整批次1568步；两次失败旧现场9+102步另存，总实际支出1679步；无干预或baseline自动重试，旧失败不抹除。0新fit/模型请求/fresh（仅指本采集阶段）。
+
+在查看新分支模型误差前登记079：open/close分支只取anchor后24周期拟合，retain分支隔离；重复前缀及baseline不再加入训练。采集全部核验后079唯一5009行fit完成，尚未独立数值审查/响应验证，不提升为控制资格。

@@ -1,0 +1,85 @@
+{
+  "prepared_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "execution_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/execution/admitted.json",
+    "sha256": "50e0a03d429b43343b5ff809879bf46bfeeff4d7b87bf7f2d70cb488d7a48d31"
+  },
+  "state_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/orchestration/STATE/result.json",
+    "sha256": "dd4429dd39bd5ee973a423985536a578fac48d71617fc166cf52b81b213108ef"
+  },
+  "state_verification_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/review/STATE_verified.json",
+    "sha256": "df3ba09889d6d179dc0ad9b13966b371e5363ca1b187888f1f9a5046827f8e96"
+  },
+  "stage_scope": "DEVELOPMENT_only",
+  "root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_dependency_repair_20261024",
+  "budget": {
+    "model_initializations": 1,
+    "cumulative_development_model_initializations": 2,
+    "cases": 12,
+    "requests": 900,
+    "denoise_calls": 31500,
+    "physics_steps": 7200,
+    "fit_calls": 0,
+    "qr_calls": 0,
+    "fresh_cases": 0,
+    "automatic_retry": false
+  },
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "automatic_retry": false,
+  "old049_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_continuation_20261024/execution/admitted.json",
+    "sha256": "66b7a2e48fbeee0ac4283d30cd079f15b8e730c5f8baa8fe6e3c90da7ec721b6"
+  },
+  "state_audit_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_state_continuation_20261024/qa/terminal_audit.json",
+    "sha256": "0701495d0d1512f51de8bbf4ac0216eba74df3535953e88235a31d32affc40dd"
+  },
+  "failure_audit_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_continuation_20261024/qa/retained_failure_audit.json",
+    "sha256": "39f517b2b1969603acca12ff7dc98d510c042fff9faab3fc13df0b9a35579819"
+  },
+  "source_generation_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_dependency_repair_20261024/source_generation_runtime_py311.json",
+    "sha256": "1d78187bfea6b036d1c5b7e37131c2096756d5b50aa5d92a1514fd49c788ef64"
+  },
+  "relocation_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_dependency_repair_20261024/path_relocation.json",
+    "sha256": "35f43c12d90c098aa2625bae5c994bf336d7488ce996a829c642f39a80ddf8a7"
+  },
+  "generated_to_original": {
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_dependency_repair_20261024/source_runtime_py311/run_wam_clean_training_development.py": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/run_wam_clean_training_development.py",
+      "sha256": "2a83fd6ba099bd85c449b8e0b3b4c012eb39eee318605f1381afcf37c2a5d364"
+    },
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_dependency_repair_20261024/source_runtime_py311/serve_wam_clean_training.py": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/serve_wam_clean_training.py",
+      "sha256": "3058c2dd0bf2da3c681a685c9ac88773cfdbc78b8d8a0b03937ace77886948ae"
+    },
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_dependency_repair_20261024/source_runtime_py311/execute_wam_clean_training_case.py": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/execute_wam_clean_training_case.py",
+      "sha256": "8a420fec60abb544676ccd196180177c21dffda7812bf4cbc8ad9effbb05b4dc"
+    },
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_dependency_repair_20261024/source_runtime_py311/verify_wam_clean_training_development.py": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/verify_wam_clean_training_development.py",
+      "sha256": "21ee98e2f0b582e68da286479b238c675dd3e3f0af2239a031f0c1b1d8dd96ba"
+    },
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_dependency_repair_20261024/source_runtime_py311/continuation_runtime.py": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/continuation_runtime.py",
+      "sha256": "f8a544ad897655efbf10b984fd4c868a19b805f1f7f1a61fde845e403ebf622c"
+    }
+  },
+  "input_preflight_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_dependency_repair_20261024/preflight_runtime_py311/all_case_inputs.json",
+    "sha256": "1a1d26a3592ebfa1c6ff8c83e011699cbe71e5c88051cf828c1bdbc9c3180ddd"
+  },
+  "qa_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_dependency_repair_20261024/qa/preparation.json",
+    "sha256": "e49e00efb58c7fbf1db1cd63c1b968d7feb65818e385f5faf37a6a0a1799fd23"
+  },
+  "owner_timeout_s": 172980
+}

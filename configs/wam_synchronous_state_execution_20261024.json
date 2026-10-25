@@ -1,0 +1,27 @@
+{
+  "schema_version": "s2a.synchronous-state-execution-policy.v1",
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "master_port": 31354,
+  "budget": {
+    "requests": 99,
+    "denoise_calls": 3465,
+    "head_boundary_calls": 3465,
+    "model_initializations": 1,
+    "fits": 0,
+    "physics_steps": 0,
+    "fresh_cases": 0
+  },
+  "model_timeout_s": 43200,
+  "numeric_timeout_s": 14400,
+  "score_timeout_s": 3600,
+  "candidate_params_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_regularization_probe_20261024/parameters.json",
+    "sha256": "ca01b9d8a49f2f1585c917f492e52a0a89cdb0b447f6bd2beee050ed0d2fccc0"
+  },
+  "current_inputs_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/synchronous_validation_20261024/current_inputs.json",
+    "sha256": "7ccff2b6d2d9b1e2a6129d7b4695a4a38a2ef6a4ea28d845b61be3a587a4c248"
+  },
+  "automatic_retry": false,
+  "fresh_authorized": false
+}

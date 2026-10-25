@@ -1,0 +1,50 @@
+{
+  "schema_version": "s2a.synchronous-validation-config.v1",
+  "seed": 42,
+  "roster": [
+    [
+      0,
+      "demo_16",
+      95
+    ],
+    [
+      0,
+      "demo_32",
+      92
+    ],
+    [
+      1,
+      "demo_4",
+      158
+    ],
+    [
+      1,
+      "demo_27",
+      177
+    ],
+    [
+      2,
+      "demo_14",
+      106
+    ],
+    [
+      2,
+      "demo_24",
+      104
+    ]
+  ],
+  "budget": {
+    "environments": 6,
+    "physics_steps": 1212,
+    "current_canvas_images": 24,
+    "future_rgb_frames": 0,
+    "model_calls": 0,
+    "fresh_cases": 0
+  },
+  "hold_steps": 80,
+  "horizon": 40,
+  "control_fps": 20,
+  "automatic_retry": false,
+  "fresh_authorized": false,
+  "model_sampling_authorized": false
+}

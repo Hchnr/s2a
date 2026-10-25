@@ -1,0 +1,38 @@
+{
+  "protocol": "048",
+  "stage_scope": "STATE_only",
+  "execution_authorized": false,
+  "components_ready": true,
+  "execution_ready": false,
+  "pending": [
+    "complete047 actual W2 fit and full independent QR",
+    "048 execution envelope, independent admission and actual CLI dry after complete047"
+  ],
+  "w2_root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024",
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "python_safepath_required": true,
+  "original_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/run_wam_clean_training_state.py",
+    "sha256": "4e7341e39cef865681c58467259a70aea71e29541975ef55c6f1687d103bf801"
+  },
+  "original_sampler_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/sample_wam_clean_training_state.py",
+    "sha256": "6c4347232652fd69cdae4cb077378cb1128f21b5f55cc09e2017d69ef32ff03c"
+  },
+  "original_verifier_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/verify_wam_clean_training_state.py",
+    "sha256": "915ab43bb44de6e4139bf483123bc503808b4766927c36e597e70eda785a4649"
+  },
+  "budget": {
+    "model_initialization_attempts": 1,
+    "model_initializations": 1,
+    "requests": 99,
+    "denoise_calls": 3465,
+    "head_calls": 3465,
+    "fit_calls": 0,
+    "qr_calls": 0,
+    "physics_steps": 0,
+    "fresh_cases": 0,
+    "automatic_retry": false
+  }
+}

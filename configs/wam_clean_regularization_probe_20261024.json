@@ -1,0 +1,62 @@
+{
+  "schema_version": "s2a.clean-regularization-probe-registration.v1",
+  "previous_fit_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/fit/W2/result.json",
+    "sha256": "dd7ee351fad0b1a183b7ea490bc8c89e62d78f09ad2565fc0886e36177efcd47"
+  },
+  "previous_verification_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/review/W2_verified.json",
+    "sha256": "434c27694c81806bc0a85de7a4629b35cb211a3e8f084db9f9ceacdebdeeb3a1"
+  },
+  "entrypoint_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/scripts/fit_wam_clean_regularization_probe.py",
+    "sha256": "631e012ed65ef98e95072ede8e9c9420839bea9d946897f884c9f5fbdc7e3792"
+  },
+  "source_refs": [
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/scripts/fit_wam_clean_regularization_probe.py",
+      "sha256": "631e012ed65ef98e95072ede8e9c9420839bea9d946897f884c9f5fbdc7e3792"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/scripts/analyze_wam_clean_capacity.py",
+      "sha256": "929eb7d3484ffa8d83690a2161d7ba07542910585aa8bfd8b70e5eb15f32c26b"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/scripts/analyze_wam_release_horizon.py",
+      "sha256": "e7a1aecbca3b0ff2d7cfc92b50f1514b97ede709210201ddfebf905f5254394a"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/src/s2a/wam_clean_streaming.py",
+      "sha256": "38bbe575ba50e58ac2d31e8ba7c4b74a3ac376cd3f6172c803e6227f27949b2b"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/src/s2a/wam_clean_readout.py",
+      "sha256": "7f433a307ec4ec56459483ba95559ea6262fbb5dce51c74d8485f08034e4e58b"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/src/s2a/clean_training_data.py",
+      "sha256": "f9b7f90b2ffc1ceaa56228191c0dc204d041ead894063d490b427e1867db1542"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/tests/test_wam_clean_streaming.py",
+      "sha256": "6012c7b38e24514bc1ca1ff92ffe06e71309eff24ccfa842fa4ccbbfe297ebcf"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/plans/v0.0.1/052_clean_regularization_probe_20261024.md",
+      "sha256": "a1c424e8fbb3aeaef18e0a562b9dc594470136f679b586bfe1c7925f8e370eee"
+    }
+  ],
+  "ridge": 7.751937984496124e-05,
+  "producer_fits": 1,
+  "rows": 840000,
+  "automatic_retry": false,
+  "new_model_calls": 0,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "deployment_authorized": false,
+  "validation_authorized": false,
+  "qa": {
+    "streaming_primitive_tests_passed": 26,
+    "ruff_passed": true
+  }
+}

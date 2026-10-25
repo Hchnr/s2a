@@ -1,0 +1,17 @@
+# 固定开发对照接续准备（2026-10-24）
+
+048 STATE仍在同一模型进程采样，尚无完整99请求/3465节点及退出资格。049固定3任务×seed42/43×raw/W2的12案例、900请求/31500节点/7200物理步，不打开fresh，不新增fit/QR。
+
+已实现049准入核心、配置绑定、独立metadata verifier和持久化supervisor；直接调用原041冻结development owner，由原owner持有唯一模型service、12个串行物理client及独立审查。049必须先读取完整048联合终态；原STATE结果单独True不能绕过。原开发case_order从固定原041注册读取并核对，dry实际调用原开发CLI并检查顺序、UUID及0模型/物理；开发环境不继承STATE桥和safe-path。
+
+收尾检查绑定原owner/audit的041及STATE来源、全部900请求/31500节点/7200步、6组成对首条件、12案例、原独立score、service/client/audit正常legacy wait0/reap和GPU释放；score未通过时也保留完整机械收尾证据，不将之改成任务收益。
+
+25项组件检查通过：真实CPU child正常退出、exit7及收尾源漂移False，旧产物拒绝重试，实际原development help解析且未加载Torch/MuJoCo，环境清理与真实dry结果不匹配拒绝，以及048联合终态检查。Ruff检查和格式检查通过。CPU supervisor的metadata结果检查在测试中使用明确synthetic替身，不代表实际开发任务资格；真实原development help已执行，真实admitted dry尚未执行。
+
+首次CPU supervisor正例因synthetic cleanup观察器漏填all_recorded_descendants_reaped被正确拒绝；首次dry正例因synthetic源闭包为空被正确拒绝。仅修正测试夹具，日志保留在outputs/receipt_revision_20261024，生产检查未放宽。
+
+本项仍在准备，policy implementation_ready=False。尚须完整准入/收尾数据合同测试与QA封存，等待实际048成功，再绑定真实来源、独立准入、实际dry和资源检查；无049配置/注册或开发模型/物理任务启动。
+
+最新：准入与完整收尾metadata合同现已补齐。与原development/service和typed receipt回归共125项通过，Ruff通过。实际live048绑定入口正确停止于缺失supervisor终态，未生成049配置/提案，无模型/物理。policy implementation_ready=True，execution_authorized=False；尚待实际048合格后最终绑定和真实dry。上述“合同测试待完成”为此前快照。测试中的正向metadata上游明确使用synthetic替身，真实048资格仍未建立。
+
+准备QA：`outputs/clean_training_development_continuation_20261024/qa/preparation.json`，SHA256 `085afa1886eb0ac53a6c1f0442230282bf93712f770e8805c3211ae6aebfeeac`，绑定8份实际准备源码/测试及125项日志。最新STATE观察闭合32/99请求、1120节点，模型PID2164619/birth575527894存活，551源/快照不变；见`outputs/clean_training_state_continuation_20261024/qa/progress_observation_2.json`，SHA256 `82582058b585239add6f7ccd515f854c57d5ab9addeb4b54e1d29dfef5796437`。尚无完整STATE或049执行资格。

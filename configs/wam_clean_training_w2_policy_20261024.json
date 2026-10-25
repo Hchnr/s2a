@@ -1,0 +1,62 @@
+{
+  "protocol": "047",
+  "stage_scope": "W2_only",
+  "implementation_ready": false,
+  "execution_authorized": false,
+  "awaiting": "046 full D1 capture, audit and normal lifecycle",
+  "root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024",
+  "prepared_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "execution_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/execution/admitted.json",
+    "sha256": "50e0a03d429b43343b5ff809879bf46bfeeff4d7b87bf7f2d70cb488d7a48d31"
+  },
+  "w1_admitted_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_fit_20261024/execution/admitted.json",
+    "sha256": "6eb0d233c05b3859f1bd50ddeaa6679089df0f7e186b9cf85a463030b238436a"
+  },
+  "d1_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_d1_continuation_20261024/execution/admitted.json",
+    "sha256": "76d8751d0213e585b9660b704556dff4c4ae7849aa80c7c067dbdcb694749d49"
+  },
+  "runtime": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.15.3",
+    "executable": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/bin/python"
+  },
+  "runtime_file_refs": [
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/python/cpython-3.11.15-linux-x86_64-gnu/bin/python3.11",
+      "sha256": "572cfa2a8597e2f431c785613539b1d219fa99eecf5ffb5765731a2ebc3e692a"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/lib/python3.11/site-packages/numpy/core/_multiarray_umath.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a735e4e8355b75c800112af8a5b1731b891b2016ed57067352eea6cab0aa00bc"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/lib/python3.11/site-packages/scipy/linalg/_fblas.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "59c3635b13f52a6f7199c0459531036fcfcbe704086ab2a7777a640bbb684877"
+    }
+  ],
+  "feature_count": 1290,
+  "expected_rows": 840000,
+  "ridge": 0.1,
+  "rounds": [
+    "D0",
+    "D1"
+  ],
+  "budget": {
+    "new_producer_attempts": 1,
+    "producer_fits": 1,
+    "independent_reconstructions": 1,
+    "cumulative_clean_producer_attempts": 3,
+    "new_model_initializations": 0,
+    "new_denoise_calls": 0,
+    "new_physics_steps": 0,
+    "new_fresh_cases": 0,
+    "automatic_retry": false
+  }
+}

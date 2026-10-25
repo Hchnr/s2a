@@ -1,0 +1,13 @@
+# 058真实采样接入准备
+
+本轮新增候选准入、capture桥组合和独立逐节点审查，尚未启动新GPU模型。058离线数值资格不等于sampler或任务性能资格；原总目标及最终24条验收标准不变。
+
+`src/s2a/terminal_candidate.py`只消费JSON，绑定固定058 proof/producer/parameters路径、完整300请求12000行、累计2次fit尝试、100轮全部CG预算和独立原L1证书，不解码训练或validation future数组。保留052 SHA及其center/scale/rotation，通过实际058文件的准入及35节点分派检查，参数SHA仍30210a2bda69962bbd24f8e86849f58c4516d2209bfb3d8a5903fc45ae543b4f。
+
+`src/s2a/terminal_capture.py`组合原桥与末节点策略，从原bridge实际record选择头；每次明确重设policy，防止候选请求后raw/zero继承其策略。原桥原地负责sigma、实际网络输入、mask、BF16注入和capture。测试覆盖35节点基线/末节点分派、参数rotation拒绝、异常恢复及候选→raw→zero跨请求隔离。
+
+独立 `scripts/verify_wam_terminal_points.py`保留原完整compact_points函数，唯一改动是将固定head替换为按实际节点选取的独立baseline/terminal数值元组。完整AST比较确认其余链式SHA、逐值数学和历史zero审查不变；不调用生产policy做独立选择。与capture/策略测试合计5项通过。
+
+实际读取合格055的首个052候选历史capture，使用052作为两个审查分支，完整35节点通过既有独立NumPy逐值数学、BF16舍入、mask及来源链检查，消费输入前后SHA不变；13322个active值变化按旧实测复现。这验证新审查接入原数值链路，不是058已实际部署。产物 `outputs/terminal_sampler_preparation_20261025/historical_point_regression_v2.json`。第一次同值诊断脚本有未使用import，随后只作lint修正；原脚本字节保存在source_versions，原声明/SHA与修正及替代产物映射见同目录source_revision.json，未重写原产物。最终相关Ruff/格式通过。
+
+剩余：独立新namespace的完整采样CLI/owner、原99请求矩阵的metadata准入、真实CLI dry和新head逐节点全量审查；继而才启动允许UUID上的同步validation。门槛、GPU UUID限制、原state gate、开发与fresh顺序保持不变。当前新模型调用/物理/fresh均为0。

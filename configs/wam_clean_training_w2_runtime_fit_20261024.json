@@ -1,0 +1,123 @@
+{
+  "prepared_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "execution_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/execution/admitted.json",
+    "sha256": "50e0a03d429b43343b5ff809879bf46bfeeff4d7b87bf7f2d70cb488d7a48d31"
+  },
+  "d0_collection_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/capture/D0/result.json",
+    "sha256": "d23b31eb9e40f9f3e8f22571399d164d8980ba3f4d75b10876d740edd52b7dae"
+  },
+  "d0_capture_audit_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/review/D0_verified.json",
+    "sha256": "5d62df6fae3aa425a74e02046b638a4543eb95b7fa31eda934b1fdad58d8b08d"
+  },
+  "d0_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/orchestration/D0/result.json",
+    "sha256": "8ce9a076828aab59dfd1478bbccfef1160f4019e9b30d10ad091eea518364950"
+  },
+  "failure_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_postcapture_repair_20261023/incident/audit.json",
+    "sha256": "38486bfc13c563886642757c75fee2de6c605bbb18c299f88a94d0a8bf93df7e"
+  },
+  "protocol": "047",
+  "stage_scope": "W2_only",
+  "root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024",
+  "budget": {
+    "new_producer_attempts": 1,
+    "producer_fits": 1,
+    "independent_reconstructions": 1,
+    "cumulative_clean_producer_attempts": 3,
+    "new_model_initializations": 0,
+    "new_denoise_calls": 0,
+    "new_physics_steps": 0,
+    "new_fresh_cases": 0,
+    "automatic_retry": false
+  },
+  "automatic_retry": false,
+  "fit_output_dir": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/fit/W2",
+  "verification_output": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/review/W2_verified.json",
+  "runtime": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.15.3",
+    "executable": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/bin/python"
+  },
+  "runtime_file_refs": [
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/python/cpython-3.11.15-linux-x86_64-gnu/bin/python3.11",
+      "sha256": "572cfa2a8597e2f431c785613539b1d219fa99eecf5ffb5765731a2ebc3e692a"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/lib/python3.11/site-packages/numpy/core/_multiarray_umath.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a735e4e8355b75c800112af8a5b1731b891b2016ed57067352eea6cab0aa00bc"
+    },
+    {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/lib/python3.11/site-packages/scipy/linalg/_fblas.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "59c3635b13f52a6f7199c0459531036fcfcbe704086ab2a7777a640bbb684877"
+    }
+  ],
+  "w1_admitted_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_fit_20261024/execution/admitted.json",
+    "sha256": "6eb0d233c05b3859f1bd50ddeaa6679089df0f7e186b9cf85a463030b238436a"
+  },
+  "w1_terminal_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_fit_20261024/qa/terminal_audit.json",
+    "sha256": "480154904dac3a9133c095ae7e093e107ba942039bebe0edbe0b89330a556dc2"
+  },
+  "w1_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_fit_20261024/supervisor/result.json",
+    "sha256": "6e97469af30a8ff662606c911bf44efa831850ae4cc39500099465759120cf5a"
+  },
+  "w1_fit_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_fit_20261024/fit/W1/result.json",
+    "sha256": "febeb824e3cb2f8b217a07f332351cc44b1f05141c5ed523d6eaa5e791d31bf4"
+  },
+  "w1_verification_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_fit_20261024/review/W1_verified.json",
+    "sha256": "a0fc11599bd325246ea4e2b995054f1ed6c0b21af41138a22a1273ff07c4d56f"
+  },
+  "w1_params_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_fit_20261024/fit/W1/parameters.json",
+    "sha256": "e70ab79facfbb42667700d823c7ca54fbafb03de03aa198767afeb3c5917dea8"
+  },
+  "d1_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_d1_continuation_20261024/execution/admitted.json",
+    "sha256": "76d8751d0213e585b9660b704556dff4c4ae7849aa80c7c067dbdcb694749d49"
+  },
+  "d1_handoff_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_d1_continuation_20261024/supervisor/result.json",
+    "sha256": "bc3605c99eeeeaeadf1659800c73911b6679212d45e9dd0e4342583665973906"
+  },
+  "d1_wrapper_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_d1_continuation_20261024/supervisor/D1/result.json",
+    "sha256": "8430399d10070c54b7dec9c2476115c5cf3f9d084d59aa3377480d1eb2eea96d"
+  },
+  "d1_worker_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_d1_continuation_20261024/worker/result.json",
+    "sha256": "4afed7abda6757f0e468f8f4ddea81575a20cbcf6a0ee6f516cf26ed0c4751a9"
+  },
+  "d1_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/orchestration/D1/result.json",
+    "sha256": "314bf1d50e403937da42ab2c71e10426bf7bd85905a14a4a1329857dc4910a52"
+  },
+  "d1_collection_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/capture/D1/result.json",
+    "sha256": "c618ca17559f103b0c36f647b1476b67593c1b0478f48074affe3b0f59835549"
+  },
+  "d1_capture_audit_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/review/D1_verified.json",
+    "sha256": "6518a4c4c78acc37f47b50ab33bcc30f2d2ff0a4d2877a01153e156d75f78385"
+  },
+  "d1_lifecycle_addendum_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_d1_lifecycle_addendum_20261024/result.json",
+    "sha256": "0c4cc4ceab18060747714b60c3f169250fc0f91bcda506854368cceead918910"
+  },
+  "qa_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/qa/preflight_qa_receipts_v2.json",
+    "sha256": "b9f5d567fac788dfedc4c04ee25146f426f2d711f782e097d61a0b55a2b79dae"
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "prepared_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "execution_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/execution/admitted.json",
+    "sha256": "50e0a03d429b43343b5ff809879bf46bfeeff4d7b87bf7f2d70cb488d7a48d31"
+  },
+  "case_order": [
+    {
+      "case_index": 0,
+      "case_id": "task0_init0_s42_raw",
+      "task_index": 0,
+      "record_name": "task0_init0",
+      "sampling_seed": 42,
+      "variant": "raw",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 1,
+      "case_id": "task0_init0_s42_w2",
+      "task_index": 0,
+      "record_name": "task0_init0",
+      "sampling_seed": 42,
+      "variant": "w2",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 2,
+      "case_id": "task0_init0_s43_raw",
+      "task_index": 0,
+      "record_name": "task0_init0",
+      "sampling_seed": 43,
+      "variant": "raw",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 3,
+      "case_id": "task0_init0_s43_w2",
+      "task_index": 0,
+      "record_name": "task0_init0",
+      "sampling_seed": 43,
+      "variant": "w2",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 4,
+      "case_id": "task1_init0_s42_raw",
+      "task_index": 1,
+      "record_name": "task1_init0",
+      "sampling_seed": 42,
+      "variant": "raw",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 5,
+      "case_id": "task1_init0_s42_w2",
+      "task_index": 1,
+      "record_name": "task1_init0",
+      "sampling_seed": 42,
+      "variant": "w2",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 6,
+      "case_id": "task1_init0_s43_raw",
+      "task_index": 1,
+      "record_name": "task1_init0",
+      "sampling_seed": 43,
+      "variant": "raw",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 7,
+      "case_id": "task1_init0_s43_w2",
+      "task_index": 1,
+      "record_name": "task1_init0",
+      "sampling_seed": 43,
+      "variant": "w2",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 8,
+      "case_id": "task2_init0_s42_raw",
+      "task_index": 2,
+      "record_name": "task2_init0",
+      "sampling_seed": 42,
+      "variant": "raw",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 9,
+      "case_id": "task2_init0_s42_w2",
+      "task_index": 2,
+      "record_name": "task2_init0",
+      "sampling_seed": 42,
+      "variant": "w2",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 10,
+      "case_id": "task2_init0_s43_raw",
+      "task_index": 2,
+      "record_name": "task2_init0",
+      "sampling_seed": 43,
+      "variant": "raw",
+      "expected_requests": 75
+    },
+    {
+      "case_index": 11,
+      "case_id": "task2_init0_s43_w2",
+      "task_index": 2,
+      "record_name": "task2_init0",
+      "sampling_seed": 43,
+      "variant": "w2",
+      "expected_requests": 75
+    }
+  ],
+  "protocol": "049",
+  "root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_continuation_20261024",
+  "stage_scope": "DEVELOPMENT_only",
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "private_port": 31339,
+  "budget": {
+    "model_initialization_attempts": 1,
+    "model_initializations": 1,
+    "cases": 12,
+    "requests": 900,
+    "denoise_calls": 31500,
+    "physics_steps": 7200,
+    "fit_calls": 0,
+    "qr_calls": 0,
+    "fresh_cases": 0,
+    "automatic_retry": false
+  },
+  "automatic_retry": false,
+  "state_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_state_continuation_20261024/execution/admitted.json",
+    "sha256": "c8389757bbdc832b0195a86e1f4b273be493790a96f1c59fae6adf04a1636b7d"
+  },
+  "state_terminal": {
+    "registration_ref": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_state_continuation_20261024/execution/admitted.json",
+      "sha256": "c8389757bbdc832b0195a86e1f4b273be493790a96f1c59fae6adf04a1636b7d"
+    },
+    "owner_ref": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_state_continuation_20261024/supervisor/result.json",
+      "sha256": "a48451bea640d5b069fecd65001adef5a82c24ece613fcce2a2212bbe954e923"
+    },
+    "state_owner_ref": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/orchestration/STATE/result.json",
+      "sha256": "dd4429dd39bd5ee973a423985536a578fac48d71617fc166cf52b81b213108ef"
+    },
+    "verification_ref": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/review/STATE_verified.json",
+      "sha256": "df3ba09889d6d179dc0ad9b13966b371e5363ca1b187888f1f9a5046827f8e96"
+    },
+    "state_gate_passed": false,
+    "numerical_contract_passed": true,
+    "eligible_for_development": true
+  },
+  "state_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/orchestration/STATE/result.json",
+    "sha256": "dd4429dd39bd5ee973a423985536a578fac48d71617fc166cf52b81b213108ef"
+  },
+  "state_verification_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/review/STATE_verified.json",
+    "sha256": "df3ba09889d6d179dc0ad9b13966b371e5363ca1b187888f1f9a5046827f8e96"
+  },
+  "owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/run_wam_clean_training_development.py",
+    "sha256": "2a83fd6ba099bd85c449b8e0b3b4c012eb39eee318605f1381afcf37c2a5d364"
+  },
+  "owner_timeout_s": 172980,
+  "qa_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_development_continuation_20261024/qa/preparation.json",
+    "sha256": "085afa1886eb0ac53a6c1f0442230282bf93712f770e8805c3211ae6aebfeeac"
+  },
+  "command": [
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/.venv/bin/python",
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/run_wam_clean_training_development.py",
+    "--prepared",
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "--prepared-sha256",
+    "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54",
+    "--execution-registration",
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/execution/admitted.json",
+    "--execution-registration-sha256",
+    "50e0a03d429b43343b5ff809879bf46bfeeff4d7b87bf7f2d70cb488d7a48d31",
+    "--state-owner",
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/orchestration/STATE/result.json",
+    "--state-owner-sha256",
+    "dd4429dd39bd5ee973a423985536a578fac48d71617fc166cf52b81b213108ef",
+    "--state-verification",
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/review/STATE_verified.json",
+    "--state-verification-sha256",
+    "df3ba09889d6d179dc0ad9b13966b371e5363ca1b187888f1f9a5046827f8e96",
+    "--seed",
+    "42"
+  ]
+}

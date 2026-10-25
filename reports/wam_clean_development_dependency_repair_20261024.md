@@ -1,0 +1,15 @@
+# 051 开发依赖接续组件准备（2026-10-24）
+
+原049失败、1次模型初始化/0请求/0物理、正常abort/wait1/reap及GPU释放已保存，562源/快照未改。STATE/W2完整资格保留，未重采、重拟合或打开fresh。
+
+四个有限源码副本已生成，只改新输出namespace、同四个子入口路径、runtime bridge路径与make_case_config中的policy_template指针。注册字典development键及数值除法保持原样；撤销明确列出的修改后整棵AST与冻结源码完全一致。主环境7项检查通过，实际sim解释器6项通过/1项跳过（仅跳过针对错误主解释器的拒绝测试），Ruff通过。
+
+初版由Python3.12 ast.unparse生成了Python3.11不兼容的f-string，实际预检在解析时正确失败，无模型/物理。初版source目录与source_generation.json保留；生成器改为强制真实Python3.11，新的source_py311及source_generation_py311.json独立保存。首次只提取metadata函数的预检缺少导入常量GPU，未发布case配置；补充冻结允许UUID后通过。均不修改原049或562来源。
+
+实际sim解释器执行新副本中的原case_order/make_case_config函数和原execution_inputs，全部12案例/900期望请求的输入存在性及SHA闭包通过，所有新输出目录均指向development_dependency_repair_20261024。权威产物`outputs/clean_training_development_dependency_repair_20261024/preflight_py311/all_case_inputs.json` SHA256 `df2fbc01bcccf2c42479cc5b7822ac9a10f2f32b672fa439e1c460bfcc82e992`。仅执行两项实际metadata函数，不是完整owner/client执行或仿真环境资格，0数组decode/模型/物理。
+
+新source_generation_py311.json SHA256 `12e3ad469cb54c9325c74f158512d3704f73379783d1ac539cf1feca2c4b30d6`。工具合同安全副本与历史native SHA完全相同；原049结果不覆盖。仍缺runtime来源桥、各角色实际准入/收据、新final source/envelope和独立metadata资格，以及真实全套CLI dry/cv2与资源检查；当前execution_authorized=False，未启动新模型或物理任务。
+
+来源桥核心现已实现于src/s2a/development_runtime_bridge.py：新入口映射回原冻结源运行原041证明，原prepared/registration JSON不变，来源集合仅扩展且拒绝覆盖原SHA。使用真实临时文件指纹测试修改/缺失源、原身份替换和未冻结basis等拒绝边界；与有限源码迁移组合16项通过，Ruff通过。该核心要求调用方提供独立准入后的qualification，本身不授权任何进程；完整051角色准入、generated runtime bridge与独立审查source map扩展仍待完成。
+
+后续051角色准入、独立AST证明及监督器已完成，110项组合检查/实际CLI dry与第二版metadata准入通过，已在新namespace实际启动；详情见wam_clean_development_dependency_execution_20261024.md。上列“待完成”为当时准备快照。

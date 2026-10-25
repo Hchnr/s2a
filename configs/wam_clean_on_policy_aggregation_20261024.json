@@ -1,0 +1,43 @@
+{
+  "protocol": "056",
+  "root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_on_policy_aggregation_20261024",
+  "master_seed": 42,
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "automatic_retry": false,
+  "fresh_authorized": false,
+  "current_manifest_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_on_policy_aggregation_20261024/current_manifest.json",
+    "sha256": "185bb7719f38f0b8e992913f70d67119f4f2df1d9fffc2d199f97b729124413c"
+  },
+  "collection": {
+    "round_name": "D2",
+    "model_initializations": 1,
+    "requests": 300,
+    "denoise_calls": 10500,
+    "head_calls": 10500,
+    "future_label_reads": 0
+  },
+  "fit": {
+    "rounds": [
+      "D0",
+      "D1",
+      "D2"
+    ],
+    "rows": 1260000,
+    "feature_dimensions": 1290,
+    "ridge": 7.751937984496124e-05,
+    "row_weight": 7.936507936507937e-07,
+    "producer_fits": 1,
+    "independent_qr_reconstructions": 1,
+    "rtol": 1e-09,
+    "atol": 1e-11
+  },
+  "validation": {
+    "model_initializations": 1,
+    "requests": 99,
+    "denoise_calls": 3465,
+    "gate": "unchanged 054/055",
+    "execution_authorized": false
+  },
+  "collection_execution_authorized": false
+}
