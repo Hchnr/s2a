@@ -1,0 +1,29 @@
+# 四步预览提案的原生解码与独立历史提交
+
+本项使用已通过全18条4907周期数值核验的预览命令，在原生Python3.11环境中检验JSON往返、真实`OperationalSpaceController.set_goal`和SOURCE/coupled历史提交。候选物理仿真尚未执行，不能把检查器中的`commit_executed`调用称为机器人已经执行命令。
+
+## 方法与覆盖
+
+`scripts/audit_coupled_preview_native_commits.py`逐条读取已核验提案和原232记录，在每个记录状态下独立设置原生ee_pos/ee_ori_mat与原旋转goal。实际调用中心化scale_action和set_goal；以原生四元数变换复核零命令保持及非零命令更新的目标矩阵。
+
+实际目标矩阵进入耦合模型，独立ODE重算每个新命令的响应，并与CoupledResponseHistory提交的名义响应比较。随后使用由该响应合成的端点核验innovation旋转组合和速度单位。这些端点不是MuJoCo生成的反事实观测。
+
+SOURCE侧先生成原转换器提案，再以新预览命令覆盖commit，和独立ExecutedResidualReplay逐项比较名义位移/速度；检查previous_command已绑定最终命令，并拒绝重复commit。每个样本重建历史对象，故该项不认证连续两套历史的长期串接，也不读取新提案后的真实反馈。
+
+原生控制器方法/变换源码及原数值资格的来源文件均记录并复核SHA。空CUDA/LD、无渲染MUJOCO_GL=disable，不启动GPU或新的物理step。新增脚本Ruff及格式检查通过。
+
+## 未完成边界
+
+尚需将预览规划、真实reader、最终SOURCE提交与两套连续历史接入独立仿真入口，并针对完整序列核验。原18/18正确参考门槛、世界模型开发及最终fresh24门槛保持。原SQP回归已经见到前7条独立性能证明，完整关闭仍待完成；全量CPU测试仍运行。
+
+## 已确认的提交失败与修复
+
+首次原生提交审查实际退出1，未生成完整通过证明。case00–06正常通过；case07周期88的平移命令第三维为1.0000000000000007，超出严格上限1约6.66e-16。QP可行性容差允许该误差，但CoupledResponseHistory严格拒绝越界。不能因为浮点误差小就把未提交命令算作执行成功。旧输出日志保存在`outputs/commit_review_20261026/preview_native_commits.log`。
+
+真实输入及原文件SHA保存`tests/fixtures/coupled_preview_case07_step88.json`。新`src/s2a/coupled_pose_preview_bounded.py`按顺序将整段命令投影到实际幅值和相邻命令变化区间，只允许最大1e-9的数值修正，超过即拒绝。修正后重算预测、目标值、梯度及NNLS约束乘子，保持2e-6驻点门槛；SOURCE严格边界不变。
+
+新边界回归与原预览/独立检查器合计16项测试通过（4.93秒），相关源码Ruff/格式检查通过。旧冻结候选保持，新增bounded入口版本依次运行全18条4907周期记录审查、90项来源绑定和原生提交审查；新结果分别写`outputs/coupled_pose_preview_records_bounded_20261026`与`outputs/coupled_pose_preview_native_commits_bounded_20261026`。完整重验尚在执行，不能沿用旧数值证明宣称新版本已获全部资格。
+
+## bounded版本全量重验完成
+
+三阶段依次完成且总进程实际退出0。18条4907周期记录数值检查、90项输入SHA绑定、4907次JSON/原生解码/SOURCE与coupled提交全部通过，最大独立原生响应差2.3172574969976267e-12。输出为前述两个bounded目录中的完整证明。依然是逐样本隔离检查，不认证连续双历史或反事实物理轨迹。随后新增的零旋转reset执行语义与运行时入口另见`reports/coupled_pose_preview_runtime_20261026.md`，其全量资格尚待完成。
