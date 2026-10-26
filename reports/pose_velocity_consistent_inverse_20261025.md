@@ -37,3 +37,19 @@ case00完整采集/独立核验通过，稳定True、末尾80步成功，位置R
 已核验前6条：case00/01/02/04/05达标，case03任务失败，合计5/6。新增case04位置4.148mm/SO3 0.007509rad，case05位置1.696mm/SO3 0.009913rad；全部独立机械/标签/图像审查通过。前6配对保存outputs/pose_velocity_tracking_pairs_20261025/verified_prefix_06.json。原owner身份PID3638955/start_ticks583917716仍存活，进入case06采集，未调整已冻结方案；原18/18资格失败与WAM/fresh关闭不变。
 
 case06完整独立审查通过，任务稳定、末尾87步成功，位置RMSE3.8583mm、SO3 RMSE0.010555rad，原门槛通过。相同参考082任务稳定但位置10.475mm超限，083在这条同时满足任务与跟踪门槛。累计前7条6条合格，case03失败不变；原owner PID3638955/start_ticks583917716仍经/proc身份核实存活。剩余回归按原冻结配置继续，不进入WAM/fresh。
+
+提交575d280后，原owner身份保持不变并继续推进至前10条独立核验完成，9/10合格。case07位置1.748mm/SO3 0.004657rad、case08位置2.839mm/SO3 0.005926rad均通过；case09稳定True、末尾92步成功，位置4.086mm/SO3 0.007484rad，修复了082同条不稳定现象。case03共同失败尚未解决，不能由9/10推断原18/18或WAM/fresh资格，总目标未完成。
+
+case10完整独立核验通过但任务从未成功；位置RMSE7.951mm、SO3 0.014291rad在门槛内，仍性能失败。082同条稳定且达标，构成083新增任务退化。累计前11条9条合格、case03和10失败；前11条只读配对保存outputs/pose_velocity_tracking_pairs_20261025/verified_prefix_11.json。原owner仍存活，完整剩余7条继续执行；不得以名义两状态目标或局部采样速度改善代替实际任务成功。
+
+case10只读放置诊断：082与083首次close均周期36、首次后续open均82、最高抬升均周期62且高度约108mm；单凭首次开闭时刻不能解释差异。周期82碗相对盘水平距离082/083为19.390/31.813mm，末端为19.912/33.985mm，083最终落点偏移更大。仅为离线对象真值描述，不作唯一因果结论或在线对象输入。来源SHA前后复核及选取周期明细保存outputs/pose_velocity_tracking_pairs_20261025/case10_release_snapshot.json，0新增物理/模型/拟合/fresh。
+
+合并2287adf后原owner仍按相同PID/start_ticks存活，全部699份冻结来源指纹一致。前13条已独立核验10条合格；case12曾成功5步但terminal/stable均False，位置RMSE2.174mm、SO3 0.010278rad，构成对082的新增任务退化。失败case03/10/12，剩余5条继续冻结执行。原18/18资格失败与WAM/fresh关闭不变。
+
+前15条独立核验完成，12/15合格。case13位置RMSE1.796mm/SO3 0.004139rad、case14位置2.931mm/SO3 0.006026rad，均稳定并达标。失败case03/10/12不变，剩余3条world_reference仍在原owner监督下执行；全量4907步和owner关闭尚未完成，原资格及最终目标均未达成。
+
+前15条完整只读配对汇总保存outputs/pose_velocity_tracking_pairs_20261025/verified_prefix_15.json：083采样速度误差在14/15条低于082，平移命令增量RMS在15/15条更低；综合资格新增通过case01/06/09，同时新增失败case10/12，共同case03失败。由此只能确认描述性平滑/速度改善，不能声称任务可靠性已解决。最后3条仍执行中，完整关闭待完成。
+
+## 完整关闭
+
+18条4907步及逐条独立机械/标签/图像审查全部完成，36个采集/核验阶段和execution owner实际wait0/reap、无信号、来源不变核验通过。原输出目录regression_summary.json、closure_verified.json已保存。任务稳定15/18、综合资格15/18；失败case03/10/12。对082综合14/18有所改善，但任务稳定同为15/18且有新增退化，不满足原18/18资格，不采用进入WAM/fresh，总目标未完成。

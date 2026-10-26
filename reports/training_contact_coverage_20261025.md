@@ -1,0 +1,11 @@
+# 141 训练干预接触几何覆盖审查进行中
+
+入口scripts/audit_training_contact_coverage.py及计划已准备，静态/格式检查通过。使用仓库outputs/libero_env311/bin/python，空CUDA/LD、MUJOCO_GL=disable启动66训练anchor只读当前状态几何重建；不调用mj_step，无渲染、全局fit、世界模型或fresh。当前工具session61583仍运行，尚无完整覆盖结论。
+
+最初.venv无mujoco，仿真解释器的OSMesa导入又缺少GL接口，均在数据输出前失败；改用不渲染的disable后实际启动，未安装依赖或修改共享环境。后续必须等待该session终止并核验result.json，不能把已启动当完成。原性能资格和总目标保持未完成。
+
+完整执行已结束：session61583实际exit0、进程消失；66anchor SITE/FK/J*qvel匹配及来源SHA复查通过。086三点机器人接触2/触桌0，097二十一点接触11/触桌3，106二十一点接触21/触桌5，115二十一点接触10/触桌0。合计触桌8/66，并非完全缺失触桌训练。
+
+8处触桌中7处table–gripper0_rightfinger，只有097 group18为table–gripper0_leftfinger。该点同时存在碗–gripper0_right_gripper接触，与092开发group4的body组合相似；不能称开发接触拓扑完全未见。当前深度、几何位置、状态和命令不同，拓扑相似也不保证局部响应相同。115按全条件方向选点未新增触桌点，说明全空间覆盖指标不自动覆盖稀少的接触侧条件。
+
+结果outputs/training_contact_coverage_20261025/result.json，未读取未来响应或重新拟合。没有物理积分或控制收益。该结果支持在原fit轨迹中针对左右指及触桌状态做训练侧几何覆盖统计，再决定新增数据；不得把开发anchor本身改成训练。原所有性能/控制/WAM/fresh门槛保持，总目标仍未完成。

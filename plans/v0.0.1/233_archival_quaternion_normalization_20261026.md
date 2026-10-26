@@ -1,0 +1,7 @@
+# 233 归档mj_forward四元数表示检查修正
+
+231监督的230检查已实际wait1/reap，前8行通过后在恢复endpoint9时失败：酒瓶free joint四元数4分量在mj_forward中归一化，最大差2.22044605e-16。原代码、失败结果和生命周期保留。没有控制轨迹或参数重试。
+
+新检查版本只在归档FK恢复阶段区分qpos四元数表示与物理变化：根据实际XML joint类型标明free/ball四元数范围；时间、所有非四元数qpos及全部qvel仍逐位一致。四元数原/新范数均须在1的16个float64 epsilon内，原始分量差与归一化后的旋转矩阵差也须在该界内，逐项保存事件。拒绝真实旋转、非单位大幅修正或任何其他状态变化。不改变运行时read_current_dynamics的逐位状态/ctrl/sensor只读要求，不改变SO3/位置任务门槛、数值KKT或优化器。
+
+另存checked脚本和监管namespace，完整164状态JSON/模型/创新/KKT要求不变。旧supervisor/child均已消失，旧检查exit/release为实际wait1/reap，无自动重试；这是明确修正后的新版本。源和seed42保持，仍无积分/新拟合/世界模型调用。通过前不启动耦合逆真实控制。

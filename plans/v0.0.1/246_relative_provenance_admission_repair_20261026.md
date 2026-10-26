@@ -1,0 +1,7 @@
+# 246 历史相对路径的来源准入修复
+
+244 SQP全18条4907周期及新164周期完整JSON资格均通过，两个实际worker wait0/reap/source closure完成。245注册进程实际wait0并生成配置，但物理启动在ROOT创建、测试及仿真之前因父证明source_sha256包含仓库相对路径而触发辅助代码的绝对路径断言，启动进程actual wait1/reap，0新物理步。旧245交接与源码全部保留，不修改已经冻结的证明。
+
+新full_pose_execution_sources_resolved按本仓库REPO解释历史相对声明、规范化绝对路径后去重；同一文件的任何SHA冲突仍拒绝，相对引用不得逃出仓库，cwd不影响含义。保留原声明到规范化路径和原SHA的source_path_aliases.json，纳入每stage的runtime来源；完整父图开始与结束核验、实际simulator源资产、36stage/owner真实wait/reap、原18/18任务与位姿门槛不变。没有改变模型、SQP参数、控制器、样本、夹爪或在线输入。
+
+新owner run_full_coupled_sqp_control_resolved沿用已登记的同一配置与尚未创建的物理namespace，额外运行真实相对路径/别名冲突回归测试。repair_full_coupled_sqp_admission先核验原注册成功、原失败启动实际wait1/reap和同身份退出、两项新数学资格及配置SHA，再在独立repair namespace一次执行新准入及安排已有独立closure。此为已确认入口错误的显式修复，不自动重启仍存活任务；不重跑数学数据或注册。不通过则保留失败证据，不启动WAM/fresh。

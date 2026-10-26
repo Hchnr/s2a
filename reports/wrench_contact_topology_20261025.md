@@ -1,0 +1,7 @@
+# 131 腕部传感器与接触拓扑核验
+
+原六anchor的已核验接触body及编译XML逐项追踪完成。力/力矩sensor共用site，其body为gripper0_right_gripper，父体robot0_right_hand；所有已知机器人接触body均在该传感器子树内。group4的table–gripper0_leftfinger及碗–gripper0_right_gripper均属其子树，没有发现绕过腕部传感器的近端接触。不能以“接触发生在腕部上游，wrench完全看不到”为解释。
+
+此结论仅为这六个anchor的几何拓扑证据，不是传感器动态传递/可观测性证明。当前净六维wrench包含多接触合力及惯性作用，拓扑不保证能唯一反演接触位置、摩擦方向和局部运动约束。原object/contact真值仍只用于离线诊断，不输入在线模型。后续需从训练侧检验因果接触约束估计，而非无依据增加上游力传感器字段。
+
+证据outputs/wrench_contact_topology_20261025/result.json保存所有接触对、所属子树与来源SHA；scripts/audit_wrench_contact_topology.py实际执行、静态/格式及来源复查通过。未运行forward/step/fit/世界模型/fresh。130资格失败与原控制、WAM、最终新初态门槛保持，总目标未完成。

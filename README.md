@@ -1,5 +1,29 @@
 # S2A — State to Action
 
+107最新完整结果：[追加wrench覆盖forward](reports/wrench_coverage_forward_20261025.md)5000方程唯一fit、独立增广SVD及三个stage/owner正常退出和来源审查完成；holdout23/24、局部22/24，资格失败，不进入控制。106追加147条/13209周期训练数据完整资格通过。原总目标与最终门槛保持。
+
+104最新完整结果：[当前实测wrench条件forward](reports/wrench_conditioned_arm_forward_20261025.md)4937方程唯一fit、独立增广SVD与三个stage/owner实际wait0和来源核验完成；holdout21/24、局部22/24，资格失败，不进入控制。103[原30轨迹wrench数据](reports/native_wrench_data_20261025.md)6180周期/6210端点及全量数据资格通过。原总目标与最终验收门槛保持。
+
+103当前执行：[原30轨迹wrench采集](reports/native_wrench_data_20261025.md)4核心测试与30实际CLI dry准入通过，持久owner采集/独立检查进行中，尚无全量数据资格。104[当前wrench条件对照](reports/wrench_conditioned_arm_forward_20261025.md)入口已准备，等待103关闭，尚未拟合。原总目标与控制/WAM/fresh门槛保持。
+
+102最新反馈核验：[当前wrench传感器合同](reports/current_wrench_sensor_contract_20261025.md)六baseline/477周期/483端点及12阶段与owner实际wait0完整关闭，直接getter/缓冲和坐标/参考点变换通过；仅确认仿真反馈当前可读，不是新模型或控制资格。原总目标和最终门槛不变。
+
+101最新完整结果：[干预斜率/自然偏置分阶段辨识](reports/separated_response_identification_20261025.md)固定两阶段fit、两独立增广SVD及三个stage/owner实际wait0和来源核验完成；holdout5/24、局部18/24，资格失败，不采用。原控制/WAM/fresh门槛及总目标保持。
+
+100最新完整结果：[固定非线性条件基forward](reports/nonlinear_conditioned_arm_forward_20261025.md)4937方程唯一fit、独立增广SVD及三个stage/owner实际wait0和来源核验完成；holdout22/24、局部22/24（未训练10/12），资格仍失败，不进入控制。原18/18、WAM开发/最终24条验收与总目标不变。
+
+098最新完整结果：[独立干预覆盖forward](reports/coverage_conditioned_arm_forward_20261025.md)4937方程唯一fit、独立增广SVD及三个stage/owner实际wait0与来源核验完成；holdout20/24、局部20/24，资格失败，不进入控制。097[训练响应数据](reports/training_response_coverage_20261025.md)147条/8281周期及完整数据生命周期资格通过。原18/18、WAM开发/最终24条验收和总目标不变。以下为历史快照。
+
+097当前执行：[独立训练响应覆盖](reports/training_response_coverage_20261025.md)21基础测试、147实际CLI dry及检查器导入通过，147条/8281周期采集由持久owner执行，部分结果已独立核验，尚无全量数据资格。096[因果局部响应](reports/causal_local_response_20261025.md)完整离线审查仍21/24局部响应失败；098仅登记下一拟合，尚未执行，原控制/WAM/fresh门槛和总目标保持。
+
+093最新机制核验：[原六baseline控制器追踪](reports/native_controller_trace_20261025.md)477显式控制周期、150内环观察及12阶段/owner实际wait0完整关闭，全部前缀匹配。实际uncoupling均true，目标周期均无限幅，group4全25次触桌；仅诊断，无新控制资格，原总目标未完成。
+
+090最新完整结果：[因果响应历史条件化forward](reports/history_conditioned_arm_forward_20261025.md)唯一4874方程fit、独立增广SVD及三个stage/owner实际wait0和来源核验完成。holdout24/24、局部响应21/24（未训练9/12），离线资格失败，不进入控制；新增物理/世界模型/fresh均0，原最终门槛及总目标不变。
+
+087最新数据资格：[原生arm前向响应数据](reports/native_arm_response_data_20261025.md)完成旧24fit/6holdout共6180行及全部XML/数值速度、实际goal协议、标签和生命周期审查；086六anchor成对响应数据亦已完整关闭。尚无新模型/控制收益，085原18/18资格失败及WAM/fresh关闭不变。
+
+083最新完整结果：[位置/速度一致性回归](reports/pose_velocity_consistent_inverse_20261025.md)18条4907步及36阶段/owner实际wait0、来源核验完成，任务稳定与综合达标均15/18，未达18/18资格；case03/10/12失败。WAM/fresh仍关闭，总目标未完成。
+
 082最新完整结果：[平移逆补偿回归](reports/translation_inverse_qualification_20261025.md)18条4907步及36阶段/owner实际wait0、来源核验完成，任务稳定15/18，原位置/旋转与稳定门槛合格14/18，未达18/18资格。083[位置/速度一致性候选](reports/pose_velocity_consistent_inverse_20261025.md)已通过20个准入进程并启动固定18条正确参考回归；无完整候选性能结果，WAM/fresh仍关闭，总目标未完成。
 
 079最新完整离线资格：[当前速度先验响应模型](reports/velocity_residual_response_20261025.md)5009行独立数据/增广最小二乘及9条冻结一步/8步响应验证通过原保持基线门槛；未全面胜过075/常速度，尚无新action控制或任务收益。下一步按[080](plans/v0.0.1/080_velocity_model_inverse_control_20261025.md)登记的有限原生命令规划和18条正确参考物理回归推进，原WAM/fresh门槛不变。

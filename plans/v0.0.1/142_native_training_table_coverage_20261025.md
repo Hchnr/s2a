@@ -1,0 +1,3 @@
+# 142 原24fit轨迹触桌区间统计
+
+仅087原24fit/4865当前转移，读取原source sim_states与metadata编译XML；mj_forward不积分，核验每点SITE/FK/J*qvel。分别记录左右指触桌mask及protocol_native_goal_override，报告原生有效周期与协议settled周期，不能将settled扩展伪装独立训练轨迹。保存全部候选周期，不选择开发邻近点或读取开发/holdout标签。XML引用外部资产只读并记录SHA。无新fit/物理积分/模型/fresh，不改原门槛。统计通过后另行登记训练侧干预选点。

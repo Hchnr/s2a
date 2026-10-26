@@ -1,0 +1,5 @@
+# 192 追加采集收尾内环步数计数修正
+
+191采集预算/循环及逐case检查为21支3003周期，但从144复制的close入口仍带旧summary explicit_integration_substeps=32725(1309*25)。旧close尚未执行，这个字段不参与worker采集或逐case检查。冻结旧入口保持不改，新增close_finger_loading_interventions_corrected.py，按已审查各trial实际周期和*25计算，预期75075。
+
+收尾只执行修正版；仍须原42stage+owner正常wait/reap、native baseline/prefix与来源完整检查。修正不更改实验预算、不重跑物理、不把待检查数据当资格；新收尾自身SHA随Evidence进入closure来源。原source roster继续检查旧冻结脚本未变，另记录此次修正路径。

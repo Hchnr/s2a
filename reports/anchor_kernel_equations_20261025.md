@@ -1,0 +1,5 @@
+# 128 固定anchor核训练方程绑定完成
+
+原116的66训练anchor和24fit轨迹身份已绑定，构建5063×624设计；4865自然及198干预物理target/nominal/weights保持。全部自然核由独立逐中心七组距离复核，原常数/83线性字段及追加wrench字段按实际布局分别与116设计核验（旧wrench位于212:218，非紧跟原线性字段）。自然归一化action与旧三个action块首列匹配；全部198干预标准化action差与原正负分支实际goal差匹配。
+
+输出outputs/anchor_kernel_equations_20261025/training.npz、parameters.json、result.json，保存中心身份及来源SHA；scripts/prepare_anchor_kernel_equations.py实际执行和静态检查通过，来源复查通过。尚无参数fit或性能资格，无新物理/模型/fresh。后续唯一fit、独立SVD及全部原性能门槛，原控制/WAM/fresh关闭与总目标保持。

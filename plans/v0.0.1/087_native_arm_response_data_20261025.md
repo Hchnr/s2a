@@ -1,0 +1,17 @@
+# 087 原生arm前向响应数据重建与资格
+
+086已完整42条3339步及独立机械/前缀/XML速度/图像和实际退出审查通过，六个anchor的实际增益变化、交叉耦合均已保留。085表明加性残差预测改善不足以保证逆控制稳定。下一步先建立可审查的状态条件化前向响应数据，不直接挑选新的补偿权重。
+
+保持原native30轨迹的24fit/6内部holdout划分，引用既有gripper_forward_identification/fit_result.json中的原始trajectory指纹；结果、controller_goals.json及record.model_xml分别绑定。最终新初态不使用，086探针不加入本阶段数据或fit；其六组响应可供后续另登记模型的局部导数验证，不能偷换成训练样本或全局真值。
+
+从原始time/qpos/qvel和已记录compiled模型XML重建当前实际controller site pose/twist、7关节q/qd、两finger q/qd；逐端点与原始保存的controller_site_pose、时间间隔及关节开度标签核对。使用独立XML运动学的解析Jacobian速度，并通过关节坐标的中心差分FK核验世界线速度与SO3世界角速度（epsilon固定1e-6秒，绝对容差1e-7）；该数值差分仅作离线几何一致性检查，不作为在线速度特征。输入SHA执行前后核验。086实际getter/Jacobian和静态XML速度对照已作为相关证据，但不能代替本30轨迹检查。
+
+每周期记录current site pose/twist、current joint/finger q/qd、known motor cache、previous actual command/goal、current applied command及current applied controller goal。实际goal是当前命令开始积分前设定的控制目标，需将controller_goals[k]与endpoint[k+1]所记录的goal及当前命令绑定；不是未来观测。保存实际goal相对当前site的translation差与world Log(R_goal R_current^T)。明确区分该controller command goal与下一实际state、世界模型desired state。
+
+原native尾段使用N端点measured SITE latch，不等于重复零命令。前N周期验证普通API目标，后80周期验证overridden标志及set_pos/set_ori与已观察到的N端点绑定；保留协议标志作数据元信息，不让未来phase或专家命令成为伪装的在线state输入。模型若后续采用current action作为条件，必须由部署时真实规划命令提供，不能由未来native日志提供。
+
+下一周期真实位置差、SO3增量、site twist以及关节状态作为forward监督标签，当前输入和下一标签分开保存，每轨迹独立、上一命令初始为0，不跨episode携带历史。原始raw states可由原轨迹ref追溯，重建缓存不改变任何native数据。分别报告fit/holdout行数及成功/失败项，不以缓存或运动学检查宣称响应模型或任务成功。
+
+本阶段0fit/物理积分/模型请求/fresh。先实现重建、独立复核与完整来源指纹及数据资格，完成后另登记条件化前向模型、固定正则化/特征和验证门槛。当前仅计划与显式来源配置，尚未重建或拟合。原18/18、WAM开发和最终24条验收不变，总目标未完成。
+
+实现补充：native_arm_response_data.py、reconstruct/verify/run/close_native_arm_response_data.py已实现当前输入/action目标/下一状态分离、完整普通API与尾段latch复核、解析XML速度及逐端点FK中心差分检查。首条原生轨迹164行实际重建通过；普通API目标独立抽查整条native段，旋转矩阵元素最大差5.59e-9，在原1e-6厂商容差内。第一周期previous command为0并保存availability=False，后续仅用上一实际命令。程序Ruff/导入通过；接下来执行准入并在独立owner内完成全30条重建与独立审查，当前尚无完整数据资格。

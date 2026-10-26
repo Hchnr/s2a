@@ -1,0 +1,7 @@
+# 155 独立预测及有界解最优性检查
+
+新增scripts/qualified_inverse_independent.py，不调用149/099逆解，独立特征/forward预测构造normalized命令响应矩阵并复算完整12响应。检查实际命令/5每秒速率交集，按自由、上下界及固定轴分别验证凸最小二乘KKT梯度条件，允许退化响应非唯一最优解，不强求复现solver内部路径。
+
+有效双轴rate边界解通过，错误但仍可行的命令被KKT拒绝、越界命令拒绝；与149测试共2项CPU通过，静态/格式检查通过。额外使用148真实合格参数、native23/cycle47状态实际生产逆解，独立完整预测与KKT复核通过，证据outputs/independent_inverse_optimality_20261025/real_model_verified.json。无新物理/全局fit/世界模型/fresh。
+
+尚未将此检查与完整控制日志的实际状态/目标/参考速度/历史重建绑定，不能以组件通过宣称18条控制审查完成。下一步接入原机械/图像/夹爪独立检查器并新增当前SITE/wrench/因果history重算，然后才能启动154物理回归。原控制/WAM/fresh门槛和总目标保持未完成。

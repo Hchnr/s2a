@@ -1,0 +1,7 @@
+# 220 预览规划的在线输入合同
+
+219活动集QP已通过全部164记录状态独立KKT，现封装在线合同：一条当前实测世界SITE pose/twist、实际previous command及availability、150已完成12维创新、当前已生成SITE轨迹与query anchor和cursor、实际固定controller contract。teacher arm action/goal及未来实测labels不读取。
+
+只读取当前cursor起最多6条已生成参考，最后不足6时缩短；当前可用生成轨迹按原reference_linear_velocity求世界参考速度，禁止读取下一未生成chunk。若初始previous不可用，则previous和创新必须全零。只提供已完成创新的dp与dv，计划内保持；不更新物理或历史。返回首条实际归一化command、实际接口解码physical_delta以及完整计划/所用参考供独立checker。
+
+测试参考起点/尾段及速度、界限/变化率和KKT、teacher/future标签排除、不修改输入、未生成cursor拒绝与跨episode陈旧创新拒绝。后续真实执行仍须只执行首条、173 SOURCE commit实际命令、env.step完成后才更新150 SITE创新，并独立重建当前状态及所有参考、QP目标/约束/KKT和任务/状态门槛。本合同不构成实际控制收益证据。

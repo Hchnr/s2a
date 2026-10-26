@@ -1,0 +1,7 @@
+# 243 六维控制的有条件持久交接
+
+242控制入口、独立checker、collector/verifier、注册器、owner和closure已实现，导入和新文件Ruff检查通过。已有全记录和完整JSON两个实际worker运行；不能以启动、部分case或仅proof文件代替两阶段正常结束。
+
+新增持久handoff仅观察这两个已存在的PID/start_ticks，不重启它们。待双方完整proof、监督result、actual wait0/reap和worker消失都一致后，才一次执行注册器与原18条物理owner启动。任何上游实际失败或无正常result而监督进程消失，保存并停止，不能自动重试或消费物理预算。等待有界且不会把观察超时当成功。
+
+物理owner仍自行运行相关测试、18真实CLI dry、checker导入及来源核验，通过后才collect/verify固定18条4907周期。handoff在真实owner launch存在后启动独立closure监督，最终36stage/owner退出、source closure及原18/18性能门槛保持。未过不得237开发/fresh。CPU/OSMesa空CUDA/LD，所有产物在本仓库，0新增模型或fresh请求。handoff不改变算法、数据、数学或性能门槛，也不发送外部消息。
