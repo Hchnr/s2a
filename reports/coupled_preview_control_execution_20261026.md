@@ -1,6 +1,6 @@
 # 四步预览固定18条物理回归准入
 
-248配置已登记，正在执行来源冻结与准入；当前没有新候选物理成绩，原总目标未完成。
+最新完整结果：248四步预览完成18条/4907周期，18/18任务稳定且全部满足原位置/旋转门槛。成功采集/核验阶段、continuation owner及closure正常退出与来源关闭均完成，生产和独立WAM控制准入复核一致通过。原case00检查器失败及修复证据保留；下文阶段快照为历史记录。尚无新WAM/fresh成绩，总目标未完成。
 
 ## 已完成资格
 
@@ -20,3 +20,17 @@
 ## 保持的边界
 
 全18条均任务稳定、位置RMSE≤0.01m、SO3 RMSE≤0.05rad，且所有阶段及owner正常退出/来源关闭后，才能进入世界模型开发。最终fresh24仍要求≥20/24稳定、各任务≥4/8。新回归仍是正确参考控制资格，不是WAM成绩。原SQP case09和case14性能失败已确认，剩余结果仍在收尾；原全量CPU测试的7失败/12错误单列，未宣称全套通过。
+
+## 检查器修复与固定配置接续
+
+原准入162项测试、18条原生CLI dry及checker导入通过。case00采集actual wait0，但原checker仍要求旧SQP运行时文件，核验实际退出1，原owner随后正常记录失败并停止；原始失败证据保留。新增registered checker要求真实preview引擎、runtime、executable和base来源，独立修复核验实际wait0，不重采case00、不放宽数值或性能门槛。
+
+`outputs/coupled_preview_verification_repair_20261026/verified.json`确认复用原case00，0新增物理周期。`resume_coupled_preview_control.py`从case01继续剩余17条；配置、控制算法、初态和seed不变。原failed owner与新continuation owner分开保留，最终closure会分别核对case00修复receipt和后续每条receipt。
+
+本次前5条/941周期证明、10个collect/verify实际wait0/reap与同身份进程消失已核对，见`outputs/coupled_preview_prefix_05_20261026.json`。位置RMSE依次0.533393、0.226448、0.259345、0.476452、0.472277mm；SO3 RMSE依次0.000975335、0.000582786、0.000770964、0.000618556、0.000800838rad，均稳定且达标。case02/04相对SQP的旋转误差略增，不能称所有指标均改善。
+
+该快照通过/proc核实continuation owner PID1074770/start_ticks594969768、closure监督PID1074794/start_ticks594969860同身份存活；这是当时状态，不是全量完成证据。原18/18门槛和WAM/fresh门槛保持。
+
+## 后续接入仍需完成
+
+当前preview物理入口在`src/s2a/coupled_pose_preview_control_simulation.py:116`显式仅接受oracle；残留WAM分支不能视作可执行的新模型资格，其旧GPU数字检查也不能沿用。通过完整18条资格后，须按237另行接入允许UUID、raw/terminal058服务身份与当前图像请求，保留连续双历史和独立审查。现阶段不启动模型或消费fresh。
