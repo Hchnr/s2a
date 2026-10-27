@@ -1,0 +1,9 @@
+# 245 SQP控制接入及运行来源范围
+
+244统一SQP修正与真实回归fixture已通过30测试和原生双模式独立证书；旧239全矩阵失败和243停止保持。SQP仍需完整18/4907数学记录、新的164周期完整控制JSON与actual wait/reap通过，才启动独立新物理namespace。旧239日志证明仅作模型/协议参考，不当作SQP新数据资格。
+
+执行、collector/checker/verifier和固定18条owner沿用242绑定结构，仅统一使用SQP求解、明确新算法身份；原目标、输入、时间、边界、夹爪、150/173/native历史及原18/18性能门槛保持。无按case选择、目标区域偏移或object/task label在线输入。
+
+来源核验分开保存：运行source roster包含全部本仓库Python代码、配置、测试、profiles/参数/证明文件，以及旧已关闭同环境各case的simulator_source_sha256中的实际外部代码/资产。collector仍按实际manifest记录和核验其真实使用输入，verifier逐值复核。完整父证明来源图先去重逐文件核验并单独封存，最终closure再逐文件重读核验；不把不被当前执行读取的历史fit缓存/旧日志反复当成每个stage运行输入。运行快照绑定父来源清单的SHA，来源图没有删文件或跳过最终检查。该改动只减少无用I/O，不改变数据、数学、软件源或性能门槛。
+
+新物理输出`outputs/full_coupled_sqp_control_20261026`，登记和条件交接只在两项新准入完整关闭后执行。保持CPU/OSMesa空CUDA/LD和8线程合同、全部36stage/owner正常wait/reap/source closure，记录求解时间而不冒称实时。未过不得237开发或fresh24，0新模型/fresh。

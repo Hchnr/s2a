@@ -1,0 +1,7 @@
+# 140 二次action候选物理性能验证
+
+生产137特征与独立旧线性特征加显式平方块、物理预测一致性通过，原holdout24/24、局部22/24。未训练group4的旋转和角速度仍失败；旋转Frobenius误差.011667471563522953高于nominal.008201913715536734，较116改善不足。二次action及新曲率训练约束没有解决主要泛化问题，offline_forward_eligible=false，不进入控制/WAM/fresh。
+
+验证owned_stage实际wait0/reap/无自动重试及冻结来源不变核验通过，主工具session29899实际exit0，无独立detached owner_wait。脚本静态/格式检查通过；输出outputs/quadratic_action_validation_20261025/validation_result.json保存全部门槛与来源。新增fit/物理/世界模型/fresh0，139全局fit1单列保留。
+
+136训练有限幅度非仿射证据成立，但不能将其当作group4失败唯一原因；本固定候选未通过原门槛。后续需区分条件泛化与接触约束不可唯一观测，不能继续以增加多项式阶数代替证据。原正确参考18/18、WAM开发和最终24新初态门槛及总目标保持，尚未完成。

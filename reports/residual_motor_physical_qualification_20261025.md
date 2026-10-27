@@ -1,0 +1,43 @@
+# 074 在线接入实现中，尚未物理执行
+
+上一轮073固定残差fit及独立数值核验是实质进展。本轮实现ResidualMotorInverse：输入仅当前opening、实际motor cache、上一测量和已生成reference；参数复制为只读，校验残差目标、40系数及标准化。首步history为None时delta0，后续由调用者显式传入，避免隐式共享或重新查询时重置。
+
+15项适配器与原始特征测试实际通过，覆盖motor/opening不一致时零残差保持实际motor、跨chunk历史、独立实例、短参考mask、八端点外参考不影响结果、非法cache及参数。Ruff通过。src/s2a/residual_motor_simulation.py基于069分支接入完整generated chunk尾部及跨chunk上一实测值，创建环境前拒绝governor和非20Hz；保留当前motor初始化和原OSC转换。草稿审查移除了不存在的model_dt配置键及旧未使用previous_command；尚未据此启动物理。
+
+按074登记统一18条正确参考，不挑案例、不重新拟合。待完成完整AST控制差异证明、独立机械checker、配置和owner/source冻结及实际3.11 dry后再运行。模型请求/物理/fresh均0。离线通过不代表state或任务通过，总目标及原WAM/fresh门槛不变。
+
+## 完整接入检查及首次准入中止
+
+控制分支全模块AST恢复比较通过，仅残差夹爪映射、显式上一测量及非governor/20Hz准入变化；独立checker全verify_case AST恢复比较通过，保留源/TCP/OSC/时间/实际motor转移/任务判定。适配器、原特征及两项AST共17项通过。独立标量与在线适配器在6180缓存行重构参考上命令相同、预测差最大5.83e-16。后者为实现一致性而非物理性能。
+
+18条实际3.11 dry及checker导入、17项测试共20个准入进程正常退出；原始逐项日志、来源SHA保存outputs/residual_motor_physical_admission_20261025。整理新checker时曾有字符串匹配误删造成语法失败，修复后完整检查重新通过，无物理执行。
+
+首次owner因067汇总字段使用execution_and_independent_checks_passed而非旧单case mechanical_labels_images_passed，在创建detached owner/worker之前KeyError中止；outputs/residual_motor_physical_20261025/admission_failure.json保留原owner SHA和0worker/0物理事实。新配置/worker/owner/审查入口使用_v2文件和输出目录，固定18条4907步、模型参数及控制分支不变，重新执行完整准入。原失败不覆写、不记作物理或性能失败。
+
+## 物理执行已启动，首条完整独立核验通过
+
+第二次owner准入还发现复制残留的不存在070计划路径，亦在worker启动前中止，原SHA及0物理记录保留于_v2/admission_failure.json。修复后逐一检查owner配置/计划字面路径；采用新admission_v3保存20个实际检查、全来源SHA及前后校验。_v2执行目录仅已有admission_failure.json时允许创建新来源快照；一旦有其他执行文件即拒绝覆盖，未重启物理案例。
+
+持久化owner PID3496816/start_ticks583073895及首worker3496824/start_ticks583073931实际核验，CUDA/LD均空。固定18条4907步已启动，源冻结后不再修改。首条case00完成164物理步、normal receipt passed；实际运行verify_residual_motor_physical_case_v2.py独立机械/实际端点标签/三张图像绑定及来源复查通过，稳定成功90步、末尾连续85步，performance_qualified=True。证据位于outputs/residual_motor_physical_20261025_v2/case00/independent_verified.json（以目录实际命名为准）。其余案例仍在同一owner下执行，尚无18条完整结论，不提升为WAM或fresh资格。
+
+## 前六条完整审查与闭环失败证据
+
+同一owner3496816/start_ticks583073895仍实际存活，未重启。已完成case00–05，六条均通过normal receipt、完整机械/实际标签/图像/来源独立审查；性能4/6。case01 wine/demo1稳定末93步、case02 cream/demo2末93步、case04 bowl/demo48末98步；case03 bowl/demo40与case05 wine/demo39均0成功，故原18/18资格已确定无法满足，仍按原登记完成剩余固定案例，不进入WAM/fresh。
+
+新增只读跟随审查器follow_residual_motor_physical_audit.py在同一执行目录逐条等待正常退出receipt后审查，不启动或重试物理；已审查文件不会覆写，独立核验失败即保留日志并停止审查。实际工具会话9909持续跟随，进度保存在independent_followup/progress.jsonl。所有18条通过审查后才写完整汇总，owner最终释放仍单列待核验。
+
+case03和case05的closed_loop_motor_deviation.json分别保存原始日志/参考NPZ前后SHA及早期偏差。两者初始实测开度与native参考精确相同；case03周期33、case05周期80在开始闭合时预测motor约0.88024/0.87765，当前motor1，因此最近可达量化保持1而非native0.75。随后motor与开度偏离；全轨迹motor RMSE0.9362/1.0112，开度RMSE0.3254/0.4145。二者位置RMSE仍仅3.26/3.23mm、旋转0.00519/0.01517rad，却无任务成功。该证据不证明唯一根因，但否定用073单步motor离线通过代替前向跟踪/任务资格；不能通过改本次量化门槛追赶失败案例。
+
+## 15条native正确参考已完整审查
+
+同一owner/start_ticks再次核实，case00–14已全部完成独立机械/标签/图像/正常receipt核验，性能11/15；失败为case03 bowl/demo40、case05 wine/demo39、case07 cream/demo40、case09新增bowl轨迹。原18/18门槛失败不变。最后三条原开发正确参考各600步仍由原owner执行，未重启，不采用阶段局部结果进入WAM/fresh。
+
+并行完成的075全阶段前向state模型为单独离线辨识，不修改本次控制或源码；其数值审查通过但原性能门槛亦失败，详见all_phase_gripper_forward_identification_20261025.md。两者均不构成最终任务达成。
+
+## 完整18条结论：14/18，原资格失败
+
+所有18条4907物理步完成，逐条独立机械、实际端点标签、三图像绑定、来源SHA前后核验通过；固定参数未改，0模型请求/新fit/fresh。独立跟随审查正常退出，regression_summary.json记录14/18稳定、performance_qualified=False。15条native为11/15，三条原开发正确参考3/3，末尾连续531/462/509步成功。失败仍为case03/05/07/09；不进入WAM或fresh，不将正确参考成功计作模型成功。
+
+closure_verified.json进一步独立核对18组durable launch/exit/release：全部实际wait0、reap、无signal/kill，原PID/start_ticks身份均消失，原冻结来源全数不变。根owner3496816/start_ticks583073895也已消失，但detached launcher没有保存根owner的实际wait退出码，不能从“进程消失”合成正常退出证明。因此owner_exit_code_verified=False、full_owner_lifecycle_qualified=False，原regression_summary的owner_release_audit_pending保留不改；18个物理worker正常退出证据与根owner生命周期缺口明确区分。性能失败已经确定，不为补根owner凭据重跑物理。
+
+本次完整证据关闭了“073离线通过是否带来统一正确参考控制资格”的问题：答案是否定。下一步不再追赶历史motor RMSE，须针对命令后的state响应、接触/速度状态和训练覆盖设计独立可检验改进；075只是另一个失败的局部模型候选，未获得控制资格。原开发5/6且各任务1/2、fresh20/24且各任务4/8和总目标不变。

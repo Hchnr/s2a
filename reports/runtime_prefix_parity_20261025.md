@@ -1,0 +1,9 @@
+# 152 真实原生前缀在线输入验证
+
+真实native23 baseline48周期完成。151在线输入逐项与087原缓存、103当前wrench及090训练history匹配1e-8，执行后150历史更新48次；原前缀、实际命令、XML独立SITE/twist及图像审查通过。实际controller零旋转命令会保持上一goal，已修正current_model_state的goal_delta并增加非零旧goal回归测试；CPU测试2项及静态/格式检查通过。
+
+首次准入错误解析虚拟环境解释器符号链接，NumPy导入失败、物理0，凭据outputs/runtime_prefix_parity_20261025/admission保留。改用完整venv路径和独立corrected输出目录后准入/采集实际wait0。首次独立检查套用原批量orchestration目录而找不到collection凭据，在写结果前失败；新只读检查器明确绑定真实collection目录后完整通过，旧失败记录保留，未重跑物理或覆盖结果。
+
+完整输出outputs/runtime_prefix_parity_corrected_20261025/case00/collection_result.json包含runtime_input_parity=true、48次完成历史及来源SHA；independent_verified.json独立机械/XML/前缀/图像通过。采集主工具session53466、修正审查session1030实际exit0，owned_stage均保留实际wait/reap。新增48物理周期/1200显式积分子步，仅输入合同验证，非新控制性能；fit/世界模型/fresh0。
+
+可进入新受限逆控制的原18条回归准备，尚无候选18/18资格。原旋转/夹爪与参考速度绑定、实际控制日志和独立审查仍需完成，原WAM/fresh门槛及总目标保持未完成。

@@ -1,0 +1,19 @@
+{
+  "protocol": "056-aggregate-validation",
+  "root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_on_policy_aggregation_20261024/aggregate_validation",
+  "budget": {
+    "requests": 99,
+    "denoise_calls": 3465,
+    "head_boundary_calls": 3465,
+    "model_initializations": 1,
+    "fits": 0,
+    "physics_steps": 0,
+    "fresh_cases": 0
+  },
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "master_port": 31357,
+  "seed": 42,
+  "automatic_retry": false,
+  "fresh_authorized": false,
+  "execution_authorized": false
+}

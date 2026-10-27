@@ -1,0 +1,23 @@
+{
+  "protocol": "049",
+  "stage_scope": "DEVELOPMENT_only",
+  "execution_authorized": false,
+  "implementation_ready": true,
+  "awaiting": "complete048 joint provenance and full99 numerical/lifecycle qualification; then actual049 binding, independent admission and CLI dry",
+  "original_prepared_root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023",
+  "upstream_state_control_root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_state_continuation_20261024",
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "http_port": 31339,
+  "budget": {
+    "model_initialization_attempts": 1,
+    "model_initializations": 1,
+    "cases": 12,
+    "requests": 900,
+    "denoise_calls": 31500,
+    "physics_steps": 7200,
+    "fit_calls": 0,
+    "qr_calls": 0,
+    "fresh_cases": 0,
+    "automatic_retry": false
+  }
+}

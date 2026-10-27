@@ -1,0 +1,19 @@
+{
+  "protocol": "059-terminal-validation",
+  "root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/terminal_state_validation_20261025",
+  "budget": {
+    "requests": 99,
+    "denoise_calls": 3465,
+    "head_boundary_calls": 3465,
+    "model_initializations": 1,
+    "fits": 0,
+    "physics_steps": 0,
+    "fresh_cases": 0
+  },
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "master_port": 31359,
+  "seed": 42,
+  "automatic_retry": false,
+  "fresh_authorized": false,
+  "execution_authorized": false
+}

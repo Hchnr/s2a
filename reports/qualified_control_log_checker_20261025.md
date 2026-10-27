@@ -1,0 +1,7 @@
+# 156 完整控制日志独立检查接入
+
+新增qualified_inverse_acceptance_checker.py保留原参考/时钟/任务/图像/夹爪回放范围，使用独立083旋转及qualified_arm_log_replay.py重建SITE目标/已生成SITE参考速度、真实上一命令、逐步innovation、完整模型预测和155 KKT；不复用生产逆解。新增qualified_input_state_audit.py以sim_states/XML独立FK/Jacobian及全局arm/finger索引绑定实际模型输入，核验motor缓存、controller前后goal、wrench sensor pose/参考点变换与time，不重算历史接触力充当测量。入口verify_qualified_inverse_control.py已接入。
+
+真实152的48周期日志/原已验证输入用于状态绑定准入，全部通过，注入错误当前关节速度被拒绝，证据outputs/qualified_control_checker_admission_20261025/state_binding_verified.json；该检查没有额外物理积分。独立有界解/前向预测/输入/历史及边界共10项CPU测试通过，完整检查模块导入和静态/格式检查通过。
+
+尚无153新控制日志，因此完整候选命令/参考/旋转/夹爪合并审查只能在实际执行后完成，不能把本组件准入当18/18成功。下一步建立持久owner原18条回归，并逐条执行独立完整checker；若机械或接口检查失败保留失败并停止，不自动重试。原4907步、位置旋转稳定门槛及WAM/fresh不变，总目标未完成。

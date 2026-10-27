@@ -1,0 +1,87 @@
+{
+  "prepared_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "execution_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/execution/admitted.json",
+    "sha256": "50e0a03d429b43343b5ff809879bf46bfeeff4d7b87bf7f2d70cb488d7a48d31"
+  },
+  "protocol": "048",
+  "root": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_state_continuation_20261024",
+  "stage_scope": "STATE_only",
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "budget": {
+    "model_initialization_attempts": 1,
+    "model_initializations": 1,
+    "requests": 99,
+    "denoise_calls": 3465,
+    "head_calls": 3465,
+    "fit_calls": 0,
+    "qr_calls": 0,
+    "physics_steps": 0,
+    "fresh_cases": 0,
+    "automatic_retry": false
+  },
+  "private_port": 31338,
+  "owner_timeout_s": 45500,
+  "automatic_retry": false,
+  "w2_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/execution/admitted.json",
+    "sha256": "a4fc6899b9dc9228d13599cb5ca79feb9f180b6c2475625cc11b1c86f25004ca"
+  },
+  "w2_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/supervisor/result.json",
+    "sha256": "4b7863a09c5dbecc4e2b2fa7d933ee184fbd4aaccdc21df77f177d655a12cae6"
+  },
+  "w2_fit_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/fit/W2/result.json",
+    "sha256": "dd7ee351fad0b1a183b7ea490bc8c89e62d78f09ad2565fc0886e36177efcd47"
+  },
+  "w2_verification_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/review/W2_verified.json",
+    "sha256": "434c27694c81806bc0a85de7a4629b35cb211a3e8f084db9f9ceacdebdeeb3a1"
+  },
+  "w2_params_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/fit/W2/parameters.json",
+    "sha256": "61145b6dfb2b3beeb9d07e945c3e2355807be0700ae91d10ba81427b730d1389"
+  },
+  "original_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/run_wam_clean_training_state.py",
+    "sha256": "4e7341e39cef865681c58467259a70aea71e29541975ef55c6f1687d103bf801"
+  },
+  "original_sampler_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/sample_wam_clean_training_state.py",
+    "sha256": "6c4347232652fd69cdae4cb077378cb1128f21b5f55cc09e2017d69ef32ff03c"
+  },
+  "original_verifier_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/verify_wam_clean_training_state.py",
+    "sha256": "915ab43bb44de6e4139bf483123bc503808b4766927c36e597e70eda785a4649"
+  },
+  "original_training_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/run_wam_clean_training.py",
+    "sha256": "8ee8796393e1e03534b1558d485c61c29315307fb49a64428fcafca980628919"
+  },
+  "bridge_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_state_continuation_20261024/import_bridge/run_wam_clean_training.py",
+    "sha256": "5633d65d6c648a82012fc83c61544304339bf82a781caca82bd0af8d9220fc11"
+  },
+  "module_refs": {
+    "run_wam_clean_training": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_state_continuation_20261024/import_bridge/run_wam_clean_training.py",
+      "sha256": "5633d65d6c648a82012fc83c61544304339bf82a781caca82bd0af8d9220fc11"
+    },
+    "continuation_runtime": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/continuation_runtime.py",
+      "sha256": "f8a544ad897655efbf10b984fd4c868a19b805f1f7f1a61fde845e403ebf622c"
+    },
+    "collect_wam_clean_training": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/source/entrypoints/collect_wam_clean_training.py",
+      "sha256": "36e8a8a837eebeadbbeb8372c7ebbf968734fed37458c66e8452d3b088c6bcce"
+    }
+  },
+  "qa_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_training_state_continuation_20261024/qa/qa_receipts_v2.json",
+    "sha256": "cac2b1965d371e5da7c9edca7573313f7ae1144b8edf447c088622ebcc1c3b89"
+  }
+}

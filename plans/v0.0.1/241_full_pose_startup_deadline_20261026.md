@@ -1,0 +1,7 @@
+# 241 共享文件系统上的监督启动时限
+
+240 corrected入口尚未执行数据worker：detached supervisor在源码核验期间未能在默认10秒ready时限内完成；launcher记录TimeoutError并实际发送SIGTERM，owned_cleanup returncode=-15/reaped=true。对应PID/start_ticks已消失，不能把此情形仅当观察超时，也不能把未启动的数据矩阵称为失败数学验证。原launcher_result、源码和launch记录保留。
+
+新监督namespace `outputs/full_coupled_all_records_startup_20261026`，继续运行未改字节的240 checked数据入口。确认原supervisor实际回收及数据输出目录不存在后，显式ready_timeout_s=300，源码仍由accept_detached_launch核验后才发布ready；数据worker的3600秒实际owned wait、全部数学/源检查和原18/18性能门槛不变。去掉ready前重复的一遍check_sources，因为accept自身已经执行同一来源核验。不是自动重试，不修改冻结公共supervisor或外部环境，不重复现存worker。
+
+数据输出仍为尚未创建的`outputs/full_coupled_all_records_checked_20261026`，旧初版CV2失败与240启动失败两个namespace均不覆盖。0新物理/拟合/模型/fresh。

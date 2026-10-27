@@ -1,0 +1,7 @@
+# 149 合格forward有界平移逆解接入
+
+新增src/s2a/qualified_forward_inverse.py，在实际非对称input/output边界内四次评估完整12响应，提取每米物理goal_delta的Jacobian与物理零点偏置。同步修改实际normalized command与controller goal_delta，保持其他当前状态/历史/旋转goal/夹爪字段。复用099有界motion+dt*linear_velocity最小二乘，命令幅值与5/s变化率交集；求解后原完整forward复算并拒绝非仿射预测器。
+
+新增接口/副本/非仿射拒绝测试及已有有界逆解测试共7项CPU通过，静态/格式检查通过。另用148合格真实参数及native23/cycle47当前条件实际运行，完整12通道仿射复算一致、命令边界/速率约束通过，证据outputs/qualified_forward_inverse_20261025/real_model_parity.json。该复算仅证明软件接口与模型一致，不是新物理跟踪性能。
+
+尚未接入完整控制回归，旋转与夹爪策略和参考速度构造须明确绑定，原18条正确参考/4907步、位置旋转及稳定门槛不变。新增物理/参数fit/世界模型/fresh0，control_qualified=false，总目标未完成。

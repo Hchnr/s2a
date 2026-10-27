@@ -1,0 +1,5 @@
+# 231 记录链路检查的持久监管
+
+上一goal turn被明确中断。已重新核实原PID364867不存在、工具session28601失效、无同名检查进程，且outputs/current_coupled_recorded_chain_20261026尚未创建；没有可宣称成功或正常wait的结果。不因此前等待超时推断停止，而是在实际进程消失后记录此次interrupted/missing handle。
+
+以新监管namespace outputs/coupled_recorded_chain_supervision_20261026启动一次独立detached supervisor，由其实际owned wait/reap原230检查脚本。源SHA保持，CPU/OSMesa与空CUDA/LD，timeout3600秒，无自动重试、不覆盖已有结果。监管与检查完成必须分别据实际进程身份和exit/release/proof核实；检查结果仍为零积分的记录状态证据，不能替代控制资格。

@@ -1,0 +1,9 @@
+{
+  "seed": 42,
+  "case_index": 3,
+  "physics_steps": 254,
+  "model_calls": 0,
+  "fresh_cases": 0,
+  "source_config": "configs/training_state_recovery_qualification_20261025.json",
+  "output_dir": "outputs/training_recovery_delay_isolation_20261025"
+}

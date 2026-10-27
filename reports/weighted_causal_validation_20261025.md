@@ -1,0 +1,7 @@
+# 135 条件加权因果残差验证
+
+使用116冻结prior、134固定窗口/核/单位ridge完成六holdout预测后observe，以及六anchor仅原前缀observe、七分支共享历史只读predict。全部当前查询局部系数由独立增广最小二乘复核，旋转左乘解码由矩阵实现核对。holdout24/24，局部23/24，仍失败于group4旋转响应：.01230978307083778高于nominal.008201913715536734，与116的.012317698766180635几乎相同。group4角速度.2503034750830396低于nominal.269341306907388，未失败。offline_forward_eligible=false，不进入控制。
+
+完整回放含1315个holdout周期查询及42个局部分支查询；六轨迹首查询为空历史，共1351次非空历史查询。每次查询生产系数两次求解（显式核对及predict），独立增广最小二乘一次；这些是在线4×12局部求解，不能称没有任何拟合计算。全局模型参数fit0，物理/世界模型/fresh0。
+
+验证owned_stage实际wait0/reap/无自动重试及冻结来源不变已核验；主工具session71697实际exit0，无独立detached owner_wait。输出outputs/weighted_causal_validation_20261025/validation_result.json和execution_result.json，脚本静态/格式检查通过。未发现因果历史泄漏或分支更新；条件加权尚未解决当前旋转泛化。原正确参考18/18、WAM开发/最终24新初态门槛和总目标保持，尚未完成。

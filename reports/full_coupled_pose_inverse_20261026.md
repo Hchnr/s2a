@@ -1,0 +1,70 @@
+# 六维联合位姿逆：模型与记录准入
+
+239全量记录检查已真实失败：完成case00–03后，case04周期71的L-BFGS-B解未满足局部驻点门槛；旧243交接已因此停止。244统一改用SLSQP并保留原独立证书和门槛，新18条4907周期及新164周期控制日志检查均已完整通过，两个worker实际wait0/reap及来源关闭完成。245注册已完成，但物理启动在来源相对路径断言处失败、actual wait1/reap且0新物理步；246新版本正在执行路径修复与来源准入，尚无新候选物理控制结果。此前232候选的完整真实控制仍为17/18，case11任务失败，不能进入237世界模型开发或fresh24，总目标未完成。
+
+## 为什么继续联合反解
+
+238完整4907周期旋转诊断实际wait0/reap关闭：实际旋转跟踪RMSE为0.007054221287003431rad，当前真实goal模型的旋转预测误差为0.0014757898901679673rad，已完成角度创新经SO3左组合后的误差为0.00043653274983354687rad。case11分别为0.009278175511682784、0.0018292477573633669、0.00028004160833181095rad。存在可预测的角度误差，但不能由此推断任务必然修复。
+
+全记录最大goal forcing与physical rotvec差为0.0017663355045224305，spring与identity的谱范数差为0.1096947268631951；故没有把旋转spring简化成identity。证据在`outputs/current_coupled_rotation_tracking_20261026/verified.json`和`outputs/current_coupled_rotation_supervision_20261026/execution_result.json`。原统一exec诊断被中断、进程与结果均不存在后，才显式改由持久监督一次执行；`prior_interruption.json`保留该事实。
+
+## 实现与验证范围
+
+`src/s2a/full_coupled_pose_inverse.py`沿用当前robot M/J和实际uncoupled OSC加速度耦合矩阵，对连续Exp(rotvec) goal重建同一18维时间响应与SO3 spring。Frechet导数包含goal对forcing和spring的影响。目标同时包括位置、SO3 geodesic和世界twist，尺度0.01m/0.05rad，速度项乘dt=0.05。完成的平移创新相加，旋转创新在世界系左组合，twist创新除dt后相加。
+
+`src/s2a/generated_reference_twist.py`只从已生成端点和当前query anchor计算世界线/角速度；未读未来实测状态。原六轴边界和actual previous±0.25保持。优化只声明局部驻点，不声称全局凸最优；reset和可行的zero-delta previous-goal latch分别求解并保存各自解/证书，按同一目标选择。恰好为零的reset使用显式极小非零代表，并重新检查调整后的目标和驻点。最终vendor解码与真实goal/model历史提交仍必须独立核验，不能把连续Exp当作vendor字节精确。
+
+10项新测试覆盖独立ODE、Frechet与任务梯度数值差分、非交换SO3 bias、已知六维命令恢复、界约束独立KKT、zero latch/reset、JSON模式与损坏拒绝、世界参考速度以及pi分支拒绝；连同既有相关13项，共23项通过。新文件Ruff check和format check通过；不据此声称全仓已有冻结历史lint问题已修复。
+
+## 首条164周期结果
+
+`outputs/full_coupled_recorded_chain_20261026/independent_verified.json`：164周期完整JSON、独立ODE/有限差分目标梯度与每种可行模式的bound KKT通过；最大独立驻点残差1.601193427581068e-7。命令、目标值、nominal、预测pose、创新和模式梯度6项损坏全部拒绝。
+
+actual native goal与连续模型最大矩阵差3.608697202173161e-8。实际nominal与连续nominal的四个分块最大差依次为位置7.336073051117387e-10m、旋转3.094695767008604e-9rad、线速度1.9537716156731166e-8m/s、角速度8.863634565203782e-8rad/s；历史从native实际goal和最终命令重算nominal后提交。
+
+监督证明`outputs/full_coupled_chain_supervision_20261026/execution_result.json`及`admission/exit.json`、`release.json`确认实际wait0/reap及源码核验。本验证使用记录的robot端点和重建的控制器goal cache/历史；不构成改变六维命令后的反事实物理轨迹，无新拟合、模型请求或物理步。
+
+## 后续门槛
+
+全矩阵初版`outputs/full_coupled_all_records_20261026`完成case00后，在case01因重复执行OpenCV导入前准入而被拒绝，actual wait1/reap保留。240 checked入口改为进程级一次准入，各case严格环境与独立历史重置保持；它的第一次supervisor启动在默认10秒readiness内未完成源码核验，被launcher实际SIGTERM/wait回收，尚未启动数据worker。241新监督`scripts/run_full_coupled_all_records_startup.py`显式300秒ready时限，仍在源码核验通过后才ready；旧两份失败namespace不覆盖，原3600秒worker时限和数学/来源门槛保持。
+
+全18条数据输出将位于`outputs/full_coupled_all_records_checked_20261026`，监督为`outputs/full_coupled_all_records_startup_20261026`。通过后仍需完整控制日志绑定和新物理入口，保留079夹爪作为控制变量、173 SOURCE最终commit和原150独立历史，独立从raw states重建所有在线输入。完整新18条4907周期、36stage/owner正常退出/来源关闭及原18/18性能门槛通过后，才可进入237开发和最终fresh24。
+
+241 startup的`supervisor/launcher_result.json`已成功发布；最近按PID/start_ticks核实supervisor728349/593062493与native worker728520/593064704均为同一存活进程。全矩阵尚无完成资格，不据启动状态宣称通过。
+
+## 242完整控制日志与243交接
+
+新物理执行模块`src/s2a/full_coupled_control_simulation.py`已接入239：actual previous六维命令作初值，选择完整六维最终命令后，第二次只读读取同一当前状态的native goal/model；228 history和173 SOURCE均提交实际最终命令。old150 packet回写完整实际goal delta，保留独立历史。连续nominal、实际native nominal及四分块差异分别保存；旋转/线速度参考只取自已生成轨迹和query anchor，求解壁钟耗时单列，无实时性能声明。
+
+`scripts/full_coupled_arm_log_replay.py`独立从raw XML/endpoint重建M/J、q/qd、SITE pose/twist和native目标，复核每种可行模式的ODE/有限差分梯度与界约束KKT、独立世界twist参考、完整最终command以及双历史。`scripts/full_coupled_acceptance_checker.py`继续保留SOURCE commit、夹爪、任务和图像审查；collector、verifier、注册器、固定18条owner及自动closure入口均已实现，导入和新文件Ruff检查通过。
+
+`outputs/full_coupled_control_log_20261026/independent_verified.json`已完成164周期完整JSON和164次SOURCE commit，20项损坏全部拒绝，最大独立驻点残差1.6011759776435634e-7。控制器goal cache明确为记录robot端点上的重建cache，不是更改命令后观测到的物理cache；原始robot状态不改。`outputs/full_coupled_log_supervision_20261026/execution_result.json`及verification的exit/release记录actual wait0/reap、worker消失和源核验。
+
+243条件交接`scripts/handoff_full_coupled_control.py`已由持久supervisor启动，最近核实PID763752/start_ticks593241957存活；它观察两个既有worker并要求完整proof、actual wait0/reap/消失一致后才一次执行注册和物理owner启动，并安排真实owner的独立closure。上游失败即保存停止，不自动重试。物理owner仍重新执行相关测试、18真实CLI dry和来源准入。当前全记录矩阵仅case00/01完成（164/254周期），尚未生成物理注册，0新物理/模型/fresh。原232的17/18结论和原验收门槛保持。
+
+
+## 244实际优化失败与245接续
+
+旧241 worker728520/start_ticks593064704已经actual wait1/reap正常回收，无信号终止；`outputs/full_coupled_all_records_checked_20261026/failure.json`记录case00–03完成及真实错误，case04只完成前71行。以上关于241 worker与243 observer存活的段落属于历史快照，不能用作当前运行证据。旧243已停止，未生成旧239物理注册。
+
+`outputs/full_pose_stationarity_failure_20261026/diagnosis.json`在原生解释器与8线程下复现：L-BFGS-B因相对目标变化提前报告成功，解析投影梯度0.00943468162675951，独立数值梯度残差0.009434681604719719，梯度差约4.78e-11；因此没有放宽2e-6门槛，也没有修改模型梯度。相同问题SLSQP的独立残差约1.1961e-8。真实fixture保存在`tests/fixtures/full_pose_case04_step71.json`，新求解器`src/s2a/full_coupled_pose_inverse_sqp.py`统一用于所有case及reset/latch模式，无按任务选择。
+
+新全矩阵输出`outputs/full_pose_sqp_all_records_20261026`，监督`outputs/full_pose_sqp_matrix_supervision_20261026`；新完整控制日志输出`outputs/full_pose_sqp_control_log_20261026`，监督`outputs/full_pose_sqp_log_supervision_20261026`。最近检查两个worker809909/start_ticks593523462与816031/start_ticks593568023均同身份存活，处于NFS RPC等待；无完整proof、exit/release或终止证据，因此不重复启动。这只是进程观察，不能计作数学资格或物理收益。
+
+245新collector、独立checker/verifier、固定18条owner、注册器和closure入口已通过定向Ruff及导入检查。`scripts/handoff_full_coupled_sqp_control.py`只观察上述两个既有准入；要求SLSQP全4907周期及164周期完整证明、原驻点界限、actual wait0/reap和进程退出后，才允许一次注册与物理owner启动。来源按245计划保留全部父图去重前后核验，真实运行源逐stage核验；没有减少物理样本或性能门槛。原232仍17/18，未达到原18/18前不进入237开发或fresh24。
+
+本轮复跑`tests/test_full_coupled_pose_inverse.py`、`tests/test_full_coupled_pose_inverse_sqp.py`和`tests/test_generated_reference_twist.py`共17项，全部通过（18.18秒，不含NFS导入等待）。245的7个物理执行/来源入口及新SQP条件交接均通过定向Ruff check/format，8个模块导入成功；这不替代未完成的全记录与物理门槛。
+
+245条件交接已完成detached ready/source准入，`outputs/full_coupled_sqp_handoff_20261026/supervisor/launcher_result.json`确认passed，观察进程821522/start_ticks593603453同身份存活；启动成功不代表上游或物理通过。最近case00已写164行，尚待逐case完整证书与全4907周期关闭；SQP物理输出尚未创建。
+
+SQP前6条case00–05共1185周期已发布完整逐case证书，最大独立驻点残差7.457957428708139e-7，均小于原2e-6界限。原失败case04的完整170周期现已通过（最大6.887750786388479e-7）；此为整条记录/重建历史上的数值修复证据，仍不证明物理任务改善。`outputs/full_pose_sqp_prefix_06_20261026.json`保存6份证书SHA和同身份存活进程观察。全4907周期及日志准入尚未关闭，条件交接继续等待，0新物理/模型/fresh。
+
+SQP完整控制日志现已关闭：164次JSON往返、164次SOURCE commit、20项损坏拒绝和最大独立驻点残差7.457963500240304e-7；verification actual wait0/reap、无信号、worker同身份已退出，supervision execution_result complete。独立复核`normal_receipts`与证明SHA保存`outputs/full_pose_sqp_log_receipt_audit_20261026.json`。此为记录日志/重建cache资格，不是物理闭环结果；全4907矩阵及其生命周期仍待完成。
+
+SQP全矩阵已完整关闭：18条4907周期，每个可行reset/latch模式的独立ODE/有限差分梯度/KKT、native实际goal与双历史均通过，全父来源图前后核验完成；最大独立驻点残差7.561676843492389e-07。admission actual wait0/reap、worker同身份消失及supervision complete已独立复核，保存`outputs/full_pose_sqp_matrix_receipt_audit_20261026.json`。两项数学/JSON准入现均合格，245交接进入注册；尚无新物理性能结论，原232仍17/18，WAM/fresh仍关闭。
+
+246修复记录：245注册actual wait0，生成同一固定18条配置；control_launch因父证明存在相对source_sha256声明，在ROOT创建和测试/物理执行前触发绝对路径断言，actual wait1/reap、无信号、进程同身份已消失。新`full_pose_execution_sources_resolved.py`保留原声明/SHA到规范化路径的映射，重复文件SHA冲突仍拒绝。三个回归测试通过（相对/绝对别名合并、冲突拒绝、cwd独立与越界拒绝），定向Ruff通过，新owner与显式repair入口导入及旧实际退出凭据核验通过。完整真实来源preflight执行中；不修改旧冻结入口或重跑数学记录，不产生新模型/fresh。
+
+246完整真实来源预检仍在同一工具session82509、PID870608/start_ticks593952162执行，最近/proc再次核实存活；读I/O持续推进但NFS等待明显，尚无最终preflight通过或失败。新repair尚未启动，不能据3个单元测试宣称全来源资格或新物理成功。修复四文件最终Ruff check/format与git diff --check通过。
+
+246完整真实来源preflight已实际exit0，通过1426项runtime、7646项父来源和7713条声明映射。原注册配置SHA再次逐值核实一致，修复监督878317/start_ticks594005721和准入worker879235/start_ticks594012234已完成实际启动并核实存活；固定18条物理回归继续在新入口下准入。新结果集中记录于`reports/full_coupled_sqp_control_execution_20261026.md`，当前尚无新物理性能。

@@ -1,0 +1,13 @@
+# WAM预览独立物理与请求检查器
+
+新增`scripts/coupled_preview_wam_acceptance_checker.py`，从已完成正确参考核验的registered preview checker显式派生。每周期raw-state、独立ODE/KKT、原生goal、SOURCE提交、双历史和夹爪路线核验语句与原checker保持AST一致。WAM入口另核对允许UUID、新服务来源/登记/分支、当前案例与worker保存的实测数组，raw与terminal058证据标签分开。
+
+逐请求检查独立重建固定12案例×75请求序号与058参数身份，不导入生产协议函数；同时检查当前PNG像素SHA、request/response身份、35节点产生的最终Action128归一化反解、实际chunk逐值一致。只允许登记的请求字段，即使响应回显额外future_state也拒绝。
+
+8项CPU测试通过：真实归档字段上的独立身份核对、四类身份错配、全部每周期物理检查语句保留，以及两种future字段拒绝。相关文件Ruff/格式检查通过。
+
+`scripts/audit_coupled_preview_wam_queries.py`实际退出0，使用旧061全部12案例各首个完整请求，独立检查真实当前图像、JSON和checkpoint配置中的归一化反解，输出`outputs/coupled_preview_wam_queries_20261026.json`。回放仅在内存中补入新chunk的development_response字段，并将配置中的服务标签设为新UUID/端口；原文件未改动。这验证新查询检查器兼容原真实服务数据，不是新preview物理结果，也不证明新服务已运行。
+
+新WAM全量verifier仍需接上该机械检查器、独立31500节点数值审查、实测标签/图像及实际wait/reap来源核验；总owner/metadata/prepare流程也未完成。禁止把已实现的checker和12次历史查询回放视作完整WAM执行资格。
+
+物理回归最近确认前17条独立核验通过，最后case17的独立核验进程PID1111081经/proc核实存活。最终18条及owner/closure尚未关闭，原开发与fresh门槛保持。

@@ -1,0 +1,9 @@
+# 222 预览JSON检查修正与明确恢复执行
+
+221首条采集正常wait0/reap并完成164实际周期；原checker在读取JSON后对list使用二维NumPy索引而TypeError，checker和owner均wait1/reap，余17条未启动。原数据/配置/运行源码和失败记录全部保留，不改任何优化数学、容差、机器人接口或物理参数，不重采首条。
+
+另存独立检查适配器，将JSON的command/planned_commands/predicted_positions/predicted_velocities转为NumPy数组，再调用原219逐标量/KKT验证。另存日志replay和checker入口，不修改已绑定原文件。补充完整JSON往返核对与损坏拒绝测试，并让164条记录状态链路准入全部通过JSON往返；原2e-6独立门槛不变。
+
+新恢复owner与source namespace为outputs/preview_control_serialized_20261026，物理case/采集数据仍在原outputs/preview_control_20261026。恢复配置必须与原配置完全一致，仅增加序列化验证proof；采集仍调用原冻结入口。首先用新checker独立核对已有case00，之后才逐条采集/核对case01–17；新的checker receipts另存原根verification_serialized，不覆盖原失败verification/case00。不自动重试失败stage，不重跑首条物理。
+
+完整36个数据stage由原已成功case00采集加新owner35个stage组成，明确记录复用来源。最后独立核对新owner正常wait/reap、全部来源，以及原checker/owner失败wait1/reap且进程已消失。原失败不改称正常收尾。综合性能门槛仍为原18/4907、18/18稳定和位置.01m/SO3.05rad，未通过则WAMdev/fresh继续关闭。

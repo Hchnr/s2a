@@ -1,0 +1,11 @@
+# 239 当前SO3 spring的六维联合逆
+
+238完整4907周期诊断及原232完整关闭保持。实际angular tracking RMS0.007054221287003431rad，真实goal nominal预测RMS0.0014757898901679673rad，已完成角度创新经SO3左组合后的预测RMS0.00043653274983354687rad；case11分别0.00927818/0.00182925/0.00028004rad。存在可预测角度偏差，但不能据此声称联合逆会修复任务。最大forcing−physical rotvec差0.00176634、spring−I谱范数0.109695，故不把全记录当作identity spring。
+
+保留当前M/J和实际uncoupled OSC耦合矩阵，对连续Exp(rotvec) goal重建同一局部SO3 spring和18维线性时间响应。六维command通过现有实际接口映射，求解同一周期位置、SO3 geodesic及世界twist目标；误差尺度0.01m/0.05rad，twist乘dt=0.05。完成的平移创新加到预测位置，角度创新左乘预测旋转，完成的twist创新除dt后加到预测twist。世界角速度仅由已生成参考和当前query anchor差分。
+
+SO3 generator对rotation参数的导数通过left Jacobian及expm Frechet求得，任务旋转误差导数使用SO3 right inverse Jacobian。带原输入边界和actual previous±0.25的有界非线性最小二乘只声明局部stationarity，不能称全局凸最优。独立ODE/数值差分必须复核预测、梯度与边界KKT。
+
+明确两种native模式：非零delta旋转reset goal；全零delta旋转latch previous goal。reset连续模型若恰好输出全零，以同一边界内显式极小非零代表实现reset，记录该动作与调整后目标/证书；latch在可行时单独求解平移并比较同一目标。模型优化的连续Exp和vendor float32 decoder分开记录，最终真实command必须经native decoder重建实际goal/model，history和173 SOURCE只commit实际执行命令；不能用连续模型假冒vendor字节精确。
+
+先完成可恢复已知命令、非交换SO3 bias、Frechet/数值导数、界约束、zero latch/reset和几何参考速度的真实测试，再完成全记录JSON、native分支和独立检查。079夹爪保持；无object/task label在线输入、任务专用偏移、样本选择或阈值修改。新namespace实际物理仍完整原18条4907周期、36stage/owner正常退出及原18/18资格，通过后才237开发与fresh24。此计划尚未启动新物理、模型或fresh。

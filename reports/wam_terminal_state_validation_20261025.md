@@ -1,0 +1,19 @@
+# 059同步末节点验证：已启动，性能待验
+
+依据059计划，058末节点参数已接入原同步验证流程：0–33节点使用052，34节点只更新xyz/opening，rotation保持052；raw/zero请求清空策略。新目录outputs/terminal_state_validation_20261025，原055/056及057失败记录不变。
+
+完整采样、独立逐节点数值审查、持久化owner、评分和metadata入口已实现。相关34项CPU测试通过，Ruff通过。完整worker/verify_generations AST与原实现一致（明确的准入/候选标识接缝），原pool/state_gate/diagnosis仅候选标识变化；逐节点compact checker单独保留原完整数学及来源链。
+
+实际准备冻结1481份源码及1481快照，prepared SHA8458ae92812a62076e458c60956c6cfab3db79335680d857faf0df0e78b162bd。独立metadata完整99请求通过，SHA9e4dec32a37c9ed5138836547fbc5063f4585e70c74ca41431be74b295931754。registration SHAd3d2176a75700ef738a0268bc81e3f99171f47abd8302a12cdfe14470aca63e9。真实模型解释器CLI dry返回0、0模型初始化、0请求，successful_cli_dry.json已保存。准备时新配置文件名引用错误发生在目录创建前，已修正后重新准备；不是模型重试。
+
+实际资源核查允许UUID GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f空闲，minor6/current visible2；owner写入fsync和空间门通过。短launcher正常返回，持久化owner PID3047316/birth580414990，持有模型子进程PID3047338/birth580415129。二者均已按/proc实际birth复核存活，模型log已进入初始化。只登记此UUID，port31359。不能由旧lock或仅launch文件推断存活。
+
+固定预算3zero+48raw+48terminal058=99请求3465节点、最多1次模型初始化。完整独立数值/真实wait0/reap/noSignal/GPU释放后才允许六future archive评分。当前尚无完整99请求或state性能结果，不进入开发/fresh。原state门槛及最终24条稳定≥20/24、各任务≥4/8不变；实时和真机另验，总目标未完成。后续只观察同一owner/model，不因观察超时重启。
+
+## 实际终止：首候选的请求身份接口缺失
+
+随后实际worker/owner均已终止，原PID/birth不存在；不是观察超时。完成3zero+1raw共4请求/140节点，首terminal058在CleanCaptureBridge.request调用_readout_sha时AttributeError：TerminalReadoutPolicy无to_parameters。该策略不是单一readout，原分派测试遗漏了真实父类请求身份接口。候选denoise尚未执行，无候选性能证据。
+
+state_sampling/result.json及orchestration/result.json保留False。实际worker wait1、reaped=True、signal_sent=False，gpu_after released=True、memory_mib=0、compute_apps=[]；GPU释放SHA2fadc3cd904c7179d566e05ff28da52fd5ba528e8de93998a8f9bfb551fa6f95。未在059目录重试或修改冻结源码。
+
+新版本修复仅对双头策略覆盖身份指纹，包含两套参数及节点34/35规则，保留原请求前后mutation guard及raw/zero父类路径；实际父类接口和相关8项CPU检查通过。另登记060固定完整99请求的有限新阶段，绑定本次真实失败和退出记录，原058参数和所有门槛不变。060未完成前，不宣称新性能或任务收益。

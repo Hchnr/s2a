@@ -1,0 +1,149 @@
+{
+  "changes": {
+    "coupled_preview_wam_execution": "serialized_preview_wam_execution",
+    "coupled_preview_wam_control": "serialized_preview_wam_control",
+    "coupled_preview_wam_simulation": "serialized_preview_wam_simulation",
+    "collect_coupled_preview_wam_development": "collect_serialized_preview_wam_development",
+    "run_coupled_preview_wam_development": "run_serialized_preview_wam_development",
+    "serve_coupled_preview_wam_development": "serve_serialized_preview_wam_development",
+    "prepare_coupled_preview_wam_development": "prepare_serialized_preview_wam_development",
+    "verify_coupled_preview_wam_development": "verify_serialized_preview_wam_development",
+    "verify_coupled_preview_wam_metadata": "verify_serialized_preview_wam_metadata",
+    "coupled_preview_wam_audit_admission": "serialized_preview_wam_audit_admission",
+    "coupled_preview_wam_acceptance_checker": "serialized_preview_wam_acceptance_checker",
+    "check_coupled_preview_wam_inputs": "check_serialized_preview_wam_inputs",
+    "test_coupled_preview_wam_collection": "test_serialized_preview_wam_collection",
+    "test_coupled_preview_wam_owner": "test_serialized_preview_wam_owner",
+    "test_coupled_preview_wam_service": "test_serialized_preview_wam_service",
+    "test_coupled_preview_wam_simulation": "test_serialized_preview_wam_simulation",
+    "test_coupled_preview_wam_metadata": "test_serialized_preview_wam_metadata",
+    "test_coupled_preview_wam_checker": "test_serialized_preview_wam_checker",
+    "test_coupled_preview_wam_verifier": "test_serialized_preview_wam_verifier",
+    "current_coupled_wam_development_20261026": "serialized_preview_wam_development_20261026",
+    "coupled_preview_wam_preparation_20261026": "serialized_preview_wam_preparation_20261026",
+    "s2a.preview-wam-development": "s2a.serialized-preview-wam-development"
+  },
+  "files": [
+    {
+      "original": "src/s2a/coupled_preview_wam_execution.py",
+      "original_sha256": "1ff6ddda474bb8f1696eb2d30d83dcf4448c9be6ece6f5c1f9bfc4ac2b88c52c",
+      "derived": "src/s2a/serialized_preview_wam_execution.py"
+    },
+    {
+      "original": "src/s2a/coupled_preview_wam_control.py",
+      "original_sha256": "924048ae284d7a63086c0c2598e039f8355808e0ac75bf548a48c3a77a8dc434",
+      "derived": "src/s2a/serialized_preview_wam_control.py"
+    },
+    {
+      "original": "src/s2a/coupled_preview_wam_simulation.py",
+      "original_sha256": "4ed83b62a75bd10edbb11e29b6e6fc86a99bbfa4b86a632cbe45e50eb7002d3d",
+      "derived": "src/s2a/serialized_preview_wam_simulation.py"
+    },
+    {
+      "original": "scripts/collect_coupled_preview_wam_development.py",
+      "original_sha256": "7540be83bbc19129d6ce15d0309064f9706ab45f38b1e96e553529e9cc2408e3",
+      "derived": "scripts/collect_serialized_preview_wam_development.py"
+    },
+    {
+      "original": "scripts/run_coupled_preview_wam_development.py",
+      "original_sha256": "34fb6dd5efcf39120de6cd2c9be442d332893e6a154c410aa0bfb38b8682fcda",
+      "derived": "scripts/run_serialized_preview_wam_development.py"
+    },
+    {
+      "original": "scripts/serve_coupled_preview_wam_development.py",
+      "original_sha256": "53661c21701956f9e579aca1bb5301e4b26c6d54b52819c58bfdeee62544178f",
+      "derived": "scripts/serve_serialized_preview_wam_development.py"
+    },
+    {
+      "original": "scripts/prepare_coupled_preview_wam_development.py",
+      "original_sha256": "cab825563859f58bd58af9baf23f28b6adc1fa1b2ff15af5c100b626244ae12a",
+      "derived": "scripts/prepare_serialized_preview_wam_development.py"
+    },
+    {
+      "original": "scripts/verify_coupled_preview_wam_development.py",
+      "original_sha256": "9779ca889f3c9487d9d5420d315880e2af53d77906733ee45747fa6e742332e7",
+      "derived": "scripts/verify_serialized_preview_wam_development.py"
+    },
+    {
+      "original": "scripts/verify_coupled_preview_wam_metadata.py",
+      "original_sha256": "1074720e34f36fa66be4af40c01a9d02bf5580e2bfdc4a4e463f044ef8a40c46",
+      "derived": "scripts/verify_serialized_preview_wam_metadata.py"
+    },
+    {
+      "original": "scripts/coupled_preview_wam_audit_admission.py",
+      "original_sha256": "bc79f4dab2a1985930544e99f3d547b8d18d6fcd40b2dc4fc31588ef9ec0f3cc",
+      "derived": "scripts/serialized_preview_wam_audit_admission.py"
+    },
+    {
+      "original": "scripts/coupled_preview_wam_acceptance_checker.py",
+      "original_sha256": "9228b49a8a34def248640f1416f7bf909adf35e97c761916ee371caed4b3f367",
+      "derived": "scripts/serialized_preview_wam_acceptance_checker.py"
+    },
+    {
+      "original": "scripts/check_coupled_preview_wam_inputs.py",
+      "original_sha256": "74c0616897b84bb18b103bf2d2b587aaadfc07bfb0d53ddf2fc37d3d43382e46",
+      "derived": "scripts/check_serialized_preview_wam_inputs.py"
+    },
+    {
+      "original": "tests/test_coupled_preview_wam_collection.py",
+      "original_sha256": "2f9b81defaceda1aa75ec0f5336f8f910022df443e398d2a1c19f173537d8e64",
+      "derived": "tests/test_serialized_preview_wam_collection.py"
+    },
+    {
+      "original": "tests/test_coupled_preview_wam_owner.py",
+      "original_sha256": "da65849a9793a68bbc45d78a5df676064e2da4536dcc39e4192dc4010599cbe4",
+      "derived": "tests/test_serialized_preview_wam_owner.py"
+    },
+    {
+      "original": "tests/test_coupled_preview_wam_service.py",
+      "original_sha256": "3ec317e80e5aee21db7712780378a58f63c2c26d35ad9bf62de1b65b4ea04c71",
+      "derived": "tests/test_serialized_preview_wam_service.py"
+    },
+    {
+      "original": "tests/test_coupled_preview_wam_simulation.py",
+      "original_sha256": "9b303d60033ea83486db9b97d2dd6b2eb1050afaf49ca18bb00645f054294ca9",
+      "derived": "tests/test_serialized_preview_wam_simulation.py"
+    },
+    {
+      "original": "tests/test_coupled_preview_wam_metadata.py",
+      "original_sha256": "103545eb3b85a301538e2fc9a65556a63a78495655b9172a00294356f6827b39",
+      "derived": "tests/test_serialized_preview_wam_metadata.py"
+    },
+    {
+      "original": "tests/test_coupled_preview_wam_checker.py",
+      "original_sha256": "ace487894e06d4c32fff9fcd72db3f67df6c971b0bb7ab39417bac1d2328bb80",
+      "derived": "tests/test_serialized_preview_wam_checker.py"
+    },
+    {
+      "original": "tests/test_coupled_preview_wam_verifier.py",
+      "original_sha256": "65212f2a8ead49db769d73cd1e2f675baf5d843f26ff73b9a26ab33ecead8a18",
+      "derived": "tests/test_serialized_preview_wam_verifier.py"
+    }
+  ],
+  "recovery_binding_changes": {
+    "scripts/prepare_serialized_preview_wam_development.py": [
+      [
+        "from s2a.terminal_development_policy import case_order",
+        "from s2a.terminal_development_policy import case_order\nfrom s2a.serialized_preview_recovery import recovery_evidence"
+      ],
+      [
+        "    local = source_closure(entries)",
+        "    entries += [\"tests/fixtures/serialized_preview_derivation.json\"]\n    local = source_closure(entries)"
+      ],
+      [
+        "    inputs = {ref[\"path\"]: ref[\"sha256\"] for ref in refs}",
+        "    value[\"recovery\"] = recovery_evidence()\n    refs += list(value[\"recovery\"][\"refs\"].values())\n    inputs = {ref[\"path\"]: ref[\"sha256\"] for ref in refs}"
+      ]
+    ],
+    "scripts/verify_serialized_preview_wam_metadata.py": [
+      [
+        "from s2a.clean_training_runtime import publish, reference",
+        "from s2a.clean_training_runtime import publish, reference\nfrom s2a.serialized_preview_recovery import recovery_evidence"
+      ],
+      [
+        "    physical = audit_physical_control(e, p[\"preview_control_closure_ref\"])",
+        "    require(p[\"recovery\"] == recovery_evidence(), \"Serialization recovery provenance differs\")\n    for ref in p[\"recovery\"][\"refs\"].values():\n        e.path(ref)\n        require(p[\"input_sha256\"].get(ref[\"path\"]) == ref[\"sha256\"], \"Recovery input omitted\")\n    physical = audit_physical_control(e, p[\"preview_control_closure_ref\"])"
+      ]
+    ]
+  }
+}

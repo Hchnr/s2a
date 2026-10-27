@@ -1,0 +1,47 @@
+{
+  "seed": 42,
+  "ridge": 0.001,
+  "state_dimension": 83,
+  "design_dimension": 336,
+  "output_dimension": 12,
+  "dt": 0.05,
+  "std_floor": 1e-08,
+  "output_dir": "outputs/history_conditioned_arm_forward_20261025",
+  "data_closure_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_arm_response_data_20261025/closure_verified.json",
+    "sha256": "d5fba031d98e766383f701d98164d9adcabc0457ced82784f281f97b5a68ef7c"
+  },
+  "data_result_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_arm_response_data_20261025/reconstruction_result.json",
+    "sha256": "793427b126bb41c3c10d2ede681be81f3bc250474609bf3d43c48efaca1d0ac4"
+  },
+  "paired_closure_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/paired_arm_response_20261025/closure_verified.json",
+    "sha256": "81d39c560be848388fc10d11b44531b5bf37172e0863587ceb55825ac1d233d4"
+  },
+  "paired_analysis_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/paired_arm_response_analysis_20261025/complete_06.json",
+    "sha256": "b8cf373d5cac6a60a275818e00f06531c9a4d636f1b2dae723ff81568592421d"
+  },
+  "physics_steps": 0,
+  "model_calls": 0,
+  "fresh_cases": 0,
+  "training_anchor_groups": [
+    0,
+    3,
+    5
+  ],
+  "validation_anchor_groups": [
+    1,
+    2,
+    4
+  ],
+  "native_weight": 0.5,
+  "contrast_weight": 0.5,
+  "contrast_equations": 9,
+  "prior_fit_closure_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/contrast_conditioned_arm_forward_20261025/closure_verified.json",
+    "sha256": "e4be9465fa0beb8a3bf3abe6656ab952e658893e48c7a3867b09bbbbeb4b6a23"
+  },
+  "history_dimension": 12
+}

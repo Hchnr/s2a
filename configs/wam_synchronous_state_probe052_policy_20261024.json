@@ -1,0 +1,44 @@
+{
+  "schema_version": "s2a.synchronous-state-probe052-policy.v1",
+  "preparation_only": true,
+  "execution_authorized": false,
+  "automatic_retry": false,
+  "candidate_fit_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_regularization_probe_20261024/result.json",
+    "sha256": "fbed6821f59d143b3299524f2aaca1926cec7c27cd79ada89cfb040b66a7f927"
+  },
+  "candidate_verification_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/clean_regularization_probe_20261024/independent_verified.json",
+    "sha256": "a15383c61a712d0a3e3d2fdc23f9ebd26ce10101c7ca84c28aad1259872c507f"
+  },
+  "current_inputs_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/synchronous_validation_20261024/current_inputs.json",
+    "sha256": "7ccff2b6d2d9b1e2a6129d7b4695a4a38a2ef6a4ea28d845b61be3a587a4c248"
+  },
+  "gpu_uuid": "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
+  "budget": {
+    "requests": 99,
+    "denoise_calls": 3465,
+    "head_boundary_calls": 3465,
+    "model_initializations": 1,
+    "fits": 0,
+    "physics_steps": 0,
+    "fresh_cases": 0
+  },
+  "seeds": [
+    42,
+    43
+  ],
+  "variants": [
+    "raw",
+    "probe052"
+  ],
+  "zero_regressions": 3,
+  "fresh_authorized": false,
+  "remaining_before_execution": [
+    "independent complete numerical verifier",
+    "owned process lifecycle receipts",
+    "actual successful admitted CLI dry",
+    "GPU UUID/PCI/minor and idle check"
+  ]
+}

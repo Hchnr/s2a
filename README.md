@@ -1,6 +1,100 @@
 # S2A — State to Action
 
+107最新完整结果：[追加wrench覆盖forward](reports/wrench_coverage_forward_20261025.md)5000方程唯一fit、独立增广SVD及三个stage/owner正常退出和来源审查完成；holdout23/24、局部22/24，资格失败，不进入控制。106追加147条/13209周期训练数据完整资格通过。原总目标与最终门槛保持。
+
+104最新完整结果：[当前实测wrench条件forward](reports/wrench_conditioned_arm_forward_20261025.md)4937方程唯一fit、独立增广SVD与三个stage/owner实际wait0和来源核验完成；holdout21/24、局部22/24，资格失败，不进入控制。103[原30轨迹wrench数据](reports/native_wrench_data_20261025.md)6180周期/6210端点及全量数据资格通过。原总目标与最终验收门槛保持。
+
+103当前执行：[原30轨迹wrench采集](reports/native_wrench_data_20261025.md)4核心测试与30实际CLI dry准入通过，持久owner采集/独立检查进行中，尚无全量数据资格。104[当前wrench条件对照](reports/wrench_conditioned_arm_forward_20261025.md)入口已准备，等待103关闭，尚未拟合。原总目标与控制/WAM/fresh门槛保持。
+
+102最新反馈核验：[当前wrench传感器合同](reports/current_wrench_sensor_contract_20261025.md)六baseline/477周期/483端点及12阶段与owner实际wait0完整关闭，直接getter/缓冲和坐标/参考点变换通过；仅确认仿真反馈当前可读，不是新模型或控制资格。原总目标和最终门槛不变。
+
+101最新完整结果：[干预斜率/自然偏置分阶段辨识](reports/separated_response_identification_20261025.md)固定两阶段fit、两独立增广SVD及三个stage/owner实际wait0和来源核验完成；holdout5/24、局部18/24，资格失败，不采用。原控制/WAM/fresh门槛及总目标保持。
+
+100最新完整结果：[固定非线性条件基forward](reports/nonlinear_conditioned_arm_forward_20261025.md)4937方程唯一fit、独立增广SVD及三个stage/owner实际wait0和来源核验完成；holdout22/24、局部22/24（未训练10/12），资格仍失败，不进入控制。原18/18、WAM开发/最终24条验收与总目标不变。
+
+098最新完整结果：[独立干预覆盖forward](reports/coverage_conditioned_arm_forward_20261025.md)4937方程唯一fit、独立增广SVD及三个stage/owner实际wait0与来源核验完成；holdout20/24、局部20/24，资格失败，不进入控制。097[训练响应数据](reports/training_response_coverage_20261025.md)147条/8281周期及完整数据生命周期资格通过。原18/18、WAM开发/最终24条验收和总目标不变。以下为历史快照。
+
+097当前执行：[独立训练响应覆盖](reports/training_response_coverage_20261025.md)21基础测试、147实际CLI dry及检查器导入通过，147条/8281周期采集由持久owner执行，部分结果已独立核验，尚无全量数据资格。096[因果局部响应](reports/causal_local_response_20261025.md)完整离线审查仍21/24局部响应失败；098仅登记下一拟合，尚未执行，原控制/WAM/fresh门槛和总目标保持。
+
+093最新机制核验：[原六baseline控制器追踪](reports/native_controller_trace_20261025.md)477显式控制周期、150内环观察及12阶段/owner实际wait0完整关闭，全部前缀匹配。实际uncoupling均true，目标周期均无限幅，group4全25次触桌；仅诊断，无新控制资格，原总目标未完成。
+
+090最新完整结果：[因果响应历史条件化forward](reports/history_conditioned_arm_forward_20261025.md)唯一4874方程fit、独立增广SVD及三个stage/owner实际wait0和来源核验完成。holdout24/24、局部响应21/24（未训练9/12），离线资格失败，不进入控制；新增物理/世界模型/fresh均0，原最终门槛及总目标不变。
+
+087最新数据资格：[原生arm前向响应数据](reports/native_arm_response_data_20261025.md)完成旧24fit/6holdout共6180行及全部XML/数值速度、实际goal协议、标签和生命周期审查；086六anchor成对响应数据亦已完整关闭。尚无新模型/控制收益，085原18/18资格失败及WAM/fresh关闭不变。
+
+083最新完整结果：[位置/速度一致性回归](reports/pose_velocity_consistent_inverse_20261025.md)18条4907步及36阶段/owner实际wait0、来源核验完成，任务稳定与综合达标均15/18，未达18/18资格；case03/10/12失败。WAM/fresh仍关闭，总目标未完成。
+
+082最新完整结果：[平移逆补偿回归](reports/translation_inverse_qualification_20261025.md)18条4907步及36阶段/owner实际wait0、来源核验完成，任务稳定15/18，原位置/旋转与稳定门槛合格14/18，未达18/18资格。083[位置/速度一致性候选](reports/pose_velocity_consistent_inverse_20261025.md)已通过20个准入进程并启动固定18条正确参考回归；无完整候选性能结果，WAM/fresh仍关闭，总目标未完成。
+
+079最新完整离线资格：[当前速度先验响应模型](reports/velocity_residual_response_20261025.md)5009行独立数据/增广最小二乘及9条冻结一步/8步响应验证通过原保持基线门槛；未全面胜过075/常速度，尚无新action控制或任务收益。下一步按[080](plans/v0.0.1/080_velocity_model_inverse_control_20261025.md)登记的有限原生命令规划和18条正确参考物理回归推进，原WAM/fresh门槛不变。
+
+078最新数据资格：[受控夹爪响应采集](reports/native_gripper_response_interventions_20261025.md)完整12条1568步、三native基线及全部独立机械/标签/速度/命令审查通过；24个stage及execution owner实际wait0/reap/来源核验通过。079[当前速度先验响应模型](reports/velocity_residual_response_20261025.md)固定新数据隔离划分后完成唯一5009行fit，独立数值及一步/8步验证尚未执行，无新控制性能或任务成功，原WAM/fresh门槛不变。
+
+074最新完整结果：[统一残差夹爪物理资格](reports/residual_motor_physical_qualification_20261025.md)18条4907步及逐条独立机械/标签/图像审查完成，稳定14/18，原18/18性能门槛失败；18个物理worker实际wait0/reap/无信号与来源不变均核验，根owner已消失但无其实际wait凭据，生命周期缺口单列保留。075[全阶段前向state辨识](reports/all_phase_gripper_forward_identification_20261025.md)数值复核通过，但wine/demo39单步误差差于保持基线，离线资格失败。两者均不进入WAM/fresh，总目标未完成。
+
+068最新完整结果：[位姿耦合开度预览](reports/coupled_gripper_preview_20261025.md)24条6098步及完整独立审查通过，候选稳定17/18，未达原18/18资格；新增轨迹与baseline均5/6。修复原预览退化但未解决共同wine失败，不进入WAM/fresh，原最终目标不变。
+
+067最新完整结果：[六步开度预览回归](reports/gripper_preview_regression_20261025.md)15条4430步及完整独立审查通过，但候选稳定7/9，留出4/6低于baseline5/6，有两条明确回归；不采用无条件预览，不进入WAM/fresh。原066三训练参考通过仅为局部证据，总目标未完成。
+
+062最新完整结果：[当前环境匹配oracle正控](reports/matched_oracle_requalification_20261025.md)三任务1800物理步及独立机械/退出审查通过，正确参考稳定3/3，原位置/旋转门槛均通过。此为固定S2A正确参考资格，不能计入WAM成功；061候选0/6与fresh关闭不变。
+
+061最新完整结果：[固定闭环开发对照](reports/wam_terminal_development_execution_20261025.md)12/12条、900请求、31500节点、7200物理步及完整独立审查/正常退出/GPU释放均通过；raw稳定1/6、terminal058稳定0/6，原开发性能门槛失败，不采用058进入fresh。继续定位参考路径与受限执行，原总验收门槛不变。以下为历史快照。
+
+060最新完整结果：[058末节点参考验证](reports/wam_terminal_identity_execution_20261025.md)99请求/3465节点及独立数值、正常退出/GPU释放全部通过，原state门槛通过；H16位置/旋转/开度误差相对raw下降17.764%/22.492%/30.569%，全48候选历史隔离对照通过。尚无新闭环任务或fresh结果；下一步按[061](plans/v0.0.1/061_terminal_development_20261025.md)接入固定12条开发对照，原最终24条门槛不变。以下为历史快照。
+
+060最新接续：[请求身份修复与新验证](reports/wam_terminal_identity_execution_20261025.md)已通过36项CPU检查、1483源码/快照、独立metadata、真实CLI dry及模型解释器的实际父类身份接口检查，由新owner在允许UUID上启动。原059首候选接口失败、4请求/140节点及正常释放记录保留。当前无完整候选性能结果，开发/fresh关闭，原最终门槛不变。以下为历史快照。
+
+059最新执行：[058末节点同步验证](reports/wam_terminal_state_validation_20261025.md)已完成1481源码/快照冻结、独立99请求metadata、真实CLI dry和34项CPU检查，并由持久化owner在唯一允许UUID上启动。058仅离线数值资格通过，当前无完整state或任务结果，开发/fresh关闭；原24条最终验收门槛不变。以下为历史快照。
+
+056最新完整结果：[D2聚合与同步validation](reports/wam_clean_on_policy_aggregation_20261024.md)全部完成，D2 300/10500、1260000行fit/独立QR、validation 99/3465及正常退出均合格；但原性能门槛仍失败。新头比052改善，H16相对raw位置/开度误差仍增大16.255%/139.056%，旋转改善25.799%。不进入开发或fresh，继续诊断局部残差与积分state目标不一致的问题；总目标和原24条最终验收门槛不变。以下为较早阶段快照。
+
+056最新执行：[聚合完整资格与同步validation](reports/wam_clean_on_policy_aggregation_20261024.md)。D2全部300/10500与聚合1260000行fit/独立完整QR、正常退出审查均通过；统一新参数已冻结。1476份来源/快照、独立metadata及实际模型CLI dry通过，固定99请求validation已在唯一允许UUID上启动。尚无新候选性能或任务收益，开发/fresh保持关闭，原055失败及原24条验收门槛不变。以下为较早阶段快照。
+
+056最新执行：[D2完整资格与聚合拟合](reports/wam_clean_on_policy_aggregation_20261024.md)。D2全部300请求/10500节点、300初态配对及独立数值/正常退出审查通过，GPU已释放。固定1260000行的唯一CPU fit已实际启动，完整fit/独立QR及新validation尚待完成，无新任务或fresh收益。原055性能失败、总验收门槛及fresh关闭不变。以下为更早阶段快照。
+
+2026-10-24当前执行：[056自身策略训练轨迹聚合](reports/wam_clean_on_policy_aggregation_20261024.md)。D2已通过完整执行准入、实际模型CLI dry及157项CPU检查，1470份来源/快照冻结；同一owner/worker持续采集，最近核实快照为123/300请求、4305节点。尚未完成全量D2数值/正常退出资格，聚合fit/QR和新validation均未执行，fresh保持关闭。相关拟合、审查、owner及validation接入组件已实现，不能把软件检查当作性能收益。
+
+2026-10-24最新完整性能：[055接续结果](reports/wam_synchronous_state_continuation_20261024.md)数值及退出审查通过，但性能门槛失败：旋转改善，位置和夹爪退化；[配对/合同/分布诊断](reports/wam_synchronous_pair_diagnosis_20261024.md)定位到自身生成轨迹末节点的teacher误差反转，根因尚未唯一确定。总目标与原24条留出初态稳定≥20/24、各任务≥4/8不变。以下为较早阶段快照。
+
+2026-10-24最新结果：[054分派错误终止与prefix审查](reports/wam_synchronous_state_execution_20261024.md)。已完成3zero＋1raw/140节点并独立核验；首probe052在采样前KeyError，原worker/owner False及实际wait1/reap/GPU释放保留。分派回归组件已通过6项CPU测试，055仅剩余95请求的显式接续在准备，未重启模型；无新候选性能或fresh结果。下列054启动为历史快照。
+
+2026-10-24最新执行：[054同步新头配对采样](reports/wam_synchronous_state_execution_20261024.md)已通过124项CPU检查、1447源/快照、两完整AST证明、独立最终准入及实际模型CLI dry，并由持久化owner在允许UUID上启动固定99请求。尚无完整采样或新任务收益；原W2失败、最终门槛及fresh关闭不变。
+
+2026-10-24最新资格：[053同步validation参考](reports/wam_synchronous_validation_20261024.md)完成原六demo的1212物理步、24当前图像与完整独立审查，native稳定正控6/6；当前图像/实测状态/未来端点由真实物理时钟绑定。已分离current-only模型清单，0新WAM采样或fresh。下一步另登记052新头配对采样，原W2失败及旧同步未认证记录保留，总目标未完成。
+
+2026-10-24最新候选：[052单值正则化对照](reports/wam_clean_regularization_probe_20261024.md)已完成同一840000行的新CPU fit与独立完整QR，原容差通过；训练归一化位置/开度MSE改善29.59%/17.83%，尚无新采样或任务收益。原W2开发0/6稳定失败保留，fresh关闭。原六个validation demo来源及初态隔离预检通过，下一步实现带真实物理时钟的同步参考采集，不能用训练误差替代最终验收。
+
+2026-10-24最新完整结果：[051开发对照与补充审查](reports/wam_clean_development_dependency_execution_20261024.md)已完成12/12条、900请求和7200物理端点，独立补充数值审查通过；原审查失败记录保留。raw稳定1/6，W2稳定0/6，开发性能门槛失败，当前W2不进入fresh。已完成[失败定位与夹爪释放条件核对](reports/wam_development_failure_localization_20261024.md)，尚无新候选收益；总目标及预留24条验收门槛不变。下列运行中与部分完成描述为历史快照。
+
+2026-10-24最新观测：[051 bowl两seed完整结果](reports/wam_clean_development_dependency_execution_20261024.md)。4/12条已完成：raw稳定1/2，W2稳定0/2；seed43/W2虽曾成功39步，但终点和末40步稳定判定失败。当前候选即使剩余W2全成功也至多4/6，且bowl为0/2，已无法达到原开发≥5/6及各任务≥1/2门槛。仍完成固定剩余8条以取得完整对照，完整独立审查尚未完成，fresh保持关闭；下列计数和运行状态为此前快照。
+
+2026-10-24最新执行：[051修复后开发对照](reports/wam_clean_development_dependency_execution_20261024.md)。110项组合检查、五入口AST独立证明、583来源/585快照及真实CLI dry通过；新namespace实际启动，首client已越过原缺失合同失败点并完成模型请求，物理进度60端点/8chunks。尚无完整case/稳定率，STATE gate=False及原049失败保留，fresh关闭；下列049停止或051准备为此前快照。
+
+2026-10-24最新结果：[049开发首client依赖失败](reports/wam_clean_development_execution_20261024.md)。首client因旧tool_contract挂载路径缺失在输入指纹阶段退出，0请求/物理；1次模型初始化已abort、wait/reap和GPU释放，原False/562源保留。已找到与历史SHA相同的新挂载合同并建立安全副本，实际sim输入预检通过；051新namespace有限接续在准备，无新执行或fresh。下列049启动段为历史快照。
+
+2026-10-24最新执行：[STATE完整资格与049开发启动](reports/wam_clean_development_execution_20261024.md)。STATE独立99/3465数值、来源及正常收尾通过，但state gate=False和validation初态同步未认证均保留；049冻结562源/快照、独立准入和原CLI实际dry通过，固定12条raw/W2开发对照已启动。尚无完整任务结果或fresh收益，总目标未达到；下列STATE运行中描述为历史快照。
+
+2026-10-24最新准备：[049固定开发接续](reports/wam_clean_development_handoff_preparation_20261024.md)代码及125项组合检查通过，QA绑定8份源码/测试；实际绑定正确拒绝未完成048，0新开发模型/物理。最新观察STATE同一模型已闭合32/99请求、1120节点，551源/快照无漂移，尚无完整STATE资格或新任务收益。
+
+2026-10-24最新：[W2完整资格与STATE启动](reports/wam_clean_w2_and_state_execution_20261024.md)。W2全部840000行拟合及独立QR按原容差通过，正常wait0/reap，537源/快照无漂移；048冻结551源/快照、独立准入及两个真实CLI dry通过，STATE模型已在唯一允许UUID上启动。尚无完整99请求资格或新物理/留出任务收益；下列W2运行中描述为历史快照。
+
+2026-10-24最新：[050 D1完整资格及W2启动](reports/wam_clean_d1_lifecycle_addendum_20261024.md)。D1完整300请求/10500节点及独立审查通过；原046收据字段错误的False保留，050独立生命周期补充核验通过。W2相关150项及收据/接续68项检查通过，537源/快照冻结、独立准入和三个真实CLI dry通过；CPU W2 producer已实际启动，拟合/QR完成资格及新任务收益仍待验证。下列D1运行中描述为历史快照。
+
 [当前实现进度与总目标](reports/status_current_20261023.md)：控制与独立仿真链路已建立，真实世界模型参考的多任务稳定效果尚未达标。当前版本终点固定为原预留24条中稳定≥20/24、各任务≥4/8；实时和真机分别另验。下列按日期保留推进记录。
+
+2026-10-24最新实现准备：[048生产桥与STATE入口](reports/wam_clean_state_handoff_execution_preparation_20261024.md)已实现并通过129项相关CPU检查及真实解释器导入检查，尚无实际048准入/STATE。模型和独立CPU审查的导入环境分别固定，额外lookup绑定真实PID/birth；11:19同一D1已闭合270/300请求，519源/快照不变，W2仍未拟合。
+
+2026-10-24最新组件：[048 W2到STATE来源桥准备](reports/wam_clean_state_handoff_preparation_20261024.md)只读资格核验和导入隔离组件已实现，135项相关CPU检查及两解释器4次原sampler help解析检查通过。生产桥/角色收据/048执行入口尚未完成，0新模型或STATE；10:47原D1同一进程已闭合156/300请求，519源/快照无漂移，W2仍未拟合。
+
+2026-10-24最新准备：[047 W2双轮接续](reports/wam_clean_w2_preparation_20261024.md)实现及142项相关CPU检查通过，实际sim运行时组件核验通过；真实live D1和绑定CLI均被正确拒绝，0实际W2 fit/QR。10:22快照同一D1进程已闭合66/300请求，原519源/快照未变；完整D1资格仍待完成，最终门槛不变。
+
+2026-10-24最新启动：[046显式D1接续](reports/wam_clean_d1_continuation_20261024.md)完成219项相关CPU检查、519源/快照、独立准入和实际CLI dry；持久化supervisor已持有原041 collector实际模型worker，仅允许UUID对应当前GPU2/minor6。10:07快照已闭合10/300请求，前2请求/70节点原独立重算通过，尚无完整采集/退出资格；W2、任务及fresh未启动，原失败与最终门槛不变。
+
+2026-10-24最新完成：[045实际CPU W1及独立QR](reports/wam_clean_runtime_fit_20261024.md)均通过完整420000行/150标签窗口，参数按原容差一致，508源/快照及两角色实际wait0/reap通过。原043失败保留，累计W1尝试2次/成功1次；原合成60通过/4严格参考比较失败及Decimal诊断如实保留。原D1 head合同只读接入通过，D1/W2/任务及fresh尚未执行，下一步为046显式接续。
+
+2026-10-24最新资格：[044完整CPU数值兼容审查](reports/wam_clean_runtime_qualification_20261024.md)通过150训练窗口、300请求/10500节点及两路径420000行字节比较；实际sim运行时逐值通过原生产门，498源/快照和正常wait0/reap通过。0新fit/QR/模型/物理/fresh，原043失败与main首窗口False保留；下一步另行固定新输出及累计尝试预算的W1接续。
+
+2026-10-24最新：[043实际CPU接续](reports/wam_clean_training_postcapture_20261024.md)。147项相关测试、Ruff、495源/快照及独立准入/真实dry通过；W1尝试1次，在标签重建检查处停止，0参数/成功fit/QR，失败保留。首窗口main与sim环境有float64差异，sim逐值复现，完整运行时资格尚未建立；没有重试、D1或fresh。代码已提交`2d218d8`，双语PR说明见[报告](reports/pr_clean_training_20261024.md)。
 
 2026-10-23最新结果：[041完整D0与W1前置失败](reports/wam_clean_training_continuation_20261023.md)。新D0的300请求/10500节点、独立审查及正常退出/GPU释放已通过；W1源码引用准入错误发生在fit前，0fit/QR/未来标签decode，supervisor保留False并停止，D1未启动。[043有限CPU修复](plans/v0.0.1/043_clean_training_postcapture_20261023.md)另行准备，不重采合格D0，不覆盖失败。等待期间[最终接入隔离组件](reports/wam_fresh_acceptance_implementation_20261023.md)339项组合检查通过，仍无实际候选或fresh性能。下列“D0运行中”为此前快照。
 

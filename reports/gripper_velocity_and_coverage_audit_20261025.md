@@ -1,0 +1,11 @@
+# 当前夹爪速度与前向响应覆盖审计
+
+075失败后先审计可用状态和样本覆盖，未做新拟合。audit_gripper_velocity_state.py逐条读取原30条source case的XML worldbody关节顺序和类型，重建nq/nv及finger关节qpos/qvel索引；所有状态向量长度、time、两个finger qpos与原单独保存值逐值相同，opening重算一致。依照实际binding_utils.py:224的[time,qpos,qvel]格式提取当前qvel，来源和全30轨迹SHA前后保持。qvel为当前物理状态，不是未来观测；当前robosuite single_arm.py:334–340定义gripper_qvel传感器并默认active=True。该静态合同尚不等同于新采集worker实际观测核验。
+
+wine/demo39周期157：过去差分对应本周期变化0.05310，当前瞬时qvel对应0.05158，实际下一变化0.04267，075模型预测约0.16060。补瞬时速度可能影响预测，但这些数值不足以支持“只缺瞬时速度就能修复”的结论；155–162完整窗口保存于outputs/gripper_velocity_state_audit_20261025/audit.json。没有据此拟合另一套特征追赶同一留出。
+
+独立只读audit_gripper_response_coverage.py复核075 fit_cache及当前qvel，保留后验描述性区域：q<0.7、当前/下一motor>0.99、0<过去dq<0.07。24fit原轨迹该区域0行，内部留出8行；这是失败诊断，不是新接受门槛或泛化证据。周期157在075标准化四维空间的最近fit样本仍是另一wine轨迹motor0.5→0.75，而当前查询motor1→1；距离0.67856，说明该打开响应没有相近的fit覆盖。最邻近5行、各自qvel与实际next_q变化、来源SHA保存coverage_diagnosis.json。
+
+两个脚本Ruff及实际执行通过；全部产物位于仓库outputs/gripper_velocity_state_audit_20261025，0新fit/物理/模型请求/fresh。后续应先采集原训练初态下的受控命令扰动和当前关节速度，在新数据上验证命令后的state响应；不把本诊断当作新模型性能或物理成功。
+
+后续076已登记并生成确切配置：原fit三个demo的首次闭合后打开anchor为78/157/85周期，12条总1568物理步，当前0执行。先验证三条完整native基线的原始前缀，再运行固定三种夹爪干预；不会使用074失败轨迹或fresh作新拟合。见plans/v0.0.1/076_native_gripper_response_interventions_20261025.md。当前无运行中的S2A物理任务。

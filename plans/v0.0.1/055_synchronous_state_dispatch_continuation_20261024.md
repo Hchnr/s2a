@@ -1,0 +1,15 @@
+# 055：054分派错误后的有限未执行接续
+
+总目标和原24条留出门槛不变。054实际初始化1次，完整执行3zero＋1raw，共4请求/140节点后，在首probe052的model.prepare之前因dict关键字仍为w2而KeyError。第五目录只有request.json，无noise/response/trace/compact；实际模型calls没有跨过原index4。054 worker/owner False、真实wait1/reap/noSignal与GPU释放收据全部保留，不回写或冒称整轮正常。
+
+CPU独立prefix审查已通过4请求/140节点、105个zero fullpoint源数组及原response/initial完全回归，原始C0/原对象/掩码/当前caption/网格/trace/每request参数前后一致；source/input SHA前后不变。整个worker未写parameters_after，不能补造整体字段。prefix_verified.json SHA e0fda7e66b45e25d7cb446c13973b10fa4a990dd63a5af5706a2ac852ccbed58，范围只覆盖前4个请求，不代替054整轮失败。
+
+接续目标固定为原indices4..98，共95请求/3325节点，额外最多1次模型初始化；累计初始化预算明确为2、总完整请求99/节点3465。不得重采已完成4次，不改任何输入图像、task、seed42/43、head参数、sampler、mask、sigma、数值容差、state门槛或fresh分母。该接续另namespace outputs/synchronous_state_probe052_continuation_20261024 和独立schema/注册，不是原054自动重试或原单初始化协议通过。
+
+修复仅为variant→head分派。新增纯函数select_readout已对raw/zero/probe052全部对象身份、首适配index4及旧w2拒绝作6项CPU回归。新worker必须实际调用该函数，并在GPU前对完整99/实际剩余95的分派与请求循环作可执行CPU检查；不能只靠文本重命名或AST数学等价证明代替分派行为。原054冻结源码不修改。
+
+新worker读取已独立合格prefix元数据；第一个probe052必须与原index3 raw的完整FP32 initial noise/condition及caption逐位相同。允许读取该已发生的initial模型archive用于配对，不读053 future trajectory、专家动作或success。其后47对在新进程内逐位配对。现有parameters_identity含Python对象ID/显存地址，是进程内对象/版本指纹，不能跨进程比较哈希。每进程仍须严格核对各request与整轮前后identity；跨进程核对同一冻结只读checkpoint路径/163文件size+mtime、加载合同与参数数量，并对首对完整initial逐位配对。旧进程没有参数内容哈希，不能声明已证明跨进程参数逐位一致；这一证据边界保留。新进程有自己正常wait0/reap/释放证据。原failed exit1保留为prefix真实事实，不伪装新正常收据。
+
+独立审查按每个真实namespace与source/参数/时间/过程来源核验：prefix4保持原source1447及原退出事实，continuation95有新source闭包和新正常收尾；105 zero完整源和全部3465 compact节点联合证据才可评分。联合结果显式记录两个初始化与实际prefix失败，不能构造一个假的单worker actual_requests99或改写旧sampling result。全部数值与生命周期核实后CPU才打开六条053 future档案，按054已固定同一阈值评分。未完整实现、测试、独立准入和真实CLI dry前，接续模型不启动。
+
+预算0新fit/物理/fresh，不自动再试，不调参或按task拼接。实际实现、测试、准入与执行状态见对应055报告；计划本身不授权模型启动，fresh保持关闭。

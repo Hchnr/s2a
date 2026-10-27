@@ -1,0 +1,5 @@
+# 149 合格forward到有界平移逆解
+
+绑定148合格物理模型的三平移action仿射性质。以实际normalized input/output边界，在基准input_min及每轴input_max四个可执行命令上评估完整12响应，换算每米物理goal_delta导数与物理零点偏置。数据当前measured/历史/旋转goal/夹爪不变，只同步action_command前三维与action_goal_delta前三维。核验基准可执行命令及任意候选预测与偏置+Jacobian一致，禁止套用二次/时间解码模型。
+
+逆解复用099的motion3+dt*next_linear_velocity3有界最小二乘，固定normalized rate5/s、20Hz，取实际命令幅值与上周期命令速率交集。返回实际命令和原完整模型复算12响应，跟踪旋转耦合只作日志，不因平移目标忽略它的物理评价。先模块测试和真实合格参数复算；随后独立登记18正确参考完整回归。无新控制资格，原全部门槛保持。

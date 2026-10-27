@@ -1,0 +1,7 @@
+# 159 固定控制器数值旋转goal修复验证
+
+新增src/s2a/current_model_state_native_precision.py，包装旧151只读读取，非零旋转使用固定控制器实际axisangle2quat/quat2mat路径，再按实际goal矩阵相对当前SITE计算模型rotation goal。零命令保持上一goal。未调用set_goal/forward/step，旧151/153/157源码及失败输出不变。
+
+新解码对157首条全部164步实际controller goal验证，在不变1e-9容差下最大向量误差0。证据outputs/native_rotation_goal_decode_20261025/verified.json包含实际依赖源码SHA及原日志来源。纯组件测试验证实际数值decoder与零命令latch语义，连同历史测试2项CPU通过，静态/格式检查通过。未新增物理/fit/世界模型/fresh。
+
+该修复尚未实际运行新控制执行器；旧157仍失败，不改其结果。下一步新namespace绑定159，并重新完成CPU/实际CLI/独立checker准入后执行原18条/4907步回归，原位置旋转/稳定及WAM/fresh门槛保持，总目标未完成。

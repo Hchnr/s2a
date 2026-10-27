@@ -1,0 +1,7 @@
+# 124 时间残差候选物理输出验证
+
+123唯一参数使用121生产编解码及独立逐样本旋转矩阵实现，原六holdout/六局部anchor所有预测一致性通过；解码仅使用预测末角速度和当前twist。原物理输出评分holdout24/24、局部23/24，未训练group4旋转响应Frobenius误差.01231402015506095，仍高于nominal.008201913715536734。相较116的.012317698766180635仅极小变化，不能宣称解决泛化问题。offline_forward_eligible=false，禁止进入控制/WAM/fresh。
+
+验证owned_stage实际wait0/reap/无自动重试及执行前源码冻结未变均复查，主工具session55320实际exit0。输出outputs/temporal_response_validation_20261025/validation_result.json及execution_result.json保留全量结果与来源。未使用detached supervisor，主编排不具备独立owner_wait凭据，范围区别保留；不能等同旧完整三stage+owner关闭。
+
+格式检查执行过；Ruff报告I001导入排序，命令串仍继续启动验证，此项静态准入未通过，明确保留，未改动冻结脚本或伪称全检查通过。数值结果完整但候选性能已失败，不补跑候选以覆盖记录。新增fit/物理/世界模型/fresh0；123参数fit1保持。下一步应回到条件/响应表示的泛化限制，避免继续等价的小幅目标重参数化。总目标及原验收门槛不变，尚未完成。

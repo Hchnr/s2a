@@ -1,0 +1,7 @@
+# 204 完整前向映射与限速决策独立绑定
+
+tracking_guarded_loading_inverse保留178混合命令，在加载且166支持距离<2radius时求202最小上限，无可行解保留原命令；非加载/支持外不额外限速。最终命令重新预测并保留pre-rate及guard reason/可行性记录。
+
+guarded_loading_support_independent用独立prediction四支重建normalized command→SITE位置仿射映射，再以独立多项式根核对最小可行change、最终命令、支持距离、学习KKT及实际预测。15项相关测试通过，覆盖范围外回退与篡改拒绝。check_guarded_loading_saved_states在200已审查首条全部164当前状态上生产/独立完整重算通过；只是单步反事实，不是新执行历史或闭环收益。
+
+205完整物理准入绑定该proof和所有SHA，不省略原机械/标签/图像与两套实际命令历史检查。原所有资格门槛保持。

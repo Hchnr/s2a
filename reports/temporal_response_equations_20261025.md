@@ -1,0 +1,7 @@
+# 122 时间残差训练方程准备完成
+
+原116完整关闭的4865自然转移与198干预方程已转换为121期间旋转残差标签，固定1128设计、原权重/统计/划分保持。全部24原fit轨迹当前twist与旧raw89明确37:43列一致。198干预逐个读取原正/负分支，重建实际物理packet及共同当前twist，核验物理差分等于116旧target，再分别编码后差分，未直接变换导数标签。
+
+全部编码用独立旋转矩阵乘法复核，解码往返恢复真实旋转矩阵；nominal平移干预旋转/角速度两块为零亦核验。输出outputs/temporal_response_equations_20261025/training.npz及result.json保存数据SHA与来源证据；scripts/prepare_temporal_response_equations.py实际执行和静态/格式检查通过。不读取holdout或开发标签，不新增fit/物理/世界模型/fresh。
+
+此为训练方程准备，不是独立完整训练资格或性能通过。后续须唯一fit、独立数值求解及解码后原24holdout/24局部响应检查，完整生命周期凭据；原控制/WAM/fresh门槛不变，总目标未完成。

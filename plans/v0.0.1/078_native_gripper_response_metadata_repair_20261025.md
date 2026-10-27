@@ -1,0 +1,11 @@
+# 078 077完整baseline后元数据序列化修复
+
+077首条102步baseline及103端点NPZ完整保存，raw sim_states/source_pose/opening/gripper_qpos与原native逐值相同，raw_baseline_comparison.json保留读取前后SHA。结束写controller_contract的ndarray时json.dump失败，partial JSON、worker/owner实际wait1和原102步完整现场保留；0干预。076先前partial9步亦保留，既往实际支出共111步，不计为新完整案例。
+
+新collector_v3仅复用既有collect_wam_native_training.write_once：支持ndarray/NumPy scalar，先完整json.dumps(allow_nan=False)，再exclusive创建目标文件。不修改命令、初始化、传感器读取、物理、源数据、基线容差或数据标签。真实控制器数组round-trip、拒绝覆盖、序列化/非有限失败不留下文件的针对性检查通过；加原schedule及读取修复共9项通过。
+
+新config/输出_v3仍固定原12条1568步，先三条baseline正常退出及完整独立审查，再9干预。原失败的完整raw baseline只作证据保留，不冒充正常退出，不用于跳过新基线。明确从头新采这一固定批次，不是自动重试；不会继续修改参数追赶结果。
+
+启动前新增采集器全AST恢复证明只改变输出namespace、导入write_once和最后结果JSON写入，完整dry、来源冻结及owner实际wait均保留。记录图像不属本数据阶段要求。此阶段0fit/模型/fresh，不以采集完成宣称控制目标完成。
+
+全采集器AST恢复比较也已实际通过，当前共10项检查通过；测试临时产物显式放仓库outputs/native_gripper_metadata_checks_20261025。全部owner配置/计划/测试字面路径已逐一核验存在。准备新_v3完整准入及启动。
