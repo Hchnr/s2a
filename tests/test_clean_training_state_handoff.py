@@ -14,6 +14,12 @@ from s2a.clean_training_import_bridge import ENV_PATH, ENV_SHA, load_frozen_dele
 from s2a.durable_stage_supervisor import REPO, reference
 
 
+def role_receipt_fingerprints():
+    """Dry metadata calls must preserve any already recorded production receipts."""
+    folder = state.ROOT / "role_receipts"
+    return {str(p.relative_to(folder)): reference(p)["sha256"] for p in folder.rglob("*") if p.is_file()}
+
+
 def ref(name):
     return dict(path=str(name), sha256="a" * 64)
 
@@ -112,6 +118,7 @@ def bridge_scene(tmp_path, monkeypatch):
 
 def test_actual_owner_and_sampler_call_sites_use_production_bridge(bridge_scene, monkeypatch):
     a, registered, prepared, modules, parent = bridge_scene
+    receipts_before = role_receipt_fingerprints()
     with metadata_import_scope(
         bridge_directory=state.BRIDGE_DIRECTORY,
         bundle_directory=state.BUNDLE,
@@ -160,7 +167,7 @@ def test_actual_owner_and_sampler_call_sites_use_production_bridge(bridge_scene,
     assert len(receipts) == 2
     assert {r["caller_function"] for r in receipts} == {"planned_worker", "admit_sampling"}
     assert all(r["dry_run"] is True and r["bridge_ref"] == a["bridge_ref"] for r in receipts)
-    assert not (state.ROOT / "role_receipts").exists()
+    assert role_receipt_fingerprints() == receipts_before
 
 
 def test_gpu_environment_safe_path_and_independent_audit_unbridged(bridge_scene, monkeypatch):
@@ -270,6 +277,7 @@ def test_actual_original_sampler_help_imports_production_bridge_without_model(tm
     import os
     import subprocess
 
+    receipts_before = role_receipt_fingerprints()
     prepared = json.loads((state.PREPARED_ROOT / "preparation/prepared.json").read_text())
     python = str(REPO / ".venv/bin/python") if runtime == "main" else prepared["model_config"]["model_python"]
     env = dict(
@@ -297,7 +305,7 @@ def test_actual_original_sampler_help_imports_production_bridge_without_model(tm
     assert "import 'torch'" not in out.stderr and "import 'mujoco'" not in out.stderr
     (tmp_path / f"{runtime}_help_stdout.log").write_text(out.stdout)
     (tmp_path / f"{runtime}_help_imports.log").write_text(out.stderr)
-    assert not (state.ROOT / "role_receipts").exists()
+    assert role_receipt_fingerprints() == receipts_before
 
 
 @pytest.mark.parametrize("fault", ["none", "exit7", "source_drift"])
