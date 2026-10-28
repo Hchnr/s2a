@@ -1,5 +1,7 @@
 # S2A — State to Action
 
+当前CPU执行：[同warm H12有限信赖域对照](reports/prefix_trust_region_control_20261028.md)已通过61项native QA及8条实际准入命令，两臂同源搜索已启动，完整独立复核尚未开始。合成困难例的有限搜索失败保留，生产算法和原门槛未修改。尚无本轮完整数值结果或控制资格，实际仍止于cursor8、task/grasp0；新增物理/模型/fresh0，GPU继续禁用，总目标未完成。
+
 最新CPU机制检验（2026-10-28）：[固定保存方向回缩](reports/saved_direction_backtracking_20261028.md)96条响应和完整独立复核已关闭，14/16方向、36/64内部点恢复可行下降，但原cursor9达标0/96、完整witness0。独立checker元数据错误已保留失败记录并通过隔离修复，84项native QA通过。下一步[同warm的H12有限信赖域A/B](plans/v0.0.1/prefix_trust_region_control_20261028.md)已登记、尚未执行；实际仍止于cursor8，新增物理/模型/fresh0，GPU继续禁用，总目标未完成。
 
 最近CPU接续（2026-10-28）：[H13提前/临近相位分配](reports/paired_reference_phase_20261028.md)两个同源650ms搜索与完整独立复算均正常关闭，各4000响应/1300000内步，严格分类一致、完整witness0。新相位连续10端点包含一个中点，仍仅原cursor0..8达标；原cursor9两组仍超原位置/旋转门槛。后续固定方向回缩结果见上文。新增物理/模型/fresh0，GPU继续禁用，总目标未完成。
