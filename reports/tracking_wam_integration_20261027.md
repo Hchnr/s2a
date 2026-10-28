@@ -740,3 +740,12 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 独立1131周期/1134端点/675新内环样本最大state/q/qvel差异0，324未来预测端点独立XML pose/twist及目标误差重算一致；本阶段总物理2262，模型/fresh0。三条SHA及失败候选详见报告，不能把短段达标或审核关闭当成完整控制/任务成功。
 
 下一项先做真实停止状态的首周期与未来/terminal约束归因及一周期数值消融，暂不把停止唯一归因于冻结动力学。相关4CPU测试及新增源码/CLI检查通过。GPU禁用与原18/完整12WAM/final24门槛保持，总目标未完成。
+
+
+## 实际停止点约束归因与制动时间敏感性（2026-10-28，CPU）
+
+[首周期数值归因](fk_stop_constraint_audit_20261028.md)固定实际377及自身历史，原H8候选首动作box/rate与q7制动活跃；去未来/terminal后H1仍无解。提前terminal/无terminal共146响应，旋转误差.07895/.07307rad。首版checker因对象四元数规范化误用全qpos逐位断言而wait1/reap1，失败和源码保留；v2显式核对规范化，机器人/夹爪及全部模型/约束容差保持，独立十个构型与分组余量通过，SHA f7c50e7c93d27778dd037f2174e39cd3d168cc1ab9db4d60e778c212953443fd。
+
+[投影制动时间](fk_braking_time_numeric_20261028.md)同状态H1/no-terminal仅比较.05/.025s，166响应，候选旋转.06987/.06631rad仍不符合.05rad。独立按各自tau核对全部约束及MuJoCo几何通过，SHA 41fc9373b73f8be5e54651c2a3f31a1f9cdb2f896cdfcafa40e116e8145a480c；producer/checker均actual wait0/reap0，不能用局部有限搜索失败证明物理不可达。
+
+本阶段无新物理/模型/fresh，约束模块16CPU测试通过，新增源码Ruff/format通过。下一步对已有实际命令做冻结与状态更新动力学的因果预测对照，尚未运行。实际仍仅到cursor8、task0；GPU禁用与原18/完整12WAM/final24门槛保持。

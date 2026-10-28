@@ -23,3 +23,5 @@
 入口：`execute_tracking_v5_fk_braking_time_numeric.py --launch`；新 producer/owner/supervisor 分别写 `outputs/tracking_v5_fk_braking_time_numeric_20261028`、`outputs/tracking_v5_fk_braking_time_numeric_execution_20261028`、`outputs/tracking_v5_fk_braking_time_numeric_supervisor_20261028`。独立检查器另行实现，须复算当前状态与动力学、FK误差及各候选自身 tau 下的全部约束；结果尚未执行或核验时不计为新增证据。
 
 即使存在新 H1 模型 witness，也只说明额外投影制动时间的数值敏感性。任何后续实际 CPU feedback 都需要新的明确预登记与完整未来安全验证，并继续保持原实际 .05rad 关节裕量、真实 pose 门槛及停止规则；本计划不构成实际控制安全证据。原18条资格、完整12条WAM开发、final24新初态与最终稳定任务门槛保持，任务目标尚未达成。
+
+两次新数值搜索及独立检查已actual wait0/reap0完整关闭：.05/.025s旋转误差分别.0698699/.0663121rad，均无首点witness；166响应，物理/模型/fresh0。独立十个构型和全部各自tau约束通过，未取得实际执行或任务资格。[完整结果](../../reports/fk_braking_time_numeric_20261028.md)。
