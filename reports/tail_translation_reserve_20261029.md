@@ -15,6 +15,20 @@
 - 新95源/29模块统一native CPU QA已完成：766 passed、122.69秒；两个警告来自既有SLSQP合成用例。执行句柄72990实际exit0，child实际wait/reap，无信号、无重试；新95源及driver保持原字节，旧85源SHA为同字节子集。
 - QA：`outputs/tail_translation_reserve_native_qa_20261029_lkpp55kq/result.json`，SHA `e421b3860faa93407194fad3cc57eabd56d16d6eea58bb46998a90dc62dde663`；日志SHA `02c23ad7dea004b1a499a6c49a398d831b433a815dee252e55f77b23b6bd73f6`。QA driver SHA `efc7ba7d10a9471b3f5c91b4fcfae6077133a6df7083ecaa362e8e67beefc08d`。
 - 95源Ruff/format及producer/checker/diagnose owner的三条实际CLI dry均正常完成。五个子进程均实际wait0/reap，无信号、无重试；句柄64989实际exit0。准入记录 `outputs/tail_translation_reserve_admission_20261029/result.json`，SHA `a02ef18417130cdd2aa74a299e6e9245def56c3627a388495a066626ce3c8e44`；driver SHA `f34537226acb2f50553cf27a2e322fd7e3e670d85557b7fa2e836818e2e0bb00`。producer/checker各核2435来源，新增响应/查询0。
-- 实现提交 `0503033`。14次真实局部数值响应、独立复算及完整来源闭合尚未执行，现已完成执行前准入；组件测试不作为控制效果证据。
+- 实现提交 `0503033`。14次真实局部数值响应现已完整完成；独立复算进行中，完整来源闭合尚未完成。组件测试不作为控制效果证据。
 
 旧85源及所有已执行证据保持原字节。GPU继续禁用，新增物理/world-model/fresh/参考消费为0；实际仍cursor8、task/grasp0，原18正确参考/12WAM开发/24最终留出门槛保持，总目标尚未达成。
+
+## 生产响应已关闭，独立核验进行中
+
+producer及owner已正常关闭：固定14调用、13唯一命令、4200数值内步/4369查询，优化迭代0；句柄15941实际exit0。child553959/start616882219，actual wait0/reap、无信号、无重试。
+
+| 证据 | 相对路径 | SHA256 |
+|---|---|---|
+| producer | `outputs/tracking_v5_tail_translation_reserve_20261029/verified.json` | `0305dc39480abf4512205f8628729fd789595d40aeca189343bc19779f029d70` |
+| producer owner | `outputs/tracking_v5_tail_translation_reserve_execution_20261029/result.json` | `f604b9e31b1a4aa00a576b099065334fd04aae8722ac5710165b080c2c76b6cb` |
+| check owner实际dry | `outputs/tail_translation_reserve_check_admission_20261029/result.json` | `40db64dbca0b784f2b890a91fa0e7b5e3211f4048fe4dae13494d938ec555908` |
+
+check owner实际dry句柄68393已exit0，新增响应/查询0。独立复算由句柄58216运行，尚无关闭结论。
+
+生产侧12候选中6条通过恢复资格，按原排序选择请求5（末周期y +.001）。其terminal为7.734855175988188e-5，扣除1e-8后的余量7.733855175988188e-5，超过固定10E17目标2.3626357467448553e-5。其他原安全slack最小3.267282409069594e-7；历史anchor、首末repeat及全部14条因果检查均exact。生产侧improvement_found与sufficient_reserve_restored均true；这些科学标签仍待独立复核，完整H12 witness仍0，不能计作cursor9推进或任务成功。
