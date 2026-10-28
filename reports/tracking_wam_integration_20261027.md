@@ -674,3 +674,10 @@ probe/execute_tracking_v5_quality_capped_numeric首版在原分支完成后因�
 同一真实state/profile/box/rate/关节/制动/终端/.01m/.05rad条件下，继续hold cursor8有model_witness（首模型误差0.00338706387481883m/0.0351840759719188rad），resume cursor9的非线性搜索未找到witness。没有证明全局不可行，也没有恢复推进的实际证据；不能把单次保持升级为连续任务控制成功。owner actual_wait=true/returncode0、release reaped=true/returncode0，physics/model/fresh0；两个入口ruff/format通过。outputs/tracking_v5_reference_resume_numeric_20261028/verified.json SHA 95f62cc3e0a892dbf5633cb6197e47cd19f7f5832a4e0c4bf3c676e372da4a1a。
 
 GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照，须实际执行并更新候选自身历史，逐周期记录相位与未消费目标，保持完整轨迹和原任务验收要求；原总目标未完成。
+
+
+## 保持后原参考推进的固定初值检查（2026-10-28，CPU）
+
+按[固定初值计划](../plans/v0.0.1/reference_resume_multistart_20261028.md)，在同一实际held endpoint378和自身因果历史上，保留原cursor9..16及全部原约束，分别从上一命令重复、held计划移位和原线性witness启动。三项均未找到非线性质量witness，响应数45/107/41，合计193，均非预算耗尽；不证明全局不可行，也未取得新的控制/任务资格。新增物理周期、世界模型调用及fresh案例均为0。actual wait0/reap0已核验，verified SHA `cb52615c6dfd6d51088958e95e6cab3636b5ec55b67159cf01a1ec28fe3544e8`。
+
+首版owner在探针执行前因两份已提交测试的指纹变化终止，原日志保留。v2仅明确登记测试9db6efa→2f09739的旧新SHA迁移，其余原v5源码仍按冻结指纹核验；原v5注册不修改。下一步应验证多周期保持后的真实反馈是否支持恢复推进，不在相同状态继续任意重启。GPU继续禁用，18条/WAM开发/final24门槛均不变。
