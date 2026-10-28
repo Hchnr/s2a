@@ -775,3 +775,5 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 [保留已达标前缀修复](../plans/v0.0.1/prefix_preserving_trajectory_control_20261028.md)已实现，17项solver及16项独立ledger测试通过，并在正式Python3.11/NumPy1.26/SciPy1.15环境合计33 passed。允许移动早期命令而保持原pose caps，逐点修复首失败cursor，完整安全条件及4000/60共享预算保持。v2完整关闭后的唯一CPU新搜索已正常结束4000响应/54迭代，连续预测达标点6→9，但cursor9仍11.52mm/.05758rad超原门槛，完整witness0；[新完整独立复算](prefix_preserving_trajectory_control_20261028.md)已正常关闭4000轨迹/1200000内步，严格分类及阶段账本一致。没有新action/物理/模型/fresh，实际cursor8和task0不变。原18/完整12WAM/final24与总目标保持，GPU禁用。
 
 [保存轨迹相位诊断](saved_trajectory_phase_diagnostic_20261028.md)已正常关闭并独立核对几何来源/算术：prefix selected原timed9/12、最佳网格相位仍9/12，最后三点的连续路径分数下界均>1，无法仅给保存失败轨迹换相位补救。没有新动作/响应/物理/模型/fresh；同650ms提前/临近相位分配只完成候选计划，须重新联合规划动作且保留原timed评价，prefix完整动力学checker现已正常关闭，H13实现开始但尚未运行。
+
+后续[H13提前/临近相位对照](paired_reference_phase_20261028.md)已通过81项正式环境组件/账本检查并完成两组同源搜索，两个producer及owner实际exit0/wait0/reap0关闭。各4000响应/50迭代，warm均准入但完整witness0；retimed连续10端点含一个插入中点，仍仅9个原节点合格，原cursor9仍双超原caps。early原时序前缀8、late9；不能把调速后的10端点计为新增实际推进。两组完整独立复算已启动但尚未关闭，新增物理/模型/fresh均0，GPU禁用和原最终门槛保持。

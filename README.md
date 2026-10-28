@@ -1,6 +1,6 @@
 # S2A — State to Action
 
-最新CPU接续（2026-10-28）：[H13提前/临近相位分配](reports/paired_reference_phase_20261028.md)已通过81项正式环境组件/账本检查，两个同源650ms对照均通过初始轨迹准入，独立owner正在搜索。原时序与新相位分别评价；目前没有完整结果或新增实际推进，GPU继续禁用，总目标未完成。
+最新CPU接续（2026-10-28）：[H13提前/临近相位分配](reports/paired_reference_phase_20261028.md)两个同源650ms搜索均正常结束，各4000响应/50迭代，完整witness0。新相位连续10端点包含一个中点，仍仅原cursor0..8达标；原cursor9两组仍超原位置/旋转门槛。完整独立复算进行中，新增物理/模型/fresh0，GPU继续禁用，总目标未完成。
 
 最新CPU多周期结果（2026-10-28）：[原生目标H12搜索与完整独立复核](reports/state_updated_trajectory_control_20261028.md)已关闭，4000响应确认完整witness0；[保留达标前缀修复](reports/prefix_preserving_trajectory_control_20261028.md)的新4000响应/54迭代已正常结束，连续预测达标点6→9，但cursor9仍11.52mm/.05758rad超原门槛，完整witness0。新搜索全部4000轨迹/1200000内步的独立复算已正常关闭，严格分类一致、完整witness仍0。新增物理/模型/fresh0，实际仍止于cursor8，GPU继续禁用。 [只读相位诊断](reports/saved_trajectory_phase_diagnostic_20261028.md)已完成：新selected最后三点即使另选路径相位仍超caps，不能仅重新标记时间补救；后续需重新联合规划动作。
 
