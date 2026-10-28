@@ -1,6 +1,6 @@
 # S2A — State to Action
 
-当前CPU进度：[同warm H12有限信赖域对照](reports/prefix_trust_region_control_20261028.md)两臂producer已正常关闭，4000/3148响应均prefix9、完整witness0，尚待独立资格。候选checker因旧外部mesh缺失在0查询时失败，已保留失败并登记完整资产迁移修复；96个安全副本匹配20261025资产指纹，不改数学/物理参数、不重跑producer。实际仍止于cursor8、task/grasp0；新增物理/模型/fresh0，GPU继续禁用，总目标未完成。
+当前CPU进度：[同warm H12有限信赖域对照](reports/prefix_trust_region_control_20261028.md)完整资产迁移与156项QA通过，两臂v2独立复算进行中；4000/3148个producer响应均prefix9、完整witness0，尚待独立资格。原0查询加载失败保留，96个安全资产匹配历史SHA，仅改XML文件路径。[保存差分诊断](reports/prefix_trust_saved_linearization_20261029.md)及11项QA已完成：36个非零callback线性预测贴近前缀边界，但实际保存响应全部越界，下一步检验显式完整响应回缩。实际仍cursor8、task/grasp0，新增物理/模型/fresh0，GPU禁用，总目标未完成。
 
 最新CPU机制检验（2026-10-28）：[固定保存方向回缩](reports/saved_direction_backtracking_20261028.md)96条响应和完整独立复核已关闭，14/16方向、36/64内部点恢复可行下降，但原cursor9达标0/96、完整witness0。独立checker元数据错误已保留失败记录并通过隔离修复，84项native QA通过。下一步[同warm的H12有限信赖域A/B](plans/v0.0.1/prefix_trust_region_control_20261028.md)已登记、尚未执行；实际仍止于cursor8，新增物理/模型/fresh0，GPU继续禁用，总目标未完成。
 
