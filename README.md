@@ -1,6 +1,10 @@
 # S2A — State to Action
 
-当前CPU结果：[终端单行割线外推](reports/terminal_secant_probe_20261029.md)完成655项native QA、17调用及全量独立复算、2422来源闭合。两个未拟合混合方向均未达到误差减半门槛，最大新绝对残差约2.28e-6高于原终端裕量3.20e-9；修正不采用。15个探针均未保持旧达标前缀，完整witness0。下一步固定前11周期，仅检验末周期平移能否恢复终端余量。实际仍cursor8、task/grasp0，GPU禁用，原18/12/24门槛与总目标保持。
+当前CPU结果：[末周期平移恢复终端余量](reports/tail_translation_reserve_20261029.md)的14次生产响应、隔离v2完整独立复算及2485来源闭合均已完成。6/12候选合格，选中请求5（末周期y +.001），terminal余量恢复到7.733855175988188e-5并通过原经验门槛；前11周期、旋转goal及history/repeat的exact检查通过。完整H12 witness仍0，cursor9仍11.47494mm/.05737520rad，实际仍cursor8、task/grasp0。其他安全最小值仅3.267282409069594e-7，不能称全约束鲁棒内点。
+
+原95源QA为766通过，新100源QA为796通过；v1 checker在14条复算后发生布尔数组比较异常的失败历史保留，原producer未重跑。三阶段实际合计42响应/12600内步/13107查询，新增物理/world-model/fresh0。[从恢复候选重新开始完整H12 SQP](plans/v0.0.1/restored_anchor_sqp_20261029.md)已登记、尚未执行，首次完整响应不exact即停止。GPU继续禁用，原18/12/24门槛与总目标保持。
+
+前项CPU结果：[终端单行割线外推](reports/terminal_secant_probe_20261029.md)完成655项native QA、17调用及全量独立复算、2422来源闭合。两个未拟合混合方向均未达到误差减半门槛，最大新绝对残差约2.28e-6高于原终端裕量3.20e-9；修正不采用。15个探针均未保持旧达标前缀，完整witness0；后续终端恢复结果见上文。
 
 当前CPU推进：[实际接纳点SQP](reports/accepted_point_sqp_20261029.md)搜索与完整独立复算均正常关闭：1919响应/575700数值内步、118条ray、25份anchor、27个QP和24次曲率更新全部核验，严格分类一致；仍prefix9、完整witness0。cursor9仍11.47mm/.05738rad超原caps。[固定方向导数诊断](reports/directional_derivative_consistency_20261029.md)保留v1零响应准入失败；隔离v2通过529测试及实际dry，77完整调用/76唯一命令正常关闭、witness0，全量独立复算完成77响应后因旧stencil无容差边界守卫失败；隔离check-only v3通过573测试、同77响应全量复核及2381来源闭合；全固定步长分析确认旧terminal线性预测偏差，小步长差分未显示收敛，尚无新控制解。保持原18/12/24任务门槛，实际仍cursor8、task/grasp0，GPU继续禁用。
 
