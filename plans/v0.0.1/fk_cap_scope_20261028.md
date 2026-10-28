@@ -9,3 +9,5 @@
 入口`execute_tracking_v5_fk_cap_scope_numeric.py --launch`。仅独立物理重放已关闭的actual endpoint370，使用本分支实际368/369之后的profile和上一命令/shifted warm，不借原旧分支370+。从该真实q/qvel在隔离XML mj_forward重建M/J，固定Kp/Kd与initial_joint，使用已生成chunk46 cursor2..9，先全预览后首点，各160响应，总320。每个返回模型解均用MuJoCo重算全部8点FK误差，首点模式仍完整展示未来标签。新增物理、世界模型、fresh均0；只有首点确有满足原当前/关节约束的解才考虑同一固定接口原生延续。
 
 GPU继续禁用，原18/完整12WAM开发/final24门槛不变。当前数值结果待执行。
+
+两项已actual wait0/reap0关闭：全8点无witness（154响应/10.72763s）；首点有witness（62响应/4.08452s），当前误差.00180041214m/.01581542355rad，但预测第8点cursor9旋转.07794381061rad不合格。MuJoCo核验所有返回端点FK一致。verified SHA 94e17c413bbd44c2908f93b8d3456360378ff9e8ca71e56578c67c4cd2ff6d8f，物理/模型/fresh0。[结果与下一原生验证](../../reports/fk_cap_scope_20261028.md)。
