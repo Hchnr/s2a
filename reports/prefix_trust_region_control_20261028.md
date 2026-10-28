@@ -4,7 +4,7 @@
 
 ## 当前状态与证据范围
 
-实现、61项同版本native CPU测试和8条实际准入命令全部通过，两组真实数值搜索已启动、尚无完成结果；完整独立检查待各臂正常退出后启动。不得将合成测试通过或程序准备就绪作为控制性能证据。实际仍止于原cursor8，task/grasp0；本轮新增物理、世界模型调用和fresh案例均为0。原18条正确参考、12条WAM开发及最终24条留出任务门槛保持，总目标未完成。
+两组数值搜索均已actual wait0/reap关闭，producer均报告prefix9、完整witness0；完整独立检查尚未通过。候选第一次checker在加载旧外部mesh时失败，actual wait1/reap1、0响应/查询/内步，失败保留，正在按[资产迁移修复登记](../plans/v0.0.1/prefix_trust_asset_check_repair_20261029.md)接续。实际仍止于原cursor8，task/grasp0；本轮新增物理、世界模型调用和fresh案例均为0。原18条正确参考、12条WAM开发及最终24条留出任务门槛保持，总目标未完成。
 
 候选保留原完整响应、九组约束审计、位置/旋转caps和全轨迹目标；增加每阶段最多5迭代、固定三半径、完整响应验收后重新定中心及逐请求计费记录。普通下降可以在prefix不增长时获接纳；完整H12 witness仍必须通过全部原门槛。此对照比较整套控制流，不能单独归因于半径。
 
@@ -29,6 +29,26 @@
 
 两臂producer由各自持有Popen句柄的owner执行。启动快照`outputs/prefix_trust_execution_checkpoint_20261029/producer_started.json`（SHA`d2c895f028c42eb72941f354b3a4135a41bb4cf89b19049a8233ffd4a679ea00`）记录了当次实际PID/start_ticks/PPID存活核对及两臂各600条已报告响应；这是运行中快照，不是完成或wait证据。baseline tool session为29743、candidate为87474。继续工作时必须复查这些原句柄/进程，不能因观察超时重启。
 
-两臂owner登记的1969份来源SHA映射和native QA引用完全相同。输出位于`outputs/tracking_v5_prefix_trust_{baseline,candidate}_20261028`，owner为相应`_execution_20261028`；日志为owner目录的`capture/command.log`。当前未取得producer完成、独立复核或完整witness结论，不预填预算消耗或成功数。
+两臂owner登记的1969份来源SHA映射和native QA引用完全相同。输出位于`outputs/tracking_v5_prefix_trust_{baseline,candidate}_20261028`，owner为相应`_execution_20261028`；日志为owner目录的`capture/command.log`。上述运行快照保留；两producer现均完成、实际退出0且无signal/retry。
 
-待两臂实际退出后记录响应/迭代、原cursor9误差、全H12前缀、witness数、每次接受anchor及活动约束。独立检查未关闭前不授予局部数值资格；即便获得完整模型witness，也须另行登记同初态物理pilot并独立重放，不能据此宣称实际控制或留出任务成功。
+以下为producer保存结果，**尚待完整独立复核**：
+
+| 指标 | 冻结baseline | 信赖域candidate |
+| --- | ---: | ---: |
+| 唯一完整响应 | 4000 | 3148 |
+| 数值内步/查询 | 1200000 / 1248001 | 944400 / 982177 |
+| 累计迭代/阶段 | 53 / 1 | 45 / 9 |
+| 连续达标端点 | 9 | 9 |
+| 完整H12 witness | 0 | 0 |
+| selected trace index | 1254 | 2262 |
+| cursor9位置误差 | 11.46476035 mm | 11.48335059 mm |
+| cursor9旋转误差 | .05738804160 rad | .05742253674 rad |
+| 停止原因 | 4000响应预算耗尽 | 三个固定半径均无可接纳下降 |
+
+原门槛仍为10mm/.05rad，两臂均未达到。candidate用更少响应但没有更好精度或新达标端点，不据此提升为控制方案。producer及owner SHA完整列于新修复计划；只读汇总`outputs/prefix_trust_presentation_20261029/producer_summary.json` SHA`e290a3e90e85c7c728af6de7ee596bab5318f31a82f31595ed07541703fd9445`绑定两成功owner和来源，不新增响应。producer合计7148响应/2144400内步/2230178查询。
+
+候选的6次新anchor全部来自差分探针，没有callback被接纳。cursor9最大归一化平方误差从1.324948101801降至1.318939090352，仍超过1；最后三个半径的callback都失去原prefix，主要在cursor4旋转、cursor5/8位置。最终selected #2262不同于最后anchor #1876，仅改善后续全轨迹loss，cursor9误差相同。完整selected审计的最紧非线性项为cursor8/joint index4的braking_upper，余量5.3219e-7rad；这不能反推仅有标量safety_min的其他callback具体失败关节。
+
+candidate独立checker的失败结果SHA`cc4993e6e0e2772ad4e2172910cf7f93b634b1cb94f61753ae18499f588cea47`，失败owner SHA`335ea5abf56ea58b41d653b8d5ba7953ef22fc20f2e55ec985c433a6ccdf9a84`。错误发生在MjModel加载前期，0响应/0数值内步/0查询，不能写成已完成一条重构。baseline checker仅metadata dry通过，未实际执行。原XML与1969来源未变，但这些指纹没有覆盖当时外部资产加载字节；已找到96个安全副本全部匹配20261025已存资产SHA，修复只迁移路径并保留完整模型，不裁剪几何、改物理参数或重跑producer。
+
+下一步先通过新的隔离加载器完成全部7148响应独立复算，再据保存ledger分析未收敛步的线性预测与实际前缀误差，避免盲目扩大搜索。当前无完整witness，不进入物理pilot；独立检查本身也不能授予实际控制或留出任务资格。
