@@ -14,7 +14,7 @@
 
 新增纯stdlib模块及CLI；不导入LIBERO、torch、MuJoCo、OpenGL或ctypes，不执行setup.py、ldd、动态加载器、外部脚本或模型。命令cwd固定本仓库，空CUDA/LD，单线程，所有新增文件在仓库outputs内。
 
-新独占目标为`outputs/native_runtime_path_snapshot_20261029`。复制安全根的`LIBERO/libero`完整非缓存文件树及LICENSE，保留双层namespace布局；排除`__pycache__`、`.pyc/.pyo`，不复制.git、训练数据集或外部路径。保留包中已有init_files作为文件快照，不将其计为固定manifest初态的实际输入。另复制单个OSMesa文件。最多10000个源文件、1GiB总源字节，执行前预检、流式复制、每个源和目标SHA一致、结束时重新枚举及核验；拒绝symlink、路径穿越、特殊文件和目标覆盖。发生中途失败保留独占目录，不自动重试。
+新独占目标为`outputs/native_runtime_path_snapshot_20261029`。复制安全根的`LIBERO/libero`完整非缓存文件树及LICENSE，保留双层namespace布局；排除`__pycache__`、`.pyc/.pyo`及工具缓存目录，不复制.git、训练数据集或外部路径。保留包中已有init_files作为文件快照，不将其计为固定manifest初态的实际输入。另复制单个OSMesa文件。源inventory与包含元数据/原始备份/派生配置的完整输出分别不得超过10000文件、1GiB，执行前预检、流式复制、每个源和目标SHA一致、结束时重新枚举及核验；拒绝symlink、路径穿越、特殊文件和目标覆盖。发生中途失败保留独占目录，不自动重试。
 
 保存原manifest及原config字节副本；原runtime对象只替换`libero_root/libero_config/osmesa_library`三项。config内`benchmark_root/bddl_files/init_states/assets/datasets`五键精确映射到快照根，其他参数不改。`datasets`只映射至明确未填充的空目录，不读取原data目录，也不宣称数据已复制。独立文件核验须反向比较原对象并检查精确inventory，防止重算manifest SHA掩盖非路径参数变化、文件遗漏或附加文件。
 
