@@ -15,7 +15,7 @@
 
 ## 当前状态与结果解释
 
-两个producer均已正常结束，各4000唯一完整H13响应、50共享迭代、1300000数值内步、1352001次query，均因共享响应预算耗尽而停止，完整witness为0。预检和solver初值恰好复用一次：每组4001次predict调用、1次cache hit；合计8000响应/100迭代/2600000内步/2704002次query。early搜索耗时733.140833s，late721.805304s；两组进程部分并行，不用壁钟差异比较方法效率。以下性能数字仍是生产归档及保存数据算术，完整独立动力学复算正在进行。
+两个producer均已正常结束，各4000唯一完整H13响应、50共享迭代、1300000数值内步、1352001次query，均因共享响应预算耗尽而停止，完整witness为0。预检和solver初值恰好复用一次：每组4001次predict调用、1次cache hit；合计8000响应/100迭代/2600000内步/2704002次query。early搜索耗时733.140833s，late721.805304s；两组进程部分并行，不用壁钟差异比较方法效率。完整独立动力学复算现已正常关闭，两组严格分类、selected及阶段账本均确认一致；以下性能失败未因独立审核通过而改变。
 
 | 指标 | early：5→6加50ms | late：8→9加50ms |
 | --- | --- | --- |
@@ -29,7 +29,7 @@
 
 表中误差和前缀均针对selected。10个新端点包含一个插入中点，不能写成原参考推进到cursor9：两组仍仅原cursor0..8达标，原cursor9在物理endpoint index10失败。原H12 prefix selected在同节点的误差为0.011516282m/0.05758048rad；多给50ms并重新优化仅略缩小该局部缺口，两组依旧同时超过原0.01m/0.05rad。early原时序前缀还从原H12的9降为8，不能省略这种退化或把新相位评分替代原时序。有限局部搜索未找到解，不构成物理不可行证明。
 
-用两组各4000条保存TCP误差重算三套评分（每组12000个轨迹/合同组合），归一化平方误差差异0、严格pass/prefix标签无分歧；另从归档误差和安全标记重算prefix优先排序，selected索引一致。所有安全候选中达到新相位prefix10的只有early232、late23条，原节点prefix≥10均0；即使含不安全探针，两组保存原节点prefix的最大值也仍为9。该算术审阅没有重新运行动力学，不代替正在进行的全量独立复算。
+用两组各4000条保存TCP误差重算三套评分（每组12000个轨迹/合同组合），归一化平方误差差异0、严格pass/prefix标签无分歧；另从归档误差和安全标记重算prefix优先排序，selected索引一致。所有安全候选中达到新相位prefix10的只有early232、late23条，原节点prefix≥10均0；即使含不安全探针，两组保存原节点prefix的最大值也仍为9。该算术审阅没有重新运行动力学；全量独立动力学复算是下文另行闭合的证据。
 
 selected末段的原节点误差如下，单元格为位置mm/旋转rad，原caps为10mm/0.05rad：
 
@@ -45,9 +45,9 @@ selected末段的原节点误差如下，单元格为位置mm/旋转rad，原cap
 
 归档机制线索：selected最紧动态项仍为原cursor6的第五关节制动上界，early/late slack分别为1.64696e-6/8.94544e-6rad；原cursor9的Z命令分别接近-0.9999941/-0.9976502下界。该节点第六关节裁剪内步从原H12的14/25降至4/25和1/25，但位置/旋转仍双超限，不能归因于末点力矩裁剪一项。整个selected裁剪内步为early50/325、late36/325（原H12为69/300），不是无裁剪解。两组末callback均破坏已达标前缀；忽略安全和先前精度，保存候选在原cursor9的最小最大归一化平方误差仍为1.237896/1.222024，且这些候选原节点前缀只剩5/4。
 
-后续优先审视已保存单轴差分组中的pose下降方向、前缀精度及box/rate冲突，再据证据选择步长接受或更早q5姿态/速度分配的干预。现有trace只保存TCP误差和全局safety minimum，不能据它声称已得到每个关节约束的独立差分梯度或KKT证明；若需要完整约束向量，须另登记有限复算。当前不追加搜索预算、改变起点或继续试速度，先完成正在运行的独立资格。
+后续优先审视已保存单轴差分组中的pose下降方向、前缀精度及box/rate冲突，再据证据选择步长接受或更早q5姿态/速度分配的干预。现有trace只保存TCP误差和全局safety minimum，不能据它声称已得到每个关节约束的独立差分梯度或KKT证明。完整独立资格现已关闭；不追加本次搜索预算、改变起点或继续试速度，完整约束的有限复算另行登记。
 
-后续[保存差分诊断](saved_trajectory_differences_20261028.md)现已执行：H12/early/late分别54/50/50个完整差分组均与紧邻非拟合候选配对；原cursor9可行基点主分析仅10/5/1条，均无L∞≤.01样本。前两组8/10、4/5预测改善但实际target变差，支持另登记有限回缩检验，不能据此认定缩步必然找到解。该只读诊断没有新增响应或改变本次搜索；H13完整动力学资格仍独立等待checker关闭。
+后续[保存差分诊断](saved_trajectory_differences_20261028.md)现已执行：H12/early/late分别54/50/50个完整差分组均与紧邻非拟合候选配对；原cursor9可行基点主分析仅10/5/1条，均无L∞≤.01样本。前两组8/10、4/5预测改善但实际target变差，支持另登记有限回缩检验，不能据此认定缩步必然找到解。该只读诊断没有新增响应或改变本次搜索；其执行时H13 checker仍运行的快照原样保留，当前完整复算已关闭。
 
 ## 正常退出及独立复算
 
@@ -67,8 +67,21 @@ selected末段的原节点误差如下，单元格为位置mm/旋转rad，原cap
 | [late registration](../outputs/tracking_v5_paired_reference_phase_late_20261028/registration.json) | `ccf7cdf6ec3a295c7d0dac732379b63616a2ce5620f183d993b64ead93462149` |
 | [late owner result](../outputs/tracking_v5_paired_reference_phase_late_execution_20261028/result.json) | `02cafc5370235432d9905dd06968cbb3fb95b1714d6fe073c6589fa5d3f35bfe` |
 
-两个完整独立checker已分别由新owner唯一启动，时限各5400s、空CUDA/LD和数值库单线程；首次核查同PID/start_ticks/parent实际状态R。early工具会话81399，child3240665/start613804281/parent3240423；late会话15578，child3241251/start613807509/parent3241135。输出分别为`outputs/tracking_v5_paired_reference_phase_{case}_check_20261028`，不覆盖生产结果。每组必须核对全部4000响应/1300000内步/1352001查询、严格双合同分类、原节点映射和阶段账本，并取得owner实际wait/reap；当前尚无完整独立资格。
+两个完整独立checker各唯一执行、正常关闭，时限各5400s、空CUDA/LD和数值库单线程。根工具会话81399与15578均实际取得exit0；early child3240665/start613804281/parent3240423，late child3241251/start613807509/parent3241135均有一致launch、actual wait0/reap0、无信号和无原始错误，进程已消失。没有重试或覆盖。
 
-登记的命令拒绝和动态warm拒绝分支本次都未触发。两组完整搜索仍无witness，故不进入13周期物理pilot；先关闭全量独立复算，再依据完整约束/误差证据决定下一干预，不追加当前预算或悄悄增加起点。
+每组独立复算全部4000响应/1300000内步/1352001查询/52000预测周期，三套合同严格分类分歧均为空；安全轨迹1294/678、selected3440/2396、closest2705/2316与50次阶段迭代账本一致，完整witness均0。全trace TCP误差最大差分别3.21271e-15/3.94129e-15，安全minimum均2.66454e-15。四个完整候选名称warm/initial/selected/closest实际只有三个唯一命令，其中保存q/v/torque可逐项比较：early最大内步q/v/torque差4.99600e-16/7.16094e-15/1.26654e-12，late1.55431e-15/6.82787e-15/1.02318e-12。不能声称全部4000条有旧q/v数组可比较。
+
+原rate违规探针分别217/1473条，未获得安全资格。原生JIT与纯Python AST goal的独立诊断最大差均8.94070e-8，分别涉及38554/37895个周期；这与producer对独立原生JIT的匹配误差分开保留。每组checker1883条引用及owner1882项来源，合并去重1890项由root重新hash全部匹配；另一只读审阅连同退出/结果凭据共核1904个唯一文件，绑定与来源均通过。
+
+| 独立复算归档 | SHA256 |
+| --- | --- |
+| [early verified](../outputs/tracking_v5_paired_reference_phase_early_check_20261028/verified.json) | `4c0bf31490e701b2a804a26fd8280c0af463c80dc90bf577dcbc78403225a54e` |
+| [early registration](../outputs/tracking_v5_paired_reference_phase_early_check_20261028/registration.json) | `ef610a617b98763923090d37a938820ca1b3d0cc36e058c8f81e7471c10de11b` |
+| [early owner result](../outputs/tracking_v5_paired_reference_phase_early_check_execution_20261028/result.json) | `1dae567731040e13d825bc025d4c9fdceafefd04416ba8b7ad448c4b2bf357b5` |
+| [late verified](../outputs/tracking_v5_paired_reference_phase_late_check_20261028/verified.json) | `91d27e2bd73bcc8e6d46cd5a4594f0658de53c2760671e80c6cf66dbc97e2e99` |
+| [late registration](../outputs/tracking_v5_paired_reference_phase_late_check_20261028/registration.json) | `91131d64c32db9d50c3f42908f64fecc0abdb6de613b52d30bf44d3346ad7789` |
+| [late owner result](../outputs/tracking_v5_paired_reference_phase_late_check_execution_20261028/result.json) | `393eb2ee31e4f2d385f8375d1b30c945e4b24e324fa74dc2bb2efa5975471613` |
+
+登记的命令拒绝和动态warm拒绝分支本次都未触发。两组完整搜索仍无witness，故不进入13周期物理pilot。[固定方向回缩检验](../plans/v0.0.1/saved_direction_backtracking_20261028.md)已登记但尚未执行：全部16方向、六个固定比例、每侧96响应，保留完整约束和端点匹配，不追加本次搜索预算或悄悄增加起点。
 
 当前新增物理、世界模型调用和fresh案例均为0，实际仍止于cursor8，task/grasp0。若找到完整模型witness，仍须另登记13周期原生物理及独立重放；本计划不自动派发动作。原18条正确参考、12条WAM开发、最终24条新初态和全部任务门槛保持，总目标未完成。
