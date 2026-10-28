@@ -1,6 +1,6 @@
 # 固定锚点方向导数一致性：CPU诊断
 
-固定网格v2 producer与隔离v3完整独立复核均已正常关闭：77完整调用、76唯一命令、72轴旧FD、39差分对及历史anchor全部核验，2381来源闭合通过；完整H12 witness0。旧terminal线性预测明显偏离中等步长的正向响应，更小步长的差分并未收敛；不能直接把缩小FD或中心差分作为已验证修复。v1/v2失败记录原样保留。实际仍cursor8、task/grasp0，GPU禁用，原18正确参考/12WAM开发/24最终留出门槛保持。
+固定网格v2 producer与隔离v3完整独立复核均已正常关闭：77完整调用、76唯一命令、72轴旧FD、39差分对及历史anchor全部核验，2381来源闭合通过；完整H12 witness0。旧terminal线性预测明显偏离中等步长的正向响应，更小步长的差分未显示收敛；不能直接把缩小FD或中心差分作为已验证修复。v1/v2失败记录原样保留。实际仍cursor8、task/grasp0，GPU禁用，原18正确参考/12WAM开发/24最终留出门槛保持。
 
 按[执行前登记](../plans/v0.0.1/directional_derivative_consistency_20261029.md)，固定旧trace1819命令锚点与stages24–26的三个方向，使用13个预定步长、先正后负，最后强制重复anchor。总计80计划请求；非法box/rate请求保留原因并跳过，合法命令即使预测joint/pose失败也完整记录。不优化、不裁剪、不替换控制器、不自适应追加请求。
 
@@ -70,7 +70,7 @@ v1源码、QA、失败准入及日志均保留原字节。v2入口仅替换为�
 
 ## 全固定网格的保存数据分析
 
-[完整分析](../outputs/directional_derivative_v3_analysis_20261029/result.json) SHA `717c5d4758ada20cdaeddf6ec7a120ff42a065fa19693333666afcb84524d4f0`，原session23100实际exit0；先读取并重哈希完整闭合来源，再只对保存值计算，不新增响应。全80请求中75合法grid、3非法grid、初末anchor各1；forward/central可用36对，backward39对。非法正侧来自stage25的h=.01、stage26的h=.01/.005，原因包含rate上下界；没有裁剪或补采样。所有请求实际位移非零。
+[完整分析](../outputs/directional_derivative_v3_analysis_20261029/result.json) SHA `717c5d4758ada20cdaeddf6ec7a120ff42a065fa19693333666afcb84524d4f0`，原session23100实际exit0；先读取并重哈希完整闭合来源，再只对保存值计算，不新增响应。全80请求中75合法grid、3非法grid、初末anchor各1；forward/central可用36对，backward39对。非法正侧来自stage25的h=.01、stage26的h=.01/.005，原因包含rate上下界；没有裁剪或补采样。全部78个grid请求实际位移非零；初末anchor请求位移为零。
 
 终端行明确为`terminal[0] = -final predicted joint_velocity[6]`，完整安全向量索引4368；anchor值`1.320428817e-8`。旧72轴单边FD给三个单位方向的预测分别为`-3.20428818e-7`、`-6.40857639e-7`、`-1.28171513e-6`。以下列出全部13个登记步长的实际前向/中心终端差分；`—`表示该正侧命令非法，不能计算。分母仍为原h/2h，不按实际位移重新归一化。
 
