@@ -9,3 +9,5 @@
 数值入口`execute_tracking_v5_feasibility_first_numeric.py --launch`。仅使用已独立复核的实际held endpoint378、真实前缀9周期及自身held377更新的10周期因果历史，固定原hold8与resume9两目标，不追加初值重启，合计最多320响应。原搜索结果作为归档对照；检查实测q/qvel和历史逐项相同。先XML-only CPU局部模型搜索，新增物理/模型调用/fresh均0；有原下一点完整witness才考虑新原生动作验证。没有witness不等于不可行，不退化为放宽精度、关节或时序。
 
 GPU持续禁用，原18/完整12WAM开发/final24门槛全部保持，当前数值结果待执行。
+
+数值已actual wait0/reap0完整关闭：hold8有witness（83响应/55迭代），resume9无witness（155响应/52迭代）；首周期可行性阶段正常结束但超限目标.12822907265，最好已检查线性可行推进尝试旋转.07532084839rad超过.05rad，不接收。verified SHA fddcff00e253ad7a6ec9b335bf192f0c20088bf42b548a3a1973390c6f5b21e2，新增物理/模型/fresh0。[完整结果与限制](../../reports/feasibility_first_recovery_20261028.md)。新候选及相关原规划/IK/XML FK测试共10 passed in5.38s。
