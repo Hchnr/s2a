@@ -15,11 +15,11 @@
 - 新95源/29模块统一native CPU QA已完成：766 passed、122.69秒；两个警告来自既有SLSQP合成用例。执行句柄72990实际exit0，child实际wait/reap，无信号、无重试；新95源及driver保持原字节，旧85源SHA为同字节子集。
 - QA：`outputs/tail_translation_reserve_native_qa_20261029_lkpp55kq/result.json`，SHA `e421b3860faa93407194fad3cc57eabd56d16d6eea58bb46998a90dc62dde663`；日志SHA `02c23ad7dea004b1a499a6c49a398d831b433a815dee252e55f77b23b6bd73f6`。QA driver SHA `efc7ba7d10a9471b3f5c91b4fcfae6077133a6df7083ecaa362e8e67beefc08d`。
 - 95源Ruff/format及producer/checker/diagnose owner的三条实际CLI dry均正常完成。五个子进程均实际wait0/reap，无信号、无重试；句柄64989实际exit0。准入记录 `outputs/tail_translation_reserve_admission_20261029/result.json`，SHA `a02ef18417130cdd2aa74a299e6e9245def56c3627a388495a066626ce3c8e44`；driver SHA `f34537226acb2f50553cf27a2e322fd7e3e670d85557b7fa2e836818e2e0bb00`。producer/checker各核2435来源，新增响应/查询0。
-- 实现提交 `0503033`。14次真实局部数值响应现已完整完成；独立复算进行中，完整来源闭合尚未完成。组件测试不作为控制效果证据。
+- 实现提交 `0503033`。14次真实局部数值响应现已完整完成；独立复算14条后发生元数据比较异常，完整来源闭合尚未完成。组件测试不作为控制效果证据。
 
 旧85源及所有已执行证据保持原字节。GPU继续禁用，新增物理/world-model/fresh/参考消费为0；实际仍cursor8、task/grasp0，原18正确参考/12WAM开发/24最终留出门槛保持，总目标尚未达成。
 
-## 生产响应已关闭，独立核验进行中
+## 生产响应已关闭，独立核验失败记录保留
 
 producer及owner已正常关闭：固定14调用、13唯一命令、4200数值内步/4369查询，优化迭代0；句柄15941实际exit0。child553959/start616882219，actual wait0/reap、无信号、无重试。
 
@@ -29,6 +29,14 @@ producer及owner已正常关闭：固定14调用、13唯一命令、4200数值�
 | producer owner | `outputs/tracking_v5_tail_translation_reserve_execution_20261029/result.json` | `f604b9e31b1a4aa00a576b099065334fd04aae8722ac5710165b080c2c76b6cb` |
 | check owner实际dry | `outputs/tail_translation_reserve_check_admission_20261029/result.json` | `40db64dbca0b784f2b890a91fa0e7b5e3211f4048fe4dae13494d938ec555908` |
 
-check owner实际dry句柄68393已exit0，新增响应/查询0。独立复算由句柄58216运行，尚无关闭结论。
+check owner实际dry句柄68393已exit0，新增响应/查询0。独立复算句柄58216实际exit1，完成14条数值复算后在元数据审计失败，详情如下。
 
 生产侧12候选中6条通过恢复资格，按原排序选择请求5（末周期y +.001）。其terminal为7.734855175988188e-5，扣除1e-8后的余量7.733855175988188e-5，超过固定10E17目标2.3626357467448553e-5。其他原安全slack最小3.267282409069594e-7；历史anchor、首末repeat及全部14条因果检查均exact。生产侧improvement_found与sufficient_reserve_restored均true；这些科学标签仍待独立复核，完整H12 witness仍0，不能计作cursor9推进或任务成功。
+
+## 独立检查器失败与隔离修复登记
+
+v1 checker完整复算14条/4200内步/4369查询，原数值比较及strict分类通过，随后在完整historical entry的`clipped`布尔数组比较时发生TypeError。原独立audit默认比较器会转float，实际checker传入的比较器直接相减；组件QA未覆盖该实际接线。ledger及fresh独立因果/恢复核验尚未完成，不能宣称原生产结论已完整独立通过。
+
+失败checker SHA `f7582560bc9dce92f56632b8c7688c9b4403b50ce23be4dc1d68b818d3600751`；失败owner SHA `22a0be80635c2023c2cc95b2a088eb0c9b51aa5e2c362c7b4a52c97eae88da8f`；完整traceback日志 `outputs/tracking_v5_tail_translation_reserve_check_execution_20261029/capture/command.log` SHA `876e35928e2245bf60f093cf22cd2e1abd24af0e23506bafb1ad234b6d3df7a9`。child569716/start616909863实际wait1/reap，无信号、无自动重试；原95源和产物全部保留。
+
+[check-only v2计划](../plans/v0.0.1/tail_translation_check_v2_20261029.md)新增类型明确的比较及真实保存answer回归。仅布尔/整数标签改用exact类型、shape和值比较，浮点沿原冻结比较器和容差；不重跑producer、不改候选/选择/E17/控制参数。新5源、100源/30模块QA及两实际CLI dry通过后，在独占v2目录再完整复算同14条。包括失败成本共42完整响应/12600内步/13107查询；此处为登记预算，v2尚未执行。
