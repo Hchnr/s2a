@@ -1,6 +1,6 @@
 # 固定锚点方向导数一致性：CPU诊断
 
-v1实现及503项原生CPU QA已完成，但实际producer dry在创建模型前因复用了额外warm裁剪守卫而失败；真实固定网格响应尚未执行。[隔离v2修正](../plans/v0.0.1/directional_derivative_v2_admission_20261029.md)保持原命令字节及登记的1e-12容差，正在验证。此前[SQP完整独立复算](accepted_point_sqp_20261029.md)已关闭，仍无完整H12 witness；实际仍cursor8、task/grasp0，GPU禁用，原18正确参考/12WAM开发/24最终留出门槛保持。
+v1实际producer dry在创建模型前因复用了额外warm裁剪守卫而失败；[隔离v2修正](../plans/v0.0.1/directional_derivative_v2_admission_20261029.md)保持原命令字节及登记的1e-12容差，529项原生CPU QA及全部实际dry已通过，唯一v2诊断owner已启动，尚无终态结果。此前[SQP完整独立复算](accepted_point_sqp_20261029.md)已关闭，仍无完整H12 witness；实际仍cursor8、task/grasp0，GPU禁用，原18正确参考/12WAM开发/24最终留出门槛保持。
 
 按[执行前登记](../plans/v0.0.1/directional_derivative_consistency_20261029.md)，固定旧trace1819命令锚点与stages24–26的三个方向，使用13个预定步长、先正后负，最后强制重复anchor。总计80计划请求；非法box/rate请求保留原因并跳过，合法命令即使预测joint/pose失败也完整记录。不优化、不裁剪、不替换控制器、不自适应追加请求。
 
@@ -27,3 +27,11 @@ v1实现及503项原生CPU QA已完成，但实际producer dry在创建模型前
 只读保存值检查确认：anchor1819首行第1/2轴距严格ratebox分别超出`1.1102230246251565e-16`/`7.216449660063518e-16`，最大相邻rate为`0.25000000000000067`。这些仍符合本计划原1e-12命令容差。直接复用旧solver warm的零变化clip合同是入口错误；不能以裁剪改变原anchor来通过它，也不能据503项合成QA宣称实际准入成功。
 
 v1源码、QA、失败准入及日志均保留原字节。v2入口仅替换为完整四组box/rate原slack审查，拒绝超过原容差的命令且不裁剪，源与输出独立。checker只改变入口/evidence导入，完整数值重放与差分审计复用冻结代码；不放宽原joint/pose标签。修正增加6来源和1测试模块，后续须重新完成68来源/21模块QA与实际dry才可运行唯一诊断。
+
+## 已关闭的v2 QA与准入
+
+[v2 QA](../outputs/directional_derivative_v2_native_qa_20261029_yuinc_wl/result.json) SHA `8499d64a179c44c0b6364e588cd9d64c87b3d981aec3d07654cf898d36a5673a`，[日志](../outputs/directional_derivative_v2_native_qa_20261029_yuinc_wl/pytest.log) SHA `c3070191f86759d2d07326f9fc3665922a53ca9ba1663ab9064370925e539b4d`。原session50656实际exit0，529 passed、2条既有warning，55.96秒；68源码前后不变，21模块。新增26项验证ULP内及5e-13的rate超差仍按原1e-12容差保留原命令与signed-zero字节，超容差在首次查询前拒绝；计账、cache、owner生命周期和完整QA绑定保持。
+
+[v2实际准入](../outputs/directional_derivative_v2_admission_20261029/result.json) SHA `d79a36473d979601ed79f9444416629e78210ff116e016f2018d6caa2296c44c`，原session8783实际exit0。61份Python来源Ruff/format及producer/checker/diagnose-owner三个实际dry均wait/reap0，无信号或自动重试；68源码不变，producer/checker各2348引用、owner2350引用，新响应/查询/物理/模型/fresh0。
+
+唯一v2诊断通过同一QA后启动于session18894，固定600秒子进程上限、完整80请求和末尾repeat合同。此时尚无producer正常终态或独立复算结果；不从启动成功推断导数趋势、完整witness或控制收益。实现提交`fdd2bb1`，此前v1实现`d254a05`、失败及修正计划`092c71c`均保留。
