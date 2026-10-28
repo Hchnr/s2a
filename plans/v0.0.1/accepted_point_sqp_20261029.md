@@ -28,6 +28,6 @@ QP行缩放固定为`scale_i=max(1,max(abs(A_i)),abs(b_i))`。对scaled slack不
 
 先用有解析解的约束QP验证乘子符号/缩放、bounds、active epigraph、冗余dual与不可行/未获证书处理；用解析曲率验证BFGS secant、负曲率阻尼、SPD、实际缩短ray、拒绝与cursor切换状态、部分FD预算。再做真实合成响应的整体求解测试。测试不构建物理环境，不引入旧未来观测，不把合成成功计入控制结果。正式native QA、Ruff/format及producer/checker实际dry和来源闭包全部通过后才允许唯一真实数值搜索。
 
-新的独立checker需重建全部唯一响应、ray和anchor审计，并从完整FD关联重建每阶段QP/近似乘子证书、实际s和Lagrangian secant及BFGS更新；不能调用生产核心作为唯一算法正确性依据。新增账本和组件QA不替代全量数值复算或实际控制。执行/检查入口尚未就绪时不运行真实响应。
+新的独立checker需重建全部唯一响应、ray和anchor审计，并从完整FD关联重建每阶段QP/近似乘子证书、实际s和Lagrangian secant及BFGS更新；不能调用生产核心作为唯一算法正确性依据。trace另保存完整非线性安全向量，answer保存previous_command并与原completed367命令精确绑定。算法代数核验从保存原精度TCP误差/安全向量重建；各向量另外按原数值复算容差与独立响应比较，严格分类仍须完全一致。独立Python与原JIT浮点路径的微小差异不被冒称为完全相同的FD/乘子，但不得因此放宽原caps或跳过数值复算。新增账本和组件QA不替代全量数值复算或实际控制。执行/检查入口尚未就绪时不运行真实响应。
 
 仍无完整H12 witness，禁止物理pilot。已关闭的运行时文件快照只具备文件资格；实际动态加载、bootstrap和原18/12/24目标均未完成。GPU恢复需用户明确通知。
