@@ -2,7 +2,7 @@
 
 actual368 的 H12 单次搜索已正常结束，但没有找到满足全部原条件的轨迹。4000 个唯一完整轨迹响应耗尽预算，完成 53 次迭代；producer 记录 406 个动作/关节合规候选、完整 witness 为 0。selected 的最大位置误差 0.02255697719 m、最大旋转误差 0.11277641832 rad，均超过原 0.01 m/0.05 rad。没有派发新 action，`control_qualified=false`，实际仍止于此前分支的 cursor8，未取得 cursor9 实际推进或新任务成功。
 
-当前证据状态：producer 和其 owner 均 `complete=true/passed=true`、实际 wait0/reap0；原独立 checker 在完成500/4000条后因检查开销过高被明确停止，已实际wait/reap、child returncode=-15，独立核验未完成。下述候选数值、分类及约束来自 producer 产物及其只读重算摘要，不能将本报告草稿视为完整独立核验已经关闭。原checker源码及失败/停止产物保留；另行登记的v2只优化相同检查的成功路径开销，已开始从头核验完整4000条，当前尚无v2完整结果。
+当前证据状态：producer及其owner、v2独立checker及其owner均`complete=true/passed=true`，实际wait0/reap0、无信号。v2从头独立复算全部4000轨迹/1200000内步/1248001次MuJoCo查询，确认406个仅动作/关节合规候选、完整witness0，selected/closest索引2224/151及53迭代一致。原独立v1检查只完成500/4000条即因开销被明确停止，actual wait/reap=-15；该失败/停止产物和源码原样保留，未并入v2通过计数。数值复核通过只确认本轮计算与判定一致，不能将无witness提升为控制或任务成功。
 
 本次执行按[事先登记计划](../plans/v0.0.1/state_updated_trajectory_control_20261028.md)，承接[停止点 H1 搜索失败](state_updated_stop_control_20261028.md)，转到更早的 actual368 状态，唯一 H12 窗口覆盖已生成 chunk46 的 cursor0..11，明确包含 cursor9 及其后两点。唯一 warm 是旧同状态 H12 的 `answer.planned_commands`，不追加随机起点、参数扫描或其它初始化；seed42。producer/wrapper/solver/owner 提交为 `ef67eee`，独立 checker 提交为 `d976e84`。
 
@@ -68,7 +68,7 @@ selected所有约束组的最小余量和活跃数量如下。动作box/rate余�
 | [producer owner result](../outputs/tracking_v5_state_updated_trajectory_control_execution_20261028/result.json) | `82b813eb1914ae81f516bcac5b7e214fd9d4ea8c1fe4ceff7aef186eea241075` |
 | [producer owner registration](../outputs/tracking_v5_state_updated_trajectory_control_execution_20261028/registration.json) | `3c4ad79552b75f16cee60268565e4ceab21ac76e6d6f74cd6cb5d4f0de35fce5` |
 
-producer launch绑定child PID3012108/start_ticks612685767；`actual_wait=true/returncode=0`，release `reaped=true/returncode=0/signal_sent=false/original_error=null`，同一进程身份和结果/注册/launch/exit/release引用SHA核对一致。`CUDA_VISIBLE_DEVICES`、`LD_LIBRARY_PATH`均为空，无自动重试。两个owner注册各固定1754个来源，包含已执行计划及新旧实现；本次文档核查已重新计算全部来源SHA，均匹配。该来源核对不替代尚未完成的独立数值验证。
+producer launch绑定child PID3012108/start_ticks612685767；`actual_wait=true/returncode=0`，release `reaped=true/returncode=0/signal_sent=false/original_error=null`，同一进程身份和结果/注册/launch/exit/release引用SHA核对一致。`CUDA_VISIBLE_DEVICES`、`LD_LIBRARY_PATH`均为空，无自动重试。原producer及原v1 checker两个owner注册各固定1754个来源，包含已执行计划及新旧实现；本次文档核查已重新计算全部来源SHA，均匹配。该来源核对本身不替代下述v2全量独立数值验证。
 
 原独立checker注册 [registration.json](../outputs/tracking_v5_state_updated_trajectory_control_check_20261028/registration.json)，SHA `01b87d56a48d3f3028219d426ec2e6085c80c987df06e2d058c20c3fd59b8fbd`；其owner注册SHA `c65621a0170bae90cf465c4dd73f00b176aa02c1106278d789c5f581c77f46e7`。launch child PID3028290/start_ticks612754824，CUDA/LD均为空。登记范围为独立原生AST+真实Numba JIT、每次resetData/mj_forward、完整4000轨迹/1200000内步的跨周期重算，并核对initial/selected/closest完整rollout、全部原约束、排名、来源及预算。
 
@@ -82,10 +82,23 @@ producer launch绑定child PID3012108/start_ticks612685767；`actual_wait=true/r
 
 按[新v2执行前登记](../plans/v0.0.1/state_updated_trajectory_check_v2_20261028.md)，新增独立源码 `scripts/check_tracking_v5_state_updated_trajectory_control_v2.py`，输出使用全新 `outputs/tracking_v5_state_updated_trajectory_control_v2_check_20261028`；新owner上限5400秒，以完整范围的实测成本留出检查时间，不改变任何控制/任务门槛。v2运行前要求原attempt的明确停止决策和同一child实际wait/reap证据，原producer仍必须完整通过；这不是无记录重启。
 
-v2仅把每次query的有限同shape逐位检查改为 `np.array_equal`，把已检查有限/shape并计算最大绝对差的compare改为 `max_abs_difference <= tolerance`，替代成功路径的通用 `np.testing` 开销。全部scalar qpos/qvel和每个quaternion的原归一化条件仍在每次查询检查；原1e-10状态/几何/指标和1e-8力矩容差、所有动态方程、跨period递推、全trace分类/排序/预算保持。AST对照确认整个数值try主体除query检查外相同，包括重建、完整候选比较、约束和选择逻辑；compare仍在判定前累计最大差。执行前比较逻辑验证已完成：`tests/test_trajectory_audit_comparisons.py` 13项CPU测试通过（1.64s；临时目录`outputs/pytest_trajectory_audit_comparisons_20261028_001`），覆盖1e-10/1e-8正负ULP边界、不同量级、空数组/shape、NaN/inf/差值溢出、精确状态与四元数归一化；matching NaN/inf从旧exact接受变为新检查更早拒绝，未放宽有限数值接受范围。尚需正式v2全量核验，不借用原500条部分进度拼接结果。
+v2仅把每次query的有限同shape逐位检查改为 `np.array_equal`，把已检查有限/shape并计算最大绝对差的compare改为 `max_abs_difference <= tolerance`，替代成功路径的通用 `np.testing` 开销。全部scalar qpos/qvel和每个quaternion的原归一化条件仍在每次查询检查；原1e-10状态/几何/指标和1e-8力矩容差、所有动态方程、跨period递推、全trace分类/排序/预算保持。AST对照确认整个数值try主体除query检查外相同，包括重建、完整候选比较、约束和选择逻辑；compare仍在判定前累计最大差。执行前比较逻辑验证已完成：`tests/test_trajectory_audit_comparisons.py` 13项CPU测试通过（1.64s；临时目录`outputs/pytest_trajectory_audit_comparisons_20261028_001`），覆盖1e-10/1e-8正负ULP边界、不同量级、空数组/shape、NaN/inf/差值溢出、精确状态与四元数归一化；matching NaN/inf从旧exact接受变为新检查更早拒绝，未放宽有限数值接受范围。随后正式v2已完成全部范围，未借用原500条部分进度拼接结果。
 
-v2源码/owner/比较测试已由`75d2719`提交，正式CPU运行已启动。owner登记1761来源，registration SHA `f0663f7ac197fc6db881d647b7716eba4fe5157d7b17f73f04595f1bac395406`；launch SHA `238d7abef6369ad711b4ee06b4576a4f71a454bea0261b77c4cca13438d669db`，child PID3061337/start_ticks612914299/parent3061134，CUDA/LD均为空。root实际持有会话6677，日志进度只能作为运行观察；必须同一会话最终退出、完整verified和owner result核对通过后才关闭。当前没有完整结果SHA、actual wait0或reap0结论。
+v2源码/owner/比较测试提交为`75d2719`。本次独立重算48000个预测控制周期及1200000内步，每个period25次内环查询加1次端点查询，另加起点查询，共1248001次；全部4000条逐条核对TCP误差、约束分类、预算和排序，三份完整initial/selected/closest轨迹另核对全部q/v/goal/pose/twist/力矩/clipping。全trace TCP误差最大差2.86576318e-15、nonlinear safety_min差5.16955389e-15；三份完整候选q/v最大差5.55111512e-16/3.71924713e-15、requested/applied torque最大差9.20152843e-13。原状态/几何/指标1e-10与力矩1e-8容差保持。三份完整候选的q/v差值不能冒充另外3997份未归档完整状态数组的逐项比较。
 
-下一机制已按[保留达标前缀修复计划](../plans/v0.0.1/prefix_preserving_trajectory_control_20261028.md)实现，solver/17项CPU组件测试提交`58440fa`。新solver保留已达标前缀的原caps，所有72命令仍自由，每阶段仅修复首失败点；完整H12安全条件、全12点最终精度和共享4000/60预算不变。17项测试通过2.21s（`outputs/pytest_prefix_response_review_20261028_03`），包括真实SLSQP可移动前缀反例、严格阈值、假success拒绝、全H12机制对应的合成安全约束及跨阶段缓存/预算。它们不是本case的数值可行性或实际控制证据；正式新搜索尚未执行，入口必须等待本轮v2完整关闭。
+独立原生JIT与旧纯Python AST的方向增量矩阵在36123个预测period有差异，最大1.19209290e-7；这是两种原生实现路径的单列诊断，不能拿纯Python近似替换正式JIT。producer与独立JIT重算之间的完整goal最大差7.77156117e-16，实际367历史latch核对差0。1030条rate违规差分/搜索探针全部计入响应预算、保留失败判定；没有据结果删候选或放宽任何门槛。
 
-本轮新增物理周期、世界模型调用和fresh case均为0。需先关闭新v2完整独立核验；即使数值复核通过，无witness仍意味着不能按本计划进入原生实际推进。新方案仅改变有明确反例支持的优化策略，不在本轮增加搜索起点/响应预算、削弱原caps或略过cursor9。GPU继续禁止，原18条正确参考、完整12条WAM开发、最终24条新初态及总任务目标保持。
+| 完整v2独立证据 | SHA256 |
+| --- | --- |
+| [checker verified](../outputs/tracking_v5_state_updated_trajectory_control_v2_check_20261028/verified.json) | `06750c34880e06b87332cbd79e9608f2bc7142a31cdef37ce2d8c2961d5a0f08` |
+| [checker registration](../outputs/tracking_v5_state_updated_trajectory_control_v2_check_20261028/registration.json) | `42017e408e05a04c8a486e49b7d65c8f59b026c68fcfa2451367c63930c8dcde` |
+| [owner result](../outputs/tracking_v5_state_updated_trajectory_control_v2_check_execution_20261028/result.json) | `927ea1c224dafd6a1ae64416f00a72600ef61b5c641c189bd8dbc317185d2d4e` |
+| [owner registration](../outputs/tracking_v5_state_updated_trajectory_control_v2_check_execution_20261028/registration.json) | `f0663f7ac197fc6db881d647b7716eba4fe5157d7b17f73f04595f1bac395406` |
+
+owner launch SHA `238d7abef6369ad711b4ee06b4576a4f71a454bea0261b77c4cca13438d669db`，child PID3061337/start_ticks612914299/parent3061134；CUDA/LD均为空、无自动重试。root持有的会话6677已实际取得owner exit0；child actual_wait=true/returncode0，release reaped=true/returncode0/signal_sent=false/original_error=null，身份连续。1761项owner来源、原producer1754项来源及checker1820引用均重新核对SHA一致，去重共1828路径。原v1的外部SIGTERM与失败退出记录保留，不能用v2成功掩盖。
+
+下一机制已按[保留达标前缀修复计划](../plans/v0.0.1/prefix_preserving_trajectory_control_20261028.md)实现，solver/17项CPU组件测试提交`58440fa`，实验入口/独立checker/16项ledger测试提交`263ce1d`。新solver保留已达标前缀的原caps，所有72命令仍自由，每阶段仅修复首失败点；完整H12安全条件、全12点最终精度和共享4000/60预算不变。17项开发环境测试通过2.21s，16项ledger测试通过1.44s；两组又在正式Python3.11.15/NumPy1.26.4/SciPy1.15.3环境合计33 passed/9.90s，来源及实际exit0见[持久QA](../outputs/prefix_native_qa_20261028_vm4v8_yg/result.json)，SHA `738878bd5b9ed52a524ccafe19cf6b4e3bd8278412bac258a1b14e2e089a37f2`。这些合成组件和账本检查不构成本case的数值或实际控制资格。
+
+v2完整闭环后，唯一新prefix producer已在CPU实际启动，root会话90660，child PID3117933/start_ticks613192333/parent3117803；输出`outputs/tracking_v5_prefix_preserving_trajectory_control_20261028`。当前仍在计算，无完整新搜索结果、独立数值资格或新物理执行。初始化、原生预测闭包和原数据保持；本轮只检验修复顺序是否能保住原连续6点并完成后续全部点。
+
+本轮新增物理周期、世界模型调用和fresh case均为0。v2完整核验关闭但无witness，因此本轮不进入原生实际推进；新修复方案若有完整候选仍须独立复算，再另行登记实际前向。原18条正确参考、完整12条WAM开发、最终24条新初态及总任务目标保持，GPU继续禁止。
