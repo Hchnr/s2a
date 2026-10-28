@@ -51,6 +51,40 @@ SHA256 4a42c9647372bfce84f63bde93bb066d0ee06d7157cce9d8cef99271ee3539ab
 1. **Bootstrap 环境依赖未闭合。** `make_environment` 先从 BDDL 构建 `OffScreenRenderEnv` 并 reset，然后才加载记录 XML。因此对应任务 BDDL、初始化模型 XML 及其额外资产也必须可用并绑定来源。当前96资产快照只证明最终完整数值模型的资产闭包，不证明 bootstrap 所需模型闭包。[环境构建:72](../src/s2a/libero_simulation.py#L72)、[最终模型快照验证:142](../src/s2a/prefix_trust_asset_repair.py#L142)
 2. **OSMesa 传递库依赖未闭合。** 已核对目标 `.so` 的历史字节身份，尚未验证它在新路径下的全部动态依赖与实际加载。不能把文件存在和 SHA 匹配写成运行时加载成功。
 
+## Task0 bootstrap 输入的有界补查
+
+本次补查仅沿原 task0 的构建入口读取源码、JSON 和对应 BDDL，未构建环境或遍历数据集。历史引用核对范围为原 manifest、`outputs/wam_checkpoint_acceptance_20261019v2/samples/manifest.json`、`outputs/terminal_development_20261025/historical_oracle_xml_migration.json` 及仓库 configs。下文“未找到历史绑定”限于这个已检查范围。
+
+**本实验的 task0 是 `libero_goal` 任务8，即 bowl/plate。** 原 runtime 登记 `task_suite="libero_goal"`、`task_id=8`；`make_environment` 据此取任务，并用 `get_libero_path("bddl_files") / task.problem_folder / task.bddl_file` 构造首次环境。安全 LIBERO 副本中 `libero/libero/benchmark/__init__.py:84,111,188` 的默认 task order 为 identity，`libero/libero/benchmark/libero_suite_task_map.py:35` 的索引8是 `put_the_bowl_on_the_plate`；这两份源码与原 manifest 登记 SHA 一致。[原任务参数:2074](../outputs/tracking_preview_wam_development_v5_20261028/development/cases/task0_init0_s42_terminal058/simulation/8400_masked_position_hold/task0_init0_s42/manifest.json#L2074)、[构建入口:74](../src/s2a/libero_simulation.py#L74)
+
+对应 BDDL 安全候选及本次实算指纹为：
+
+```text
+/share-mixed/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/LIBERO/libero/libero/bddl_files/libero_goal/put_the_bowl_on_the_plate.bddl
+SHA256 358b7781437e412c67d6a7648c1c28796b6b1bf117a25e61316cb8dfeb940e5b
+```
+
+这是**当前文件指纹，尚缺历史字节身份绑定**。不能将它追认为原运行时已验证 SHA。[已有 restore 配置的 task_bddl:99](../configs/wam_video_pose_restore_20261020.json#L99)实际是 `put_the_wine_bottle_on_the_rack.bddl`，不能用于证明本任务的 bowl/plate BDDL。
+
+**恢复初态已有精确历史绑定，不依赖 `.pruned_init`。** 构建入口直接消费原 manifest `record.initial_state` 内的79个 float64，并在恢复前验证其字节 SHA；本次按小端 float64 重算得到 `5239d6a1c021e69231f3ef91a1ad93bd5b626981c003140b29150c0c9713a702`，与原登记完全一致。`get_task_init_states()` 是 LIBERO 的另一个接口，本入口没有调用；也不读取 runtime 的 episodes fixture、原 HDF5 或 expert.npy。这些来源可保留 provenance，但不能误列为此固定命令 pilot 的直接 bootstrap 输入。[初态校验与恢复:97](../src/s2a/libero_simulation.py#L97)、[原初态 SHA:2241](../outputs/tracking_preview_wam_development_v5_20261028/development/cases/task0_init0_s42_terminal058/simulation/8400_masked_position_hold/task0_init0_s42/manifest.json#L2241)
+
+原 manifest 的整体 SHA 同时绑定 runtime 参数：seed42、libero_goal任务8、256渲染分辨率、`camera_observations=False` 和 `refresh_controller_after_restore=True`。入口将 seed+trial 用于 random、NumPy 和环境，并在恢复后刷新 controller。需要保留一个默认值边界：它不把 runtime 的 `control_fps/max_steps` 传入构造器；实际20Hz和 horizon1000来自已登记 `libero/libero/envs/env_wrapper.py:27` 的默认参数，而非这两个 runtime 字段。[构建与种子:75](../src/s2a/libero_simulation.py#L75)、[恢复后刷新:105](../src/s2a/libero_simulation.py#L105)、[原 runtime:2091](../outputs/tracking_preview_wam_development_v5_20261028/development/cases/task0_init0_s42_terminal058/simulation/8400_masked_position_hold/task0_init0_s42/manifest.json#L2091)
+
+首次构建还会读取**默认 OSC JSON**：`env_wrapper.py:47` 请求 `OSC_POSE`，robosuite 根据名称加载 `controllers/config/osc_pose.json`。当前仓库文件 SHA 为 `07f3a8b41d3eecc8a36700a85bd8207ee3fbc36eb73f6a2248340c96770d1e45`，同样尚未在上述历史引用范围找到字节身份绑定。其当前值包括 kp150、阻尼比1、输入±1、输出平移±.05/旋转±.5、fixed impedance、uncoupled/control_delta开启及无 interpolation；源码 SHA 匹配并不自动绑定这个外部 JSON。[加载路径:76](../outputs/libero_env311/lib/python3.11/site-packages/robosuite/controllers/controller_factory.py#L76)、[当前配置:1](../outputs/libero_env311/lib/python3.11/site-packages/robosuite/controllers/config/osc_pose.json#L1)
+
+此次对相关四份源码再次实算，均匹配原 manifest 的历史登记：
+
+| 源码（LIBERO 路径相对于安全 LIBERO 根） | 已登记且当前匹配的 SHA256 |
+| --- | --- |
+| `libero/libero/benchmark/__init__.py` | `4ce6edbb00b3280692f2e2b2e8a14bf6e2d5878965b0484a386c0355a867ecc5` |
+| `libero/libero/benchmark/libero_suite_task_map.py` | `0c950df0a785aa55de968bb38ccd865d2017f71ddbe6f48cfd05ac0742b6d62d` |
+| `libero/libero/envs/env_wrapper.py` | `a782fb76c9792268d28979474fe72849e1e98ada49c8e997a65359a8d6b6acd0` |
+| 仓库 `outputs/libero_env311/lib/python3.11/site-packages/robosuite/controllers/controller_factory.py` | `1dab09602c41dcf3749bed43dd3bc4e098040cabc8f7fbfd030d9008bd3d5776` |
+
+历史依据分别见 [任务选择源码:4140](../outputs/tracking_preview_wam_development_v5_20261028/development/cases/task0_init0_s42_terminal058/simulation/8400_masked_position_hold/task0_init0_s42/manifest.json#L4140)、[环境包装源码:4154](../outputs/tracking_preview_wam_development_v5_20261028/development/cases/task0_init0_s42_terminal058/simulation/8400_masked_position_hold/task0_init0_s42/manifest.json#L4154)、[controller factory:4187](../outputs/tracking_preview_wam_development_v5_20261028/development/cases/task0_init0_s42_terminal058/simulation/8400_masked_position_hold/task0_init0_s42/manifest.json#L4187)。原 tool contract 文件亦匹配历史登记 `6fcaed3fe499aacb15d03170d002b1c897091481a0022db5f2922c06320a3a0c`，但它不是默认 OSC JSON 的替代证明。[tool contract 登记:6](../outputs/tracking_preview_wam_development_v5_20261028/development/cases/task0_init0_s42_terminal058/simulation/8400_masked_position_hold/task0_init0_s42/manifest.json#L6)
+
+因此，新增明确缺口为本任务 BDDL 和默认 OSC JSON 的历史身份；bootstrap XML及资产闭包也仍未核验。首次 BDDL 构建和 reset 先于记录 XML 恢复，已有最终模型96资产快照不能覆盖或免除这一步。以上仅是只读输入调查，没有取得新的运行时或物理资格。
+
 ## 完整 witness 后的最小物理接入建议
 
 采用新的独占 producer/checker/owner 输出，不修改已执行旧入口。可复用 `probe_tracking_v5_fk_first_long_native.py` 的原初态、seed42、368条历史命令重放及观测调度，从自然执行恢复 actual368 的控制器、夹爪和接触求解历史；逐端点核对原历史至368。[原前缀重放:117](../scripts/probe_tracking_v5_fk_first_long_native.py#L117)
