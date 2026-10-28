@@ -2,6 +2,8 @@
 
 本报告收敛已完成的只读源码、元数据、路径存在性及 SHA256 调查，供后续接续使用。没有建立新运行时，没有导入仿真、加载模型或执行物理周期，没有取得新的物理控制资格。已执行旧源码、配置、计划与结果保持不变；GPU 继续禁用。
 
+后续独立阶段已完成[仓库内运行时文件快照](native_runtime_path_snapshot_20261029.md)，105项native QA、实际dry及唯一文件准备均正常关闭。本报告保留原调查时点的结论；文件迁移仍未验证实际加载、bootstrap或物理控制。
+
 **只有原 actual368 / H12 的完整模型 witness、全部响应独立核验及对应 owner 正常关闭均通过后，才可另行登记新的 CPU 物理 pilot。** 有限搜索下降、prefix 增长或部分 checker 日志均不满足这个前置。本报告不授权启动物理或扩大当前实验预算。[本轮计划:3](../plans/v0.0.1/prefix_optimization_reserve_20261029.md#L3)、[完整 witness 判定:163](../src/s2a/prefix_callback_backtracking_plan.py#L163)
 
 ## 原始来源与安全路径候选
