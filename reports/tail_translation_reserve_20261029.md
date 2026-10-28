@@ -12,6 +12,9 @@
 
 - 分项native CPU测试：core22项、独立audit20项、owner/执行接线69项通过，共111项；Ruff/format通过。owner最终scope句柄83672实际exit0，69 passed in17.30s。
 - 执行测试包含逐调用初态重置、强制完整末repeat、第15调用拒绝、原E17全15点来源、1ULP安全buffer变化、低于数值比较容差的因果变化，以及命令仍合法但扰动周期错误时0query拒绝。
-- 新95源/29模块统一QA与实际CLI dry尚未执行；14次真实局部数值响应、独立复算及完整来源闭合均尚未执行。组件测试不作为控制效果证据。
+- 新95源/29模块统一native CPU QA已完成：766 passed、122.69秒；两个警告来自既有SLSQP合成用例。执行句柄72990实际exit0，child实际wait/reap，无信号、无重试；新95源及driver保持原字节，旧85源SHA为同字节子集。
+- QA：`outputs/tail_translation_reserve_native_qa_20261029_lkpp55kq/result.json`，SHA `e421b3860faa93407194fad3cc57eabd56d16d6eea58bb46998a90dc62dde663`；日志SHA `02c23ad7dea004b1a499a6c49a398d831b433a815dee252e55f77b23b6bd73f6`。QA driver SHA `efc7ba7d10a9471b3f5c91b4fcfae6077133a6df7083ecaa362e8e67beefc08d`。
+- 95源Ruff/format及producer/checker/diagnose owner的三条实际CLI dry均正常完成。五个子进程均实际wait0/reap，无信号、无重试；句柄64989实际exit0。准入记录 `outputs/tail_translation_reserve_admission_20261029/result.json`，SHA `a02ef18417130cdd2aa74a299e6e9245def56c3627a388495a066626ce3c8e44`；driver SHA `f34537226acb2f50553cf27a2e322fd7e3e670d85557b7fa2e836818e2e0bb00`。producer/checker各核2435来源，新增响应/查询0。
+- 实现提交 `0503033`。14次真实局部数值响应、独立复算及完整来源闭合尚未执行，现已完成执行前准入；组件测试不作为控制效果证据。
 
 旧85源及所有已执行证据保持原字节。GPU继续禁用，新增物理/world-model/fresh/参考消费为0；实际仍cursor8、task/grasp0，原18正确参考/12WAM开发/24最终留出门槛保持，总目标尚未达成。
