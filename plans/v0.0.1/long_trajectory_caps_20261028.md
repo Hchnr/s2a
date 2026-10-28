@@ -7,3 +7,5 @@
 数值入口`execute_tracking_v5_long_trajectory_caps_numeric.py --launch`，探针同前缀。预先固定实际causal-error分支step368，校验独立XML q/qvel/SITE速度及原历史profile，分别8/12/16点。使用同一原8点warm plan，长窗口仅重复其最后命令延长，动作rate保持；每项相同160响应/60迭代，合计最多480响应。目标取已生成chunk46 cursor0..H-1，时间间隔仍.05s，实测M/J及原控制器initial_joint相同，不拼接不同实际状态、不重设物理起点。
 
 XML和已记录当前动力学上的局部冻结模型搜索，新增物理、模型调用与fresh均0，不宣称真实未来误差、碰撞或控制资格。有完整模型witness才考虑原生执行；失败不是全局不可行证明。GPU继续禁用，原18/完整12WAM开发/final24门槛不变。当前结果待执行。
+
+已actual wait0/reap0关闭：8点witness，12/16未找到witness，分别2/124/149响应，合计275。16点未保存线性可行尝试但LP可行，不证明不可行。verified SHA b9ff7959c6be6308fd11220134e895230328579283708687aa4da002daa969ef。[完整结果](../../reports/long_trajectory_caps_20261028.md)。下一候选核验并选择线性可行起点，保持原约束/预算。
