@@ -11,3 +11,5 @@
 数值入口`execute_tracking_v5_fk_consistent_trajectory_numeric.py --launch`，同一实际368、同一当前机器人M/J/q/qvel/历史profile与已生成chunk46，固定8/12/16三窗口、原warm重复末命令延长，最多480响应。与原长窗口的实际q/qvel/history逐项一致。记录真实计算耗时及FK查询/缓存数；每个返回witness另外用独立XML raw-state FK核验全部端点pose、world SITE twist及TCP误差。新增物理、模型调用、fresh均0。只有完整合规模型解才考虑同一接口原生前向验证，不能把搜索/协议通过写成执行或任务成功。
 
 GPU持续禁用，原18/完整12WAM开发/final24门槛全部保持。当前数值结果待实际执行。
+
+数值及MuJoCo交叉核验均已actual wait0/reap0关闭：8点完整witness（71响应/4.5847s），12/16无witness（160/114响应）；8点最大误差.00247193504m/.02400348397rad、全部端点FK一致。36构型MuJoCo姿态差≤2.55e-15、J差≤1.78e-15。numeric/check verified SHA分别443e1661345459ecc4a91a468971e49ed332371c3b8e470d7e0ae98667326b84、679a0f119a8d05300442921f29caa4f2a42e24440f2d00d463ba4266cd581cb1。物理/模型/fresh0，不取得实时/执行/任务资格。[完整结果与下一原生反馈](../../reports/fk_consistent_trajectory_20261028.md)。
