@@ -4,7 +4,7 @@
 
 ## 当前状态与证据范围
 
-两组数值搜索均已actual wait0/reap关闭，producer均报告prefix9、完整witness0；完整独立检查尚未通过。候选第一次checker在加载旧外部mesh时失败，actual wait1/reap1、0响应/查询/内步，失败保留。[资产迁移修复登记](../plans/v0.0.1/prefix_trust_asset_check_repair_20261029.md)对应的完整编译及156项QA现已通过，两臂v2独立复算正在运行。实际仍止于原cursor8，task/grasp0；本轮新增物理、世界模型调用和fresh案例均为0。原18条正确参考、12条WAM开发及最终24条留出任务门槛保持，总目标未完成。
+两组数值搜索及全部7148响应的v2独立复算均已actual wait0/reap关闭；严格标签一致，确认两臂均prefix9、完整witness0。候选第一次checker在加载旧外部mesh时失败，actual wait1/reap1、0响应/查询/内步，失败保留。[资产迁移修复登记](../plans/v0.0.1/prefix_trust_asset_check_repair_20261029.md)对应的完整编译及156项QA通过，96资产完整模型复算现已完成。实际仍止于原cursor8，task/grasp0；本轮新增物理、世界模型调用和fresh案例均为0。原18条正确参考、12条WAM开发及最终24条留出任务门槛保持，总目标未完成。
 
 候选保留原完整响应、九组约束审计、位置/旋转caps和全轨迹目标；增加每阶段最多5迭代、固定三半径、完整响应验收后重新定中心及逐请求计费记录。普通下降可以在prefix不增长时获接纳；完整H12 witness仍必须通过全部原门槛。此对照比较整套控制流，不能单独归因于半径。
 
@@ -31,7 +31,7 @@
 
 两臂owner登记的1969份来源SHA映射和native QA引用完全相同。输出位于`outputs/tracking_v5_prefix_trust_{baseline,candidate}_20261028`，owner为相应`_execution_20261028`；日志为owner目录的`capture/command.log`。上述运行快照保留；两producer现均完成、实际退出0且无signal/retry。
 
-以下为producer保存结果，**尚待完整独立复核**：
+以下为producer保存结果，**现已由完整v2独立复核确认**：
 
 | 指标 | 冻结baseline | 信赖域candidate |
 | --- | ---: | ---: |
@@ -51,7 +51,7 @@
 
 candidate独立checker的失败结果SHA`cc4993e6e0e2772ad4e2172910cf7f93b634b1cb94f61753ae18499f588cea47`，失败owner SHA`335ea5abf56ea58b41d653b8d5ba7953ef22fc20f2e55ec985c433a6ccdf9a84`。错误发生在MjModel加载前期，0响应/0数值内步/0查询，不能写成已完成一条重构。baseline checker仅metadata dry通过，未实际执行。原XML与1969来源未变，但这些指纹没有覆盖当时外部资产加载字节；已找到96个安全副本全部匹配20261025已存资产SHA，修复只迁移路径并保留完整模型，不裁剪几何、改物理参数或重跑producer。
 
-新的隔离加载器正在执行全部7148响应独立复算；并行完成的[保存ledger诊断](prefix_trust_saved_linearization_20261029.md)定位了未收敛步的线性预测与实际前缀偏差，避免盲目扩大搜索。当前无完整witness，不进入物理pilot；独立检查本身也不能授予实际控制或留出任务资格。
+新的隔离加载器已完成全部7148响应独立复算；并行完成的[保存ledger诊断](prefix_trust_saved_linearization_20261029.md)定位了未收敛步的线性预测与实际前缀偏差。下一步按[callback完整响应回缩](prefix_callback_backtracking_20261029.md)检验有限新候选。当前无完整witness，不进入物理pilot；独立检查本身也不能授予实际控制或留出任务资格。
 
 ## 完整资产修复与v2准入（2026-10-29）
 
@@ -66,3 +66,14 @@ candidate独立checker的失败结果SHA`cc4993e6e0e2772ad4e2172910cf7f93b634b1c
 v2两臂输出独占新目录，仍须分别独立重构4000和3148响应并实际wait/reap关闭。上述准入记录生成时尚未启动正式v2；随后两臂已按原5400s预算启动，数值资格仍待定，原完整witness0和实际cursor8/task0/grasp0保持。
 
 运行中快照`outputs/prefix_trust_asset_execution_checkpoint_20261029/checkers_started.json` SHA`e74d7fbaf402ab615a84af9310fb96aef7701529be21ebc695055fab5cab163b`已核对两臂真实/proc PID/start_ticks/PPID、CPU单线程及空CUDA/LD。该次快照各575条已报告通过；它不是全量完成或wait凭据。baseline tool session4563、child3562544/start614887704；candidate session51662、child3562548/start614887718。两owner登记2197份来源SHA映射相同；baseline登记SHA`3e1f9073aba9522f837b42824d819446be3f2cf0a914793b5cf282abe2f98a77`、candidate登记SHA`389a0d2ca37f8748b104172052275272c90026cb159e9745910049e900bac107`。接续必须观察原句柄，不因观察超时重启；最终还须校验完整结果、严格分类、实际wait/reap及来源未变。
+
+## v2完整关闭（2026-10-29）
+
+上述两个原句柄现均实际退出0，不再是运行中状态。baseline完整4000响应/1200000内步/1248001查询，candidate完整3148响应/944400内步/982177查询；两臂严格标签分歧均为空、完整witness均为0。initial/selected/closest完整保存轨迹已核验，candidate全部7份anchor审计亦通过。
+
+| 凭据 | baseline SHA256 | candidate SHA256 |
+| --- | --- | --- |
+| `outputs/tracking_v5_prefix_trust_{case}_check_v2_20261029/verified.json` | `ed151a7c7682e2c53d23589e6ead03307cea65803c1f3887cb065b4a7360a8f1` | `366f91ca28331a283268360cb61253ad163c6807a655e003fe2dac1b02616751` |
+| `outputs/tracking_v5_prefix_trust_{case}_check_v2_execution_20261029/result.json` | `7d592bb548871c6f7d1724e921c9d002d55db295891eda651d1a7e73fc75152b` | `6c905dc12e82fac0e762814f651665ece08d54982e8a17c87dd0694b22025fca` |
+
+原`closed_owner`与`finish`分别重验2205个去重引用；两owner的2197份来源映射和同一native QA逐项一致。launch与原PID/start_ticks绑定，capture actual wait/release reaped均为0，无信号、原始错误或自动重试。数值复算使用相同完整96资产快照，没有回写旧路径或重跑producer。结果仅确立局部模型和搜索账本证据，不授予实际控制或任务成功。
