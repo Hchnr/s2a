@@ -52,3 +52,15 @@
 candidate独立checker的失败结果SHA`cc4993e6e0e2772ad4e2172910cf7f93b634b1cb94f61753ae18499f588cea47`，失败owner SHA`335ea5abf56ea58b41d653b8d5ba7953ef22fc20f2e55ec985c433a6ccdf9a84`。错误发生在MjModel加载前期，0响应/0数值内步/0查询，不能写成已完成一条重构。baseline checker仅metadata dry通过，未实际执行。原XML与1969来源未变，但这些指纹没有覆盖当时外部资产加载字节；已找到96个安全副本全部匹配20261025已存资产SHA，修复只迁移路径并保留完整模型，不裁剪几何、改物理参数或重跑producer。
 
 下一步先通过新的隔离加载器完成全部7148响应独立复算，再据保存ledger分析未收敛步的线性预测与实际前缀误差，避免盲目扩大搜索。当前无完整witness，不进入物理pilot；独立检查本身也不能授予实际控制或留出任务资格。
+
+## 完整资产修复与v2准入（2026-10-29）
+
+修复实现已提交`4484bc8`。新增完整资产快照、扩展来源准入、仅两处可逆AST转换的v2 checker及其5400s进程owner；原已执行source、测试、计划和失败结果未修改。新增文件与原实现共18份来源绑定同一native QA：`outputs/prefix_trust_asset_native_qa_20261029_fsj1vuyh/result.json` SHA`0430be2247cfee440062d7b236d374686f4bfad093286719a9925fb62f4451a5`，156 passed/19.58s、actual wait0、来源不变。两条SciPy warning仍来自保留的困难合成例。
+
+一次性准入记录：`outputs/prefix_trust_asset_admission_20261029/result.json` SHA`92475d48eecd99d4a9a704421795cab519c9e31553d162eb57278756453d3358`。16个Python文件的Ruff检查与格式、snapshot dry、唯一完整编译、两臂checker与owner dry共8条命令均actual wait0，无信号和自动重试；18份来源及QA指纹一致。driver本身、逐命令日志/退出码/PID均保存，新响应、查询、数值内步、物理步、世界模型调用和fresh案例均0。
+
+完整资产快照为`outputs/prefix_trust_asset_snapshot_20261029/manifest.json` SHA`c9eaaca963a82f504ed38e67df847fc54c144d030f660be52f6439db0b7b3566`：99个file引用、96资产逐项匹配历史SHA，原XML副本与路径逆替换均字节一致。所有file引用显式命名，无include；资产文件编号不会改变MuJoCo默认名称。安全外部源只读、旧路径未恢复。
+
+唯一编译结果为同目录`compile.json` SHA`a0bbbbdfe379feeb4f9c2b83c7f1e66e9aa95d884bcfb19fd5131439f8dbe5ed`。完整MuJoCo2.3.7模型具有nq41/nv37/nu9、38 bodies、17 joints、240 geoms、83 meshes、18 textures、29 sites，Euler2ms；仅MjModel创建，未执行forward或step。Python3.11.15/NumPy1.26.4，空CUDA/LD及单线程CPU环境固定。此编译准入不补称producer加载时逐资产SHA，也不代表完整数值检查通过。
+
+v2两臂输出独占新目录，仍须分别独立重构4000和3148响应并实际wait/reap关闭。当前准入已完成、正式v2尚未启动，数值资格待定；原完整witness0和实际cursor8/task0/grasp0保持。
