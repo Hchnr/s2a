@@ -773,3 +773,5 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 原独立checker执行500/4000条后明确终止，实际wait/reap=-15及来源保留；v2只减少相同数值条件的断言开销，13项比较测试通过，从头完整复算4000轨迹/1200000内步/1248001查询，actual wait0/reap0、无信号。全trace TCP差最大2.87e-15，三份完整候选q/v/力矩差5.55e-16/3.72e-15/9.20e-13；仅完整候选才有原q/v数组可逐项比较。verified SHA `06750c34880e06b87332cbd79e9608f2bc7142a31cdef37ce2d8c2961d5a0f08`，1761 owner源及1820引用全部SHA一致。原失败attempt不覆盖或并入通过计数，独立通过没有改变完整witness0的性能失败。
 
 [保留已达标前缀修复](../plans/v0.0.1/prefix_preserving_trajectory_control_20261028.md)已实现，17项solver及16项独立ledger测试通过，并在正式Python3.11/NumPy1.26/SciPy1.15环境合计33 passed。允许移动早期命令而保持原pose caps，逐点修复首失败cursor，完整安全条件及4000/60共享预算保持。v2完整关闭后的唯一CPU新搜索已正常结束4000响应/54迭代，连续预测达标点6→9，但cursor9仍11.52mm/.05758rad超原门槛，完整witness0；[新完整独立复算](prefix_preserving_trajectory_control_20261028.md)进行中，尚无完整数值资格。没有新action/物理/模型/fresh，实际cursor8和task0不变。原18/完整12WAM/final24与总目标保持，GPU禁用。
+
+[保存轨迹相位诊断](saved_trajectory_phase_diagnostic_20261028.md)已正常关闭并独立核对几何来源/算术：prefix selected原timed9/12、最佳网格相位仍9/12，最后三点的连续路径分数下界均>1，无法仅给保存失败轨迹换相位补救。没有新动作/响应/物理/模型/fresh；同650ms提前/临近相位分配只完成候选计划，须重新联合规划动作且保留原timed评价，等待prefix完整动力学checker关闭。
