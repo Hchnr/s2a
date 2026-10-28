@@ -8,4 +8,8 @@
 
 当前完成：新core27项、独立ledger32项、执行接线34项，共 **93项 native CPU 组件测试通过**，14.64秒，句柄36020实际exit0；新9个Python文件Ruff/format通过。覆盖实际入口失败保存、合法ULP越界命令不裁剪、大整数/布尔类别严格比较、完整初始 witness 只收费一次、0query非法输入、实际状态/latch重置、部分失败计账、owner输出来源闭合及完整replay资格。算法有限变更与独立原数学、全trace复算循环有AST逆核验，未据此声称新控制效果。
 
-统一110源/33模块 native QA、实际CLI准入和正式搜索尚未执行。GPU继续禁用；新增物理/world-model/fresh/参考消费0，实际仍cursor8、task/grasp0，原18正确参考/12WAM开发/24最终留出门槛及总目标不变。
+实现已提交 `aab996c`。统一110源/33模块 native CPU QA 已完成：**889 passed，132.76秒**，句柄82866实际exit0；2个警告均来自既有 SLSQP 合成用例。child实际wait0/reap、无信号、无重试；新110源与driver原字节保持，旧100源SHA为逐项相同子集。
+
+QA产物为 `outputs/restored_anchor_sqp_native_qa_20261029_hjcgopjj/result.json`，SHA `6f77550d6df96e8ff56e9e97250e89081fd3a529d66f825cd55767d462c757ca`；日志SHA `4169482514acee808a3d198fb7a8de1ab95376c4cc64fa0fbffd44ded3f6a5e7`。driver `outputs/restored_anchor_sqp_native_qa_driver_20261029.py` SHA `294bc0c88b6c2c14ef318a9975d9b2dbd07c4c07f3bc371ef5fb8507da737e58`。
+
+实际CLI准入正在执行，正式搜索尚未启动。GPU继续禁用；新增物理/world-model/fresh/参考消费0，实际仍cursor8、task/grasp0，原18正确参考/12WAM开发/24最终留出门槛及总目标不变。
