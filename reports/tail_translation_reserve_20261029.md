@@ -40,3 +40,10 @@ v1 checker完整复算14条/4200内步/4369查询，原数值比较及strict分�
 失败checker SHA `f7582560bc9dce92f56632b8c7688c9b4403b50ce23be4dc1d68b818d3600751`；失败owner SHA `22a0be80635c2023c2cc95b2a088eb0c9b51aa5e2c362c7b4a52c97eae88da8f`；完整traceback日志 `outputs/tracking_v5_tail_translation_reserve_check_execution_20261029/capture/command.log` SHA `876e35928e2245bf60f093cf22cd2e1abd24af0e23506bafb1ad234b6d3df7a9`。child569716/start616909863实际wait1/reap，无信号、无自动重试；原95源和产物全部保留。
 
 [check-only v2计划](../plans/v0.0.1/tail_translation_check_v2_20261029.md)新增类型明确的比较及真实保存answer回归。仅布尔/整数标签改用exact类型、shape和值比较，浮点沿原冻结比较器和容差；不重跑producer、不改候选/选择/E17/控制参数。新5源、100源/30模块QA及两实际CLI dry通过后，在独占v2目录再完整复算同14条。包括失败成本共42完整响应/12600内步/13107查询；此处为登记预算，v2尚未执行。
+
+
+v2修复提交 `5496c42`，前置计划/失败记录提交 `3ee6142`。针对性native CPU测试30项通过；其中原真实producer完整answer与前项17响应档案经实际custom比较函数完成metadata ledger，新增响应/查询0。新100源/30模块正式QA为796 passed、120.35秒，句柄8283实际exit0，actual wait/reap且无信号/重试，旧95源逐项摘要保持。
+
+QA：`outputs/tail_translation_check_v2_native_qa_20261029_y5rxr7gl/result.json`，SHA `fe36dfd12c29f6a55fd73d789cc91132e3fb726069100cf3a729743e421590d8`；日志SHA `dff58e3b438223defe52717ceecf45d754dca5cbf095a3529804710d608bc090`。QA driver SHA `865bebb41c55f5e948e815ffe8ca22015c5b42b0aa45e4559618ec50a6354fd6`。
+
+新4条实际准入（Ruff/format/checker dry/owner dry）均actual wait0/reap、无信号/重试，句柄74506实际exit0。准入 `outputs/tail_translation_check_v2_admission_20261029/result.json` SHA `159cae7a80c7907e934869a388aab26a7269a02b44ebb105940f54be9dc6729f`；driver SHA `ca1d8218f7f7ed215033a7f3be409ae1e899d3d803a64810970a093855dac494`。v2独立完整复算现已启动；原生产未重跑，完整资格仍待正常闭合。
