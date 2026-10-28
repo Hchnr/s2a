@@ -99,6 +99,6 @@ owner launch SHA `238d7abef6369ad711b4ee06b4576a4f71a454bea0261b77c4cca13438d669
 
 下一机制已按[保留达标前缀修复计划](../plans/v0.0.1/prefix_preserving_trajectory_control_20261028.md)实现，solver/17项CPU组件测试提交`58440fa`，实验入口/独立checker/16项ledger测试提交`263ce1d`。新solver保留已达标前缀的原caps，所有72命令仍自由，每阶段仅修复首失败点；完整H12安全条件、全12点最终精度和共享4000/60预算不变。17项开发环境测试通过2.21s，16项ledger测试通过1.44s；两组又在正式Python3.11.15/NumPy1.26.4/SciPy1.15.3环境合计33 passed/9.90s，来源及实际exit0见[持久QA](../outputs/prefix_native_qa_20261028_vm4v8_yg/result.json)，SHA `738878bd5b9ed52a524ccafe19cf6b4e3bd8278412bac258a1b14e2e089a37f2`。这些合成组件和账本检查不构成本case的数值或实际控制资格。
 
-v2完整闭环后，唯一新prefix producer已在CPU实际启动，root会话90660，child PID3117933/start_ticks613192333/parent3117803；输出`outputs/tracking_v5_prefix_preserving_trajectory_control_20261028`。当前仍在计算，无完整新搜索结果、独立数值资格或新物理执行。初始化、原生预测闭包和原数据保持；本轮只检验修复顺序是否能保住原连续6点并完成后续全部点。
+v2完整关闭后，唯一新prefix producer已在CPU正常结束，4000响应/54迭代将连续预测合格点从6扩至9，但cursor9仍11.52mm/.05758rad超原门槛，完整witness0。root会话90660已取得实际exit0，child PID3117933/start_ticks613192333/parent3117803的wait/reap均0。完整新独立复算已启动，尚无完整数值资格或新物理执行；详见[前缀修复报告](prefix_preserving_trajectory_control_20261028.md)。初始化、原生预测闭包、原时间和数据保持。
 
 本轮新增物理周期、世界模型调用和fresh case均为0。v2完整核验关闭但无witness，因此本轮不进入原生实际推进；新修复方案若有完整候选仍须独立复算，再另行登记实际前向。原18条正确参考、完整12条WAM开发、最终24条新初态及总任务目标保持，GPU继续禁止。
