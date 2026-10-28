@@ -13,3 +13,5 @@
 首版实际结果未完整关闭：8点witness（2响应）、12点无witness（90响应，原warm线性不合格，改用复核LP启动）；16点LP success点未通过原1e-10线性接收复核，probe/owner实际wait1/reap1，保留partial结果。独立重新rollout该LP命令得到全内环最小slack −1.38364821822e-8rad，box合格、rate超限仅1.11e-16、制动slack−1.33e-15、terminal超限4.13e-15；明确拒绝，不放宽1e-10门槛。
 
 v2独立新模块/入口将HiGHS primal/dual求解容差均收紧至1e-10，记录LP返回残差并维持原box/rate/关节接收条件；未通过残差复核时返回明确linear_witness_not_certified且不进入非线性搜索，不把success标记当作资格。其余参考、历史、初值策略与预算不变，新outputs不覆盖。v2与原长窗口6测试通过（实际结果见运行输出），下一次固定8/12/16数值比较仍不增加物理/模型/fresh。
+
+v2三项已actual wait0/reap0完整关闭：8点witness（2响应），12/16从认证LP起点仍无witness（122/103响应），合计227，verified SHA 063ca5370c69c77f1ac53f548219cc63a69192b502b7d5655626e665f07aa575。[结果](../../reports/feasible_start_trajectory_20261028.md)。新模块及原长窗口6测试passed in4.83s，原门槛未放宽。进一步独立XML检查发现被接收8点模型解也有joint/TCP几何不一致，后续优先修正预测几何而非继续放大窗口。

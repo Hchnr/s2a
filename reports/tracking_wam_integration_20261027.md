@@ -704,3 +704,12 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 [完整预览精度检查](trajectory_caps_numeric_20261028.md)保留原box/rate、全内环关节/历史/制动/终端合同，把首周期精度扩展至全部8个预测端点。五真实状态条件搜索共10次，首点策略均有模型witness；完整8点仅368有witness，370起未找到。共582响应，actual wait0/reap0，verified SHA 412858e83ccf920b476b1c02308e11a891ac68a5b8d6542659f7f7f343d133ba。新策略目前仅更早拒绝后续预测失准的计划，无实际控制收益。8点窗口晚于已生成参考的可用时间暴露cursor9，下一步检查原368实际状态下12/16点预览是否可提前构造合规计划；不预设成功。
 
 两诊断新增物理/模型/fresh均0，相关共13项CPU测试通过，新源码Ruff/format通过；原18/WAM/final24门槛和GPU禁用保持。
+
+
+## 长窗口、线性残差准入和内部运动学缺陷（2026-10-28，CPU）
+
+[8/12/16预览](long_trajectory_caps_20261028.md)在相同actual368状态仅8点witness；12/16未找到解，共275响应。首版线性可行起点检查因16点LP success的内环slack约−1.38e-8未达原1e-10而实际wait1/reap1，保留失败。[v2认证起点](feasible_start_trajectory_20261028.md)收紧LP求解精度后12/16确有满足原残差门槛的起点，但仍未找到完整pose witness，三项227响应、actual wait0/reap0，verified SHA 063ca5370c69c77f1ac53f548219cc63a69192b502b7d5655626e665f07aa575。均不证明物理不可行或取得控制资格。
+
+更关键的[独立XML一致性检查](preview_fk_consistency_20261028.md)发现被接收8点解的模型Cartesian标签8/8合格，但同一预测joint_position经FK只有5/8符合原精度；最大内部差异.01701236716m/.04484467660rad。初点Jacobian差仅1.50e-10，冻结J积分不能代替远离初点构型的真实FK。actual wait0/reap0，verified SHA 1d06af338652019c1c8d1624e5ee6dee9b5c5af0d557d0a23e9b98d545d00b03。它是内部几何反例，不是已测真实未来轨迹误差；后续应使用预测q的一致FK/pose/twist导数，不继续仅放大窗口。
+
+本阶段物理/模型/fresh均0，最新候选相关6测试通过，新增源码Ruff/format通过。原18/WAM/final24门槛和GPU禁用不变，总目标未完成。
