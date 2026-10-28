@@ -8,6 +8,8 @@ v4最新完整结果（2026-10-28）：[全量独立复核](reports/tracking_wam
 
 最新恢复分析（2026-10-28）：[首周期可行性优先规划](reports/feasibility_first_recovery_20261028.md)仍未找到推进解；[独立XML复核的静态IK](reports/recovery_pose_ik_20261028.md)确认原下一姿态在.05rad关节裕量内存在合法构型，问题仍在实际状态与固定控制接口下的动态推进。新增物理/模型/fresh均0，未取得任务资格。
 
+最新预览合同检查（2026-10-28）：[完整8点精度约束](reports/trajectory_caps_numeric_20261028.md)在五个较早真实状态中仅首状态找到完整预览模型解，原首点策略全部接收；当前只确认能更早拒绝后续预测失准的计划，无新控制/任务收益。下一步检查同一实际起点的更长因果预览，GPU继续禁用。
+
 107最新完整结果：[追加wrench覆盖forward](reports/wrench_coverage_forward_20261025.md)5000方程唯一fit、独立增广SVD及三个stage/owner正常退出和来源审查完成；holdout23/24、局部22/24，资格失败，不进入控制。106追加147条/13209周期训练数据完整资格通过。原总目标与最终门槛保持。
 
 104最新完整结果：[当前实测wrench条件forward](reports/wrench_conditioned_arm_forward_20261025.md)4937方程唯一fit、独立增广SVD与三个stage/owner实际wait0和来源核验完成；holdout21/24、局部22/24，资格失败，不进入控制。103[原30轨迹wrench数据](reports/native_wrench_data_20261025.md)6180周期/6210端点及全量数据资格通过。原总目标与最终验收门槛保持。

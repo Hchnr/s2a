@@ -695,3 +695,12 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 [先可行后性能规划](feasibility_first_recovery_20261028.md)在同一实际endpoint378/因果历史仍只取得hold8 witness；resume9的最好已检查线性可行尝试旋转误差.07532084839rad超过.05rad，拒绝。两项共238响应，actual wait0/reap0，verified SHA fddcff00e253ad7a6ec9b335bf192f0c20088bf42b548a3a1973390c6f5b21e2，不证明非线性全局不可行。
 
 [静态IK分离检查](recovery_pose_ik_20261028.md)8固定查询证明cursor9在原关节范围内缩.05rad后仍有严格姿态witness，误差9.29328539e-6m/7.64504909e-5rad，关节最小裕量.05025039461rad；独立XML FK最大姿态差2.22e-15、Jacobian差2.104e-10。actual wait0/reap0，verified SHA 658591bb08711b3ceee9125c25da96ffd6876281acfeb0c4f6bd3f14ba956ed4。不能把控制搜索失败归为目标姿态必然不可达，也不把静态解当作已达起点/可执行action；下一步检查实际状态锚定的提前构型调整。新增物理/模型/fresh均0，相关10测试通过，原全部任务门槛和GPU禁用保持。
+
+
+## 实际锚定误差管与全预览精度合同（2026-10-28，CPU）
+
+[误差管查询](recovery_pose_tube_20261028.md)4固定查询完成；内缩.05的cursor9候选距实际q最大分量.01995242885rad，端点满足原.01m/.05rad，但两段各257关节线段样本都未全部位于前后管并集，未证明连续/动态可行，更不把q直接当action。独立XML FK差1.55e-15，actual wait0/reap0，verified SHA 8edb7d730279cf3574216c64dd6415af397ad20d7964d26173b7d43ac1e36514。
+
+[完整预览精度检查](trajectory_caps_numeric_20261028.md)保留原box/rate、全内环关节/历史/制动/终端合同，把首周期精度扩展至全部8个预测端点。五真实状态条件搜索共10次，首点策略均有模型witness；完整8点仅368有witness，370起未找到。共582响应，actual wait0/reap0，verified SHA 412858e83ccf920b476b1c02308e11a891ac68a5b8d6542659f7f7f343d133ba。新策略目前仅更早拒绝后续预测失准的计划，无实际控制收益。8点窗口晚于已生成参考的可用时间暴露cursor9，下一步检查原368实际状态下12/16点预览是否可提前构造合规计划；不预设成功。
+
+两诊断新增物理/模型/fresh均0，相关共13项CPU测试通过，新源码Ruff/format通过；原18/WAM/final24门槛和GPU禁用保持。
