@@ -19,3 +19,5 @@
 两组seed都取实际最后命令，supplied warm都取保存H8最近线性可行候选的首命令；保留求解器记录的LP替换和实际start policy，不能冒称最终优化起点相同。每组160响应/60迭代，共320响应；seed42、原门槛不变。H1 twist从完整已生成参考cursor9计算，保留邻点8/10，不能对单目标截片计算。H1的all_pose_caps_enforced=true是因首点即整个窗口；空normals从JSON读取时显式恢复(0,7)。
 
 producer入口`execute_tracking_v5_fk_stop_constraint_audit.py --launch`；独立重建当前M/J、joint rollout、MuJoCo FK/J/target errors及全部分组余量的checker入口`execute_tracking_v5_fk_stop_constraint_audit_check.py --launch`。先精确重建原H8保存候选误差与裕量，再执行两个H1对照，模型与首点条件无法一致时停止；不重试、不派发。当前待执行。
+
+首版独立检查已实际失败（wait1/reap1）：`mj_forward`对对象自由关节四元数归一化，41个qpos中4个变化、最大2.22e-16，原检查器错误要求所有qpos逐位不变。原结果、owner及源码保留。新增`execute_tracking_v5_fk_stop_constraint_audit_v2_check.py --launch`：按XML关节类型显式识别free/ball四元数，验证归一化后值；非四元数qpos（含机器人/夹爪）、所有qvel仍逐位一致，既有模型/误差/约束容差不变。每个虚拟构型从同一初始化后状态复制，避免反复归一化累积。修正版只重做独立数值核验，不重跑搜索或物理。
