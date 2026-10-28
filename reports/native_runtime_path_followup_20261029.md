@@ -85,6 +85,39 @@ SHA256 358b7781437e412c67d6a7648c1c28796b6b1bf117a25e61316cb8dfeb940e5b
 
 因此，新增明确缺口为本任务 BDDL 和默认 OSC JSON 的历史身份；bootstrap XML及资产闭包也仍未核验。首次 BDDL 构建和 reset 先于记录 XML 恢复，已有最终模型96资产快照不能覆盖或免除这一步。以上仅是只读输入调查，没有取得新的运行时或物理资格。
 
+## OSMesa 动态依赖的有界静态补查
+
+本次仅对上述安全 OSMesa 文件及其 `DT_NEEDED` 递归候选执行 `readelf -d/--version-info`、文件 SHA256 和 `ldconfig -p` 缓存读取；另检查正式 Python 可执行文件的解释器/RPATH 与有限的候选目录。没有执行 `ldd`、动态加载器、`ctypes.CDLL`、仿真导入或模型构建，也没有遍历整个文件系统。原入口实际加载 OSMesa 的步骤仍未执行。[加载入口:47](../src/s2a/libero_simulation.py#L47)
+
+安全 `libOSMesa.so.8.0.0` 的当前 SHA 仍为 `40e28f0f15c4cd13ad3c353509eb2fad79d8041528c59dc56d6e68fae8d1677a`，与历史登记相同；`SONAME=libOSMesa.so.8`，自身没有 `RPATH/RUNPATH`。七个直接 `DT_NEEDED` 为 `libLLVM.so.20.1`、`libz.so.1`、`libdrm.so.2`、`libstdc++.so.6`、`libm.so.6`、`libgcc_s.so.1`、`libc.so.6`。[历史库指纹:95](../configs/wam_video_pose_restore_20261020.json#L95)
+
+沿这些声明共读取 **19 个不同 ELF 文件（OSMesa 加18个系统依赖）**，全部有当前可读候选；**43 条带版本要求的依赖边**所需版本名均能在选定候选的版本定义中找到，包括 `LLVM_20.1`、`GLIBC_2.38` 和 `GLIBCXX_3.4.29`。这是当前 `DT_NEEDED` 图及版本名检查，不是完整实际动态装载闭包或符号解析证明。当前 `/etc/ld.so.cache` SHA 为 `4dfac64547527431d97ec8ce19948ea818c30dbd789ae24b87e6267fca71808b`；缓存中的 `/lib/x86_64-linux-gnu/` 路径解析到下表的 `/usr/lib/x86_64-linux-gnu/` 文件。
+
+| 当前 canonical 文件（统一前缀 `/usr/lib/x86_64-linux-gnu/`） | 当前 SHA256 |
+| --- | --- |
+| `libLLVM.so.20.1` | `4b93481bd1c9d42c0951275dd275d4a9d30db78c309ae2cc0405669bc6dbbf8a` |
+| `libz.so.1.3` | `9b64150b28505a33d6bc3ecf709c279f6de97a1c184dbda65d06ee4537f6d286` |
+| `libdrm.so.2.125.0` | `ff39219aa058421e46afd36851342370cd1932d2557eb22f54e129755642bf67` |
+| `libstdc++.so.6.0.33` | `1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11` |
+| `libm.so.6` | `1b87a1a50b496cfead2b0ad134c2ff536705c82608db240c7e8aa48d6c0e4217` |
+| `libgcc_s.so.1` | `d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb` |
+| `libc.so.6` | `d8db8739a1633c972cec6a4fe0566bdcec6fd088f98723492ab0361f66238f75` |
+| `libffi.so.8.1.4` | `00f593fe192f2851b8ce23b25cec2488d769beb5a8f63e8c9e563071e1075153` |
+| `libedit.so.2.0.72` | `195c607216f8581dbf516346ed38f4c73500cac4b84e18eb0a4fd49931e4cd56` |
+| `libzstd.so.1.5.5` | `0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb` |
+| `libxml2.so.2.9.14` | `1a960c92f3a3633832fbecd1345333c07e63807c4e0413b9878d708c5884f88f` |
+| `ld-linux-x86-64.so.2` | `1cd555ac46b7887edeaf3c42aac5408c8135e52f6b37870da2cf82d5fe14e829` |
+| `libtinfo.so.6.4` | `28ab8e2e29d46dc8f7222025ca2d61e0b898364c6426cc631bf4ecc7c7f5ac52` |
+| `libbsd.so.0.12.1` | `e86cd4f0019f42c2ba5e60602e0edc8694d2948377d98c3654d0f6bddb5254bb` |
+| `libicuuc.so.74.2` | `7560aadde38e5f4237a47a1ddd5891f9b36768a77a60faae30beee003ac01901` |
+| `liblzma.so.5.4.5` | `a9793942a8a5f6f4d0f523ef9e0a5be4f0033f2c6c28520cd2b4e706d53c6e17` |
+| `libmd.so.0.1.0` | `423e18586b6ea740f4465afd64f7a9a4cb7264ed979c8e7256f9085af5345fef` |
+| `libicudata.so.74.2` | `ddbb3718b8bd9cbd780e5ab08b4503c30a6c4fa0706ebe5d074ed6b596c1714e` |
+
+这些依赖未在正式 venv 的 `outputs/libero_env311/lib`、仓库 Python 的 `outputs/python/cpython-3.11.15-linux-x86_64-gnu/lib` 或安全 OSMesa 所在目录发现同名候选，当前定位依靠容器系统库。正式 Python 的真实可执行文件位于仓库 `outputs/python/cpython-3.11.15-linux-x86_64-gnu/bin/python3.11`，`RPATH=$ORIGIN/../lib`。上述19个 ELF 中仅 LLVM 声明 `RUNPATH=$ORIGIN/../lib`，其当前 canonical 展开为不存在的 `/usr/lib/lib`；相应依赖仍可在系统缓存找到候选。
+
+**历史身份与实际加载仍未闭合。** 在本次检查的原 manifest、restore 配置、既有 `source_audit.json` 和仓库相关配置/报告中，未找到这18个系统库的历史二进制 SHA 或原实际解析记录；上表只能登记当前身份，不能追认为原物理运行时相同。后续还需明确冻结这些依赖或补齐历史绑定，并另行登记实际加载顺序/符号解析验证。动态 `dlopen` 依赖、已加载全局库的影响及 bootstrap 模型/资产均不在本次静态检查的完成范围内。
+
 ## 完整 witness 后的最小物理接入建议
 
 采用新的独占 producer/checker/owner 输出，不修改已执行旧入口。可复用 `probe_tracking_v5_fk_first_long_native.py` 的原初态、seed42、368条历史命令重放及观测调度，从自然执行恢复 actual368 的控制器、夹爪和接触求解历史；逐端点核对原历史至368。[原前缀重放:117](../scripts/probe_tracking_v5_fk_first_long_native.py#L117)

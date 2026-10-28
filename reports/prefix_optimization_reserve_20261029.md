@@ -26,8 +26,38 @@
 
 此准入记录生成时尚未启动新producer。之后必须使用本轮唯一独占输出、同一QA和原4000响应/60迭代/60阶段预算，producer1200秒、checker5400秒，无自动重试；完整独立结果产生前无新数值资格。
 
-随后唯一producer已启动，原tool session17677、child PID3827991/start_ticks615340066、owner PID3825995。运行快照`outputs/prefix_optimization_reserve_execution_checkpoint_20261029/producer_started.json` SHA`00ecb0dfd94c0fb977a817f8bb8fb0bd23cb630b16caa0b9e606bfe88294767b`核对当时300响应、真实/proc父子身份与存活、8项CPU环境匹配、38份QA来源不变。owner登记2269份来源，登记SHA`0bde8f36d4f2a29c91aeb0bbcafc33a23938a670985cc25fe84e3cf5eaff5af2`，launch SHA`cdd56527287b73e9defe109a1c943bfcfce56545ef769dfb4a0d74c00b4f81a5`。快照保留主机实际UTC时间，不是完成或wait/reap凭据；接续观察原句柄，不能因观察超时重启。
+随后唯一producer启动，原tool session17677、child PID3827991/start_ticks615340066、owner PID3825995。运行快照`outputs/prefix_optimization_reserve_execution_checkpoint_20261029/producer_started.json` SHA`00ecb0dfd94c0fb977a817f8bb8fb0bd23cb630b16caa0b9e606bfe88294767b`核对当时300响应、真实/proc父子身份与存活、8项CPU环境匹配、38份QA来源不变。owner登记2269份来源，登记SHA`0bde8f36d4f2a29c91aeb0bbcafc33a23938a670985cc25fe84e3cf5eaff5af2`，launch SHA`cdd56527287b73e9defe109a1c943bfcfce56545ef769dfb4a0d74c00b4f81a5`。该快照保留主机实际UTC时间；下面的完成记录取代其运行中状态，但不改写原快照。
 
-[后续物理入口与路径调查](native_runtime_path_followup_20261029.md)保留了原manifest与安全配置/库/源码的只读比对、最小恢复协议及尚未闭合的bootstrap/动态库依赖；没有建立新运行时或执行物理。只有完整H12解及全部独立核验成功，才可另行登记物理pilot。
+## 搜索完成，完整独立复算运行中
+
+原producer及owner现已正常退出：tool17677返回exit0，保存的actual wait/reap均0，无信号或重试。结果`outputs/tracking_v5_prefix_optimization_reserve_20261029/verified.json` SHA`321a096afd1f0a571cc70f51e3ba3dba6ec3da2973eb83981665b754bc1bcf4a`；owner结果`outputs/tracking_v5_prefix_optimization_reserve_execution_20261029/result.json` SHA`b14ff55ef82ebb6b5a28f20f2f76af7244e774bad15b35fafd9a1c50a384c581`；release SHA`0689ad83f72413c805a14cfa9e2dc87c92cbeebbbf4824b6cd19fab454b25b29`。执行后已用`closed_owner`、完整来源重读及同QA的check-owner dry核验。
+
+以下是**保存的producer结果及只读账本诊断，完整独立数值复算尚未完成**：
+
+| 指标 | 本轮结果 |
+| --- | --- |
+| 唯一完整H12响应 / 数值内步 / 查询 | 4000 / 1200000 / 1248001 |
+| 迭代 / 阶段 | 53 / 54 |
+| 原连续达标prefix / 完整witness | 9 → 9 / 0 |
+| 普通下降anchor / 全部anchor（含warm） | 53 / 54 |
+| ray尝试 / 新响应 / 缓存复用 | 177 / 124 / 53 |
+| 最终selected | response3993，等于最后接受anchor |
+| cursor9位置 / 旋转 | .011473285411891755m / .05737175685151507rad |
+| cursor9归一化平方误差（位置 / 旋转） | 1.3163627814272814 / 1.3166073936917462 |
+| 终止原因 | response_budget；最后stage53在gradient_probe axis6请求被拒绝 |
+
+53个有callback的阶段各接受第一条合格ray，原prefix均为9；阶段全部使用半径.01，未进入.005或.0025。stage53只有6条新差分响应、无callback/ray，随后达到原4000响应预算。因此本轮未复现前轮三个半径连续回缩失败，但不能把预算耗尽写成收敛或已经找到执行解。
+
+177个ray中53接受、124拒绝；缓存命中53个中5接受，新响应124个中48接受。alpha尝试次数为1:53、1/2:48、1/4:40、1/8:25、1/16:6、1/32:4、1/64:1，后两个更小alpha未使用。53个下降的target最大平方误差合计减小.008340708109477957，由共同warm的1.3249481018012241降至1.3166073936917462，仍大于原门槛1；只消除了初始超限量约2.57%。与前轮callback最终selected的1.3188159044570198相比也没有新增达标端点。
+
+优化余量不是额外接纳门槛：53个新anchor中46个的原prefix最小余量小于1e-4，7个达到；全部仍满足原caps。最小余量出现在stage5/response455，约5.3140769e-8。最终anchor的最紧prefix为cursor5位置，余量.0001064182884392；cursor4旋转为.04999687293281797rad。不能宣称整个接纳轨迹都维持了优化器余量。
+
+末个完整stage52的alpha1（response3990）同时违反prefix与非线性安全并无target下降；alpha1/2和1/4（3991/3992）仅无target下降；alpha1/8（3993）接受，下降1.818508720630163e-5。最终非线性安全最小值为braking_upper[cursor6,joint7]的1.0273032891028322e-6。原关节/命令审计容差与实际pose caps均未调整，不能用这些局部改善替代物理或任务成功。
+
+搜索关闭后的独立owner启动准入记录为`outputs/prefix_optimization_reserve_check_admission_20261029/result.json` SHA`7ac95f933a295e805ed5a590e8808bfebcf5081d77145f0c16d70b4512582189`。check-owner dry实际wait/reap0、来源前后不变、2275个来源引用通过，新增响应/物理/模型/fresh均0。驱动SHA`7ddea4f8074a59d015eb36a5b8a8078bb22df58f5a42dd6b6f93f54100d45267`；新观察驱动经过Ruff/format检查，不改动已冻结的算法、测试与登记。
+
+完整独立checker已按同一QA、原5400秒预算启动，tool session28112，child PID3878329/start_ticks615426310，owner PID3876177/start_ticks615422488。owner登记SHA`256968d27a32684dcc7c6a0e8c62bc52489f332d04de0e02061cd00210223b0d`，launch SHA`d1864619b79c6db883f2cdb5c947d2f4e3f68b495dea907cfa55cf7d12c6f178`。运行快照`outputs/prefix_optimization_reserve_execution_checkpoint_20261029/checker_started.json` SHA`881a4f5852676df3efa84d847e5c20726a5cbd6ded480001a30d712a7c54c1f0`确认当时50/4000响应已检查，真实/proc父子身份仍活跃、8项CPU环境一致、38份QA来源未变。完整4000响应、177份完整ray和54份anchor审计尚未全部结束；局部日志不构成完整资格。接续只观察原句柄，不因观察超时重启，也不自动追加新搜索候选。
+
+[后续物理入口与路径调查](native_runtime_path_followup_20261029.md)补充了本任务bowl/plate BDDL、79维已绑定初态、默认OSC JSON及OSMesa静态依赖候选。BDDL/OSC JSON及系统依赖的历史身份、实际动态加载和bootstrap资产仍未闭合；没有建立新运行时或执行物理。只有完整H12解及全部独立核验成功，才可另行登记物理pilot。
 
 实际仍止于原cursor8、task/grasp0，新物理/世界模型调用/fresh均0，总目标尚未完成。

@@ -1,6 +1,6 @@
 # S2A — State to Action
 
-当前CPU进度：[callback完整响应回缩](reports/prefix_callback_backtracking_20261029.md)1012条响应、75份完整ray及13份anchor审计已独立复算并正常关闭，严格标签一致、完整witness0，仍prefix9。12次下降后回缩在cursor4旋转边界停滞；与已关闭[同warm对照](reports/prefix_trust_region_control_20261028.md)相比没有新的达标端点。[固定前缀优化余量](reports/prefix_optimization_reserve_20261029.md)新候选通过318项native QA及5项启动前检查后已启动，快照确认300响应与CPU进程存活，尚无完整结果；原实际caps与任务门槛保持。实际仍cursor8、task/grasp0，新增物理/模型/fresh0，GPU禁用，总目标未完成。
+当前CPU进度：[固定前缀优化余量](reports/prefix_optimization_reserve_20261029.md)搜索已正常关闭，4000响应/1200000数值内步、53次下降仍为prefix9、完整witness0；cursor9仍11.47mm/.05737rad超原caps。完整独立复算已启动，快照确认50/4000及CPU进程存活，尚无完整数值资格。[前轮callback回缩](reports/prefix_callback_backtracking_20261029.md)1012响应已独立关闭，本轮避免其提前停滞但未增加达标端点。后续[物理运行时调查](reports/native_runtime_path_followup_20261029.md)明确了bootstrap与动态依赖的当前候选和历史身份缺口，尚未建立新运行时。实际仍cursor8、task/grasp0，新增物理/模型/fresh0，GPU禁用，原任务门槛与总目标保持。
 
 最新CPU机制检验（2026-10-28）：[固定保存方向回缩](reports/saved_direction_backtracking_20261028.md)96条响应和完整独立复核已关闭，14/16方向、36/64内部点恢复可行下降，但原cursor9达标0/96、完整witness0。独立checker元数据错误已保留失败记录并通过隔离修复，84项native QA通过。下一步[同warm的H12有限信赖域A/B](plans/v0.0.1/prefix_trust_region_control_20261028.md)已登记、尚未执行；实际仍止于cursor8，新增物理/模型/fresh0，GPU继续禁用，总目标未完成。
 
