@@ -1,6 +1,6 @@
 # S2A — State to Action
 
-最新CPU多周期结果（2026-10-28）：[原生目标H12搜索与完整独立复核](reports/state_updated_trajectory_control_20261028.md)已关闭，4000响应确认完整witness0；[保留达标前缀修复](reports/prefix_preserving_trajectory_control_20261028.md)的新4000响应/54迭代已正常结束，连续预测达标点6→9，但cursor9仍11.52mm/.05758rad超原门槛，完整witness0。新搜索全部轨迹的独立复算进行中，尚无完整数值资格。新增物理/模型/fresh0，实际仍止于cursor8，GPU继续禁用。 [只读相位诊断](reports/saved_trajectory_phase_diagnostic_20261028.md)已完成：新selected最后三点即使另选路径相位仍超caps，不能仅重新标记时间补救；后续需重新联合规划动作。
+最新CPU多周期结果（2026-10-28）：[原生目标H12搜索与完整独立复核](reports/state_updated_trajectory_control_20261028.md)已关闭，4000响应确认完整witness0；[保留达标前缀修复](reports/prefix_preserving_trajectory_control_20261028.md)的新4000响应/54迭代已正常结束，连续预测达标点6→9，但cursor9仍11.52mm/.05758rad超原门槛，完整witness0。新搜索全部4000轨迹/1200000内步的独立复算已正常关闭，严格分类一致、完整witness仍0。新增物理/模型/fresh0，实际仍止于cursor8，GPU继续禁用。 [只读相位诊断](reports/saved_trajectory_phase_diagnostic_20261028.md)已完成：新selected最后三点即使另选路径相位仍超caps，不能仅重新标记时间补救；后续需重新联合规划动作。
 
 最新CPU停止点结果（2026-10-28）：[原生目标与状态更新受限规划](reports/state_updated_stop_control_20261028.md)及独立7250数值内步复核完整关闭；281候选/32迭代未找到cursor9执行解，selected旋转.07346693rad仍超原.05rad门槛。新增物理/模型/fresh0，实际仍止于cursor8；下一步从更早actual368开展包含cursor9的多周期规划，原实际门槛和GPU禁用保持。
 

@@ -59,3 +59,11 @@ A 通过而 B 未找到 witness，支持“需在较早受限段前分配时间�
 截至本文编写，仅完成源码/保存报告/原 chunk 的只读审视及计划编写；没有新增响应、物理周期、世界模型调用、GPU 任务或 fresh 案例。
 
 只读前置更新：相位诊断已actual exit0关闭（代码3e99634，[结果报告](../../reports/saved_trajectory_phase_diagnostic_20261028.md)）。prefix selected的cursor9..11均不在已登记路径的原空间caps内，不能把保存动作仅换相位视为修复。本对照据此只检验“新增一次50ms并重新联合规划动作能否改变预测轨迹”，不宣称原失败只是滞后。5→6为4.01546mm/0.0506273rad，8→9为2.95869mm/0.0592341rad，均非静止；保留原A/B插入位置，待完整prefix checker关闭后可实现并执行原有界对照。本次更新未运行新响应。
+
+实现接口登记：A命名`early`、B命名`late`，CLI显式`--case early|late`。每组使用独立producer、checker及owner目录，分别为`outputs/tracking_v5_paired_reference_phase_{case}_20261028`、`..._{case}_check_20261028`、`..._{case}_execution_20261028`和`..._{case}_check_execution_20261028`；不把两组合入一个可中断共享过程。每组producer时限1200s、checker5400s，逐组无覆盖/自动重试；总响应/迭代预算保持。源码为同一组新入口，执行前全部冻结，不能在先执行组后按结果修改另一组。
+
+预检需证明原solver的`np.clip(warm,lo,hi)`不改变命令字节，使唯一supplied warm与used_start一致；不满足则在任何动力学响应前记录命令准入失败，不暗改warm。命令准入通过后，必须完整计算一次warm响应；动态或缓冲准入失败记录`warm_admission_failed`、`answer=null`、1响应/0迭代、完整warm记录且无phases。完整warm witness仍按原规则允许1响应/0迭代快捷返回。正常分支沿用原solver answer schema，预检响应与initial共用精确字节缓存。
+
+数值结果的原节点映射/前缀及后缀必须用`scheduled`、`predicted`或`qualified_original_node_prefix`等明确命名，实际新增消费为0；参考计划含cursor11不表示已经物理消费至cursor11。正常和准入失败分支均保存两套误差、全部warm约束和实际响应计账；任一组未获动态warm准入，不将该结果计作成对搜索性能胜负。
+
+实施前置关闭：prefix独立checker完整4000响应/1200000内步/1248001次query已通过，确认1797动作/关节合格但完整witness0，54迭代、前缀6→9；owner实际wait/reap0、无信号、1852引用重新核对SHA一致。checker SHA `dde839ae104d17fd469409ec539b780ebb829d0e5dca9052c755fe0fefe6e831`，owner result SHA `a494d9b06ae45f7aaea6a587029d0d4c77a30f5b83a09d2fe07f0082a728ed74`。相位诊断亦已关闭，现允许按原方案实现及组件QA；正式两组搜索仍须入口/独立checker/owner和正式环境QA完成并提交，不能仅凭本记录启动。

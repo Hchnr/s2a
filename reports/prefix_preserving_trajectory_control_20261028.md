@@ -2,7 +2,7 @@
 
 总目标仍为固定机器人/控制接口下的实际轨迹可靠跟踪及留出新初态任务稳定成功。GPU继续禁用。本轮按[执行前登记](../plans/v0.0.1/prefix_preserving_trajectory_control_20261028.md:7)保持actual368、已经生成的chunk46前12点、原50ms目标时间和全部原精度/关节/动作条件。
 
-唯一搜索已正常结束：4000个完整H12响应、1200000数值内步、54次迭代，耗时647.030379s。连续合格预测前缀从6点提高到9点，但cursor9仍超原位置及旋转门槛，完整witness为0。这里只改善了局部模型中的早段跟踪，尚未扩大实际推进范围；新增物理、世界模型调用、fresh案例均为0，实际仍止于cursor8、task/grasp均0。全部4000响应的独立动力学复算正在进行，不能提前称为完整数值资格。
+唯一搜索已正常结束：4000个完整H12响应、1200000数值内步、54次迭代，耗时647.030379s。连续合格预测前缀从6点提高到9点，但cursor9仍超原位置及旋转门槛，完整witness为0。这里只改善了局部模型中的早段跟踪，尚未扩大实际推进范围；新增物理、世界模型调用、fresh案例均为0，实际仍止于cursor8、task/grasp均0。全部4000响应的独立动力学复算现已正常关闭，确认上述结果与严格分类；数值核验通过不构成实际控制资格。
 
 ## 搜索结果与范围
 
@@ -15,7 +15,7 @@
 | 修复cursor8 | 8→9 | 366→658 | 4 | callback发现前缀增长 |
 | 修复cursor9 | 9→9 | 658→4000 | 45 | 共享响应预算耗尽 |
 
-4000条中1797条动作/关节合格，1014条同时保留最初6点，610条达到连续9点；没有任何候选达到连续10点。selected为从0计数的trace3268；closest_safety_attempt为trace1742，只有4点连续达标，不能替代selected。上述计数及选择已用保存数据独立做算术审阅，但尚不代替完整动力学复算。
+4000条中1797条动作/关节合格，1014条同时保留最初6点，610条达到连续9点；没有任何候选达到连续10点。selected为从0计数的trace3268；closest_safety_attempt为trace1742，只有4点连续达标，不能替代selected。上述计数及选择先经保存数据算术审阅，随后完整独立动力学复算也确认一致。
 
 | 原cursor | selected位置误差（m） | selected旋转误差（rad） | 原0.01m/0.05rad条件 |
 | --- | --- | --- | --- |
@@ -55,6 +55,19 @@ selected之后731个响应没有改善合规九点前缀的最佳值，但不能
 
 producer child PID3117933/start_ticks613192333/parent3117803；root会话90660已取得owner实际exit0。child actual_wait0/reaped0、无信号、无原始错误，身份一致。1766项owner来源、上轮v2的1820引用及本轮登记引用经重新核对SHA一致，去重1842路径。唯一历史迁移仍是原先审计过的两份测试文件9db6efa→2f09739；没有新增例外。
 
-[独立checker](../scripts/check_tracking_v5_prefix_preserving_trajectory_control.py:324)已通过原owner以`--stage check`启动，root会话70434，child PID3131773/start_ticks613267008/parent3131636，CUDA/LD均为空。登记范围为全部4000响应/1200000内步/1248001次forward查询，并核对三份完整候选、每点误差、全部约束、阶段及预算。输出使用独立`outputs/tracking_v5_prefix_preserving_trajectory_control_check_20261028`，不覆盖producer；实际退出和完整结果尚未取得。
+[独立checker](../scripts/check_tracking_v5_prefix_preserving_trajectory_control.py:324)已通过原owner以`--stage check`启动，root会话70434，child PID3131773/start_ticks613267008/parent3131636，CUDA/LD均为空。登记范围为全部4000响应/1200000内步/1248001次forward查询，并核对三份完整候选、每点误差、全部约束、阶段及预算。输出使用独立`outputs/tracking_v5_prefix_preserving_trajectory_control_check_20261028`，不覆盖producer；现已全部完成，root会话70434实际取得owner exit0，child actual_wait0/reaped0、无信号/原始错误，同PID/start_ticks一致。
 
-后续须先关闭完整独立复算。没有完整witness，本轮不派发action；下一机制需依据首失败点、约束和参考时序的证据单独登记，不能以重复搜索或放宽原指标代替推进。原18条正确参考、完整12条WAM开发、最终24条新初态及全部任务门槛保持，总目标尚未完成。
+| 独立复核证据 | SHA256 |
+| --- | --- |
+| [checker verified](../outputs/tracking_v5_prefix_preserving_trajectory_control_check_20261028/verified.json) | `dde839ae104d17fd469409ec539b780ebb829d0e5dca9052c755fe0fefe6e831` |
+| [checker registration](../outputs/tracking_v5_prefix_preserving_trajectory_control_check_20261028/registration.json) | `8a4cc492b91ea85b361d766ddd696586fcc763a54eb02a7ab86618e08084be23` |
+| [checker owner result](../outputs/tracking_v5_prefix_preserving_trajectory_control_check_execution_20261028/result.json) | `a494d9b06ae45f7aaea6a587029d0d4c77a30f5b83a09d2fe07f0082a728ed74` |
+| [checker owner registration](../outputs/tracking_v5_prefix_preserving_trajectory_control_check_execution_20261028/registration.json) | `72108e12a902670e82c9a28214871ed1ab3b57ab47b8c52e606125aba005ba81` |
+
+完整复算覆盖4000条轨迹、48000个预测端点、1200000内步和1248001次forward查询，独立确认1797条动作/关节合格、完整witness0、54迭代和6→9前缀。292条rate越界探针被保留并判为不合格，严格边界分类分歧为空；selected3268、closest1742及四阶段账本一致。全部trace的TCP误差最大差3.10862447e-15，safety最小值最大差3.64038498e-15。
+
+initial/selected/closest三份完整候选另外逐数组核对：内步q最大差1.77635684e-15rad、v为7.10542736e-15rad/s，requested/applied torque为1.00897068e-12。该逐数组范围仅为三份候选；全部4000条已独立重构并核对逐端点误差和约束分类，不能把三份数组比较写成全部轨迹逐数组比较。JIT与历史Python AST目标构造的差异单列为8.94069672e-8、34812个周期，不是生产JIT与独立JIT复算的差异。正式环境为MuJoCo2.3.7/NumPy1.26.4/Numba0.68.0。
+
+关闭时重新核对checker的1852项和owner的1766项来源，去重1852路径，SHA无不一致；原执行代码及失败历史均保留。相位诊断中checker为running的记录是其较早执行时的真实快照，不回写为已关闭。
+
+完整独立复算已关闭，但没有完整witness，本轮不派发action。下一项[H13成对相位分配](../plans/v0.0.1/paired_reference_phase_20261028.md)在同650ms和全部原节点下重新联合规划动作，分别插入早期或临近cursor9的50ms；原时序指标并列保留，不以调速资格替代原指标。原18条正确参考、完整12条WAM开发、最终24条新初态及全部任务门槛保持，总目标尚未完成。
