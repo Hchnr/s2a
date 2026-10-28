@@ -688,3 +688,10 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 [完整记录](reference_recovery_native_20261028.md)：从实际held endpoint378执行16周期反馈，16次hold、0次resume，最后消费cursor8；最大保持位置/旋转误差.00334615924m/.04158785168rad、最小内环关节裕量.05324711229rad，task/grasp均0。独立394周期重放对齐真实传感刷新调度后，395端点与400新内环q/qvel/time全部核验，state/q/qvel最大差异均0；actual wait0/reap0，verified SHA 807632bd10e8cec0d9a1bb61fff378622dcf2ef7e34381ee3264d1b4abbaa259。保留前两版1及58周期失败及v3预执行失败记录，总新增实际物理847，model/fresh0。只能确认短时保持，仍不能沿原轨迹前进，不取得控制或任务资格。
 
 本次复核发现current_observation会调用sim.forward，遗漏初始/每周期刷新可导致接触段分叉；不能将其当成可省略而物理等价的读取。下一候选检验首周期可行性优先的原约束规划搜索，不继续任意增加保持/重启。GPU继续禁用，原18/WAM开发/final24门槛不变。
+
+
+## 首周期可行性优先与下一参考几何分离（2026-10-28，CPU）
+
+[先可行后性能规划](feasibility_first_recovery_20261028.md)在同一实际endpoint378/因果历史仍只取得hold8 witness；resume9的最好已检查线性可行尝试旋转误差.07532084839rad超过.05rad，拒绝。两项共238响应，actual wait0/reap0，verified SHA fddcff00e253ad7a6ec9b335bf192f0c20088bf42b548a3a1973390c6f5b21e2，不证明非线性全局不可行。
+
+[静态IK分离检查](recovery_pose_ik_20261028.md)8固定查询证明cursor9在原关节范围内缩.05rad后仍有严格姿态witness，误差9.29328539e-6m/7.64504909e-5rad，关节最小裕量.05025039461rad；独立XML FK最大姿态差2.22e-15、Jacobian差2.104e-10。actual wait0/reap0，verified SHA 658591bb08711b3ceee9125c25da96ffd6876281acfeb0c4f6bd3f14ba956ed4。不能把控制搜索失败归为目标姿态必然不可达，也不把静态解当作已达起点/可执行action；下一步检查实际状态锚定的提前构型调整。新增物理/模型/fresh均0，相关10测试通过，原全部任务门槛和GPU禁用保持。
