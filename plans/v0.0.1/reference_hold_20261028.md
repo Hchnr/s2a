@@ -5,3 +5,5 @@
 原生两377前缀+1周期及独立756回放正常关闭，总1512物理周期，model/fresh0。只干预step377 arm动作，gripper原命令相同。保持后对上一参考误差.00491261m/.03719512rad、minmargin.06995243rad；对原timed下一点旋转误差.08779647rad，比原动作.07885881rad更大。两者task/grasp false，不取得新控制资格。所有状态/inner q/qvel独立精确一致，verified SHA 82b3ba41a9bdca987a1c077cba2c262b951c92a5e3542d3856d81597651d9a50。数值verified SHA 1f6cea9f8752903f771dca3b28bd811f060ededad16408a11f46137b69d3cd41。
 
 下一步：用保持后实际endpoint378重新重建模型，仅用真实旧prefix至376及新held周期377更新自身history，分别求解继续保持cursor8与推进原cursor9的方案；不能借用旧分支step378。若有可推进witness，再做原生反馈的明确相位记录及独立回放。完整相位控制必须协调参考姿态/夹爪、记录原点ID/未消费点、保持原实际20Hz；重定时实验不冒充原时序跟踪。所有18/WAM/fresh门槛不变，冻结v5不改动。
+
+保持后endpoint378数值检查完整关闭：仅真实旧prefix九周期+新held周期更新profile；继续hold8有witness，resume9未找到非线性witness，非不可行证明。actual wait0/reaped0，physics/model/fresh0。verified SHA 95f62cc3e0a892dbf5633cb6197e47cd19f7f5832a4e0c4bf3c676e372da4a1a。尚无恢复推进证据，GPU保持禁用，后续只CPU。

@@ -666,3 +666,11 @@ probe/execute_tracking_v5_quality_capped_numeric首版在原分支完成后因�
 ## 用户要求停止GPU任务（2026-10-28）
 
 用户明确要求在另行通知前不使用GPU。向已核实的v5 owner2358795发送SIGTERM，由其清理拥有的当前采集2494361及模型service2359094；随后kernel确认三进程均不再存在，相关run/serve/collect进程列表为空，nvidia-smi compute-apps查询亦为空。不自动恢复或排队GPU任务；已完成前三案例和第四案例部分输出保留，第四条中止不能记作完整或性能通过。CPU全量测试进程保留，后续仅CPU工作。临时禁用约束已追加AGENTS.md，恢复须等待用户明确通知。
+
+## 保持后真实状态的恢复数值检查已关闭（CPU）
+
+新增probe/execute_tracking_v5_reference_resume_numeric.py。输入为已经独立逐状态/inner q/qvel复现的held分支实际endpoint378。误差profile仅取原候选368..376九个已完成周期，再用实际held周期377的25个q与该实际命令的预测更新，最后完成步377、共10个周期；不读旧分支step378后状态或误差。XML mj_forward核对实际最终q/qvel，重新计算M/J，用真实上一命令作seed及上一已生成held计划移位作warm start。
+
+同一真实state/profile/box/rate/关节/制动/终端/.01m/.05rad条件下，继续hold cursor8有model_witness（首模型误差0.00338706387481883m/0.0351840759719188rad），resume cursor9的非线性搜索未找到witness。没有证明全局不可行，也没有恢复推进的实际证据；不能把单次保持升级为连续任务控制成功。owner actual_wait=true/returncode0、release reaped=true/returncode0，physics/model/fresh0；两个入口ruff/format通过。outputs/tracking_v5_reference_resume_numeric_20261028/verified.json SHA 95f62cc3e0a892dbf5633cb6197e47cd19f7f5832a4e0c4bf3c676e372da4a1a。
+
+GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照，须实际执行并更新候选自身历史，逐周期记录相位与未消费目标，保持完整轨迹和原任务验收要求；原总目标未完成。
