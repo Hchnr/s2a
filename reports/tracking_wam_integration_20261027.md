@@ -662,3 +662,7 @@ probe/execute_tracking_v5_quality_capped_numeric首版在原分支完成后因�
 ## 提交前状态核实：v5第三案例生产关闭，第四案例继续
 
 第三案例task0_init0_s43_raw原worker2402406已终止，orchestration对应exit actual_wait=true/returncode0、release reaped=true/returncode0；600周期/75请求，worker SHA 3335150cda78522a02f98a45d9d8f96f26a2539b11cf06d9ac185c42b11ac54a。保存日志描述器case02 SHA 9bf38011cc4dae5aeabd6ecf28f05f2c19bebb1de8ff87f4e9b28cdd4f18d5da：任务/抓取周期均0，TCP位置RMSE .0124833135398095m、SO(3) .05502045744605921rad；q7期前越界258周期、首step121、最小margin -.0031933104097650045rad。此为已关闭生产的描述统计，不是独立全量资格。原owner2358795和同一模型service2359094继续运行；kernel已核实第四条task0_init0_s43_terminal058 worker2494361存活。前三条均无任务成功，不提前判定完整12矩阵或fresh资格。
+
+## 用户要求停止GPU任务（2026-10-28）
+
+用户明确要求在另行通知前不使用GPU。向已核实的v5 owner2358795发送SIGTERM，由其清理拥有的当前采集2494361及模型service2359094；随后kernel确认三进程均不再存在，相关run/serve/collect进程列表为空，nvidia-smi compute-apps查询亦为空。不自动恢复或排队GPU任务；已完成前三案例和第四案例部分输出保留，第四条中止不能记作完整或性能通过。CPU全量测试进程保留，后续仅CPU工作。临时禁用约束已追加AGENTS.md，恢复须等待用户明确通知。
