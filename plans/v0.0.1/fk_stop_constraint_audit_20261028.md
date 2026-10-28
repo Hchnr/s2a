@@ -21,3 +21,5 @@
 producer入口`execute_tracking_v5_fk_stop_constraint_audit.py --launch`；独立重建当前M/J、joint rollout、MuJoCo FK/J/target errors及全部分组余量的checker入口`execute_tracking_v5_fk_stop_constraint_audit_check.py --launch`。先精确重建原H8保存候选误差与裕量，再执行两个H1对照，模型与首点条件无法一致时停止；不重试、不派发。当前待执行。
 
 首版独立检查已实际失败（wait1/reap1）：`mj_forward`对对象自由关节四元数归一化，41个qpos中4个变化、最大2.22e-16，原检查器错误要求所有qpos逐位不变。原结果、owner及源码保留。新增`execute_tracking_v5_fk_stop_constraint_audit_v2_check.py --launch`：按XML关节类型显式识别free/ball四元数，验证归一化后值；非四元数qpos（含机器人/夹爪）、所有qvel仍逐位一致，既有模型/误差/约束容差不变。每个虚拟构型从同一初始化后状态复制，避免反复归一化累积。修正版只重做独立数值核验，不重跑搜索或物理。
+
+producer及v2独立检查已actual wait0/reap0完整关闭，两H1策略共146响应均无首点witness；无terminal最近候选仍为原H8首命令。独立十个预测构型和九组约束通过，首版四元数逐位断言失败保留。新增物理/模型/fresh0，[完整结果](../../reports/fk_stop_constraint_audit_20261028.md)。
