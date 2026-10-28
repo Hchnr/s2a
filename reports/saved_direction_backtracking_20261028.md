@@ -18,7 +18,11 @@ H12、early、late完整独立旧审计均已actual wait/reap0且无信号；192
 
 ## 正式运行状态
 
-唯一producer owner已启动，尚未据文件存在宣称完成。其输出为`outputs/tracking_v5_saved_direction_backtracking_execution_20261028/`；完整producer结果将写`outputs/tracking_v5_saved_direction_backtracking_20261028/verified.json`。独立checker只在producer实际成功关闭之后启动，输出另存`outputs/tracking_v5_saved_direction_backtracking_check_20261028/`及对应`_check_execution_`目录。
+唯一producer在31.746s完成，owner实际wait0/reap0、无信号，1921份producer/1923份owner来源重hash无变化。结果`outputs/tracking_v5_saved_direction_backtracking_20261028/verified.json` SHA`0957f81930cd65d08761220c76000374e1b7c9826872145319e311a42e26028e`；owner result SHA`4c99e0fd689c61a198384a7c694b2cf697fa6415ab386b832d071f5a4df71fec`。
+
+第一版独立checker在第一个端点完成数值比较后，比较`endpoint_match.fields_checked`字符串列表时误入`np.isfinite`，TypeError退出。失败结果SHA`78c5df22d2dc767f145ea144138c0296b916c6ce66e4c21189fab78eaf9cacd3`、失败owner SHA`7e2c78e5da7fbfa985d5d8e53b7d6b4d413779b31afb6c3a7925dd1b556cbd42`。child3342049/start614300118 actualwait1/reap1、无signal；1929来源未变。该case实际已计算1条H12响应/300内步/313查询，顶层尚未按case累加的0不能解释为未执行。尚无完整独立资格。
+
+[单独登记的元数据修复](../plans/v0.0.1/saved_direction_backtracking_check_repair_20261028.md)新增薄wrapper，严格比较字符串列表，复用冻结数值算法并另设`_check_v2_`输出；原全部源码与失败产物保留。修正版尚未执行，不自动重试原输出。
 
 | 每侧固定预算 | H12 | early | late | 合计 |
 | --- | ---: | ---: | ---: | ---: |
@@ -28,6 +32,6 @@ H12、early、late完整独立旧审计均已actual wait/reap0且无信号；192
 | 数值内步 | 18000 | 9750 | 1950 | 29700 |
 | queries（含各case一个current） | 18721 | 10141 | 2029 | 30891 |
 
-producer与checker各完整复算，计划总计192响应、59400内步、61782查询。完整保存九组约束slacks、inner/endpoint q/v、FK、目标递推及力矩。旧trace端点仅可比较已有commands/TCP errors/safety minimum/prefix/joint/feasible六字段，不声称旧档保存每条完整q/v或slacks。
+原计划producer与checker各完整复算，总计192响应、59400内步、61782查询。修正版另计已发生的失败前缀；若完整完成，累计193响应、59700内步、62095查询，新增独特命令仍64。完整保存九组约束slacks、inner/endpoint q/v、FK、目标递推及力矩。旧trace端点仅可比较已有commands/TCP errors/safety minimum/prefix/joint/feasible六字段，不声称旧档保存每条完整q/v或slacks。
 
 正式数值结论及全方向表等待实际结果与独立关闭证据。局部下降、target达标、完整H witness及物理/任务资格分别报告，不能互相替代。即使出现完整局部模型witness，也需另行登记物理pilot及独立重放。原18条正确参考、12条WAM开发、最终24条留出门槛保持。

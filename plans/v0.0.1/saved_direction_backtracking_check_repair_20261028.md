@@ -1,0 +1,13 @@
+# 固定回缩独立checker元数据修复（执行前登记，CPU）
+
+原[回缩计划](saved_direction_backtracking_20261028.md)及全部科学/控制门槛保持。producer已正常实际wait/reap0完成96响应/29700内步/30891查询，结果SHA`0957f81930cd65d08761220c76000374e1b7c9826872145319e311a42e26028e`。不重新运行producer。
+
+第一版checker已失败退出：`outputs/tracking_v5_saved_direction_backtracking_check_20261028/verified.json` SHA`78c5df22d2dc767f145ea144138c0296b916c6ce66e4c21189fab78eaf9cacd3`；owner result SHA`7e2c78e5da7fbfa985d5d8e53b7d6b4d413779b31afb6c3a7925dd1b556cbd42`。错误为`endpoint_match.fields_checked`字符串列表误入数值`np.isfinite`。prefix实际已执行一个H12响应、300内步/313查询；顶层计数只在整case完成时累加，因此顶层0不能解释为没有新响应。没有完整verified entry，也未建立完整独立资格。失败child实际wait1/reap1、无信号；保留原全部source/test/plan和失败产物，禁止覆盖。
+
+唯一修复是比较字符串列表时逐项精确比较其类型、形状/顺序和内容；继续拒绝字段遗漏、重排、类型变化。数值容差、布尔/整数严格标签及96请求重建、native AST/JIT动力学、九组约束与全部评分数学不变。新增薄wrapper调用冻结checker，替换其元数据比较分派及输出路径，绑定本次失败关闭证据。其余类型委托冻结比较器；不吞掉数值或严格分类异常。
+
+新增源码：`src/s2a/saved_direction_backtracking_check_repair.py`、`scripts/check_tracking_v5_saved_direction_backtracking_v2.py`、`scripts/execute_tracking_v5_saved_direction_backtracking_check_v2.py`及`tests/test_saved_direction_backtracking_check_v2.py`。独立数学仍来自冻结checker，全部新文件/本计划及原九文件纳入QA与运行source SHA。实际失败endpoint元数据的合成回归必须触发旧错误并在新分派下通过，篡改字符串/顺序/类型必须拒绝；数值/strict labels不能放宽。
+
+新checker输出`outputs/tracking_v5_saved_direction_backtracking_check_v2_20261028/`，owner为`outputs/tracking_v5_saved_direction_backtracking_check_v2_execution_20261028/`，全部拒绝覆盖。原生Python3.11/NumPy1.26.4、空CUDA/LD、单线程，先QA及真实CLI dry、提交，再唯一启动修正版，1800s时限，无自动重试。
+
+修正版重新完整独立重构同96响应/29700内步/30891查询，包含失败首条的重新核验。所有数值工作累计producer96+失败checker1+修正版96=193条轨迹响应、59700内步、62095查询；其中完整成功复核的应为96条，失败前缀另列。新增独特命令仍64。物理/模型/fresh均0，原实际cursor8/task0/grasp0不变。修复完成也不能自动发起物理pilot或改验收。
