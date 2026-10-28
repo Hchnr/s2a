@@ -1,0 +1,13 @@
+# H12独立检查的等价高效实现（执行前登记，CPU）
+
+原H12 producer已正常退出，4000完整响应、53迭代、1200000预测内步，无完整witness。原独立checker已执行500/4000条轨迹（日志确认150000数值内步），逐查询断言的开销按实测速率无法在原1200秒owner时限内覆盖全量；不是发现数值不一致后挑选通过项。
+
+本轮明确停止原checker child PID3028290/start_ticks612754824，事先记录`outputs/tracking_v5_state_updated_trajectory_control_check_stop_20261028/decision.json`，仅向核对身份的child发送SIGTERM，由原parent实际wait/reap。原owner result complete/passed均false，实际returncode=-15；父owner的signal_sent=false仅表示信号不是它发出的，root发信号事实以decision为准。原注册、命令日志、退出与release保留，不存在原checker完整verified结果，不提升其500条部分检查为完整独立资格。
+
+另建v2 checker，唯一改变为成功检查路径的开销：原逐查询状态逐位相等条件使用形状、有限性和np.array_equal检验；原quaternion归一化的相同坐标、相同容差保持覆盖；已显式检查有限值和形状、计算最大绝对差的compare，使用该最大差≤原绝对容差替代重复调用通用np.testing.assert_allclose(rtol=0)。仍逐个quaternion使用原归一化公式，不跳过任何查询、坐标或已登记数值条件。原方程、MjData重置/mj_forward、2ms递推、JIT目标、所有约束、排序与预算逻辑保持不变。新源码独立提交，原已执行源码不编辑。
+
+v2从头重算全部4000条完整H12轨迹、1200000内步及全部300内环/12端点约束；不将原未完成checker的日志当作数值结果拼接，不采样或缩小范围。状态/几何/指标容差1e-10、力矩1e-8不变。完整候选保留initial/selected/closest的所有状态、速度、goal、clipping、力矩及TCP对照；仍不导入新producer的模型、trajectory、query、audit或solver实现。
+
+新checker首先核对原attempt的真实terminal退出/完整reap及stopdecision对应同一child，再检查原正常producer和全部前置证据。生成路径`outputs/tracking_v5_state_updated_trajectory_control_v2_check_20261028`与`..._v2_check_execution_20261028`均全新、不覆盖、无自动重试。新owner上限5400秒，依据原实测速率为完整检查留出时间；该计算时限不改变任何控制/任务门槛。
+
+执行前先对新旧查询断言及差值检查做等价性验证，使用有限相等、不等、NaN/inf、形状不一致和四元数归一化样本；差异只能是对无效输入更早拒绝，不能接受原容差外数值。再做新源码Ruff/格式和来源差异审查。新运行需要真正退出0/wait0/reap0及全4000检查完成，才可报告独立数值核验通过。新增物理、世界模型调用与fresh仍0，GPU继续禁止，总目标未达。
