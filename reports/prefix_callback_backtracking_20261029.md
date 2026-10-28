@@ -24,4 +24,8 @@
 
 本段准入记录生成时新候选尚未启动。后续只能使用已登记的独占输出和同一QA，不因观察超时重启；没有完整独立结果前不授予新数值资格。
 
+随后已启动唯一producer，原tool session为67356，child PID3737042/start_ticks615184030，owner PID3735458。运行快照`outputs/prefix_callback_backtracking_execution_checkpoint_20261029/producer_started.json` SHA`f94afe682b7d7c167cfc7018d10e7b88fa0f4c917c9c97c8d8283dfe60640cc2`记录当时400条完整响应、真实/proc存活及父子身份、8项CPU环境均匹配，28份QA来源未变。owner登记2243份来源，登记SHA`5287ccdfb8f5e9d618a7e20b1fbd8c3c3c3913f6d1b36ed613a30a83eb316f1f`，launch SHA`c71f928f79c36b3d541398b6f01c8238b32544013d92a62995eb1e446481ff19`。快照保留主机实际UTC时间；目录沿用登记日期，不改写时间。
+
+该快照仅证明当时在运行，尚无新完整搜索结果或独立资格。接续观察同一句柄；producer正常关闭后须对其全部实际唯一响应执行独立checker，不能以局部日志、合成测试或快照替代。
+
 实际机器人仿真进度仍为原cursor8、task/grasp0；本次新增物理、世界模型调用、fresh案例均为0。即使后续完整模型witness通过独立复核，也不自动授予实际控制、WAM或留出任务资格，总目标尚未完成。
