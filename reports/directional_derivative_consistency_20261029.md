@@ -1,6 +1,6 @@
 # 固定锚点方向导数一致性：CPU诊断
 
-v1实际producer dry在创建模型前因复用了额外warm裁剪守卫而失败；[隔离v2修正](../plans/v0.0.1/directional_derivative_v2_admission_20261029.md)保持原命令字节及登记的1e-12容差，529项原生CPU QA及全部实际dry已通过，唯一v2诊断owner已启动，尚无终态结果。此前[SQP完整独立复算](accepted_point_sqp_20261029.md)已关闭，仍无完整H12 witness；实际仍cursor8、task/grasp0，GPU禁用，原18正确参考/12WAM开发/24最终留出门槛保持。
+v1实际producer dry在创建模型前因复用了额外warm裁剪守卫而失败；[隔离v2修正](../plans/v0.0.1/directional_derivative_v2_admission_20261029.md)保持原命令字节及登记的1e-12容差，529项原生CPU QA及全部实际dry已通过。唯一v2诊断已正常关闭：77完整调用、76唯一命令、3条非法请求，完整witness0；完整独立重放已启动，尚无其终态。实际仍cursor8、task/grasp0，GPU禁用，原18正确参考/12WAM开发/24最终留出门槛保持。
 
 按[执行前登记](../plans/v0.0.1/directional_derivative_consistency_20261029.md)，固定旧trace1819命令锚点与stages24–26的三个方向，使用13个预定步长、先正后负，最后强制重复anchor。总计80计划请求；非法box/rate请求保留原因并跳过，合法命令即使预测joint/pose失败也完整记录。不优化、不裁剪、不替换控制器、不自适应追加请求。
 
@@ -35,3 +35,11 @@ v1源码、QA、失败准入及日志均保留原字节。v2入口仅替换为�
 [v2实际准入](../outputs/directional_derivative_v2_admission_20261029/result.json) SHA `d79a36473d979601ed79f9444416629e78210ff116e016f2018d6caa2296c44c`，原session8783实际exit0。61份Python来源Ruff/format及producer/checker/diagnose-owner三个实际dry均wait/reap0，无信号或自动重试；68源码不变，producer/checker各2348引用、owner2350引用，新响应/查询/物理/模型/fresh0。
 
 唯一v2诊断通过同一QA后启动于session18894，固定600秒子进程上限、完整80请求和末尾repeat合同。此时尚无producer正常终态或独立复算结果；不从启动成功推断导数趋势、完整witness或控制收益。实现提交`fdd2bb1`，此前v1实现`d254a05`、失败及修正计划`092c71c`均保留。
+
+## 已关闭的唯一诊断与独立重放启动
+
+原session18894已实际terminal exit0；[producer](../outputs/tracking_v5_directional_derivative_v2_20261029/verified.json) SHA `a626d66c66b4fba7dd0509092c1067c615b69cfe8545bba42e6f2b4d8d13951c`，[owner](../outputs/tracking_v5_directional_derivative_v2_execution_20261029/result.json) SHA `ebf9d63e7612e939370ce40ebfe3e698a2996912c167db0e5f08686f0564dbe6`。原child182137/start616269982正常wait0/reap，无信号或重试。
+
+80计划请求全部记录：76次首次计算、3次command拒绝、1次强制anchor repeat，无grid cache命中；77完整调用/76唯一命令、23100数值内步、24025查询、0优化迭代。完整H12 witness仍0。producer保存的初末anchor数值比较exact=true、最大差0，历史trace/anchor-audit比较也exact=true；这些是已关闭producer的保存结果，完整独立核验尚待结束，不能先据此作导数机制结论。
+
+[check-owner实际准入](../outputs/directional_derivative_v2_check_admission_20261029/result.json) SHA `48adb93eeb94f92d15789dd6fba8fe146d76893b9d4912af7b4f307eb4914d33`，原session30399实际exit0，2356引用、68源码不变，新响应0。完整checker owner已按唯一登记命令启动于session7602，必须核验全部77调用，包括末尾重复；1800秒上限、无自动重试。新增物理/模型/fresh/参考消费仍0。

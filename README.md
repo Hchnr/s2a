@@ -1,6 +1,6 @@
 # S2A — State to Action
 
-当前CPU推进：[实际接纳点SQP](reports/accepted_point_sqp_20261029.md)搜索与完整独立复算均正常关闭：1919响应/575700数值内步、118条ray、25份anchor、27个QP和24次曲率更新全部核验，严格分类一致；仍prefix9、完整witness0。cursor9仍11.47mm/.05738rad超原caps。[固定方向导数诊断](reports/directional_derivative_consistency_20261029.md)保留v1零响应准入失败；隔离v2通过529测试及全部实际dry，唯一owner已启动，尚无终态。保持原18/12/24任务门槛，实际仍cursor8、task/grasp0，GPU继续禁用。
+当前CPU推进：[实际接纳点SQP](reports/accepted_point_sqp_20261029.md)搜索与完整独立复算均正常关闭：1919响应/575700数值内步、118条ray、25份anchor、27个QP和24次曲率更新全部核验，严格分类一致；仍prefix9、完整witness0。cursor9仍11.47mm/.05738rad超原caps。[固定方向导数诊断](reports/directional_derivative_consistency_20261029.md)保留v1零响应准入失败；隔离v2通过529测试及实际dry，77完整调用/76唯一命令正常关闭、witness0，全量独立复算已启动。保持原18/12/24任务门槛，实际仍cursor8、task/grasp0，GPU继续禁用。
 
 当前CPU进度：[固定前缀优化余量](reports/prefix_optimization_reserve_20261029.md)搜索与完整独立复算均正常关闭，4000响应/1200000数值内步、177条ray和54份anchor全量核验，严格分类一致，53次下降后仍为prefix9、完整witness0；cursor9仍11.47mm/.05737rad超原caps。差分占3822/4000，53阶段均在首非零callback截断并重置SQP状态，后续需检验实际接纳点间的曲率保留。[运行时文件快照](reports/native_runtime_path_snapshot_20261029.md)105项native QA、实际准备及独立文件核验已关闭，完整1090文件/454957103字节；尚未验证实际加载或bootstrap，[历史身份缺口](reports/native_runtime_path_followup_20261029.md)保持。实际仍cursor8、task/grasp0，新增物理/模型/fresh0，GPU禁用，原任务门槛与总目标保持。
 
