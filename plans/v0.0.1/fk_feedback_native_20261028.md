@@ -9,3 +9,5 @@
 夹爪保持prefix最后真实命令，是明确arm-only机制pilot，不取得完整夹爪协调或任务资格。object/task/grasp仅执行后评价，不输入规划。物理控制间隔与优化墙钟分开记录，不取得实时资格。新增模型调用/fresh0，GPU继续禁用。独立命令物理重放尚须另行完成，生产者自报不替代独立证据。
 
 入口`execute_tracking_v5_fk_feedback_native.py --launch`，新outputs不覆盖原结果。原18/完整12WAM开发/final24门槛保持。当前已实现待实际执行。
+
+实际producer及独立物理重放均已wait0/reap0关闭：370周期/371端点/50新内环样本，最大state/q/qvel差异0。实际仅执行2新周期，位置误差1.059/2.255mm、旋转.01817/.01863rad，最小关节裕量.36213rad，task/grasp0；step370完整8点模型无witness而停止，未执行cursor2及关键9。总实际物理740，模型/fresh0，未取得控制/任务/实时资格。producer/check verified SHA分别6e4cdf5aa8f6c0d91327975cb970931ef9b80a5477dae9607691a75e0e3c70a7、9066f354d88851bad042cea70c7112921fb8271730756fb843a749ada2b9a484。[完整结果和下一对照](../../reports/fk_feedback_native_20261028.md)。

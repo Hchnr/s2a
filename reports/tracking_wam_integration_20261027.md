@@ -713,3 +713,12 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 更关键的[独立XML一致性检查](preview_fk_consistency_20261028.md)发现被接收8点解的模型Cartesian标签8/8合格，但同一预测joint_position经FK只有5/8符合原精度；最大内部差异.01701236716m/.04484467660rad。初点Jacobian差仅1.50e-10，冻结J积分不能代替远离初点构型的真实FK。actual wait0/reap0，verified SHA 1d06af338652019c1c8d1624e5ee6dee9b5c5af0d557d0a23e9b98d545d00b03。它是内部几何反例，不是已测真实未来轨迹误差；后续应使用预测q的一致FK/pose/twist导数，不继续仅放大窗口。
 
 本阶段物理/模型/fresh均0，最新候选相关6测试通过，新增源码Ruff/format通过。原18/WAM/final24门槛和GPU禁用不变，总目标未完成。
+
+
+## FK一致预览与实际反馈核验（2026-10-28，CPU）
+
+[新预览](fk_consistent_trajectory_20261028.md)用预测q的FK/J(q)qdot及一致pose/twist导数替代冻结J Cartesian积分，保留原全部关节/历史/制动/terminal和预算。8点模型解全部通过独立XML/MuJoCo几何核验（最大pose/J差2.55e-15/1.78e-15），最大目标误差.00247194m/.02400348rad；12/16仍无解。数值/交叉检查均actual wait0/reap0，5项相关CPU测试及新增源码Ruff/format通过；不取得实时资格。
+
+[实际前向反馈及独立重放](fk_feedback_native_20261028.md)关闭：2新周期实际误差均达标，位置1.059/2.255mm、旋转.01817/.01863rad，最小内环关节裕量.36213rad。step370完整8点精度模型无witness，按计划未派发，未执行cursor2/关键9，task/grasp均0。独立370周期/371端点/50内环样本最大state/q/qvel差异0，actual wait0/reap0，verified SHA 9066f354d88851bad042cea70c7112921fb8271730756fb843a749ada2b9a484。总实际物理740、模型/fresh0，control_qualified=false。
+
+下一步区分新增完整未来精度约束的保守性与当前动作不可行：在同一新endpoint370及自身history上比较首点/完整精度，保留原实际误差、关节、时序及全部任务门槛。原未来pose/twist性能成本仍保留，不把额外模型条件当成原真实验收。GPU继续禁用，原总目标尚未完成。
