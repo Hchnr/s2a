@@ -1,6 +1,6 @@
 # 固定锚点方向导数一致性：CPU诊断
 
-v1实际producer dry在创建模型前因复用了额外warm裁剪守卫而失败；[隔离v2修正](../plans/v0.0.1/directional_derivative_v2_admission_20261029.md)保持原命令字节及登记的1e-12容差，529项原生CPU QA及全部实际dry已通过。唯一v2诊断已正常关闭：77完整调用、76唯一命令、3条非法请求，完整witness0；完整独立重放已启动，尚无其终态。实际仍cursor8、task/grasp0，GPU禁用，原18正确参考/12WAM开发/24最终留出门槛保持。
+v1实际producer dry在创建模型前因复用了额外warm裁剪守卫而失败；[隔离v2修正](../plans/v0.0.1/directional_derivative_v2_admission_20261029.md)保持原命令字节及登记的1e-12容差，529项原生CPU QA及全部实际dry已通过。唯一v2诊断已正常关闭：77完整调用、76唯一命令、3条非法请求，完整witness0；v2独立重放完成77调用后在旧stencil边界守卫失败，不能认定完整核验通过；[隔离check-only v3](../plans/v0.0.1/directional_derivative_check_v3_20261029.md)已登记。实际仍cursor8、task/grasp0，GPU禁用，原18正确参考/12WAM开发/24最终留出门槛保持。
 
 按[执行前登记](../plans/v0.0.1/directional_derivative_consistency_20261029.md)，固定旧trace1819命令锚点与stages24–26的三个方向，使用13个预定步长、先正后负，最后强制重复anchor。总计80计划请求；非法box/rate请求保留原因并跳过，合法命令即使预测joint/pose失败也完整记录。不优化、不裁剪、不替换控制器、不自适应追加请求。
 
@@ -43,3 +43,11 @@ v1源码、QA、失败准入及日志均保留原字节。v2入口仅替换为�
 80计划请求全部记录：76次首次计算、3次command拒绝、1次强制anchor repeat，无grid cache命中；77完整调用/76唯一命令、23100数值内步、24025查询、0优化迭代。完整H12 witness仍0。producer保存的初末anchor数值比较exact=true、最大差0，历史trace/anchor-audit比较也exact=true；这些是已关闭producer的保存结果，完整独立核验尚待结束，不能先据此作导数机制结论。
 
 [check-owner实际准入](../outputs/directional_derivative_v2_check_admission_20261029/result.json) SHA `48adb93eeb94f92d15789dd6fba8fe146d76893b9d4912af7b4f307eb4914d33`，原session30399实际exit0，2356引用、68源码不变，新响应0。完整checker owner已按唯一登记命令启动于session7602，必须核验全部77调用，包括末尾重复；1800秒上限、无自动重试。新增物理/模型/fresh/参考消费仍0。
+
+## 保留的v2独立checker失败与check-only v3登记
+
+原session7602实际terminal exit1。[失败checker](../outputs/tracking_v5_directional_derivative_v2_check_20261029/verified.json) SHA `f764512e07864a8dc89774059c43ed71ac76dca5914ad4531fa8a132b2ee5aab`、[失败owner](../outputs/tracking_v5_directional_derivative_v2_check_execution_20261029/result.json) SHA `feebe6faa1ff11491e94e8ed2c32b15573f5cf2c9dfe18517f392a71069bf852`。child205307/start616309119已实际wait1/reap，无信号或自动重试；失败owner无正常owned_command字段，生命周期通过原capture launch/exit/release直接绑定，不能伪造成功owner。
+
+全部77完整响应、23100内步、24025查询及固定网格代数已核验，严格分类分歧为空；随后在[原audit:437](../scripts/directional_derivative_audit.py#L437)因`Anchor inside old stage bounds`退出。该检查错误要求零容差，而原anchor仍在已登记1e-12容差内。历史anchor审计、JIT签名及最终来源闭合未到达，因此complete/passed=false，不认定完整独立核验通过。
+
+保留旧source与全部失败证据；[新计划](../plans/v0.0.1/directional_derivative_check_v3_20261029.md)只增加checker/helper/owner/evidence及测试，共7来源、75来源QA/23模块。新helper唯一语义变化为anchor bounds使用原±1e-12，不改FD符号、命令字节、响应绑定、差分公式或控制门槛。只重放已经关闭的同一v2 producer全部77调用，不重跑生产或新采样；原68来源QA与新75来源QA分开绑定，68摘要须完整相同。尚待新QA和实际dry通过后执行一次1800秒上限全量复核，原v2部分复算不能替代新完整复核。新增物理/模型/fresh/参考消费均0，实际仍cursor8、task/grasp0。
