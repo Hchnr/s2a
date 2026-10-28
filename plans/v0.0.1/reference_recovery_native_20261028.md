@@ -13,3 +13,5 @@ CPU producer已实际启动，结果待owner正常关闭。独立检查入口为
 实际producer已wait0/reap0：394总周期，16新周期全部hold、resume0，400内环样本；最小裕量.05324711229rad，最大保持位置/旋转误差.00334615924m/.04158785168rad，task/grasp均0。独立首版在首个前缀端点bitwise比较失败（最大3.073e-16），保留失败记录；v2预先登记1e-10绝对/0相对容差重放，实际执行中。[结果与限制](../../reports/reference_recovery_native_20261028.md)。
 
 v2复核在58周期后实际分叉（state最大分量差异.17327147），保持原失败记录。根因候选为checker遗漏producer初始和每周期post-action的传感刷新（current_observation内sim.forward），不放宽1e-10容差。v3 owner因多登记原清单不存在的测试迁移而在探针前失败；v4去掉该无关项并保持刷新时序修正，新目录实际执行中。
+
+v4复核已actual wait0/reap0完整关闭，394周期/395端点/400内环样本通过，state/q/qvel最大差异均0。verified SHA 807632bd10e8cec0d9a1bb61fff378622dcf2ef7e34381ee3264d1b4abbaa259。总物理847（含失败复核59），模型/fresh0。确认短时保持成立而推进仍0，原控制资格未改变；下一步检验原约束下先可行后性能的规划搜索，避免只延长保持。

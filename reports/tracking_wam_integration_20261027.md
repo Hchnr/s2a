@@ -681,3 +681,10 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 按[固定初值计划](../plans/v0.0.1/reference_resume_multistart_20261028.md)，在同一实际held endpoint378和自身因果历史上，保留原cursor9..16及全部原约束，分别从上一命令重复、held计划移位和原线性witness启动。三项均未找到非线性质量witness，响应数45/107/41，合计193，均非预算耗尽；不证明全局不可行，也未取得新的控制/任务资格。新增物理周期、世界模型调用及fresh案例均为0。actual wait0/reap0已核验，verified SHA `cb52615c6dfd6d51088958e95e6cab3636b5ec55b67159cf01a1ec28fe3544e8`。
 
 首版owner在探针执行前因两份已提交测试的指纹变化终止，原日志保留。v2仅明确登记测试9db6efa→2f09739的旧新SHA迁移，其余原v5源码仍按冻结指纹核验；原v5注册不修改。下一步应验证多周期保持后的真实反馈是否支持恢复推进，不在相同状态继续任意重启。GPU继续禁用，18条/WAM开发/final24门槛均不变。
+
+
+## 多周期实际保持/恢复复核关闭（2026-10-28，CPU）
+
+[完整记录](reference_recovery_native_20261028.md)：从实际held endpoint378执行16周期反馈，16次hold、0次resume，最后消费cursor8；最大保持位置/旋转误差.00334615924m/.04158785168rad、最小内环关节裕量.05324711229rad，task/grasp均0。独立394周期重放对齐真实传感刷新调度后，395端点与400新内环q/qvel/time全部核验，state/q/qvel最大差异均0；actual wait0/reap0，verified SHA 807632bd10e8cec0d9a1bb61fff378622dcf2ef7e34381ee3264d1b4abbaa259。保留前两版1及58周期失败及v3预执行失败记录，总新增实际物理847，model/fresh0。只能确认短时保持，仍不能沿原轨迹前进，不取得控制或任务资格。
+
+本次复核发现current_observation会调用sim.forward，遗漏初始/每周期刷新可导致接触段分叉；不能将其当成可省略而物理等价的读取。下一候选检验首周期可行性优先的原约束规划搜索，不继续任意增加保持/重启。GPU继续禁用，原18/WAM开发/final24门槛不变。
