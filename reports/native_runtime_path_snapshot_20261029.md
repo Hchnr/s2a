@@ -29,6 +29,20 @@
 
 执行owner的[exit](../outputs/native_runtime_path_snapshot_execution_20261029/00/exit.json#L1) SHA为`c7d849a7cc03fdcc943e035408c4c94d0f1a866278c5227571199a0bac93d3ab`，[release](../outputs/native_runtime_path_snapshot_execution_20261029/00/ownership/release.json#L1) SHA为`7e353a659261f6e873da2d8706af99a1896c05816c4a65a8703e6b136e10a1f4`。owner driver SHA为`680d451019638b83d80f90c1b850a298f514f8b1bc3dbd54ca294aefc499dd33`。
 
+## 独立文件核验及保留的核验失败
+
+另行使用纯stdlib、未导入生产模块的独立driver重新枚举源与输出，逐一比较文件SHA和大小，并严格反向核对三加五路径修改、原件字节及空dataset。隔离v2唯一执行已实际wait/reap0，无signal或自动重试；**完整输出1090文件、454957103字节、247目录（不含根）**，包含上述1084源文件及6份元数据（3626949字节），仍在原文件/字节预算内。2324份唯一引用在检查结束时重读不变，45份LIBERO与120份robosuite历史源码匹配，20个当前依赖的身份标签保持。快照及原输入全程只读，只在独立检查目录保存driver和收据。
+
+首次独立检查实际wait/reap1，在逐文件循环前停止：检查器在缓存目录截断，漏记45个后代文件的排除条目。只读复核确认归档与当前排除记录均为56项（11目录、45文件），没有新增或缺失。失败结果`outputs/native_runtime_path_snapshot_crosscheck_20261029/result.json` SHA为`544ff16d57c3f5e6d812a42d93f106e8368ba3d26c7100b4fef494cf42f0141b`，退出记录SHA为`43a8fbb2c807e78bfebab6e0793d53f503d20d645c6c58aa62603a8018efdba4`，均保留。此失败来自独立检查器的清单粒度，不能据此称原快照损坏，也不能把首轮记为通过。
+
+新目录`outputs/native_runtime_path_snapshot_crosscheck_v2_20261029`仅修复缓存遍历：继承排除标志，递归stat并记录后代，不读取缓存内容；四类工具缓存名称按原声明处理。AST差异仅为`enumerate_tree`。修复记录`repair.json` SHA为`9125feb09baafe65bee29c881aed7dd539da5647919c9706f936fc44fb7d19c3`，绑定旧失败与两份driver；生产代码、快照和旧检查记录未修改。
+
+| 独立v2证据 | SHA256 |
+| --- | --- |
+| [result.json](../outputs/native_runtime_path_snapshot_crosscheck_v2_20261029/result.json#L1) | `abfce6a762de30268123ca92da909441f31e2767716a2ca69ba1e221ca545100` |
+| [execution.json](../outputs/native_runtime_path_snapshot_crosscheck_v2_20261029/execution.json#L1) | `29f59a8fce9977af01fa5e80ea61f1eb0906e1f164a1919cb40d64de095ab650` |
+| [driver.py](../outputs/native_runtime_path_snapshot_crosscheck_v2_20261029/driver.py#L1) | `52a3acd483bc495be5eb68cb1d3f14ad59bcd47977381f4464e182824e0ef40d` |
+
 ## 仍未完成的资格
 
 所有结果仅标记`file_snapshot_verified=True`，`runtime_loaded/bootstrap_verified/control_qualified=False`。新增数值响应、物理周期、世界模型调用和fresh案例均为0。复制了文件，不代表后续Python导入、默认控制配置或动态库解析实际使用这些文件。
