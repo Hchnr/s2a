@@ -1,6 +1,6 @@
 # 实际接纳点曲率保留的显式 SQP：实现与组件验证
 
-本稿记录实现提交 `83a2467`、已关闭的正式 CPU QA和启动前准入。唯一真实数值搜索已启动（tool session33552），已观察到200个完整H12响应；尚无终态搜索或完整独立复算结果。组件测试通过不代表已获得控制解。
+本候选搜索已正常关闭（tool session33552实际exit0）：1919响应、27个合格QP、24次普通接纳与24次曲率更新后，三档半径回缩耗尽，仍为prefix9、完整H12 witness0。独立完整复算owner已启动（session6487），尚无其终态结果。本稿的搜索数字来自已关闭producer及保存数据分析，不冒充独立数值或实际控制资格。
 
 按[执行前登记](../plans/v0.0.1/accepted_point_sqp_20261029.md)，保持 actual368 当前状态、completed367 因果控制历史、已生成 chunk46 的原 H12、共同 warm、完整资产模型和历史误差 profile；不使用 actual369 以后的真实状态作输入。原18正确参考、12 WAM开发、24最终留出门槛保持。前置[固定优化余量完整复算](prefix_optimization_reserve_20261029.md)已关闭，仍为 prefix9、完整 H12 witness0。
 
@@ -39,6 +39,29 @@ H12每套完整差分为72轴，固定单边 nominal step 为 `1e-4`，符号由
 
 [准入记录](../outputs/accepted_point_sqp_admission_20261029/result.json) SHA为`ee6440624e8fb932d2f07c3ae2e9b5a7e748dbd088a44a8f5e3ece8462833869`。Ruff、47个Python文件format检查、producer dry、checker dry、diagnose owner dry五个命令均实际wait0，无信号、无重试，52份来源前后不变。producer/checker dry各核2299引用，owner dry核2301引用；新响应/查询均0，warm SHA保持`16bdfbb266ef13d2588c8116e13511d93df936d72ae8a57d19df0b01ed3acee0`。
 
-搜索通过同一QA和来源核查后启动，输出归属`outputs/tracking_v5_accepted_point_sqp_execution_20261029/`，producer输出根为`outputs/tracking_v5_accepted_point_sqp_20261029/`。当前观察只证明原进程确实推进，不证明正常退出或已找到完整witness；终态结果、全部响应的独立数值复算及其owner生命周期尚待关闭。
+## 已关闭的搜索与保存数据分析
+
+[producer](../outputs/tracking_v5_accepted_point_sqp_20261029/verified.json) SHA为`66b5b2f89905b7e8be17d92926ffe96015d2433c5f9ce9dc02860870b3d739da`；[owner](../outputs/tracking_v5_accepted_point_sqp_execution_20261029/result.json) SHA为`07301c0ac1fc413dba8f677a5bfbd123af707ed73589dd5e9a932fd807203da6`。原子进程4181009/start615941428正常wait0/reap，无信号或自动重试。未耗尽4000响应上限，也未追加预算；实际在三档信赖半径均无接纳点后停止。
+
+[保存数据分析](../outputs/accepted_point_sqp_result_analysis_20261029/result.json) SHA为`43c72b4136faa55a60142ac264f6a0e7790b918b878eb0d21679b739d7f5c22d`，driver实际exit0，2311引用重读不变。它只分析保存值，没有执行新响应；完整独立数值核验仍另行进行。
+
+| 项目 | 实际保存结果 |
+| --- | --- |
+| 完整唯一响应 / 数值内步 / 查询 | 1919 / 575700 / 598729 |
+| 响应来源 | warm1、FD1800、回缩118；FD另有144次缓存命中 |
+| 外层阶段 / QP代数迭代 | 27 / 466；27个QP后端成功且证书合格 |
+| 回缩 / 普通接纳 / 含warm的anchor | 118 / 24 / 25 |
+| 曲率更新 / 其中Powell阻尼 | 24 / 8；无cursor增长重置 |
+| 终止 | 最后三阶段半径.01/.005/.0025，各九条ray全部拒绝 |
+| prefix / 完整witness | 9→9 / 0 |
+| 原cursor9最大归一化平方误差 | 1.3249481018012241→1.3167648082536445 |
+| selected cursor9位置 / 旋转误差 | 0.011474935525262358m / 0.057375186454024805rad |
+| selected身份 | 全缓存排名第1918响应；不是最后接纳anchor1819 |
+
+实际s与同乘子曲率机制确实执行，但没有产生完整解。全部回缩中的拒绝原因计数为joint/command81、安全buffer83、prefix丢失20、无目标下降11，原因可重叠；不能把本次终止归因为QP证书失败。B条件数最高约`1.465e10`，已用s的无穷范数与FD步长之比约0.390625至100；这些诊断本身不证明病态曲率或差分误差是唯一原因。
+
+## 独立复算状态
+
+[check-owner准入](../outputs/accepted_point_sqp_check_admission_20261029/result.json) SHA为`e31c9652b1362215144659740874cb8c4733aa96969d59f9612a0d421bcfa410`，实际wait0/reap，核2307引用、新响应0。新check owner通过同一QA后已启动，目标是完整1919响应、118份ray与25份anchor及27个QP/24次曲率更新的独立核验；不得以部分复算替代全量关闭。
 
 实际任务仍停在原 cursor8、task/grasp0，本候选新增 physics/world-model/fresh 均0；GPU继续禁用。只有完整 H12 witness 与全部独立核验通过，才可另行登记物理 pilot；组件成功与局部 QP 证书均不升级控制资格。
