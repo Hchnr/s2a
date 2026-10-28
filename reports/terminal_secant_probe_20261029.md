@@ -15,4 +15,6 @@
 - QA：`outputs/terminal_secant_probe_native_qa_20261029_2wj0oaca/result.json`，SHA `28db556f5af66b66ad915cd2575ed89cd8e830c5d830b9b6564e534cc1c39019`；日志SHA `ee84af46547dc54b91991978f4c4c0d2d576d0e7fea8693075ffee683f07bc62`。执行句柄11307实际exit0，子进程wait/reap，无信号、无重试。
 - QA driver：`outputs/terminal_secant_probe_native_qa_driver_20261029.py`，SHA `2d9189f7cfee9b58cc50068cd0babddce46e6c18628f0fcfadf9ce6d08da38b8`。
 
-当前正式 CLI dry 准入进行中，17次新响应及独立复核尚未执行。组件测试不计作新控制效果证据。新增物理/world-model/fresh/参考消费均0，实际仍 cursor8、task/grasp0；原18正确参考/12WAM开发/24最终留出门槛保持，GPU继续禁用，总目标未完成。
+相关85源 Ruff/format、producer/checker/diagnose owner 的三条实际 CLI dry 均已正常完成；五个准入子进程实际wait0/reap、无信号、无重试，新增响应/查询为0。producer/checker分别检查2395项来源，owner另绑定本次QA和日志。准入 `outputs/terminal_secant_probe_admission_20261029/result.json`，SHA `7f4d7fc88051b003a8b9616949427c19b18dc5b77573cfb15268cddd23250957`，执行句柄47791实际exit0。
+
+实现已提交 `68ecd37`。正式 diagnose owner 已启动，原执行句柄52767保留；尚未取得完整17次响应及独立复核结果。组件测试与准入不计作新控制效果证据。新增物理/world-model/fresh/参考消费均0，实际仍 cursor8、task/grasp0；原18正确参考/12WAM开发/24最终留出门槛保持，GPU继续禁用，总目标未完成。
