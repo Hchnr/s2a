@@ -64,4 +64,22 @@ H12每套完整差分为72轴，固定单边 nominal step 为 `1e-4`，符号由
 
 [check-owner准入](../outputs/accepted_point_sqp_check_admission_20261029/result.json) SHA为`e31c9652b1362215144659740874cb8c4733aa96969d59f9612a0d421bcfa410`，实际wait0/reap，核2307引用、新响应0。新check owner通过同一QA后已启动，目标是完整1919响应、118份ray与25份anchor及27个QP/24次曲率更新的独立核验；不得以部分复算替代全量关闭。
 
+[运行中快照](../outputs/accepted_point_sqp_execution_checkpoint_20261029/checker_started.json) SHA为`f9aba7bd12ce274d89104c82c834310124a8fbac167c4dfb3d66237f9990334f`，记录原session6487、child24766/start616006536、owner21673/start616001104及100/1919进度；两进程均实际存活，空CUDA/LD及单线程环境核对通过，52份QA源码重读不变。这只是运行中证据，不能代替最终wait/reap或完整复算结果。
+
+## 保存数据的终端行诊断
+
+[只读诊断](../outputs/accepted_point_sqp_terminal_linearization_20261029/result.json) SHA为`951eb83b022938d1d908170c8bd8da32bca7a7687ad7b60cc6219e16963db3b9`，[执行记录](../outputs/accepted_point_sqp_terminal_linearization_20261029/execution.json) SHA为`2913a0e9ec50dec3681e73326a88dc3d3bef32af225962eba7ca4b4b3781fd91`。单次实际wait/reap0，2314引用前后不变；新响应、查询、内步、物理、模型及fresh均0。它从保存的完整安全向量、逐轴FD关联和实际ray位移重建线性预测，证据等级仍是保存数据代数。
+
+末三阶段共用anchor1819及同一组72轴FD。该anchor的`terminal[0]`余量为`1.320428817e-8`；27条ray均保持原prefix9并降低cursor9目标，但最小安全行全部为`terminal[0]`。26条违反原joint审计，最后一条仅低于`1e-8`优化buffer。因此全缓存selected1918与最后接纳anchor不同是既定排名与接纳规则的结果，并非已取得推进资格。
+
+| stage / 半径 | alpha=1实际terminal余量 | alpha=1/256线性预测 | alpha=1/256实际值 |
+| --- | --- | --- | --- |
+| 24 / .01 | -6.47022e-6 | 1.31918e-8 | -2.80245e-8 |
+| 25 / .005 | -3.65684e-6 | 1.31918e-8 | -4.85556e-9 |
+| 26 / .0025 | -1.69002e-6 | 1.31918e-8 | 8.65477e-10 |
+
+设R为实际余量减线性预测。stage24在alpha=1/16至1/128的R/alpha约为`-8.2e-6`且近稳定，R/alpha²绝对值却约增8倍；stage25/26的R/alpha也未趋近零。这支持有限采样区间内的一阶预测不一致，不能据此宣称已证明渐近误差阶数或纯二阶效应。FD截断、控制裁剪等不光滑性、浮点噪声尚未区分；末三阶段B条件数实际均约`6.36e5`，此前峰值也不足以证明BFGS是唯一原因。
+
+下一项拟验证问题是固定anchor与这三个已保存方向的方向导数一致性：独立登记预定步长的双侧/单侧差分，核对原命令合法性并计入每个新完整响应；双侧不合法则明确记录，不能裁剪后冒称原方向。该诊断尚未登记或执行，须先关闭当前完整复算。不会因当前失败放宽原caps/buffer、追加搜索预算或自动采用二阶修正；若不同步长差分不稳定，“减小FD步长即可解决”也应被否定。
+
 实际任务仍停在原 cursor8、task/grasp0，本候选新增 physics/world-model/fresh 均0；GPU继续禁用。只有完整 H12 witness 与全部独立核验通过，才可另行登记物理 pilot；组件成功与局部 QP 证书均不升级控制资格。
