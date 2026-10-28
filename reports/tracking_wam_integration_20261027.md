@@ -757,3 +757,11 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 独立原生公式与XML/MuJoCo重算全部1350数值内步、225解析内步和225实际内环标签通过；最大q差4.44e-16、v差5.22e-15、力矩差6.36e-13，SHA 996ebb167fc3b62884d2ac47a768233006567397e0dfbeac4a96c01a60b26388。两个producer/checker owner均实际wait0/reap0；11CPU组件测试及新增源码Ruff/format通过。另明确原生float32 goal与本次双精goal最大元素差3.55e-8，未改原容差或已执行来源。
 
 本阶段新增物理/世界模型/fresh0，无新action或任务成功。下一步按[停止点控制计划](../plans/v0.0.1/state_updated_stop_control_20261028.md)明确原生goal精度、接入受限规划并准备合规候选的原生实际前向；失败则回到较早起点规划，不放宽原actual gates。GPU禁用及完整任务门槛保持，总目标未完成。
+
+## 原生目标与状态更新响应的停止点规划关闭（2026-10-28，CPU）
+
+[完整报告](state_updated_stop_control_20261028.md)：actual377/cursor9固定H1/50ms搜索完成，281候选、32迭代，87个仅动作/关节合规，完整witness0。selected位置.00963287249m、旋转.07346693155rad，后者仍超原.05rad；SLSQP success不作达标证据，未派发新action，control_qualified=false。原box/rate、.05rad加自身过去九周期profile、.1s投影制动和实际pose门槛均保持。
+
+独立checker用真实Numba JIT原生quat2mat及独立MuJoCo查询重算九历史、全部281候选，共7250数值内步/7541查询；最大q/v/力矩差2.78e-17/1.78e-15/5.93e-13，SHA d09c7f9cf9b6685b338dd11b72abaa1f243d9610afcfaf973b2121b9d8ed17ef。JIT与纯Python方向增量矩阵最大差2.98e-8，不能沿用旧Python AST比较证明原生等价。上轮31项组件及1012个JIT精确比较为既有记录，本次文档核对未重跑。
+
+两个owner均实际wait0/reap0，无信号/自动重试；各1751来源及checker52引用当前SHA全部匹配，完整产物和退出链见报告。新增物理/模型/fresh0，实际仍止于cursor8、无新任务成功。下一步从更早actual368使用当时可用参考和历史构建包含cursor9的多周期规划，不能借用较晚误差profile或未来真实状态；数值候选独立通过后另登记CPU原生实际推进。GPU禁用与原18/完整12WAM/final24门槛保持，总目标未完成。
