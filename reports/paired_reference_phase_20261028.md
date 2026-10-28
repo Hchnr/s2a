@@ -15,7 +15,14 @@
 
 ## 当前状态与结果解释
 
-执行准入已完成，正式结果尚未生成。每组独立owner，无覆盖/自动重试；producer时限1200s、checker5400s，均空CUDA/LD且数值库单线程。两组冻结同一代码及QA；每组最多4000唯一完整响应/60共享迭代，预检warm只计一次。
+执行准入已完成，两个producer已由独立owner唯一启动，正式结果尚未生成。首次共同核实时early已完成700响应、late400响应，两组均已通过动态warm准入进入优化；这些运行中计数不表示找到witness。实际`/proc`的PID/start_ticks/父进程与launch一致、状态R，CUDA/LD为空；两个owner的1876项来源SHA表完全相同。
+
+| 组别 | owner工具会话 | child PID / start_ticks / parent | 运行证据 |
+| --- | --- | --- | --- |
+| early | 99422 | 3225627 / 613724158 / 3225434 | [registration](../outputs/tracking_v5_paired_reference_phase_early_execution_20261028/registration.json)、[launch](../outputs/tracking_v5_paired_reference_phase_early_execution_20261028/capture/launch.json) |
+| late | 83708 | 3226886 / 613730067 / 3226782 | [registration](../outputs/tracking_v5_paired_reference_phase_late_execution_20261028/registration.json)、[launch](../outputs/tracking_v5_paired_reference_phase_late_execution_20261028/capture/launch.json) |
+
+每组无覆盖/自动重试；producer时限1200s、checker5400s，均空CUDA/LD且数值库单线程。两组冻结同一代码及QA；每组最多4000唯一完整响应/60共享迭代，预检warm只计一次。尚无producer正常退出或新独立checker结果；必须等待实际wait/reap与完整结果，不能按进程启动或日志进度宣称成功。
 
 命令失败只记录0响应；动态warm失败记录1响应/325内步/339query、无优化和`answer=null`，不能称为有限搜索失败或物理不可行。任一组准入失败时，不根据另一组搜索结果宣布成对性能胜负。正常分支须由独立checker完整复算所有响应及owner实际wait/reap关闭后再解释。
 
