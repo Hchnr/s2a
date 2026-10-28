@@ -1,6 +1,6 @@
 # 固定锚点方向导数一致性：CPU诊断
 
-v1实际producer dry在创建模型前因复用了额外warm裁剪守卫而失败；[隔离v2修正](../plans/v0.0.1/directional_derivative_v2_admission_20261029.md)保持原命令字节及登记的1e-12容差，529项原生CPU QA及全部实际dry已通过。唯一v2诊断已正常关闭：77完整调用、76唯一命令、3条非法请求，完整witness0；v2独立重放完成77调用后在旧stencil边界守卫失败，不能认定完整核验通过；[隔离check-only v3](../plans/v0.0.1/directional_derivative_check_v3_20261029.md)已登记。实际仍cursor8、task/grasp0，GPU禁用，原18正确参考/12WAM开发/24最终留出门槛保持。
+v1实际producer dry在创建模型前因复用了额外warm裁剪守卫而失败；[隔离v2修正](../plans/v0.0.1/directional_derivative_v2_admission_20261029.md)保持原命令字节及登记的1e-12容差，529项原生CPU QA及全部实际dry已通过。唯一v2诊断已正常关闭：77完整调用、76唯一命令、3条非法请求，完整witness0；v2独立重放完成77调用后在旧stencil边界守卫失败，不能认定完整核验通过；[隔离check-only v3](../plans/v0.0.1/directional_derivative_check_v3_20261029.md)已通过573项QA与实际dry，同77调用全量复核已启动。实际仍cursor8、task/grasp0，GPU禁用，原18正确参考/12WAM开发/24最终留出门槛保持。
 
 按[执行前登记](../plans/v0.0.1/directional_derivative_consistency_20261029.md)，固定旧trace1819命令锚点与stages24–26的三个方向，使用13个预定步长、先正后负，最后强制重复anchor。总计80计划请求；非法box/rate请求保留原因并跳过，合法命令即使预测joint/pose失败也完整记录。不优化、不裁剪、不替换控制器、不自适应追加请求。
 
@@ -51,3 +51,11 @@ v1源码、QA、失败准入及日志均保留原字节。v2入口仅替换为�
 全部77完整响应、23100内步、24025查询及固定网格代数已核验，严格分类分歧为空；随后在[原audit:437](../scripts/directional_derivative_audit.py#L437)因`Anchor inside old stage bounds`退出。该检查错误要求零容差，而原anchor仍在已登记1e-12容差内。历史anchor审计、JIT签名及最终来源闭合未到达，因此complete/passed=false，不认定完整独立核验通过。
 
 保留旧source与全部失败证据；[新计划](../plans/v0.0.1/directional_derivative_check_v3_20261029.md)只增加checker/helper/owner/evidence及测试，共7来源、75来源QA/23模块。新helper唯一语义变化为anchor bounds使用原±1e-12，不改FD符号、命令字节、响应绑定、差分公式或控制门槛。只重放已经关闭的同一v2 producer全部77调用，不重跑生产或新采样；原68来源QA与新75来源QA分开绑定，68摘要须完整相同。尚待新QA和实际dry通过后执行一次1800秒上限全量复核，原v2部分复算不能替代新完整复核。新增物理/模型/fresh/参考消费均0，实际仍cursor8、task/grasp0。
+
+## v3正式QA、实际准入与全量重放启动
+
+实现提交`6d34b60`，失败及修正计划提交`2be7c54`。[原生QA](../outputs/directional_derivative_check_v3_native_qa_20261029_30du0rxo/result.json) SHA `73356f8cc6d75037ab09daa592ab5f21ab28218084dcb442717087fc65332da2`，[日志](../outputs/directional_derivative_check_v3_native_qa_20261029_30du0rxo/pytest.log) SHA `c3608333fcd58c0276121f62666a505f55517edb2ad23a3db172d843cdf5a962`。原session87070实际exit0，573 passed、2条既有warning，82.64秒；75源码和driver前后不变、23测试模块，Python3.11.15/NumPy1.26.4/SciPy1.15.3，空CUDA/LD及单线程。新增44项为12项stencil容差/篡改检查与32项check-only来源/实际capture/部分结果拒绝检查。
+
+[实际准入](../outputs/directional_derivative_check_v3_admission_20261029/result.json) SHA `d6ec3cc88a30cf2736536455627a36730edc41918f30e154a7f2a7970c559b58`，原session6229实际exit0；完整QA来源内Python的Ruff/format、checker dry、check-only owner dry四项均actual wait/reap0，无信号或重试。checker核2371引用；旧68来源仍是新75来源同摘要子集。新增响应、查询、物理、模型、fresh均0。
+
+唯一v3完整复核owner已启动于session43994，固定1800秒子进程上限、77完整调用（含末尾repeat），保留原v2 producer与其原QA；没有重跑生产。此处仅记录启动，完整stencil/历史anchor、来源及wait/reap仍待正常结束。实际任务仍cursor8、task/grasp0，不将573组件测试或原部分数值复算升级为控制成功。
