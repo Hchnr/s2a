@@ -1,0 +1,44 @@
+# 实际接纳点曲率保留的显式 SQP：实现与组件验证
+
+本稿记录实现提交 `83a2467`、已关闭的正式 CPU QA和启动前准入。唯一真实数值搜索已启动（tool session33552），已观察到200个完整H12响应；尚无终态搜索或完整独立复算结果。组件测试通过不代表已获得控制解。
+
+按[执行前登记](../plans/v0.0.1/accepted_point_sqp_20261029.md)，保持 actual368 当前状态、completed367 因果控制历史、已生成 chunk46 的原 H12、共同 warm、完整资产模型和历史误差 profile；不使用 actual369 以后的真实状态作输入。原18正确参考、12 WAM开发、24最终留出门槛保持。前置[固定优化余量完整复算](prefix_optimization_reserve_20261029.md)已关闭，仍为 prefix9、完整 H12 witness0。
+
+新机制在实际接纳点重新建立显式 QP，保存命令块曲率，而不是每次取得首个 callback 就丢弃整个内部优化状态。它同时改变方向生成与曲率生命周期，未来差异不能单独归因于 BFGS。
+
+QP变量为 `[d,t]`，`t` 是绝对非负 epigraph；目标为 `t + 1e-4*grad(sum(q))·d + 0.5*dᵀBd`。全部安全、前缀、目标、rate、box和信赖域约束写成 `A[d,t]+b>=0`。已达前缀仅在优化模型中保留 `1e-4` 余量；实际 pose caps 仍为10mm和0.05rad。普通回缩点仍须通过原完整 joint/command 审计、原连续前缀、`1e-8` 非线性安全余量及原下降条件；完整 witness 要求全部 H12 原 caps 和审计通过，不额外要求优化余量。依据：[QP构造:291](../src/s2a/accepted_point_sqp_plan.py#L291)、[实际接纳:425](../src/s2a/accepted_point_sqp_plan.py#L425)。
+
+QP使用公开 SciPy SLSQP，解析目标梯度和约束 Jacobian，`ftol=1e-14`、最多100个内部代数迭代。固定行缩放后，以 NNLS 拟合全部 active 行的非负乘子，独立检查 scaled primal、stationarity 和 complementarity，证书阈值 `1e-6`，active 阈值为其10倍。后端 success 与证书必须同时成立；乘子是近似局部 QP 乘子，不是精确物理乘子。依据：[公开QP:48](../src/s2a/accepted_point_sqp_core.py#L48)、[证书:156](../src/s2a/accepted_point_sqp_core.py#L156)。
+
+同 cursor 的下一实际接纳点完成整套 FD 后，使用前一合格 QP 的同一组原单位非线性乘子计算两端 Lagrangian 梯度差；`s` 来自实际接纳 ray 的命令差，而非未接纳的完整 QP 步长。固定 Powell 阻尼系数0.2；实现采用对称 outer 公式，随后做严格对称性及 Cholesky 检查，未另做矩阵平均或谱修补。无效更新保留旧 B；不以 FD 间距作为最小接纳位移阈值。依据：[同乘子实际secant:311](../src/s2a/accepted_point_sqp_plan.py#L311)、[BFGS:219](../src/s2a/accepted_point_sqp_core.py#L219)。
+
+拒绝的 ray 不产生新 secant，部分 FD 不更新 B；待更新 pair 只能消费一次。半径缩小保留 B，cursor 增长重置为单位阵并清空 pending pair。合格非零 QP 方向按固定九个 alpha（1至1/256）实际回缩，普通接纳只取第一条合格 ray；完整缓存 witness 优先。依据：[回缩:391](../src/s2a/accepted_point_sqp_plan.py#L391)、[状态转换:461](../src/s2a/accepted_point_sqp_plan.py#L461)。
+
+H12每套完整差分为72轴，固定单边 nominal step 为 `1e-4`，符号由本阶段上界决定。差分、回缩和 warm 共用精确命令字节缓存；每个新的完整 H12 响应计入原4000预算，缓存命中不重复计费。最多60次非线性外层尝试、60阶段；QP内部代数迭代单独计数，最多6000次，不混称为非线性迭代或模型响应。半径固定为 `.01/.005/.0025`；预算中断保留已有完整响应及 witness，不追加预算。依据：[固定参数:14](../src/s2a/accepted_point_sqp_plan.py#L14)、[差分:270](../src/s2a/accepted_point_sqp_plan.py#L270)、[终止:508](../src/s2a/accepted_point_sqp_plan.py#L508)。
+
+独立 checker 将逐条重构全部唯一响应；每条 compact trace 的 TCP error 和完整安全 slack 向量另按原数值容差核对，严格 prefix/joint/witness 标签不放宽。每份实际 ray 与 anchor 的完整审计也必须核验。算法代数则用已核对的保存原精度 trace 重建 FD、QP、乘子证书与 B 生命周期，避免将不同浮点重放路线的误差放大后冒充原算法 Jacobian。账本与代数审计不导入生产求解器，也不重新求解 QP。依据：[逐响应核验:264](../scripts/check_tracking_v5_accepted_point_sqp.py#L264)、[账本:59](../scripts/accepted_point_sqp_ledger_audit.py#L59)、[独立QP证书:88](../scripts/accepted_point_sqp_math_audit.py#L88)。
+
+## 已关闭的正式 CPU QA
+
+直接读取 [QA receipt](../outputs/accepted_point_sqp_native_qa_20261029_ubofewed/result.json) 与其绑定的 [pytest日志](../outputs/accepted_point_sqp_native_qa_20261029_ubofewed/pytest.log)，确认：
+
+| 项目 | 实际记录 |
+| --- | --- |
+| 测试 | 425 passed，2 warnings，49.35秒 |
+| 来源 / 测试模块 | 52 / 17 |
+| 完成 / 通过 / 实际wait / 退出码 | true / true / true / 0 |
+| QA来源前后不变 | `source_unchanged=true` |
+| Runtime | Python3.11.15、NumPy1.26.4、SciPy1.15.3 |
+| CPU环境 | CUDA/LD为空，禁bytecode，OPENBLAS/OMP/MKL/NUMEXPR/LP均为1 |
+| receipt SHA256 | `15fcabb5e5a3f09df41cf0fc7dfce469c011bf54fdf6ff944bde874ee6466143` |
+| 日志 SHA256 | `e4c2a84f97f1d321c17d4c86161940aed8e41da1f40da2a8a765a42656a446e9` |
+
+组件证据覆盖解析 QP/dual、缩放、失败证书、Powell 阻尼与 SPD、真实合成响应的缩短 ray 与同乘子 secant、cursor reset、部分 FD 预算及全缓存 witness；还验证差分换绑、错误位移/梯度差、伪证书、缓存计费、错误 anchor 和放宽 caps 均被拒绝。执行接线测试另核共同初态、来源/QA绑定及 checker 在独立数值检查前不转交未验证数据。依据：[外层测试:49](../tests/test_accepted_point_sqp_plan.py#L49)、[账本反例:101](../tests/test_accepted_point_sqp_ledger_audit.py#L101)、[执行接线:413](../tests/test_accepted_point_sqp_execution.py#L413)。
+
+## 准入与搜索状态
+
+[准入记录](../outputs/accepted_point_sqp_admission_20261029/result.json) SHA为`ee6440624e8fb932d2f07c3ae2e9b5a7e748dbd088a44a8f5e3ece8462833869`。Ruff、47个Python文件format检查、producer dry、checker dry、diagnose owner dry五个命令均实际wait0，无信号、无重试，52份来源前后不变。producer/checker dry各核2299引用，owner dry核2301引用；新响应/查询均0，warm SHA保持`16bdfbb266ef13d2588c8116e13511d93df936d72ae8a57d19df0b01ed3acee0`。
+
+搜索通过同一QA和来源核查后启动，输出归属`outputs/tracking_v5_accepted_point_sqp_execution_20261029/`，producer输出根为`outputs/tracking_v5_accepted_point_sqp_20261029/`。当前观察只证明原进程确实推进，不证明正常退出或已找到完整witness；终态结果、全部响应的独立数值复算及其owner生命周期尚待关闭。
+
+实际任务仍停在原 cursor8、task/grasp0，本候选新增 physics/world-model/fresh 均0；GPU继续禁用。只有完整 H12 witness 与全部独立核验通过，才可另行登记物理 pilot；组件成功与局部 QP 证书均不升级控制资格。
