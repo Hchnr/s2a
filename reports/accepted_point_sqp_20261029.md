@@ -1,6 +1,6 @@
 # 实际接纳点曲率保留的显式 SQP：实现与组件验证
 
-本候选搜索已正常关闭（tool session33552实际exit0）：1919响应、27个合格QP、24次普通接纳与24次曲率更新后，三档半径回缩耗尽，仍为prefix9、完整H12 witness0。独立完整复算owner已启动（session6487），尚无其终态结果。本稿的搜索数字来自已关闭producer及保存数据分析，不冒充独立数值或实际控制资格。
+本候选搜索与完整独立复算均已正常关闭（tool sessions33552、6487实际exit0）：1919响应、27个合格QP、24次普通接纳与24次曲率更新后，三档半径回缩耗尽，仍为prefix9、完整H12 witness0。全部响应、118条ray、25份anchor及QP/曲率账本已独立核验，严格分类一致；这仍是局部数值证据，不是实际控制资格。
 
 按[执行前登记](../plans/v0.0.1/accepted_point_sqp_20261029.md)，保持 actual368 当前状态、completed367 因果控制历史、已生成 chunk46 的原 H12、共同 warm、完整资产模型和历史误差 profile；不使用 actual369 以后的真实状态作输入。原18正确参考、12 WAM开发、24最终留出门槛保持。前置[固定优化余量完整复算](prefix_optimization_reserve_20261029.md)已关闭，仍为 prefix9、完整 H12 witness0。
 
@@ -60,7 +60,13 @@ H12每套完整差分为72轴，固定单边 nominal step 为 `1e-4`，符号由
 
 实际s与同乘子曲率机制确实执行，但没有产生完整解。全部回缩中的拒绝原因计数为joint/command81、安全buffer83、prefix丢失20、无目标下降11，原因可重叠；不能把本次终止归因为QP证书失败。B条件数最高约`1.465e10`，已用s的无穷范数与FD步长之比约0.390625至100；这些诊断本身不证明病态曲率或差分误差是唯一原因。
 
-## 独立复算状态
+## 已关闭的完整独立复算
+
+原session6487实际terminal exit0；[checker](../outputs/tracking_v5_accepted_point_sqp_check_20261029/verified.json) SHA `01cc69cac324ef4018a3313c634cc41a3dd56e09918c8e1d99b75af5adaf5021`，[owner](../outputs/tracking_v5_accepted_point_sqp_check_execution_20261029/result.json) SHA `54844de29f4f153af3a090424ef9a67d047e9e1152351b4b6c79fcf4d90d96ab`。原child24766/start616006536正常wait0/reap，无信号或自动重试。
+
+完整1919响应、575700数值内步、598729查询、118份完整ray和25份anchor核验完成，27个QP证书与24次曲率更新及466代数迭代全部对应。strict prefix/joint/witness分类分歧0；数值/代数比较记录中的最大绝对差约`1.464e-12`。native JIT与纯Python目标计算另外记录最大差`8.941e-8`，没有将两种计算路线混作相同原精度FD。
+
+[最终来源与生命周期闭合](../outputs/accepted_point_sqp_final_closure_20261029.json) SHA `d42f7feb220c98967fd84c5f1f88995af8514afe27a7e90565568dc466ef976b`，driver session21254实际exit0，2316引用重读不变；同一52源QA、原producer/checker命令及两子进程实际wait/reap均核对通过。新增响应/查询/物理/模型/fresh均0，完整witness仍0。以下启动记录保留历史时点口径。
 
 [check-owner准入](../outputs/accepted_point_sqp_check_admission_20261029/result.json) SHA为`e31c9652b1362215144659740874cb8c4733aa96969d59f9612a0d421bcfa410`，实际wait0/reap，核2307引用、新响应0。新check owner通过同一QA后已启动，目标是完整1919响应、118份ray与25份anchor及27个QP/24次曲率更新的独立核验；不得以部分复算替代全量关闭。
 
@@ -80,6 +86,6 @@ H12每套完整差分为72轴，固定单边 nominal step 为 `1e-4`，符号由
 
 设R为实际余量减线性预测。stage24在alpha=1/16至1/128的R/alpha约为`-8.2e-6`且近稳定，R/alpha²绝对值却约增8倍；stage25/26的R/alpha也未趋近零。这支持有限采样区间内的一阶预测不一致，不能据此宣称已证明渐近误差阶数或纯二阶效应。FD截断、控制裁剪等不光滑性、浮点噪声尚未区分；末三阶段B条件数实际均约`6.36e5`，此前峰值也不足以证明BFGS是唯一原因。
 
-下一项拟验证问题是固定anchor与这三个已保存方向的方向导数一致性：独立登记预定步长的双侧/单侧差分，核对原命令合法性并计入每个新完整响应；双侧不合法则明确记录，不能裁剪后冒称原方向。该诊断尚未登记或执行，须先关闭当前完整复算。不会因当前失败放宽原caps/buffer、追加搜索预算或自动采用二阶修正；若不同步长差分不稳定，“减小FD步长即可解决”也应被否定。
+下一项验证固定anchor与这三个已保存方向的方向导数一致性：[固定80请求计划](../plans/v0.0.1/directional_derivative_consistency_20261029.md)已登记，当前实现尚未执行真实响应。预定步长的双侧/单侧差分核对原命令合法性并计入每个完整响应；双侧不合法则明确记录，不能裁剪后冒称原方向。当前完整复算已关闭，仍须新组件QA与实际dry通过才准入。不会因当前失败放宽原caps/buffer、追加搜索预算或自动采用二阶修正；若不同步长差分不稳定，“减小FD步长即可解决”也应被否定。
 
 实际任务仍停在原 cursor8、task/grasp0，本候选新增 physics/world-model/fresh 均0；GPU继续禁用。只有完整 H12 witness 与全部独立核验通过，才可另行登记物理 pilot；组件成功与局部 QP 证书均不升级控制资格。
