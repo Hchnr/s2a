@@ -12,4 +12,8 @@
 
 QA产物为 `outputs/restored_anchor_sqp_native_qa_20261029_hjcgopjj/result.json`，SHA `6f77550d6df96e8ff56e9e97250e89081fd3a529d66f825cd55767d462c757ca`；日志SHA `4169482514acee808a3d198fb7a8de1ab95376c4cc64fa0fbffd44ded3f6a5e7`。driver `outputs/restored_anchor_sqp_native_qa_driver_20261029.py` SHA `294bc0c88b6c2c14ef318a9975d9b2dbd07c4c07f3bc371ef5fb8507da737e58`。
 
-实际CLI准入正在执行，正式搜索尚未启动。GPU继续禁用；新增物理/world-model/fresh/参考消费0，实际仍cursor8、task/grasp0，原18正确参考/12WAM开发/24最终留出门槛及总目标不变。
+实际CLI准入已完成：110源中的Python文件Ruff/format、producer dry、独立checker dry和diagnose owner dry共5个子进程均actual wait0/reap、无信号/重试，句柄48369实际exit0。两入口分别核验2499来源，warm SHA `cb86ceaa9a474b6ace07ca3babf9c99fb2102fe1b04ec0e4641037a356c5f00e`；新增响应/查询0。
+
+准入产物 `outputs/restored_anchor_sqp_admission_20261029/result.json` SHA `bd7bf2fbd8e1583094110936e5458f02e05e97519b310f3092a9d5e45e9f58e9`；driver `outputs/restored_anchor_sqp_admission_driver_20261029.py` SHA `d45f7389f567af592d5d9614c798fde00d796e26dcb797de65c4f9690017437f`。正式搜索为下一执行步骤，check owner的实际dry须等该producer正常关闭后单独执行。
+
+GPU继续禁用；新增物理/world-model/fresh/参考消费0，实际仍cursor8、task/grasp0，原18正确参考/12WAM开发/24最终留出门槛及总目标不变。
