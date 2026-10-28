@@ -9,3 +9,7 @@
 入口`execute_tracking_v5_reference_recovery_native.py --launch`，探针`probe_tracking_v5_reference_recovery_native.py`；使用独立新outputs目录，不覆盖历史。延用上次明确的两份测试指纹9db6efa→2f09739迁移，其余冻结原v5源码仍按SHA验证。后续需独立保存命令重放，逐端点及25内环状态核验，不能用producer自报替代物理复核。
 
 CPU producer已实际启动，结果待owner正常关闭。独立检查入口为`execute_tracking_v5_reference_recovery_native_check.py --launch`，必须先确认producer实际wait0/reap0；重放每条保存命令，逐端点与25内环q/qvel/time比较，检查参考消费、因果历史更新、原动作box/rate、实际误差/裕量及停止后无派发。当前不能宣称恢复或任务成功。
+
+实际producer已wait0/reap0：394总周期，16新周期全部hold、resume0，400内环样本；最小裕量.05324711229rad，最大保持位置/旋转误差.00334615924m/.04158785168rad，task/grasp均0。独立首版在首个前缀端点bitwise比较失败（最大3.073e-16），保留失败记录；v2预先登记1e-10绝对/0相对容差重放，实际执行中。[结果与限制](../../reports/reference_recovery_native_20261028.md)。
+
+v2复核在58周期后实际分叉（state最大分量差异.17327147），保持原失败记录。根因候选为checker遗漏producer初始和每周期post-action的传感刷新（current_observation内sim.forward），不放宽1e-10容差。v3 owner因多登记原清单不存在的测试迁移而在探针前失败；v4去掉该无关项并保持刷新时序修正，新目录实际执行中。
