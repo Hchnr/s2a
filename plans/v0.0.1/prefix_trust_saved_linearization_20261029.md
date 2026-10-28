@@ -16,7 +16,7 @@
 
 ## 输出和判断范围
 
-新脚本` scripts/diagnose_prefix_trust_saved_linearization.py`输出独占JSON，保留逐callback和逐stage记录、输入/源码引用以及零新响应/查询/数值内步/物理步/模型调用。用小型合成线性例核验差分方向、最新同stage组匹配及零残差，并拒绝不完整或被篡改的ledger。
+新脚本`scripts/diagnose_prefix_trust_saved_linearization.py`输出独占JSON，保留逐callback和逐stage记录、输入/源码引用以及零新响应/查询/数值内步/物理步/模型调用。用小型合成线性例核验差分方向、最新同stage组匹配及零残差，并拒绝不完整或被篡改的ledger。
 
 同时报告线性预测超限的原始符号及量级；若仅为机器舍入量级而实际偏差显著较大，只能得出“线性模型把前缀压在边界、完整响应越界”，不能宣称实质线性不可行。比较半径时逐stage列示，不能预设半径减半会单调减小偏差。不同callback目标误差与各自基点、同一anchor分别比较。
 
