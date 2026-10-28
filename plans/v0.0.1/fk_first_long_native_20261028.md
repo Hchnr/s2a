@@ -8,4 +8,6 @@
 
 入口`execute_tracking_v5_fk_first_long_native.py --horizon H --launch`，独立重放`execute_tracking_v5_fk_first_long_native_check.py --horizon H --launch`，H依次8/12/16。独立重放不导入求解器，核对所有端点/25内环q/qvel/time、历史、参考消费、保存的全未来误差及首点cap策略、真实误差/裕量/任务谓词和停止行为；保持同样sensor刷新与render调度。
 
-模型/fresh0；原18条4907步、完整12WAM开发、final24任务资格及GPU禁用保持。CPU数值可行、短期实际达标和仿真20Hz均不代表完整任务、泛化或50ms实时资格。待执行。
+模型/fresh0；原18条4907步、完整12WAM开发、final24任务资格及GPU禁用保持。CPU数值可行、短期实际达标和仿真20Hz均不代表完整任务、泛化或50ms实时资格。
+
+三组实际生产及独立重放均已actual wait0/reap0：各9周期实际达标但只到cursor8，step377/cursor9前全因模型无witness停止；task/grasp全false。独立各377周期/378端点/225新内环样本的state/q/qvel差异均0，未来全部324预测端点独立XML几何与误差重算通过。本阶段总物理2262，模型/fresh0，无完整控制或任务资格。[完整结果](../../reports/fk_first_long_native_20261028.md)。

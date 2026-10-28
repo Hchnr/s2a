@@ -12,4 +12,4 @@
 
 producer和独立检查均actual wait0/reap0，新增物理/模型/fresh0。producer verified SHA `68348411dcb921b7dbaa1955a9b991a725cabc7ae36961ab3ba4f8a322536f11`；checker `3584e1bcf5f4499dbbbd1e102c514ed177ac977b7fbaad1dcbd8a93301787849`。相关4测试通过3.18s，新脚本Ruff/format通过；未重复全量回归。
 
-[下一阶段](../plans/v0.0.1/fk_first_long_native_20261028.md)预先登记全部三组各最多16新周期的同起点实际反馈与独立重放；当前无实际比较结果。GPU禁用，原18/完整12WAM/final24资格不变，总目标未完成。
+[下一阶段](../plans/v0.0.1/fk_first_long_native_20261028.md)预先登记全部三组各最多16新周期的同起点实际反馈与独立重放；三组实际比较及独立重放现已[完整关闭](fk_first_long_native_20261028.md)：各9周期后均在cursor9前停止，未扩大实际推进范围。GPU禁用，原18/完整12WAM/final24资格不变，总目标未完成。
