@@ -1,5 +1,9 @@
 # S2A — State to Action
 
+v4最新完整结果（2026-10-28）：[全量独立复核](reports/tracking_wam_integration_20261027.md)已actual wait0/reap，12案例、900请求和31500节点全部校验关闭；任务稳定成功raw 0/6、terminal 0/6，开发门槛未通过，最终留出仍关闭。v5仍在运行，不能据审核完成宣称总目标实现。
+
+最新运行状态（2026-10-28）：[v5释放阈值WAM开发矩阵](plans/v0.0.1/tracking_wam_v5_20261028.md)已通过129项组件QA、12输入预检、独立metadata及14 CLI dry；模型服务实际就绪，前三案例各600周期/75请求生产已关闭，任务成功均0；第二、三条保存状态确认q7越界，第四条继续运行。保持原12条/900请求/7200周期与任务门槛，尚无新任务成功结论，最终留出仍关闭。完整证据与历史失败见[集成报告](reports/tracking_wam_integration_20261027.md)。
+
 107最新完整结果：[追加wrench覆盖forward](reports/wrench_coverage_forward_20261025.md)5000方程唯一fit、独立增广SVD及三个stage/owner正常退出和来源审查完成；holdout23/24、局部22/24，资格失败，不进入控制。106追加147条/13209周期训练数据完整资格通过。原总目标与最终门槛保持。
 
 104最新完整结果：[当前实测wrench条件forward](reports/wrench_conditioned_arm_forward_20261025.md)4937方程唯一fit、独立增广SVD与三个stage/owner实际wait0和来源核验完成；holdout21/24、局部22/24，资格失败，不进入控制。103[原30轨迹wrench数据](reports/native_wrench_data_20261025.md)6180周期/6210端点及全量数据资格通过。原总目标与最终验收门槛保持。
