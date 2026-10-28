@@ -722,3 +722,12 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 [实际前向反馈及独立重放](fk_feedback_native_20261028.md)关闭：2新周期实际误差均达标，位置1.059/2.255mm、旋转.01817/.01863rad，最小内环关节裕量.36213rad。step370完整8点精度模型无witness，按计划未派发，未执行cursor2/关键9，task/grasp均0。独立370周期/371端点/50内环样本最大state/q/qvel差异0，actual wait0/reap0，verified SHA 9066f354d88851bad042cea70c7112921fb8271730756fb843a749ada2b9a484。总实际物理740、模型/fresh0，control_qualified=false。
 
 下一步区分新增完整未来精度约束的保守性与当前动作不可行：在同一新endpoint370及自身history上比较首点/完整精度，保留原实际误差、关节、时序及全部任务门槛。原未来pose/twist性能成本仍保留，不把额外模型条件当成原真实验收。GPU继续禁用，原总目标尚未完成。
+
+
+## 同状态首点/全预览对照与实际前进（2026-10-28，CPU）
+
+[actual370配对](fk_cap_scope_20261028.md)保持所有原关节/历史/制动/terminal和未来pose/twist成本，全8点硬精度154响应无witness；首点硬精度62响应有witness，当前预测误差1.800mm/.01582rad，但预测cursor9旋转.07794rad仍超标。所有返回端点MuJoCo FK一致，actual wait0/reap0，verified SHA 94e17c413bbd44c2908f93b8d3456360378ff9e8ca71e56578c67c4cd2ff6d8f，物理/模型/fresh0，不把首点标签写成完整成功。
+
+[首点FK原生仿真延续](fk_first_feedback_native_20261028.md)新增7周期全部实际达标，最大位置3.334mm、旋转.04753rad、最小关节裕量.08126rad，task/grasp均0。加上继承两周期仅执行到cursor8，关键cursor9前step377又无模型witness而停止。独立377周期/378端点/175新内环样本最大state/q/qvel差异0，actual wait0/reap0，verified SHA 9797b915aa7ea84c95bb958ae9f88d1a2ad2dfedbb528a5ec67f76f80da6c86b。新增实际物理754，模型/fresh0，尚无完整控制/任务或实时资格。
+
+下一比较从更早实际368重新锚定，在固定首点精度和原真实验收不变下检查8/12/16点未来成本窗口是否能提前纳入cursor9，不能复用不同计划的旧已达状态或跳过关键点。新模块及原FK模块4测试通过，新源码Ruff/format通过；GPU禁用与原18/WAM/final24门槛均保持。

@@ -14,6 +14,8 @@ v4最新完整结果（2026-10-28）：[全量独立复核](reports/tracking_wam
 
 最新FK修正与物理核验（2026-10-28）：[FK一致8点模型解](reports/fk_consistent_trajectory_20261028.md)通过独立XML/MuJoCo核验；[原生反馈](reports/fk_feedback_native_20261028.md)两个实际周期误差均达标，随后step370完整未来精度搜索无解而停止。独立370周期/371端点/50内环状态差异0，task/grasp仍0，未到达关键参考点；GPU继续禁用，尚无完整控制或任务资格。
 
+最新首周期反馈证据（2026-10-28）：[同状态对照及原生仿真延续](reports/fk_first_feedback_native_20261028.md)新增7周期实际达标，独立377周期/378端点/175内环状态差异0；连同前两周期仅到cursor8，关键cursor9前仍因模型无解停止，task/grasp0。下一步从早期实际起点检查更长未来成本窗口；原真实验收门槛及GPU禁用保持。
+
 107最新完整结果：[追加wrench覆盖forward](reports/wrench_coverage_forward_20261025.md)5000方程唯一fit、独立增广SVD及三个stage/owner正常退出和来源审查完成；holdout23/24、局部22/24，资格失败，不进入控制。106追加147条/13209周期训练数据完整资格通过。原总目标与最终门槛保持。
 
 104最新完整结果：[当前实测wrench条件forward](reports/wrench_conditioned_arm_forward_20261025.md)4937方程唯一fit、独立增广SVD与三个stage/owner实际wait0和来源核验完成；holdout21/24、局部22/24，资格失败，不进入控制。103[原30轨迹wrench数据](reports/native_wrench_data_20261025.md)6180周期/6210端点及全量数据资格通过。原总目标与最终验收门槛保持。
