@@ -1,5 +1,7 @@
 # S2A — State to Action
 
+最新CPU多周期结果（2026-10-28）：[原生目标H12搜索](reports/state_updated_trajectory_control_20261028.md)完成4000完整响应/53迭代，没有完整witness；selected最大位置22.56mm、旋转.11278rad，仍超原门槛。v2全量独立复算正在执行，原500条终止记录保留为未完成；[保留达标前缀的修复](plans/v0.0.1/prefix_preserving_trajectory_control_20261028.md)已实现并通过17项CPU组件验证，尚未正式搜索。新增物理/模型/fresh0，实际仍止于cursor8，GPU继续禁用。
+
 最新CPU停止点结果（2026-10-28）：[原生目标与状态更新受限规划](reports/state_updated_stop_control_20261028.md)及独立7250数值内步复核完整关闭；281候选/32迭代未找到cursor9执行解，selected旋转.07346693rad仍超原.05rad门槛。新增物理/模型/fresh0，实际仍止于cursor8；下一步从更早actual368开展包含cursor9的多周期规划，原实际门槛和GPU禁用保持。
 
 最新CPU动力学证据（2026-10-28）：[冻结与状态更新响应](reports/state_updated_joint_response_20261028.md)九个已执行周期及独立1350数值内步核验关闭。更新2ms模型最大关节预测误差.000115660rad，固定M/J同数值法.000452429、旧解析.004138869；尚无新action或任务成功，实际仍止于cursor8。下一步接入受限规划和实际前向验证，原验收门槛及GPU禁用保持。

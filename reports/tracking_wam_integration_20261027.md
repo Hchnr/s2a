@@ -765,3 +765,11 @@ GPU保持禁用，后续只做CPU工作。下一步若继续保持/恢复对照�
 独立checker用真实Numba JIT原生quat2mat及独立MuJoCo查询重算九历史、全部281候选，共7250数值内步/7541查询；最大q/v/力矩差2.78e-17/1.78e-15/5.93e-13，SHA d09c7f9cf9b6685b338dd11b72abaa1f243d9610afcfaf973b2121b9d8ed17ef。JIT与纯Python方向增量矩阵最大差2.98e-8，不能沿用旧Python AST比较证明原生等价。上轮31项组件及1012个JIT精确比较为既有记录，本次文档核对未重跑。
 
 两个owner均实际wait0/reap0，无信号/自动重试；各1751来源及checker52引用当前SHA全部匹配，完整产物和退出链见报告。新增物理/模型/fresh0，实际仍止于cursor8、无新任务成功。下一步从更早actual368使用当时可用参考和历史构建包含cursor9的多周期规划，不能借用较晚误差profile或未来真实状态；数值候选独立通过后另登记CPU原生实际推进。GPU禁用与原18/完整12WAM/final24门槛保持，总目标未完成。
+
+## 原生目标H12搜索与保留前缀修复准备（2026-10-28，CPU）
+
+[完整报告](state_updated_trajectory_control_20261028.md)：原actual368、同一H12已生成参考、真实367方向goal与零历史profile，完成4000完整轨迹响应/53迭代，新增1200000预测内步；406动作/关节合规，完整witness0。selected最大位置22.56mm、旋转.11278rad，原双caps达标点从warm6/12降到2/12，改善最坏误差没有带来完整跟踪。producer实际wait0/reap0，不能把预算耗尽当作物理不可达证明。
+
+原独立checker执行500/4000条后明确终止，实际wait/reap=-15及来源保留；v2只减少相同数值条件的断言开销，13项比较测试通过，从头执行全部4000条。当前仍在运行，无完整独立核验结论；原失败attempt不覆盖或并入通过计数。
+
+[保留已达标前缀修复](../plans/v0.0.1/prefix_preserving_trajectory_control_20261028.md)已实现并通过17项CPU组件测试，允许移动早期命令而保持原pose caps，逐点修复首失败cursor，完整安全条件及4000/60共享预算保持。原v2完整关闭前不启动新科学搜索；没有新action/物理/模型/fresh结果，实际cursor8和task0不变。原18/完整12WAM/final24与总目标保持，GPU禁用。
