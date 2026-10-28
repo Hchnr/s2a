@@ -1,5 +1,7 @@
 # S2A — State to Action
 
+最新CPU动力学证据（2026-10-28）：[冻结与状态更新响应](reports/state_updated_joint_response_20261028.md)九个已执行周期及独立1350数值内步核验关闭。更新2ms模型最大关节预测误差.000115660rad，固定M/J同数值法.000452429、旧解析.004138869；尚无新action或任务成功，实际仍止于cursor8。下一步接入受限规划和实际前向验证，原验收门槛及GPU禁用保持。
+
 最新CPU约束诊断（2026-10-28）：[首周期约束归因](reports/fk_stop_constraint_audit_20261028.md)及[制动时间敏感性](reports/fk_braking_time_numeric_20261028.md)独立核验关闭；去掉未来/终端及缩短额外制动时长后仍无cursor9首点执行解，最好候选旋转.06631rad仍超原.05rad门槛。新增物理/模型/fresh0；下一步核对冻结与状态更新动力学，实际任务进度及原验收门槛不变，GPU继续禁用。
 
 最新CPU同起点对照（2026-10-28）：[首周期FK预览8/12/16](reports/fk_first_long_native_20261028.md)三组实际及独立重放完整关闭，各9周期达标但都在cursor9前停止，task/grasp0；1131独立重放周期/675新内环样本的state/q/qvel差异0。更长窗口未扩大实际推进范围，后续定位首周期与未来/terminal约束影响。总目标及原任务门槛未达，GPU继续禁用。
