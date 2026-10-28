@@ -26,4 +26,8 @@
 
 此准入记录生成时尚未启动新producer。之后必须使用本轮唯一独占输出、同一QA和原4000响应/60迭代/60阶段预算，producer1200秒、checker5400秒，无自动重试；完整独立结果产生前无新数值资格。
 
+随后唯一producer已启动，原tool session17677、child PID3827991/start_ticks615340066、owner PID3825995。运行快照`outputs/prefix_optimization_reserve_execution_checkpoint_20261029/producer_started.json` SHA`00ecb0dfd94c0fb977a817f8bb8fb0bd23cb630b16caa0b9e606bfe88294767b`核对当时300响应、真实/proc父子身份与存活、8项CPU环境匹配、38份QA来源不变。owner登记2269份来源，登记SHA`0bde8f36d4f2a29c91aeb0bbcafc33a23938a670985cc25fe84e3cf5eaff5af2`，launch SHA`cdd56527287b73e9defe109a1c943bfcfce56545ef769dfb4a0d74c00b4f81a5`。快照保留主机实际UTC时间，不是完成或wait/reap凭据；接续观察原句柄，不能因观察超时重启。
+
+[后续物理入口与路径调查](native_runtime_path_followup_20261029.md)保留了原manifest与安全配置/库/源码的只读比对、最小恢复协议及尚未闭合的bootstrap/动态库依赖；没有建立新运行时或执行物理。只有完整H12解及全部独立核验成功，才可另行登记物理pilot。
+
 实际仍止于原cursor8、task/grasp0，新物理/世界模型调用/fresh均0，总目标尚未完成。
