@@ -1,16 +1,16 @@
-# 同总时长的提前/临近参考相位分配（候选计划，未执行）
+# 同总时长的提前/临近参考相位分配（执行前登记，未执行）
 
-总目标及原全部门槛保持。本文只登记下一项 CPU 机制对照，入口/测试/checker 尚未实现，本轮只提交计划。GPU 继续禁用，不启动搜索、模型或物理，不修改已执行源码。
+总目标及原全部门槛保持。本文登记下一项 CPU 机制对照；原 prefix 完整独立复算与只读相位诊断已关闭，新入口及组件检查正在准备。正式执行必须等待本计划、producer、独立 checker、owner 与测试提交，并通过绑定最终来源的正式环境 QA。GPU 继续禁用，不修改已执行源码；本计划不授权物理动作或世界模型调用。
 
 ## 动机与必须先关闭的证据
 
-原 H12 全窗口搜索及完整独立复算没有完整 witness。本轮 prefix 的 4000 响应/54 迭代将连续预测达标点 6→9；cursor 9 仍为 0.01151628224m/0.0575804846rad，最紧制动项在 cursor 6 第五关节，非唯一根因证明。其完整独立复算尚未关闭，见 [当前报告](../../reports/prefix_preserving_trajectory_control_20261028.md:31)。
+原 H12 全窗口搜索及完整独立复算没有完整 witness。本轮 prefix 的 4000 响应/54 迭代将连续预测达标点 6→9；cursor 9 仍为 0.01151628224m/0.0575804846rad，最紧制动项在 cursor 6 第五关节，非唯一根因证明。其完整独立复算现已关闭，见 [当前报告](../../reports/prefix_preserving_trajectory_control_20261028.md)。
 
 执行前须同时满足：
 
 1. prefix checker 全部 4000 响应、来源与 owner 实际 wait/reap 关闭；失败先处理资格问题。
 2. [保存轨迹相位诊断](saved_trajectory_phase_diagnostic_20261028.md)关闭，明确原时序/共同相位误差、相位单调性及 5→6、8→9 的几何变化；离线最佳相位不进入在线控制。
-3. 据此记录是否执行：路径滞后支持检验额外时间；偏离整条路径会收窄“仅时间分配足够”的假设，但不否定提前联合规划；插入段近静止则注明区分能力弱，可不执行，不暗换插入点。下一轮再实现、QA、冻结来源。
+3. 据此记录是否执行：路径滞后支持检验额外时间；偏离整条路径会收窄“仅时间分配足够”的假设，但不否定提前联合规划；插入段近静止则注明区分能力弱，可不执行，不暗换插入点。结论及本次继续实现的依据见文末；执行前完成 QA 并冻结来源。
 
 ## 为何不再简单保持或复用旧 governor
 
@@ -56,7 +56,7 @@ A 通过而 B 未找到 witness，支持“需在较早受限段前分配时间�
 
 完整 witness 独立通过后，另登记有界 13 周期原生物理及独立重放，核实际 cursor 9、安全、两套误差、task/grasp 和后缀，不直接派发动作。局部成功不等于任务成功；原 18 条正确参考、12 条 WAM 开发、最终 24 条新初态及末 40 点门槛保持，见 [总标准](002_wam_stability_20261021.md:10)。
 
-截至本文编写，仅完成源码/保存报告/原 chunk 的只读审视及计划编写；没有新增响应、物理周期、世界模型调用、GPU 任务或 fresh 案例。
+最初登记时仅完成源码/保存报告/原 chunk 的只读审视及计划编写；该阶段没有新增响应、物理周期、世界模型调用、GPU 任务或 fresh 案例。
 
 只读前置更新：相位诊断已actual exit0关闭（代码3e99634，[结果报告](../../reports/saved_trajectory_phase_diagnostic_20261028.md)）。prefix selected的cursor9..11均不在已登记路径的原空间caps内，不能把保存动作仅换相位视为修复。本对照据此只检验“新增一次50ms并重新联合规划动作能否改变预测轨迹”，不宣称原失败只是滞后。5→6为4.01546mm/0.0506273rad，8→9为2.95869mm/0.0592341rad，均非静止；保留原A/B插入位置，待完整prefix checker关闭后可实现并执行原有界对照。本次更新未运行新响应。
 
@@ -67,3 +67,7 @@ A 通过而 B 未找到 witness，支持“需在较早受限段前分配时间�
 数值结果的原节点映射/前缀及后缀必须用`scheduled`、`predicted`或`qualified_original_node_prefix`等明确命名，实际新增消费为0；参考计划含cursor11不表示已经物理消费至cursor11。正常和准入失败分支均保存两套误差、全部warm约束和实际响应计账；任一组未获动态warm准入，不将该结果计作成对搜索性能胜负。
 
 实施前置关闭：prefix独立checker完整4000响应/1200000内步/1248001次query已通过，确认1797动作/关节合格但完整witness0，54迭代、前缀6→9；owner实际wait/reap0、无信号、1852引用重新核对SHA一致。checker SHA `dde839ae104d17fd469409ec539b780ebb829d0e5dca9052c755fe0fefe6e831`，owner result SHA `a494d9b06ae45f7aaea6a587029d0d4c77a30f5b83a09d2fe07f0082a728ed74`。相位诊断亦已关闭，现允许按原方案实现及组件QA；正式两组搜索仍须入口/独立checker/owner和正式环境QA完成并提交，不能仅凭本记录启动。
+
+最终执行合同：纯几何/评分/预检模块为 `src/s2a/paired_reference_phase.py`；独立进程入口分别为 `scripts/probe_tracking_v5_paired_reference_phase.py`、`scripts/check_tracking_v5_paired_reference_phase.py`、`scripts/execute_tracking_v5_paired_reference_phase.py`。owner 必须显式接收 `--case early|late --stage diagnose|check --qa-ref PATH --qa-sha256 SHA`，核对正式 Python3.11/NumPy1.26.4/SciPy1.15.3 下三个新测试文件的持久 stdout/exit0、最终源码/测试/本计划 SHA 及空 CUDA/LD；A/B 使用同一份 QA 与完全相同的来源集合。三个测试文件为 `tests/test_paired_reference_phase.py`、`tests/test_paired_reference_phase_independent_check.py` 和 `tests/test_paired_reference_phase_accounting.py`。基础 solver/ledger 的现有回归同时运行，但不扩大为全部仓库已通过。
+
+命令准入失败记 `command_admission_failed`、0 响应/0 query/0 迭代，动态 warm 准入失败记 `warm_admission_failed`、1 响应/325 内步/339 query/0 迭代；两者均 `answer=null`。正常搜索的唯一完整响应数为 N≤4000，实际 query 为 `1+338N`，预检 warm 被 solver 精确缓存复用一次，不能计成两次动力学响应。独立 checker 不重新搜索，逐条重构这 N 条完整轨迹并核对三套预测误差（原时序、固定新相位、12 个原节点）和严格分类；不因数值相近放宽 caps。
