@@ -19,7 +19,7 @@ from scripts.tracking.trajectory_search.state_vector_fresh_diagnostic_admission 
     validate_spec,
 )
 
-DRY_OWNER = REPO / "outputs/state_vector_dual_recovery_fresh_diagnostic_dry_20261029"
+DRY_OWNER = REPO / "outputs/state_vector_dual_recovery_fresh_diagnostic_v2_dry_20261029"
 
 
 def load_bound(path, digest):

@@ -5,9 +5,9 @@ from pathlib import Path
 
 from s2a.research.trajectory_search.restored_anchor_sqp_evidence import REPO, require
 
-CONFIG = REPO / "configs/tracking/trajectory_search/state_vector_dual_recovery_fresh_diagnostic_20261029.json"
-OUTPUT = REPO / "outputs/tracking_v5_state_vector_dual_recovery_fresh_diagnostic_20261029"
-OWNER = REPO / "outputs/state_vector_dual_recovery_fresh_diagnostic_owner_20261029"
+CONFIG = REPO / "configs/tracking/trajectory_search/state_vector_dual_recovery_fresh_diagnostic_v2_20261029.json"
+OUTPUT = REPO / "outputs/tracking_v5_state_vector_dual_recovery_fresh_diagnostic_v2_20261029"
+OWNER = REPO / "outputs/state_vector_dual_recovery_fresh_diagnostic_v2_owner_20261029"
 PRIOR_REFS = {
     "producer_ref": (
         "outputs/tracking_v5_state_vector_dual_recovery_20261029/verified.json",
@@ -28,6 +28,18 @@ PRIOR_REFS = {
     "initial_failed_owner_ref": (
         "outputs/state_vector_dual_recovery_checker_20261029/result.json",
         "2ec7846a7b13adcc25163af6060c69c74598eab2f279d990d548e7c2d646709f",
+    ),
+    "initial_diagnostic_config_ref": (
+        "configs/tracking/trajectory_search/state_vector_dual_recovery_fresh_diagnostic_20261029.json",
+        "3c04681e45944d2ac0f47e3aa2bd502c52195e7f4e8c3341b7b202286d3912d7",
+    ),
+    "initial_diagnostic_checker_ref": (
+        "outputs/tracking_v5_state_vector_dual_recovery_fresh_diagnostic_20261029/verified.json",
+        "c9d714e9e9b9a78cda7f6a229eecea41f3ea2a035728399e89f3b8c4049c1cd5",
+    ),
+    "initial_diagnostic_owner_ref": (
+        "outputs/state_vector_dual_recovery_fresh_diagnostic_owner_20261029/result.json",
+        "27613d5c82404fceb059cb9f6a0018a0a1475d309067f6bf826573d6fb86697e",
     ),
 }
 CURRENT_SOURCES = (
@@ -50,7 +62,7 @@ QA_TARGETS = (
 def validate_spec(spec):
     """Reject changing an old failure, output, budget or numerical convention."""
     expected = dict(
-        schema_version="s2a.state-vector-fresh-diagnostic.v1",
+        schema_version="s2a.state-vector-fresh-diagnostic.v2",
         seed=42,
         output_dir=str(OUTPUT.relative_to(REPO)),
         expected_responses=122,
@@ -77,7 +89,7 @@ def validate_spec(spec):
         and set(plan) == {"path", "sha256"}
         and plan["path"]
         == str(
-            REPO / "plans/v0.0.1/tracking/trajectory_search/state_vector_dual_recovery_fresh_diagnostic_20261029.md"
+            REPO / "plans/v0.0.1/tracking/trajectory_search/state_vector_dual_recovery_fresh_diagnostic_v2_20261029.md"
         ),
         "Explicit new diagnostic plan",
     )
@@ -99,6 +111,13 @@ def admit_replay(context, path):
         and old["query_count"] == 38065
         and old["qp_solves"] == old["nnls_fit_attempts"] == 0,
         "Original fully replayed checker failure remains a failure",
+    )
+    first = context.read_current_json(spec["initial_diagnostic_checker_ref"])
+    require(
+        first["complete"] is first["passed"] is False
+        and first["response_evaluations"] == first["verified_responses"] == first["query_count"] == 0
+        and first["source_validation_after"] is True,
+        "First diagnostic failed before numerical responses; preserve that boundary",
     )
     for relative in CURRENT_SOURCES:
         context.bind_current_source(REPO / relative)

@@ -346,7 +346,13 @@ def case_engine(name, original, source_reg, prefix_check_reg, result, refs, comp
     profile, normals = np.zeros((25, 7)), np.eye(7)[6:]
     desired = np.asarray(original["desired_tcp"] if name == "prefix" else original["case_contract"]["desired_tcp"])
     require(desired.shape == (HORIZON, 4, 4), "Original complete case reference")
-    _, stop_check = closed_owner(source_reg["prior_stop_check_owner_ref"], refs)
+    if input_context is None:
+        _, stop_check = closed_owner(source_reg["prior_stop_check_owner_ref"], refs)
+    else:
+        from scripts.verification.trajectory_search.native_replay_inputs import bind_closed_native_owner
+
+        _, stop_check = bind_closed_native_owner(input_context, source_reg["prior_stop_check_owner_ref"])
+        result["native_prior_stop_owner_ref"] = source_reg["prior_stop_check_owner_ref"].copy()
     stop_check_reg = load(stop_check["registration_ref"])
     helper_identity = None
     if input_context is not None:

@@ -35,7 +35,7 @@ from scripts.verification.trajectory_search.check_tracking_v5_saved_direction_ba
 )
 from scripts.verification.trajectory_search.check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
 from scripts.verification.trajectory_search.check_tracking_v5_terminal_secant_probe import verify_response_trace
-from scripts.verification.trajectory_search.native_replay_inputs import bind_native_ast_helper
+from scripts.verification.trajectory_search.native_replay_inputs import bind_closed_native_owner, bind_native_ast_helper
 
 ROOT = REPO / "outputs/tracking_v5_state_vector_dual_recovery_check_20261029"
 
@@ -76,6 +76,7 @@ def main(dry=False, *, diagnostic_config=None):
     prefix_check = read(remember(PREFIX_CHECK_REF, refs))
     prefix_check_reg = read(remember(prefix_check["registration_ref"], refs))
     helper_identity = bind_native_ast_helper(context, prefix_check_reg["ast_helper_ref"], native_functions)
+    bind_closed_native_owner(context, source_reg["prior_stop_check_owner_ref"])
     context.finish()
     current_imports.finish()
     current_identity = current_imports.verify_present()

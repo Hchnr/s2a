@@ -12,7 +12,11 @@ from types import ModuleType
 import pytest
 
 from s2a.research.trajectory_search.inputs import SearchInputContext
-from scripts.verification.trajectory_search.native_replay_inputs import HELPER_IDENTITY, bind_native_ast_helper
+from scripts.verification.trajectory_search.native_replay_inputs import (
+    HELPER_IDENTITY,
+    bind_closed_native_owner,
+    bind_native_ast_helper,
+)
 
 
 def reference(path):
@@ -191,3 +195,100 @@ def test_loaded_function_and_module_require_one_actual_current_origin(fixture, m
         monkeypatch.setitem(sys.modules, "check_tracking_v5_state_updated_response", module)
     with pytest.raises(ValueError, match="origin differs|Duplicate.*AST helper"):
         bind_native_ast_helper(fixture["context"](), fixture["declared"], module.native_functions)
+
+
+def closed_owner_records(fixture, fault=None):
+    """Reseal mutated JSON receipts so rejection exercises each original guard."""
+    root = fixture["root"] / "outputs/prerequisite"
+    asset_ref = write_json(root / "asset.json", dict(unchanged=True))
+    records = dict(
+        launch=dict(
+            automatic_retry=False,
+            selected_environment=dict(CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH=""),
+            child=dict(pid=12345, start_ticks=67890),
+        ),
+        exit=dict(automatic_retry=False, actual_wait=True, returncode=0),
+        release=dict(reaped=True, returncode=0, signal_sent=False, original_error=None, pid=12345, start_ticks=67890),
+        result=dict(complete=True, passed=True),
+        registration=dict(
+            source_sha256={
+                fixture["declared"]["path"]: fixture["declared"]["sha256"],
+                asset_ref["path"]: asset_ref["sha256"],
+            }
+        ),
+        owner=dict(complete=True, passed=True),
+    )
+    if fault is not None:
+        document, key, value = fault
+        if document == "source":
+            records["registration"]["source_sha256"][fixture["declared"]["path"]] = value
+        else:
+            records[document][key] = value
+    references = {
+        name: write_json(root / (name + ".json"), value) for name, value in records.items() if name != "owner"
+    }
+    owner = records["owner"]
+    owner.update(
+        registration_ref=references["registration"],
+        result_ref=references["result"],
+        owned_command={name: references[name] for name in ("launch", "exit", "release")},
+    )
+    return write_json(root / "owner.json", owner), owner, records["result"]
+
+
+def test_closed_owner_keeps_all_artifact_guards_and_separates_historical_sources(fixture):
+    ref, expected_owner, expected_result = closed_owner_records(fixture)
+    context = fixture["context"]()
+    owner, result = bind_closed_native_owner(context, ref)
+    assert owner == expected_owner and result == expected_result
+    assert fixture["declared"]["path"] not in context.runtime_refs
+    assert not (fixture["root"] / HELPER_IDENTITY).exists()
+    identities = context.registration()["historical_source_identities"]
+    assert len(identities) == 1 and identities[0]["declared_ref"] == fixture["declared"]
+    assert identities[0]["identity_scope"] == "byte_identity_only"
+    assert any(path.endswith("outputs/prerequisite/asset.json") for path in context.runtime_refs)
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        ("owner", "complete", False),
+        ("owner", "passed", False),
+        ("result", "complete", False),
+        ("result", "passed", False),
+        ("launch", "automatic_retry", True),
+        ("exit", "automatic_retry", True),
+        ("launch", "selected_environment", dict(CUDA_VISIBLE_DEVICES="0", LD_LIBRARY_PATH="")),
+        ("exit", "actual_wait", False),
+        ("exit", "returncode", 1),
+        ("release", "reaped", False),
+        ("release", "returncode", 1),
+        ("release", "signal_sent", True),
+        ("release", "original_error", "failure"),
+        ("release", "pid", 999),
+        ("release", "start_ticks", 999),
+        ("source", "sha256", "0" * 64),
+    ],
+    ids=[
+        "owner_complete",
+        "owner_passed",
+        "result_complete",
+        "result_passed",
+        "launch_retry",
+        "exit_retry",
+        "cpu_environment",
+        "actual_wait",
+        "exit_status",
+        "reaped",
+        "release_status",
+        "signal",
+        "error",
+        "pid",
+        "start_ticks",
+        "source_sha",
+    ],
+)
+def test_closed_owner_rejects_resealed_lifecycle_and_source_drift(fixture, fault):
+    ref, _, _ = closed_owner_records(fixture, fault)
+    with pytest.raises(ValueError):
+        bind_closed_native_owner(fixture["context"](), ref)

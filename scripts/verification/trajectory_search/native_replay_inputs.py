@@ -163,3 +163,33 @@ def bind_native_ast_helper(context, declared_ref, native_functions):
         historical_source_execution_qualified=False,
         **proof,
     )
+
+
+def bind_closed_native_owner(context, ref):
+    """Retain the original owner guards while resolving source byte identities."""
+    owner = context.read_historical_json(ref)
+    require(owner["complete"] is owner["passed"] is True, "Prerequisite owner must have completed successfully")
+    for item in [owner["registration_ref"], owner["result_ref"], *owner["owned_command"].values()]:
+        context.remember_historical(item)
+    launch = context.read_historical_json(owner["owned_command"]["launch"])
+    exited = context.read_historical_json(owner["owned_command"]["exit"])
+    release = context.read_historical_json(owner["owned_command"]["release"])
+    require(
+        launch["automatic_retry"] is exited["automatic_retry"] is False
+        and launch["selected_environment"] == dict(CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="")
+        and exited["actual_wait"] is True
+        and exited["returncode"] == 0
+        and release["reaped"] is True
+        and release["returncode"] == 0
+        and release["signal_sent"] is False
+        and release["original_error"] is None
+        and release["pid"] == launch["child"]["pid"]
+        and release["start_ticks"] == launch["child"]["start_ticks"],
+        "Matching CPU launch and actual successful wait/reap without signals or retry",
+    )
+    result = context.read_historical_json(owner["result_ref"])
+    require(result["complete"] is result["passed"] is True, "Complete prerequisite result")
+    for path, digest in context.read_historical_json(owner["registration_ref"])["source_sha256"].items():
+        context.remember_historical(dict(path=path, sha256=digest))
+    context.finish()
+    return owner, result
