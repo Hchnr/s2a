@@ -1,0 +1,47 @@
+{
+  "schema": "s2a.native-runtime-replay-inputs.v1",
+  "seed": 42,
+  "trial": 0,
+  "historical_branch": "fk_first_long_h8",
+  "output_dir": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_runtime_replay_20261029",
+  "timeout_seconds": 1800,
+  "physics_budget": 377,
+  "native_integration_budget": 9425,
+  "prefix_steps": 368,
+  "saved_continuation_steps": 9,
+  "absolute_tolerance": 1e-10,
+  "relative_tolerance": 0,
+  "automatic_retry": false,
+  "control_qualified": false,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "newly_selected_commands": 0,
+  "bootstrap_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_runtime_bootstrap_v3_20261029/result.json",
+    "sha256": "28b6001d9d7b2f9d1618968856612479b2f4c623c27979f0f934c3ba621d319c"
+  },
+  "bootstrap_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_runtime_bootstrap_v3_execution_20261029/result.json",
+    "sha256": "27fb413a080d6e47c9680f0f909eddfd8e0382c4d462e115f2db1d9163ad48a2"
+  },
+  "bootstrap_config_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/configs/native_runtime_bootstrap_v3_20261029.json",
+    "sha256": "2d9d4e572f7232a9f37c81777c7132b3d421e9fda3d0f8eef8bbfa00efbabeb6"
+  },
+  "producer_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/tracking_v5_fk_first_long_h8_native_20261028/verified.json",
+    "sha256": "138b5c64571ac7cee2edb46c75815eda2de549fe466ae46368b5362caa1c2f8a"
+  },
+  "producer_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/tracking_v5_fk_first_long_h8_native_execution_20261028/result.json",
+    "sha256": "229acbd57dc9c9f4fbc5905c6310c8909c3adcefff1403ee725473b1cc15d22d"
+  },
+  "checker_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/tracking_v5_fk_first_long_h8_native_check_20261028/verified.json",
+    "sha256": "87aa9a8131fb837c70171d5aaa4a661302e4b817d8cfbb8c42efca4848b9ff34"
+  },
+  "checker_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/tracking_v5_fk_first_long_h8_native_check_execution_20261028/result.json",
+    "sha256": "7f3df968e977e1156579eb7850d38423f5adbd8c1583228eca30d2033ffc6e30"
+  }
+}
