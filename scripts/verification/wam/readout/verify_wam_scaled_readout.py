@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 
 from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.verification.wam.readout.verify_wam_readout import _verified_audit_source
 
 CONFIG = REPO / "configs/wam_train_scale_readout_20261021.json"
 CONFIG_SHA = "dd0e0124d256a953af48ea2e548cca6603cd9f777d6bd5e4f620548591a2c06b"
@@ -35,9 +36,10 @@ NEW_SOURCES = (
 
 
 def frozen_helpers():
-    if sha256(HELPER) != HELPER_SHA:
+    _frozen_source = _verified_audit_source(HELPER, HELPER_SHA)
+    if sha256(_frozen_source.historical) != HELPER_SHA:
         raise ValueError("frozen026 independent helper changed")
-    spec = importlib.util.spec_from_file_location("frozen026_scaled_audit_helpers", HELPER)
+    spec = importlib.util.spec_from_file_location("frozen026_scaled_audit_helpers", _frozen_source.current)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module

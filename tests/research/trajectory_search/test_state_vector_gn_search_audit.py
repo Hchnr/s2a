@@ -20,6 +20,7 @@ from tests.research.trajectory_search.test_rejected_response_search_audit import
     capped_restoration_certificate,
     nonlinear_inputs,
 )
+from tests.support.source_layout import current_module_name
 from tests.support.trajectory_rollout import synthetic_case
 
 
@@ -431,7 +432,7 @@ def test_audit_imports_no_search_core_solver_or_dynamics(audit):
         elif isinstance(node, ast.ImportFrom):
             imports.append(node.module or "")
     assert not any("s2a." in name or "scipy" in name or "mujoco" in name for name in imports)
-    assert "accepted_point_sqp_math_audit" in imports
+    assert current_module_name("scripts/accepted_point_sqp_math_audit.py") in imports
 
 
 def test_compact_signed_stencil_is_reconstructed_without_optional_redundant_labels(audit):

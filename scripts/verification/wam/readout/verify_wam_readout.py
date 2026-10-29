@@ -922,10 +922,162 @@ def verify_fit(prepared, features, path, evidence):
     )
 
 
+def _verified_audit_source(declared, expected_sha):
+    """Separate frozen byte identity from the approved current audit namespace.
+
+    The complete helper AST must preserve every mathematical and evidence
+    statement. Only the explicit source locator, canonical imports and frozen
+    helper storage bindings below may differ. This grants no runtime or control
+    qualification to a historical source or its Git cache.
+    """
+    import ast
+    from collections import Counter
+    from types import SimpleNamespace
+
+    from s2a.infrastructure.current_layout import BASELINE_COMMIT, CATALOG_REF, CurrentLayout
+    from s2a.infrastructure.repository_paths import repository_root
+    from s2a.infrastructure.source_identity import SourceIdentityLocator
+
+    root = repository_root(anchor=__file__)
+    relative = Path(declared).relative_to(root).as_posix()
+    permitted = {
+        "scripts/verify_wam_readout.py",
+        "scripts/verify_wam_flow_readout.py",
+        "scripts/verify_wam_scaled_readout.py",
+        "scripts/verify_wam_scaled_state.py",
+        "scripts/audit_wam_sampler_steps.py",
+        "scripts/audit_wam_earlier_screen.py",
+    }
+    require(relative in permitted, "Only the declared independent audit helper closure may be located")
+    locator = SourceIdentityLocator(
+        root=root,
+        baseline_commit=BASELINE_COMMIT,
+        catalog_ref=CATALOG_REF,
+        cache_directory=root / "outputs/source_identity_cache/wam_readout_audits",
+    )
+    original_ref = dict(path=str(declared), sha256=expected_sha)
+    resolved = locator.resolve(original_ref)
+    historical = Path(resolved.storage_ref["path"])
+    original_bytes = historical.read_bytes()
+    require(hashlib.sha256(original_bytes).hexdigest() == expected_sha, "Frozen independent audit bytes changed")
+    layout = CurrentLayout(root=root)
+    current = layout.source_path(relative)
+    expected, actual = ast.parse(original_bytes), ast.parse(current.read_bytes())
+    namespace = {
+        "s2a.artifacts": "s2a.infrastructure.artifacts",
+        "audit_wam_earlier_screen": "scripts.verification.wam.physical_logs.audit_wam_earlier_screen",
+        "audit_wam_sampler_steps": "scripts.verification.wam.readout.audit_wam_sampler_steps",
+    }
+    for node in ast.walk(expected):
+        if isinstance(node, ast.ImportFrom) and node.module in namespace:
+            node.module = namespace[node.module]
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "importlib"
+            and node.func.attr == "import_module"
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and node.args[0].value in namespace
+        ):
+            node.args[0].value = namespace[node.args[0].value]
+    additional_imports = []
+    if relative == "scripts/audit_wam_sampler_steps.py":
+        roots = [
+            node
+            for node in expected.body
+            if isinstance(node, ast.Assign) and len(node.targets) == 1 and ast.unparse(node.targets[0]) == "ROOT"
+        ]
+        require(
+            len(roots) == 1 and ast.unparse(roots[0].value) == "Path(__file__).resolve().parents[1]",
+            "Exact historical sampler root binding",
+        )
+        roots[0].value = ast.parse("repository_root(anchor=__file__)", mode="eval").body
+        additional_imports = ast.parse("from s2a.infrastructure.repository_paths import repository_root").body
+    elif relative == "scripts/verify_wam_readout.py":
+        extra = [
+            node for node in actual.body if isinstance(node, ast.FunctionDef) and node.name == "_verified_audit_source"
+        ]
+        canonical = ast.parse(layout.source_path("scripts/verify_wam_readout.py").read_bytes())
+        canonical_loader = next(
+            node
+            for node in canonical.body
+            if isinstance(node, ast.FunctionDef) and node.name == "_verified_audit_source"
+        )
+        require(
+            len(extra) == 1 and ast.dump(extra[0]) == ast.dump(canonical_loader),
+            "Exact source-pinned current audit locator",
+        )
+        actual.body.remove(extra[0])
+        integrator = next(
+            node for node in expected.body if isinstance(node, ast.FunctionDef) and node.name == "frozen_integrator"
+        )
+        bindings = ast.parse(
+            '_integrator_source = _verified_audit_source(REPO / "scripts/audit_wam_sampler_steps.py", INTEGRATOR_SHA)\n'
+            '_rotation_source = _verified_audit_source(REPO / "scripts/audit_wam_earlier_screen.py", ROTATION_SHA)'
+        ).body
+        for statement, name in zip(integrator.body[1:3], ("_integrator_source", "_rotation_source"), strict=True):
+            require(
+                isinstance(statement, ast.Expr)
+                and isinstance(statement.value, ast.Call)
+                and ast.unparse(statement.value.func) == "evidence.check",
+                "Exact historical integration source checks",
+            )
+            statement.value.args[0] = ast.parse(name + ".historical", mode="eval").body
+        integrator.body[1:1] = bindings
+    elif relative != "scripts/audit_wam_earlier_screen.py":
+        helper = next(
+            node for node in expected.body if isinstance(node, ast.FunctionDef) and node.name == "frozen_helpers"
+        )
+        replacements = 0
+        for statement in helper.body:
+            for node in ast.walk(statement):
+                for field, value in ast.iter_fields(node):
+                    replacement = (
+                        "_frozen_source.historical" if isinstance(statement, ast.If) else "_frozen_source.current"
+                    )
+                    if isinstance(value, ast.Name) and value.id == "HELPER":
+                        setattr(node, field, ast.parse(replacement, mode="eval").body)
+                        replacements += 1
+                    elif isinstance(value, list):
+                        for index, item in enumerate(value):
+                            if isinstance(item, ast.Name) and item.id == "HELPER":
+                                value[index] = ast.parse(replacement, mode="eval").body
+                                replacements += 1
+        require(replacements == 2, "Exactly the original helper hash and import storage bindings")
+        helper.body[:0] = ast.parse("_frozen_source = _verified_audit_source(HELPER, HELPER_SHA)").body
+        additional_imports = ast.parse(
+            "from scripts.verification.wam.readout.verify_wam_readout import _verified_audit_source"
+        ).body
+    expected_imports = [node for node in expected.body if isinstance(node, (ast.Import, ast.ImportFrom))]
+    actual_imports = [node for node in actual.body if isinstance(node, (ast.Import, ast.ImportFrom))]
+    require(
+        Counter(map(ast.dump, actual_imports)) == Counter(map(ast.dump, expected_imports + additional_imports)),
+        "Only the explicitly declared canonical audit imports may change",
+    )
+    expected.body = [node for node in expected.body if not isinstance(node, (ast.Import, ast.ImportFrom))]
+    actual.body = [node for node in actual.body if not isinstance(node, (ast.Import, ast.ImportFrom))]
+    require(
+        ast.dump(actual) == ast.dump(expected), "Independent audit mathematics, evidence gates or constants changed"
+    )
+    locator.finish()
+    layout.finish()
+    return SimpleNamespace(
+        historical=historical,
+        current=current,
+        original_ref=original_ref,
+        current_ref=layout.entry(relative)["current_ref"],
+        identity_scope="byte_identity_and_explicit_namespace_proof_only_no_runtime_or_control_qualification",
+    )
+
+
 def frozen_integrator(evidence):
     """Share only frozen011's independent SciPy integration and hold/CV rules."""
-    evidence.check(REPO / "scripts/audit_wam_sampler_steps.py", INTEGRATOR_SHA)
-    evidence.check(REPO / "scripts/audit_wam_earlier_screen.py", ROTATION_SHA)
+    _integrator_source = _verified_audit_source(REPO / "scripts/audit_wam_sampler_steps.py", INTEGRATOR_SHA)
+    _rotation_source = _verified_audit_source(REPO / "scripts/audit_wam_earlier_screen.py", ROTATION_SHA)
+    evidence.check(_integrator_source.historical, INTEGRATOR_SHA)
+    evidence.check(_rotation_source.historical, ROTATION_SHA)
     script_dir = str(REPO / "scripts")
     sys.path.insert(0, script_dir)
     try:

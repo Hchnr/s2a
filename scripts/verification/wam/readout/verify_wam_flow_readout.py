@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 
 from s2a.infrastructure.artifacts import REPO
+from scripts.verification.wam.readout.verify_wam_readout import _verified_audit_source
 
 CONFIG = REPO / "configs/wam_flow_consistent_readout_20261021.json"
 CONFIG_SHA = "2d0e45b3ae02ecec4ee45bcaa1928596e347417f945f8903416f0df314a68534"
@@ -24,9 +25,10 @@ HELPER_SHA = "50e486d82bc7ea543c7e973c3c7d9d1ce469ea49bdab12947c135484b2fd1347"
 
 
 def frozen_helpers():
-    if hashlib.sha256(HELPER.read_bytes()).hexdigest() != HELPER_SHA:
+    _frozen_source = _verified_audit_source(HELPER, HELPER_SHA)
+    if hashlib.sha256(_frozen_source.historical.read_bytes()).hexdigest() != HELPER_SHA:
         raise ValueError("frozen025 independent helper changed")
-    spec = importlib.util.spec_from_file_location("s2a_frozen025_flow_audit_helpers", HELPER)
+    spec = importlib.util.spec_from_file_location("s2a_frozen025_flow_audit_helpers", _frozen_source.current)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module

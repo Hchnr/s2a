@@ -6,6 +6,7 @@ import copy
 import hashlib
 import json
 import subprocess
+from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -13,6 +14,8 @@ import numpy as np
 
 from s2a.evaluation.task_acceptance import task_outcome
 from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.current_layout import BASELINE_COMMIT, CATALOG_REF, CurrentLayout, current_source_path
+from s2a.infrastructure.source_identity import SourceIdentityLocator
 from scripts.verification.wam.physical_logs.audit_wam_position import Evidence, close, error
 from scripts.verification.wam.physical_logs.verify_wam_acceptance import verify_case as verify_native_generic
 from scripts.verification.wam.physical_logs.wam_long_position_checker import source_proof, verify_case
@@ -34,7 +37,8 @@ def lines(path, evidence):
 
 def factory_proof(evidence):
     """Remove only validation and explicit horizon keywords, then compare AST."""
-    old_path, new_path = REPO / "src/s2a/libero_simulation.py", REPO / "src/s2a/long_environment.py"
+    old_path = current_source_path("src/s2a/libero_simulation.py")
+    new_path = current_source_path("src/s2a/long_environment.py")
 
     def function(path):
         tree = ast.parse(evidence.read(path))
@@ -60,16 +64,99 @@ def factory_proof(evidence):
     )
 
 
+def _historical_source(evidence, declared, digest):
+    locator = SourceIdentityLocator(
+        root=REPO,
+        baseline_commit=BASELINE_COMMIT,
+        catalog_ref=CATALOG_REF,
+        cache_directory=REPO / "outputs/long_qualification_historical_source_cache_20261029",
+    )
+    identity = locator.resolve(dict(path=str(declared), sha256=digest))
+    storage = Path(identity.storage_ref["path"])
+    evidence.check(storage, digest)
+    data = evidence.read(storage)
+    locator.finish()
+    return data, asdict(identity)
+
+
+def _current_namespace_proof(evidence, relative, historical):
+    """Compare whole modules; only registered import names and root lookup vary."""
+    layout = CurrentLayout(root=REPO)
+    path = layout.source_path(relative)
+    original, current = ast.parse(historical), ast.parse(evidence.read(path))
+
+    def module_name(name):
+        if not name.startswith("s2a."):
+            return name
+        entry = layout.entry("src/" + name.replace(".", "/") + ".py")
+        parts = Path(entry["current_ref"]["path"]).with_suffix("").parts[1:]
+        return ".".join(parts[:-1] if parts[-1] == "__init__" else parts)
+
+    class Namespace(ast.NodeTransformer):
+        def __init__(self):
+            self.root_changes = 0
+
+        def visit_ImportFrom(self, node):
+            if not node.level and node.module:
+                node.module = module_name(node.module)
+            return node
+
+        def visit_Subscript(self, node):
+            if relative == "tests/test_long_environment.py" and ast.dump(node) == ast.dump(
+                ast.parse("Path(__file__).resolve().parents[1]", mode="eval").body
+            ):
+                self.root_changes += 1
+                return ast.parse("repository_root(anchor=__file__)", mode="eval").body
+            return self.generic_visit(node)
+
+    transform = Namespace()
+    expected = transform.visit(copy.deepcopy(original))
+    if relative == "tests/test_long_environment.py":
+        assert transform.root_changes == 1
+        # Path was used only by the replaced repository locator.
+        assert not any(isinstance(node, ast.Name) and node.id == "Path" for node in ast.walk(expected))
+        expected.body = [
+            node for node in expected.body if not (isinstance(node, ast.ImportFrom) and node.module == "pathlib")
+        ]
+        index = next(i for i, node in enumerate(expected.body) if isinstance(node, (ast.Import, ast.ImportFrom)))
+        expected.body.insert(
+            index, ast.parse("from s2a.infrastructure.repository_paths import repository_root").body[0]
+        )
+
+    def ordered_imports(tree):
+        body, index = [], 0
+        while index < len(tree.body):
+            if isinstance(tree.body[index], (ast.Import, ast.ImportFrom)):
+                imports = []
+                while index < len(tree.body) and isinstance(tree.body[index], (ast.Import, ast.ImportFrom)):
+                    imports.append(tree.body[index])
+                    index += 1
+                body.extend(sorted(imports, key=lambda node: ast.dump(node, include_attributes=False)))
+            else:
+                body.append(tree.body[index])
+                index += 1
+        tree.body = body
+        return ast.dump(tree, include_attributes=False)
+
+    assert ordered_imports(expected) == ordered_imports(current), (
+        "current runtime module changed beyond namespace migration"
+    )
+    layout.finish()
+    return layout.entry(relative)["current_ref"]
+
+
 def runtime_proof(evidence):
     """Independently compare the complete physical try bodies, not just a claim."""
     evidence.check(CPU_REVIEW, CPU_REVIEW_SHA)
     receipt = evidence.json(CPU_REVIEW)
     assert receipt["model_started"] is receipt["physics_started"] is False
+    historical_identities = []
     for path, digest in receipt["raw_source_sha256"].items():
-        evidence.check(path, digest)
+        _, identity = _historical_source(evidence, path, digest)
+        historical_identities.append(identity)
 
     def function(relative, name):
-        tree = ast.parse(evidence.read(REPO / relative))
+        tree = ast.parse(evidence.read(current_source_path(relative)))
         return next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == name)
 
     for old_file, old_name, new_name, omit_clock in (
@@ -89,6 +176,7 @@ def runtime_proof(evidence):
         assert ast.dump(ast.Module(body=old, type_ignores=[]), include_attributes=False) == ast.dump(
             ast.Module(body=new, type_ignores=[]), include_attributes=False
         )
+    current_refs = []
     for relative in (
         "src/s2a/long_environment.py",
         "src/s2a/long_simulation.py",
@@ -96,14 +184,19 @@ def runtime_proof(evidence):
         "tests/test_long_environment.py",
     ):
         registered = subprocess.check_output(["git", "show", f"{RUNTIME_COMMIT}:{relative}"])
-        assert hashlib.sha256(registered).hexdigest() == sha256(REPO / relative)
-        evidence.read(REPO / relative)
+        historical, identity = _historical_source(evidence, relative, hashlib.sha256(registered).hexdigest())
+        assert hashlib.sha256(registered).hexdigest() == sha256(Path(identity["storage_ref"]["path"]))
+        current_refs.append(_current_namespace_proof(evidence, relative, historical))
     return dict(
         native_physical_try_body_ast_exact=True,
         oracle_wam_physical_try_body_ast_exact_except_readonly_clock=True,
         runtime_commit=RUNTIME_COMMIT,
         worker_pid_startticks_environment_snapshot=True,
         actual_first600_and1200_physics_pending_until_executed=True,
+        historical_source_identities=historical_identities,
+        current_source_refs=current_refs,
+        current_modules_namespace_ast_exact=True,
+        historical_source_execution_qualified=False,
     )
 
 

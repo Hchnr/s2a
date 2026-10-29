@@ -9,7 +9,7 @@ from pathlib import Path
 from s2a.infrastructure.repository_paths import repo_path, repository_root
 
 AREAS = ("src/s2a", "scripts", "tests", "configs", "plans/v0.0.1", "reports")
-FINAL_FLAT_LIMITS = dict(zip(AREAS, (12, 2, 2, 1, 1, 1), strict=True))
+FINAL_FLAT_LIMITS = dict(zip(AREAS, (12, 2, 3, 1, 1, 1), strict=True))
 CATALOG = "docs/migrations/baseline_20261029.json"
 ROOT_METADATA = {".gitignore", "AGENTS.md", "README.md", "pyproject.toml"}
 

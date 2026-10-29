@@ -16,6 +16,7 @@ from pathlib import Path
 
 import scripts.wam.readout.run_wam_readout as frozen
 from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.current_layout import current_source_path
 from s2a.infrastructure.lifecycle.worker_handshake import birth, write_once
 
 REGISTRATION = REPO / "plans/v0.0.1/025_release_observation_addendum_20261021.md"
@@ -195,7 +196,7 @@ def new_sources(args):
         and sha256(REGISTRATION) == REGISTRATION_SHA,
         "025 resource continuation registration differs",
     )
-    paths = [Path(__file__).resolve(), REPO / "tests/test_wam_readout_continuation.py", REGISTRATION]
+    paths = [Path(__file__).resolve(), current_source_path("tests/test_wam_readout_continuation.py"), REGISTRATION]
     return {str(p): sha256(p) for p in paths}
 
 

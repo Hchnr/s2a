@@ -38,6 +38,29 @@ outputs/libero_env311/bin/python -m pytest tests/unit/infrastructure \
 当前 PyArrow 存在既有导入冲突；涉及 PyArrow 的 collection 错误单列，不能据专项
 通过声称全仓测试通过。默认跳过 `integration`，外部数据或物理仿真验证须显式配置。
 
+并发回归使用仓库内的标准库入口，不需要额外安装pytest插件：
+
+```bash
+CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' PYTHONDONTWRITEBYTECODE=1 \
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+NUMEXPR_NUM_THREADS=1 LP_NUM_THREADS=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTHONPATH=src:. outputs/libero_env311/bin/python -m \
+  scripts.maintenance.run_cpu_tests --jobs 32 \
+  --output outputs/qa/cpu_local_run001
+```
+
+每轮更换新的目录名；目录已存在会拒绝覆盖。默认收集原pytest
+scope，再按完整node ID分片；每个子进程有独立临时目录和结果，全部实际wait/reap。
+最终全量可用`--jobs 64`，数值库仍各单线程。结果单列实际pass、skip、xfail、
+collection错误及来源前后是否变化，不把跳过或收集失败计作通过。可用
+`--expected-nodeids`及`--expected-nodeids-sha`核精确节点/参数顺序，用`--nodeids`
+及对应SHA选择明确子集；这些输入须保存在仓库outputs内。
+
+该3.11环境另有4项原streaming严格数值测试失败，已在迁移前原字节中同样复现；
+开发3.12环境的相同26项在原容差下通过。两个环境的Python/NumPy/OpenBLAS均
+不同，不能归因于单个组件；不通过换环境追认旧运行资格或称单一环境全仓通过。
+当前证据及未执行项见[状态](../status.md)与[迁移记录](../migrations/README.md)。
+
 GPU 当前禁用。原始配置中的历史设备编号只是记录，不能用于启动或恢复任务；
 限制与用户恢复后的 UUID 约束见 [AGENTS.md](../../AGENTS.md)。
 

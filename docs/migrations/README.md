@@ -221,3 +221,82 @@ PyArrow五模块在仓库现有Python3.12/NumPy2/PyArrow23解释器下实际14�
 439个测试文件、898份配置/计划/报告、README导航及最终全量CPU验收仍待执行。
 本阶段未运行GPU、新生产搜索或完整研究checker；实际控制资格和总目标保持未达成。
 双语PR原文见[脚本迁移收尾PR](../pull_requests/scripts_layout_20261029.md)。
+
+## D3c：测试领域包与分轮回归
+
+已实际迁移439个测试文件，原fixture不移动；新增71个包标记，测试根保留
+README、__init__、原字节conftest。原测试函数参数、装饰器及断言在明确namespace
+归一化后保持，当前fixture/peer读路径显式定位。pytest的testpaths、not-integration
+scope及addopts保持，仅移除旧scripts搜索路径。标准库并发入口为
+`python -m scripts.maintenance.run_cpu_tests --jobs 32 --output outputs/qa/<新的独占目录>`；
+全量使用64进程，每个子进程数值库单线程、空CUDA/LD、独立临时目录、实际回收。
+
+初次受影响88个完整模块1205项回归1141通过、64失败，收据
+`outputs/qa/repository_d3c_modified_modules_20261029/result.json`。全量发现5172节点
+完整保留，仍只有原5项PyArrow/NumPy环境错误。随后的来源修复分开原Git字节、
+原声明/SHA、当前文件与批准SHA，保留完整修复逆AST及原数值/安全/预算门，新增
+5项拒绝原生运行时计数/import/cleanup等篡改的测试；节点预期扩展为5177。
+
+首次64进程全量实际报告4987通过、188失败、2跳过，原5项collection错误仍在；
+原5172节点与5项新增按明确预期顺序收集。该轮因合成fixture写坏真实config导致
+`source_unchanged=False`，不得作为有效全量通过或来源冻结证明。owner和64个
+worker均实际wait/reap；收据
+`outputs/qa/repository_d3c_full_cpu_20261029/result.json`，SHA256
+`50b5e322cfc3084752b72360e235b80a92589c546b0660ace3c7357e6bdf9cb2`。
+
+原因是path-preparation测试替身仍登记旧`s2a.native_runtime_path_snapshot`，未接管
+新canonical模块，导致合成fixture的CONFIG指向真实仓库。所有进程关闭后，从HEAD
+精确恢复`configs/native_runtime_path_snapshot_20261029.json`，恢复SHA256为
+`f41012908ebaf24f67763900b71f6f818c97cddf398ff67f82323d405d243aac`，与原catalog
+相同。损坏字节及恢复收据独立保存于
+`outputs/repository_d3c_full_source_recovery_20261029/`。原始登记及失败状态没有改写；
+完整3280项与本轮3522项来源检查只发现该config，恢复后无其他漂移。替身已改为
+准确canonical身份，文件构造前显式核临时根边界，不能靠重新登记合成SHA通过。
+
+随后修复当前loader/历史gold来源证明并分别核验数值环境差异，收尾见下文；
+raw配置/计划/报告尚未移动，最终D5全量CPU与真实dry仍待执行。
+
+四项streaming数值失败另有迁移前原字节的独立环境诊断：原test和两原数学库在
+outputs隔离目录执行，native3.11实际22通过、4失败，失败节点及最大误差逐项与
+full64相同；当前开发3.12环境的相同26项已观察全部通过。原数学AST仅import
+namespace不同，readout模块原字节保持；不修改算法、原断言或容差。两解释器的
+Python/NumPy/OpenBLAS版本均不同，不能只归因NumPy或单个组件。隔离诊断的
+owner实际exit0，测试child实际exit1，全部回收、来源前后相同；scope为既有合成
+数值差异归因，不是把原失败改成成功。收据为
+`outputs/wam_clean_streaming_baseline_native_diagnostic_20261029/result.json`，SHA256
+`7a9b163928d3240279aba41ef314e4681ad0eb475b8252583c8a5620f1be20be`。
+
+D3c修复后的64进程全量5177项，5169通过、6失败、2跳过；节点/参数/顺序和分片
+集合exact，原5项Arrow collection错误保持，源码/文档前后一致。6项失败中4项为
+上述原数值差异，另2项为GN审核的namespace断言和readout启动观察测试的调度
+竞态。只修改最后两个测试：前者通过明确old identity定位canonical module，后者
+使用真实JSONDecodeError ACK与真实identity文件握手，保留同一child及原退出/
+回收断言，不增加固定sleep窗口或mock生命周期。两个完整模块51项32并发全部
+通过；没有在最终版本重跑全部5177项。兼容3.12环境另16并发实际40项全部通过，
+包括原5个Arrow模块14项及streaming26项；该证据与数值环境限制分别保存。
+
+| 范围 | 收据 | SHA256 |
+| --- | --- | --- |
+| 修复后全量5177项 | `outputs/qa/repository_d3c_full_cpu_v2_20261029/result.json` | `f1514d09e53538a4ec50e368752b13da2e5b91fedc5a508f82c373c6c7911bef` |
+| 兼容环境40项 | `outputs/qa/repository_d3c_compatible_environment_v2_20261029/result.json` | `459485504a0652379682a22dd87ee5181b912cd864f68314fb5c9121e6e48828` |
+| 最后两模块51项 | `outputs/qa/repository_d3c_final_two_modules_v2_20261029/result.json` | `4a4c4a754659b67022bb08697b2a963f5a75276ff403d1c836aa0acfabfcbd6a` |
+
+所有owner及worker实际wait/reap，未自动重试已执行测试。一次末轮nodefile误用
+metadata对象在启动pytest前被拒，零child/零case，失败说明和正确list的新独占
+记录分开保留，不伪称首轮已执行或成功。当前累计清单SHA256为
+`e3828c550f2d3824d47d78705db78cdc7902fb99da15d1ef2c87017fc912ca02`。
+
+历史来源修复保留原SHA与完整AST：原生bootstrap证明、readout helper链及long
+qualification原CPU_REVIEW/Git来源均分开核原字节和当前批准源码。新增代码只处理
+明确namespace/存储及身份元数据，原数学、证据门、常量、预算和失败状态保持。
+旧Cosmos serving源码的静态locals测试使用011原登记绑定的精确归档；原prepared、
+原declared source和snapshot SHA均核验，不用已变化的当前Cosmos树冒充历史版本，
+不访问旧仓库或授予当前模型运行资格。
+
+当前全仓2559个Python文件Ruff/format通过；静态依赖10970条边检查通过。
+结构检查3280个历史身份、2366个实际移动通过，原节点全部保留；测试根3项。
+此处结构收据在最后两测试修复前为
+`outputs/repository_d3c_final_v2_structure_20261029/result.json`，SHA256
+`8e2aa0dd30ed4a19d181a3798fdc1153febadcff6d175a3a3f73462b50f6741d`；最后两修复后
+累计清单及51项来源冻结独立绑定当前字节，不冒称该旧收据检查过新版本。
+`full_restructure_complete=False`；898份raw文件、导航及最终D5尚未执行。

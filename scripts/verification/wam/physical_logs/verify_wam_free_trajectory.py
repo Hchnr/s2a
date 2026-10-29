@@ -17,6 +17,7 @@ from pathlib import Path
 import numpy as np
 
 from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.verification.wam.readout.verify_wam_readout import _verified_audit_source
 
 CONFIG = REPO / "configs/wam_free_trajectory_diagnostic_20261021.json"
 CONFIG_SHA = "a271cacaf0e011f0dd497173437f09cf3f256cb384e66bdf9d8a71928dd2cb73"
@@ -54,9 +55,10 @@ STATE_REFS = ("prepared", "sampling", "verification", "owner", "final_peer")
 
 
 def frozen_helpers():
-    if sha256(HELPER) != HELPER_SHA:
+    _frozen_source = _verified_audit_source(HELPER, HELPER_SHA)
+    if sha256(_frozen_source.historical) != HELPER_SHA:
         raise ValueError("frozen028 independent helper changed")
-    spec = importlib.util.spec_from_file_location("frozen028_trajectory_helpers", HELPER)
+    spec = importlib.util.spec_from_file_location("frozen028_trajectory_helpers", _frozen_source.current)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module

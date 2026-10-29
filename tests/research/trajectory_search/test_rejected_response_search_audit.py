@@ -240,5 +240,7 @@ def test_audit_imports_only_frozen_mathematics_and_never_variant_core(audit):
             imports.append(node.module or "")
     assert "s2a.rejected_response_search" not in imports
     assert "s2a.interior_trajectory_search" not in imports
-    assert "interior_trajectory_search_audit" in imports
+    assert "s2a.research.trajectory_search.rejected_response_search" not in imports
+    assert "s2a.research.trajectory_search.interior_trajectory_search" not in imports
+    assert "scripts.tracking.trajectory_search.interior_trajectory_search_audit" in imports
     assert not any("scipy" in name or "mujoco" in name for name in imports)

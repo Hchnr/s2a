@@ -10,15 +10,20 @@ No old module globals or executed sources are modified.
 import ast
 import hashlib
 from copy import deepcopy
+from dataclasses import asdict
 from pathlib import Path
 from types import FunctionType
 
+from s2a.infrastructure.current_layout import BASELINE_COMMIT, CATALOG_REF
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.infrastructure.source_identity import SourceIdentityLocator
 from s2a.research.native_runtime import bootstrap as frozen
 
 LIMITS = dict(frozen.LIMITS)
 BootstrapFailure = frozen.BootstrapFailure
 BootstrapRuntime = frozen.BootstrapRuntime
 FROZEN_CORE_PATH = Path(frozen.__file__).resolve()
+FROZEN_CORE_DECLARED_PATH = "src/s2a/native_runtime_bootstrap.py"
 FROZEN_CORE_SHA256 = "f9eefa9b43dc9ef841809fe9744974a7e8336e2ba67ecfd62d12e0ff46b198f0"
 
 
@@ -84,10 +89,66 @@ def _dump(node):
     return ast.dump(node, include_attributes=False)
 
 
+def _historical_core_source(declared_path, sha256):
+    """Read catalogued Git bytes for AST proof, without executing that module."""
+    root = repository_root(anchor=__file__)
+    locator = SourceIdentityLocator(
+        root=root,
+        baseline_commit=BASELINE_COMMIT,
+        catalog_ref=CATALOG_REF,
+        cache_directory=root / "outputs/native_runtime_bootstrap_historical_source_cache_20261029",
+    )
+    resolved = locator.resolve(dict(path=declared_path, sha256=sha256))
+    data = Path(resolved.storage_ref["path"]).read_bytes()
+    frozen._require(hashlib.sha256(data).hexdigest() == sha256, "frozen bootstrap source changed")
+    locator.finish()
+    return data, asdict(resolved)
+
+
+def _verify_frozen_namespace(historical, current):
+    """Allow exactly the repository locator and one simulator import relocation."""
+    expected = deepcopy(historical)
+    assignments = [
+        node
+        for node in expected.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "REPO" for target in node.targets)
+    ]
+    frozen._require(
+        len(assignments) == 1
+        and _dump(assignments[0].value) == _dump(ast.parse("Path(__file__).resolve().parents[2]", mode="eval").body),
+        "exactly one historical repository locator required",
+    )
+    assignment = assignments[0]
+    assignment.value = ast.parse("repository_root(anchor=__file__)", mode="eval").body
+    expected.body.insert(
+        expected.body.index(assignment),
+        ast.parse("from s2a.infrastructure.repository_paths import repository_root").body[0],
+    )
+    imports = [
+        node
+        for node in ast.walk(expected)
+        if isinstance(node, ast.ImportFrom) and node.module == "s2a.libero_simulation"
+    ]
+    frozen._require(len(imports) == 1, "exactly one historical simulator import required")
+    imports[0].module = "s2a.backends.libero.simulation"
+    frozen._require(_dump(expected) == _dump(current), "bootstrap changed beyond explicit namespace relocation")
+
+
+def _frozen_core_source():
+    data, identity = _historical_core_source(FROZEN_CORE_DECLARED_PATH, FROZEN_CORE_SHA256)
+    current = FROZEN_CORE_PATH.read_bytes()
+    _verify_frozen_namespace(ast.parse(data), ast.parse(current))
+    return data, dict(
+        historical_identity=identity,
+        current_ref=dict(path=str(FROZEN_CORE_PATH), sha256=hashlib.sha256(current).hexdigest()),
+        current_namespace_ast_equal=True,
+    )
+
+
 def _repaired_function():
-    data = FROZEN_CORE_PATH.read_bytes()
-    frozen._require(hashlib.sha256(data).hexdigest() == FROZEN_CORE_SHA256, "frozen bootstrap source changed")
-    tree = ast.parse(data, filename=str(FROZEN_CORE_PATH))
+    data, _ = _frozen_core_source()
+    tree = ast.parse(data, filename=FROZEN_CORE_DECLARED_PATH)
     original = next(
         node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "run_native_bootstrap"
     )
@@ -120,9 +181,14 @@ def _repaired_function():
 def compile_repair_proof():
     """Check the limited source transformation without importing a runtime."""
     _repaired_function()
+    _, source = _frozen_core_source()
     return dict(
         passed=True,
-        frozen_core_ref=dict(path=str(FROZEN_CORE_PATH), sha256=FROZEN_CORE_SHA256),
+        frozen_core_ref=dict(path=FROZEN_CORE_DECLARED_PATH, sha256=FROZEN_CORE_SHA256),
+        frozen_core_identity=source["historical_identity"],
+        current_core_ref=source["current_ref"],
+        current_namespace_ast_equal=source["current_namespace_ast_equal"],
+        historical_source_execution_qualified=False,
         run_inverse_ast_equal=True,
         cleanup_replacement_count=1,
         private_asset_code_equal=True,

@@ -3,13 +3,14 @@
 import argparse
 import ast
 import copy
+import hashlib
 import math
 from pathlib import Path
 from types import FunctionType
 
 import scripts.verification.native_runtime.verify_native_runtime_bootstrap_v2 as frozen_cli
 from s2a.infrastructure.snapshots.native_runtime_path_snapshot import REPO
-from scripts.simulation.runtime.prepare_native_runtime_path_snapshot import checked, read
+from scripts.simulation.runtime.prepare_native_runtime_path_snapshot import read
 
 FROZEN_CLI_REF = dict(
     path=str(REPO / "scripts/verify_native_runtime_bootstrap_v2.py"),
@@ -47,10 +48,19 @@ NEW_SOURCES = (
 )
 PATH_CHANGES = {value: value.replace("bootstrap_v2", "bootstrap_v3") for value in frozen_cli.PATH_CHANGES.values()}
 CORE_MODULE = "s2a.native_runtime_bootstrap_v2"
+FROZEN_CLI_SOURCE_PATH = frozen_cli._historical_source_path(FROZEN_CLI_REF)
+
+
+def _check_frozen_cli():
+    """Check original CLI identity independently of its current storage path."""
+    frozen_cli._require(
+        hashlib.sha256(FROZEN_CLI_SOURCE_PATH.read_bytes()).hexdigest() == FROZEN_CLI_REF["sha256"],
+        "Frozen v2 CLI bytes changed",
+    )
 
 
 def repaired_cli_ast():
-    checked(FROZEN_CLI_REF)
+    _check_frozen_cli()
     tree = frozen_cli.repaired_cli_ast()
     for node in frozen_cli._path_literals(tree):
         frozen_cli.require(node.value in PATH_CHANGES, "Frozen v2 entry path")
@@ -66,7 +76,7 @@ def repaired_cli_ast():
 
 
 def compile_cli_repair_proof(repaired_tree=None):
-    checked(FROZEN_CLI_REF)
+    _check_frozen_cli()
     original = frozen_cli.repaired_cli_ast()
     restored = copy.deepcopy(repaired_cli_ast() if repaired_tree is None else repaired_tree)
     inverse = {value: key for key, value in PATH_CHANGES.items()}
@@ -107,7 +117,7 @@ def compile_cli_repair_proof(repaired_tree=None):
 
 _tree = repaired_cli_ast()
 compile_cli_repair_proof(_tree)
-exec(compile(_tree, str(Path(__file__).resolve()), "exec"), globals())
+exec(compile(frozen_cli._current_cli_tree(_tree), str(Path(__file__).resolve()), "exec"), globals())
 _inherited_verify_native_qa = globals()["verify_native_qa"]
 _inherited_inspect_inputs = globals()["inspect_inputs"]
 _inherited_main = globals()["main"]

@@ -14,6 +14,7 @@ import s2a.research.trajectory_search.stage_budget_search as core
 from s2a.research.trajectory_search.constraint_residual_repair import evaluate_repair_entry
 from s2a.research.trajectory_search.directional_derivative_probe import _canonical
 from tests.research.trajectory_search.test_interior_trajectory_search_audit import certificate_from_point
+from tests.support.source_layout import current_module_name
 from tests.support.trajectory_rollout import synthetic_case
 
 
@@ -208,5 +209,5 @@ def test_frozen_contract_and_no_solver_import_are_explicit(audit):
             imports.extend(alias.name for alias in node.names)
         elif isinstance(node, ast.ImportFrom):
             imports.append(node.module or "")
-    assert "global_envelope_search_audit" in imports
+    assert current_module_name("scripts/global_envelope_search_audit.py") in imports
     assert not any("s2a." in name or "scipy" in name or "mujoco" in name for name in imports)

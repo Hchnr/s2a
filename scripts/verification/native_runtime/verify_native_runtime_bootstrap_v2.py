@@ -6,7 +6,10 @@ import copy
 import hashlib
 from pathlib import Path
 
+from s2a.infrastructure.current_layout import BASELINE_COMMIT, CATALOG_REF
+from s2a.infrastructure.repository_paths import repository_root
 from s2a.infrastructure.snapshots.native_runtime_path_snapshot import REPO
+from s2a.infrastructure.source_identity import SourceIdentityLocator
 from scripts.simulation.runtime.prepare_native_runtime_path_snapshot import checked, read
 from scripts.simulation.runtime.prepare_native_runtime_path_snapshot import reference as reference
 
@@ -53,6 +56,23 @@ CORE_MODULE = "s2a.native_runtime_bootstrap"
 REPAIR_FIELDS = ("repair_parent", "cli_repair_proof", "core_repair_proof")
 
 
+def _historical_source_path(ref):
+    """Locate the declared original bytes without granting runtime admission."""
+    root = repository_root(anchor=__file__)
+    locator = SourceIdentityLocator(
+        root=root,
+        baseline_commit=BASELINE_COMMIT,
+        catalog_ref=CATALOG_REF,
+        cache_directory=root / "outputs/source_identity_cache/native_bootstrap_cli",
+    )
+    resolved = locator.resolve(ref)
+    locator.finish()
+    return Path(resolved.storage_ref["path"])
+
+
+BASELINE_SOURCE_PATH = _historical_source_path(BASELINE_REF)
+
+
 def _require(condition, message):
     if not condition:
         raise ValueError(message)
@@ -63,9 +83,26 @@ def _dump(node):
 
 
 def _baseline_tree():
-    source = Path(BASELINE_REF["path"]).read_bytes()
+    source = BASELINE_SOURCE_PATH.read_bytes()
     _require(hashlib.sha256(source).hexdigest() == BASELINE_REF["sha256"], "Frozen original CLI bytes changed")
     return ast.parse(source, filename=BASELINE_REF["path"])
+
+
+def _current_cli_tree(tree):
+    """Bind a separate runtime copy to current modules after the inverse proof."""
+    imports = {
+        "prepare_native_runtime_path_snapshot": "scripts.simulation.runtime.prepare_native_runtime_path_snapshot",
+        "s2a.native_environment": "s2a.infrastructure.native_environment",
+        "s2a.native_runtime_path_snapshot": "s2a.infrastructure.snapshots.native_runtime_path_snapshot",
+        "s2a.native_runtime_bootstrap": "s2a.research.native_runtime.bootstrap",
+        "s2a.native_runtime_bootstrap_v2": "s2a.research.native_runtime.bootstrap_v2",
+        "s2a.native_runtime_bootstrap_v3": "s2a.research.native_runtime.bootstrap_v3",
+    }
+    runtime_tree = copy.deepcopy(tree)
+    for node in ast.walk(runtime_tree):
+        if isinstance(node, ast.ImportFrom) and node.module in imports:
+            node.module = imports[node.module]
+    return ast.fix_missing_locations(runtime_tree)
 
 
 def _receipt_calls(tree):
@@ -176,7 +213,7 @@ def compile_cli_repair_proof(repaired_tree=None):
 # No simulator import occurs in this inherited module's top-level code.
 _tree = repaired_cli_ast()
 compile_cli_repair_proof(_tree)
-exec(compile(_tree, str(Path(__file__).resolve()), "exec"), globals())
+exec(compile(_current_cli_tree(_tree), str(Path(__file__).resolve()), "exec"), globals())
 _inherited_verify_native_qa = globals()["verify_native_qa"]
 _inherited_inspect_inputs = globals()["inspect_inputs"]
 _inherited_main = globals()["main"]

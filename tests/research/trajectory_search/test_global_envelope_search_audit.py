@@ -246,4 +246,4 @@ def test_independent_audit_imports_only_frozen_algebra_not_any_search_or_solver(
         elif isinstance(node, ast.ImportFrom):
             imports.append(node.module or "")
     assert not any("s2a." in name or "scipy" in name or "mujoco" in name for name in imports)
-    assert "interior_trajectory_search_audit" in imports
+    assert "scripts.tracking.trajectory_search.interior_trajectory_search_audit" in imports
