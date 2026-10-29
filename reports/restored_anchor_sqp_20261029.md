@@ -16,12 +16,32 @@ QA产物为 `outputs/restored_anchor_sqp_native_qa_20261029_hjcgopjj/result.json
 
 准入产物 `outputs/restored_anchor_sqp_admission_20261029/result.json` SHA `bd7bf2fbd8e1583094110936e5458f02e05e97519b310f3092a9d5e45e9f58e9`；driver `outputs/restored_anchor_sqp_admission_driver_20261029.py` SHA `d45f7389f567af592d5d9614c798fde00d796e26dcb797de65c4f9690017437f`。
 
-正式生产已正常结束，原句柄8505实际exit0；child PID734373/start_ticks617178014实际wait0/reap、无signal、无自动重试，owner完成全部来源复核。首次完整记录guard checked/passed/exact均为true，只调用一次，发生在0阶段/0迭代/0QP时。共 **3657完整响应、1097100数值内步、1140985查询**，55阶段/55外层尝试、1160次QP内部迭代、272条实际ray；因 `trust_region_stalled` 正常停止，未追加预算。生产保存prefix9、完整witness0，最终selected不是最后接纳anchor。这些科学结果仍待全量独立复算，不能称控制资格。
+正式生产已正常结束，原句柄8505实际exit0；child PID734373/start_ticks617178014实际wait0/reap、无signal、无自动重试，owner完成全部来源复核。首次完整记录guard checked/passed/exact均为true，只调用一次，发生在0阶段/0迭代/0QP时。共 **3657完整响应、1097100数值内步、1140985查询**，55阶段/55外层尝试、1160次QP内部迭代、272条实际ray；因 `trust_region_stalled` 正常停止，未追加预算。生产保存prefix9、完整witness0，最终selected不是最后接纳anchor。下述全量独立复算现已确认这些结果，仍不构成控制资格。
 
 生产结果 `outputs/tracking_v5_restored_anchor_sqp_20261029/verified.json` SHA `b58f5d3d80abb6f4abe9e51cf785681bec1f15d067d0a684b6508142f649f6c1`；owner `outputs/tracking_v5_restored_anchor_sqp_execution_20261029/result.json` SHA `50da6df06d82973b6e3a36e1d363a5210553143cb6b317d654f7be09a63ef247`。
 
 独立checker owner实际dry准入已正常关闭，原句柄3014实际exit0；child PID785548实际wait0/reap、无signal/重试，110源SHA不变，新增响应/查询0。产物 `outputs/restored_anchor_sqp_check_admission_20261029/result.json` SHA `6530424eda8d347594f81e82518cc9205e36d3f21751953a82c596a60fd828bb`。
 
-唯一完整独立复算随后启动于原句柄10388，固定5400秒child上限。运行中快照 `outputs/restored_anchor_sqp_execution_checkpoint_20261029/checker_started.json` SHA `171fb8165bc05d772d0537754dbca183d2c0f4af3f3e47992389e46d1e9602c9` 保存当时325/3657进度、owner PID792603、child PID798911/start_ticks617290007的存活状态、空CUDA/LD及单线程环境，110份QA源重读不变。这不是最终退出或完整通过证据；后续接续同一原句柄，等待全部3657响应、272条ray、47份anchor、55个QP及46次曲率更新的独立核验和来源闭合，不启动重复checker。
+唯一完整独立复算已在原句柄10388实际exit0关闭，child PID798911/start_ticks617290007由owner PID792603实际wait/reap0，无signal或自动重试。全部 **3657响应、272条ray、47份anchor、55个QP证书及46次曲率更新** 独立核验通过，严格分类分歧与QP失败列表均为空。两阶段实际合计7314响应、2194200数值内步、2281970查询；早先tail阶段42响应单独保留，不混入本轮计数。
+
+原运行快照 `outputs/restored_anchor_sqp_execution_checkpoint_20261029/checker_started.json` SHA `171fb8165bc05d772d0537754dbca183d2c0f4af3f3e47992389e46d1e9602c9` 仍保留325/3657时的记录；完整结论依据最终退出和2526来源闭合，不以该中间快照替代。
+
+| 完整关闭证据 | SHA256 |
+| --- | --- |
+| [独立复算](../outputs/tracking_v5_restored_anchor_sqp_check_20261029/verified.json) | `d6c83bccd02d6eca82bb11db490863f778b45f0c943a21caa76bf4fb07e34e44` |
+| [checker owner](../outputs/tracking_v5_restored_anchor_sqp_check_execution_20261029/result.json) | `f8d91d931625b1dbf1f63d83debbb22a2b4d006d3c53c60f81f92fc32c31a92e` |
+| [2526来源最终核验](../outputs/restored_anchor_sqp_final_closure_20261029.json) | `e8d6c7a95c1ec4c4ac20f59c529b66e7b744e0cd59bbb928f915d624e4f62fb4` |
+| [全记录只读分析](../outputs/restored_anchor_sqp_analysis_20261029/result.json) | `05a0a2d60ec2312b921141d9b6a81dfb77da29f8b02a31fbd73eeeb3c8791a1a` |
+
+最终核验和只读分析分别在原句柄58689/60495实际exit0；未新增模型响应、查询或物理步。110份QA源、旧100份子集、两owner、全部阶段和输入结束时重核不变。
+
+| 保存候选 | 响应索引 | prefix | terminal原余量 | cursor9位置误差/旋转误差 |
+| --- | --- | --- | --- | --- |
+| initial | 0 | 9 | `7.73485517599e-5` | 11.47494mm / .05737520rad |
+| selected | 3647 | 9 | `3.05571825469e-9` | 11.46528mm / .05732691rad |
+| 最后接纳anchor | 3557 | 9 | `2.23557121672e-8` | 11.46529mm / .05732692rad |
+| closest_safety_attempt | 3003 | 5 | `1.27045989658e-6` | 11.46664mm / .05732891rad |
+
+selected仍超原10mm/.05rad caps，terminal虽过原审计容差却低于优化buffer `1e-8`；不能等同最后接纳anchor或鲁棒可行点。55阶段没有cursor增加，3384/3657响应为FD；已恢复的终端余量没有带来新的完整轨迹解。全部12端点、阶段及失败ray见[完整分析](../outputs/restored_anchor_sqp_analysis_20261029/analysis.md)。
 
 GPU继续禁用；新增物理/world-model/fresh/参考消费0，实际仍cursor8、task/grasp0，原18正确参考/12WAM开发/24最终留出门槛及总目标不变。
