@@ -1,5 +1,7 @@
 # S2A — State to Action
 
+最新CPU预算对照：[60阶段/同122响应上限](reports/stage_budget_search_20261029.md)通过142项专项QA、90响应生产/90响应完整独立复算；新旧前24阶段及34条搜索响应exact。60次QP尝试中57合格、55接纳，最终F较24阶段再降6.51%，但总误差升11.07%、双caps点6→4，前缀仍4、完整witness0。达到60阶段上限后正常关闭，32响应余量未追加；没有新实际控制/物理/world-model/fresh，实际仍cursor8/task0/grasp0。GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/pr_stage_budget_search_20261029.md)。
+
 最新CPU对照：[固定初始全局搜索上限](reports/global_envelope_search_20261029.md)通过116项专项QA，24次QP尝试中21合格，35响应生产/35响应完整独立复算正常关闭。最终最坏平方超限较前项下降15.57%，但总误差增加14.06%、最大位置误差约24mm，前缀仍4、双caps点5→6，完整witness0。只用35/122响应即达到24阶段上限，末段仍下降；没有追加旧预算。实际仍cursor8/task0/grasp0，GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/pr_global_envelope_search_20261029.md)。
 
 最新CPU对照：[安全拒绝响应的割线反馈](reports/rejected_response_search_20261029.md)通过124项专项QA，尝试24个QP（23合格）并完成52响应生产/52响应完整独立复算。3次反馈均保持原anchor，最坏平方超限较前项再降约.1698%，但cursor9和总误差略差，前缀仍4、双caps达标仍5/12，完整witness0。相同预算上限下实际多用8响应和3阶段，达到24阶段上限后关闭；新增物理/world-model/fresh0，实际仍cursor8/task0/grasp0。GPU禁用和原18/12/24门槛保持；[双语PR原文](reports/pr_rejected_response_search_20261029.md)。
