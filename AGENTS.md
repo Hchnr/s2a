@@ -30,3 +30,11 @@ CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python -m pytest
 ### 最新限制（用户2026-10-22确认，覆盖旧四卡许可）
 
 只允许当前容器可见GPU2、3；已用驱动PCI/UUID/Device Minor交叉核实为设备minor6、7。允许UUID分别为`GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f`、`GPU-7a163b30-e2cd-f747-6075-3265058ad0b8`。模型入口按UUID显式设置CUDA_VISIBLE_DEVICES，不沿用旧配置数字4–7或容器数字6、7；当前可见0、1禁止使用。恢复/排队同样遵守，CPU/OSMesa仍显式空CUDA/LD。
+
+### 临时禁止 GPU（用户2026-10-28明确要求，覆盖上述许可）
+
+在用户明确通知恢复前，不启动任何GPU模型、推理、训练或GPU测试，不自动恢复/排队GPU任务。已停止v5调度owner、GPU模型服务及依赖其服务的当前采集进程；允许继续CPU工作，CPU/OSMesa仍显式设置CUDA_VISIBLE_DEVICES和LD_LIBRARY_PATH为空。后续即使恢复，也须继续遵守此前UUID限制。
+
+## 提交节奏（用户2026-10-28明确要求）
+
+完成可验证的小阶段后及时本地提交，避免多个阶段长期堆积。提交前运行对应检查，提交说明如实标注尚未完成的验证。

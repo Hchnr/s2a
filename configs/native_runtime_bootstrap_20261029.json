@@ -1,0 +1,88 @@
+{
+  "actual_consumed_reference_count": 0,
+  "allowed_asset_roots": [
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_runtime_path_snapshot_20261029/LIBERO/libero/libero/assets",
+    "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/lib/python3.11/site-packages/robosuite/models/assets"
+  ],
+  "automatic_retry": false,
+  "control_qualified": false,
+  "controller_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/tracking_preview_wam_development_v5_20261028/development/cases/task0_init0_s42_terminal058/simulation/8400_masked_position_hold/task0_init0_s42/controller.json",
+    "sha256": "d6d143e51764c3fc496006315a6e1e51a9e2aa1314e5294acdae238a987ac2c9"
+  },
+  "cv2_guard": {
+    "exact_probe_ref": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/local_python_environment_repair_20261022/native_cv2_probe.json",
+      "sha256": "8cdc8f2c8b85946e911813d2375b46a005e73d94a13f232e37f4e85586eedaa7"
+    },
+    "helper_ref": {
+      "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/src/s2a/native_environment.py",
+      "sha256": "d8c14d1e111485e55d65fd1de6c839b0da16767d20c5bf5c39f74d6adfb2e1de"
+    },
+    "runtime_source_refs": [
+      {
+        "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/lib/python3.11/site-packages/cv2/__init__.py",
+        "sha256": "936bd94c5a5debf0212fc751af79d3a163652f3e850259df2159db6aa3ed8ad8"
+      },
+      {
+        "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/lib/python3.11/site-packages/cv2/config.py",
+        "sha256": "974e2d4096ee1a9a9a341df1bf33e16973683bf1ac733006de27ff2f23bc584d"
+      },
+      {
+        "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/lib/python3.11/site-packages/cv2/config-3.py",
+        "sha256": "9a7aadf724b822001f5e963b01fd4e375d45e2cbbe328d2ca7b42a440c083a1c"
+      }
+    ]
+  },
+  "fresh_cases": 0,
+  "historical_runtime_equivalence_claimed": false,
+  "limits": {
+    "control_step": 0,
+    "mj_forward": 32,
+    "mj_resetData": 1,
+    "mj_step": 0,
+    "mj_step1": 2,
+    "mj_step2": 0,
+    "model_build": 3,
+    "osmesa_context": 3,
+    "read_pixels": 1,
+    "render": 1
+  },
+  "original_manifest_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/tracking_preview_wam_development_v5_20261028/development/cases/task0_init0_s42_terminal058/simulation/8400_masked_position_hold/task0_init0_s42/manifest.json",
+    "sha256": "4a42c9647372bfce84f63bde93bb066d0ee06d7157cce9d8cef99271ee3539ab"
+  },
+  "output_dir": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_runtime_bootstrap_20261029",
+  "record_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_runtime_path_snapshot_20261029/runtime_manifest.json",
+    "sha256": "ec8c377eb9fe505d69745f55e33b4ccb6f352fdf6d2e49555d6146c39cb111f5"
+  },
+  "render": {
+    "camera_name": "agentview",
+    "depth": false,
+    "height": 256,
+    "width": 256
+  },
+  "s2a_commands": 0,
+  "schema": "s2a.native-runtime-bootstrap-inputs.v1",
+  "seed": 42,
+  "snapshot_crosscheck_execution_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_runtime_path_snapshot_crosscheck_v2_20261029/execution.json",
+    "sha256": "29f59a8fce9977af01fa5e80ea61f1eb0906e1f164a1919cb40d64de095ab650"
+  },
+  "snapshot_crosscheck_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_runtime_path_snapshot_crosscheck_v2_20261029/result.json",
+    "sha256": "abfce6a762de30268123ca92da909441f31e2767716a2ca69ba1e221ca545100"
+  },
+  "snapshot_inputs_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/configs/native_runtime_path_snapshot_20261029.json",
+    "sha256": "f41012908ebaf24f67763900b71f6f818c97cddf398ff67f82323d405d243aac"
+  },
+  "snapshot_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_runtime_path_snapshot_20261029/manifest.json",
+    "sha256": "a9ffc0fc6b883f00676d8211958cf96b752b0f977d72a737fcca17fde6b742cd"
+  },
+  "timeout_seconds": 600,
+  "trial": 0,
+  "world_model_calls": 0
+}

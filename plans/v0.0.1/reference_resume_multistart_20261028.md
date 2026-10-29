@@ -1,0 +1,11 @@
+# 保持后原参考推进的固定初值诊断（CPU）
+
+总目标和原18条、WAM开发矩阵、最终24新初态任务门槛保持不变。前一阶段在实际held endpoint378上保持cursor8有局部模型witness，推进cursor9没有找到非线性witness；未证明不可行。
+
+本次保持同一真实状态、已执行前缀及自身held周期更新的因果误差历史，参考仍为原cursor9..16，初始关节、命令box/rate、全内环裕量、制动、终端方向和首周期.01m/.05rad精度约束全部保留。预先固定三个初值：上一真实命令重复、上一held计划移位、旧resume9的线性约束witness；每次最多160响应/60迭代，总最多480响应。全部结果逐一报告，不按观察结果追加重启或放宽约束。仅检验初值敏感性，不产生物理周期、世界模型调用或fresh案例，不认证原生可执行性或任务成功。
+
+入口：`scripts/execute_tracking_v5_reference_resume_multistart_v2.py --launch`，实际探针为`probe_tracking_v5_reference_resume_multistart.py`。首版owner因原v5清单中两份测试已被2f09739修复而在执行探针前终止，失败日志保留于`outputs/tracking_v5_reference_resume_multistart_supervisor_20261028/supervisor.log`，不覆盖。v2仅显式接受这两份测试从9db6efa到2f09739的精确Git内容迁移，登记旧新SHA；其余原v5源码全部继续验证。原v5注册清单与历史产物不修改，GPU持续禁用。
+
+v2实际owner已关闭，actual_wait=true/returncode0，reaped=true/returncode0。结果`outputs/tracking_v5_reference_resume_multistart_20261028/verified.json` SHA `cb52615c6dfd6d51088958e95e6cab3636b5ec55b67159cf01a1ec28fe3544e8`。三个初值均为nonlinear_search_no_witness，响应评估分别45、107、41（合计193），迭代30、43、30，均以Positive directional derivative for linesearch退出，未耗尽160响应预算。该结果不支持仅因旧warm初值导致失败的解释，但不证明全局不可行；原控制资格不变。
+
+后续优先用实际多周期保持反馈更新自己的历史，再检查能否恢复推进。需要显式记录参考相位和夹爪合同、保持失败时停止，不将原轨迹之外的暂停/恢复算成原时序跟踪成功。全量pytest仍运行且已观察到失败，不能报告整体回归通过。

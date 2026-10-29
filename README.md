@@ -1,5 +1,67 @@
 # S2A — State to Action
 
+最新实现准入：[pose紧活动子集的乘子恢复](reports/state_vector_dual_recovery_implementation_20261029.md)已通过182项专项CPU测试、新文件Ruff/格式和两条真实输入dry，182来源指纹保持。仅改变pose的一次NNLS恢复子集，完整原KKT门、restore和60阶段/122响应上限保持；生产搜索和完整独立复算待执行，尚无本项跟踪收益结论。实现提交`d527982`，实际仍cursor8/task0/grasp0，GPU继续禁用；[双语PR原文](reports/pr_state_vector_dual_recovery_20261029.md)。
+
+最新CPU对照：[整个目标统一缩放](reports/state_vector_objective_scale_20261029.md)通过200项专项QA、5响应生产/5响应完整独立复算，2724来源闭合。10QP均status0，但原互补证书仅3个合格（2restore/1pose）；总误差较原GN停止点降.526%，最坏F升.821%，前缀/双caps仍9、完整witness0。半径下限正常停止，未追加50阶段/117响应；实际仍cursor8/task0/grasp0，GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/pr_state_vector_objective_scale_20261029.md)。
+
+最新CPU对照：[TCP误差向量GN](reports/state_vector_gn_search_20261029.md)通过186项专项QA、3响应生产与3响应完整独立复算，2691来源闭合。7次QP仅原restore合格，6个pose QP均status8未获资格，没有GN方向的新响应；半径下限停止，未追加53阶段/119响应余量。最终仍前缀9、完整witness0，不能判断GN跟踪收益；实际仍cursor8/task0/grasp0。GPU禁用和原18/12/24门槛保持；[双语PR原文](reports/pr_state_vector_gn_search_20261029.md)。
+
+最新CPU预算对照：[60阶段/同122响应上限](reports/stage_budget_search_20261029.md)通过142项专项QA、90响应生产/90响应完整独立复算；新旧前24阶段及34条搜索响应exact。60次QP尝试中57合格、55接纳，最终F较24阶段再降6.51%，但总误差升11.07%、双caps点6→4，前缀仍4、完整witness0。达到60阶段上限后正常关闭，32响应余量未追加；没有新实际控制/物理/world-model/fresh，实际仍cursor8/task0/grasp0。GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/pr_stage_budget_search_20261029.md)。
+
+最新CPU对照：[固定初始全局搜索上限](reports/global_envelope_search_20261029.md)通过116项专项QA，24次QP尝试中21合格，35响应生产/35响应完整独立复算正常关闭。最终最坏平方超限较前项下降15.57%，但总误差增加14.06%、最大位置误差约24mm，前缀仍4、双caps点5→6，完整witness0。只用35/122响应即达到24阶段上限，末段仍下降；没有追加旧预算。实际仍cursor8/task0/grasp0，GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/pr_global_envelope_search_20261029.md)。
+
+最新CPU对照：[安全拒绝响应的割线反馈](reports/rejected_response_search_20261029.md)通过124项专项QA，尝试24个QP（23合格）并完成52响应生产/52响应完整独立复算。3次反馈均保持原anchor，最坏平方超限较前项再降约.1698%，但cursor9和总误差略差，前缀仍4、双caps达标仍5/12，完整witness0。相同预算上限下实际多用8响应和3阶段，达到24阶段上限后关闭；新增物理/world-model/fresh0，实际仍cursor8/task0/grasp0。GPU禁用和原18/12/24门槛保持；[双语PR原文](reports/pr_rejected_response_search_20261029.md)。
+
+最新CPU搜索：[反复内点恢复与完整轨迹信赖域](reports/interior_trajectory_search_20261029.md)通过138项专项QA、21个QP及44响应生产/44响应完整独立复算。8次恢复和7次pose接纳使最坏平方超限下降2.3901%、安全余量增加，但数值前缀9→4、双caps达标点9→5，完整witness0；没有可执行新轨迹。最终因最小半径停止，后期拒绝集中于固定pose上限预测失准。实际仍cursor8/task0/grasp0，原验收门槛及GPU禁用保持，不追加本轮预算。
+
+最新CPU机制结果：[完整约束残差修正](reports/constraint_residual_repair_20261029.md)通过131项专项QA、唯一QP及11响应生产/11响应独立复算。全步恢复全部安全与前缀优化余量，但仅保留49.488%原下降，未通过预登记50%条件，故不选中；其余缩短步仍安全失败。cursor9仍11.46492mm/.05732601rad、完整witness0，实际仍cursor8/task0/grasp0。2540来源核验关闭，不放宽原门槛或自动追加微步搜索；GPU继续禁用。
+
+最新CPU结果：[保存3543的末周期修复](reports/terminal_only_tail_repair_20261029.md)完成155项专项QA、14响应生产和14响应完整独立复算。12候选中2个合格，选中末周期x减.001，terminal恢复至2.762279319e-5；保留cursor9微小改善，但其误差仍11.46520mm/.05732641rad超原caps，其他安全最小slack仍仅6.13467e-8。首次环境引用错误的零响应失败保留。完整witness0、实际cursor8、task/grasp0，不自动重开同一SQP；GPU禁用及原18/12/24门槛保持。
+
+前项CPU结果：[从恢复候选重新开始完整H12 SQP](reports/restored_anchor_sqp_20261029.md)的889项native QA、生产搜索、3657响应完整独立复算及2526来源核验全部关闭。272条ray、47份anchor、55个QP和46次曲率更新核验通过；仍prefix9、完整witness0，55阶段后信赖域停滞。selected的cursor9仍11.46528mm/.05732691rad超原caps，实际仍cursor8、task/grasp0。GPU继续禁用，原18/12/24门槛及总目标保持。
+
+运行时验证：[保存命令CPU回归](reports/native_runtime_replay_20261029.md)通过27项专项QA与实际准入，唯一真实重放完成377控制周期/9425积分步；378个完整端点、225内环样本的最大状态差异均0，actual368完整状态逐字节一致。固定控制器与llvmpipe软件OSMesa通过，2808来源不变；首次QA参数格式拒绝的零运行时失败保留。此前[v3 bootstrap](reports/native_runtime_bootstrap_v3_20261029.md)及其两次失败证据保持。本次只复现已执行分支，实际仍cursor8、task/grasp0，不授予新轨迹控制或历史二进制等价资格，GPU继续禁用。
+
+当前CPU结果：[末周期平移恢复终端余量](reports/tail_translation_reserve_20261029.md)的14次生产响应、隔离v2完整独立复算及2485来源闭合均已完成。6/12候选合格，选中请求5（末周期y +.001），terminal余量恢复到7.733855175988188e-5并通过原经验门槛；前11周期、旋转goal及history/repeat的exact检查通过。完整H12 witness仍0，cursor9仍11.47494mm/.05737520rad，实际仍cursor8、task/grasp0。其他安全最小值仅3.267282409069594e-7，不能称全约束鲁棒内点。
+
+原95源QA为766通过，新100源QA为796通过；v1 checker在14条复算后发生布尔数组比较异常的失败历史保留，原producer未重跑。三阶段实际合计42响应/12600内步/13107查询，新增物理/world-model/fresh0。后续[完整H12 SQP登记](plans/v0.0.1/restored_anchor_sqp_20261029.md)的首次完整响应exact门及生产结果见上文。GPU继续禁用，原18/12/24门槛与总目标保持。
+
+前项CPU结果：[终端单行割线外推](reports/terminal_secant_probe_20261029.md)完成655项native QA、17调用及全量独立复算、2422来源闭合。两个未拟合混合方向均未达到误差减半门槛，最大新绝对残差约2.28e-6高于原终端裕量3.20e-9；修正不采用。15个探针均未保持旧达标前缀，完整witness0；后续终端恢复结果见上文。
+
+当前CPU推进：[实际接纳点SQP](reports/accepted_point_sqp_20261029.md)搜索与完整独立复算均正常关闭：1919响应/575700数值内步、118条ray、25份anchor、27个QP和24次曲率更新全部核验，严格分类一致；仍prefix9、完整witness0。cursor9仍11.47mm/.05738rad超原caps。[固定方向导数诊断](reports/directional_derivative_consistency_20261029.md)保留v1零响应准入失败；隔离v2通过529测试及实际dry，77完整调用/76唯一命令正常关闭、witness0，全量独立复算完成77响应后因旧stencil无容差边界守卫失败；隔离check-only v3通过573测试、同77响应全量复核及2381来源闭合；全固定步长分析确认旧terminal线性预测偏差，小步长差分未显示收敛，尚无新控制解。保持原18/12/24任务门槛，实际仍cursor8、task/grasp0，GPU继续禁用。
+
+当前CPU进度：[固定前缀优化余量](reports/prefix_optimization_reserve_20261029.md)搜索与完整独立复算均正常关闭，4000响应/1200000数值内步、177条ray和54份anchor全量核验，严格分类一致，53次下降后仍为prefix9、完整witness0；cursor9仍11.47mm/.05737rad超原caps。差分占3822/4000，53阶段均在首非零callback截断并重置SQP状态，后续需检验实际接纳点间的曲率保留。[运行时文件快照](reports/native_runtime_path_snapshot_20261029.md)105项native QA、实际准备及独立文件核验已关闭，完整1090文件/454957103字节；尚未验证实际加载或bootstrap，[历史身份缺口](reports/native_runtime_path_followup_20261029.md)保持。实际仍cursor8、task/grasp0，新增物理/模型/fresh0，GPU禁用，原任务门槛与总目标保持。
+
+最新CPU机制检验（2026-10-28）：[固定保存方向回缩](reports/saved_direction_backtracking_20261028.md)96条响应和完整独立复核已关闭，14/16方向、36/64内部点恢复可行下降，但原cursor9达标0/96、完整witness0。独立checker元数据错误已保留失败记录并通过隔离修复，84项native QA通过。下一步[同warm的H12有限信赖域A/B](plans/v0.0.1/prefix_trust_region_control_20261028.md)已登记、尚未执行；实际仍止于cursor8，新增物理/模型/fresh0，GPU继续禁用，总目标未完成。
+
+最近CPU接续（2026-10-28）：[H13提前/临近相位分配](reports/paired_reference_phase_20261028.md)两个同源650ms搜索与完整独立复算均正常关闭，各4000响应/1300000内步，严格分类一致、完整witness0。新相位连续10端点包含一个中点，仍仅原cursor0..8达标；原cursor9两组仍超原位置/旋转门槛。后续固定方向回缩结果见上文。新增物理/模型/fresh0，GPU继续禁用，总目标未完成。
+
+最新CPU多周期结果（2026-10-28）：[原生目标H12搜索与完整独立复核](reports/state_updated_trajectory_control_20261028.md)已关闭，4000响应确认完整witness0；[保留达标前缀修复](reports/prefix_preserving_trajectory_control_20261028.md)的新4000响应/54迭代已正常结束，连续预测达标点6→9，但cursor9仍11.52mm/.05758rad超原门槛，完整witness0。新搜索全部4000轨迹/1200000内步的独立复算已正常关闭，严格分类一致、完整witness仍0。新增物理/模型/fresh0，实际仍止于cursor8，GPU继续禁用。 [只读相位诊断](reports/saved_trajectory_phase_diagnostic_20261028.md)已完成：新selected最后三点即使另选路径相位仍超caps，不能仅重新标记时间补救；后续需重新联合规划动作。
+
+最新CPU停止点结果（2026-10-28）：[原生目标与状态更新受限规划](reports/state_updated_stop_control_20261028.md)及独立7250数值内步复核完整关闭；281候选/32迭代未找到cursor9执行解，selected旋转.07346693rad仍超原.05rad门槛。新增物理/模型/fresh0，实际仍止于cursor8；下一步从更早actual368开展包含cursor9的多周期规划，原实际门槛和GPU禁用保持。
+
+最新CPU动力学证据（2026-10-28）：[冻结与状态更新响应](reports/state_updated_joint_response_20261028.md)九个已执行周期及独立1350数值内步核验关闭。更新2ms模型最大关节预测误差.000115660rad，固定M/J同数值法.000452429、旧解析.004138869；尚无新action或任务成功，实际仍止于cursor8。下一步接入受限规划和实际前向验证，原验收门槛及GPU禁用保持。
+
+最新CPU约束诊断（2026-10-28）：[首周期约束归因](reports/fk_stop_constraint_audit_20261028.md)及[制动时间敏感性](reports/fk_braking_time_numeric_20261028.md)独立核验关闭；去掉未来/终端及缩短额外制动时长后仍无cursor9首点执行解，最好候选旋转.06631rad仍超原.05rad门槛。新增物理/模型/fresh0；下一步核对冻结与状态更新动力学，实际任务进度及原验收门槛不变，GPU继续禁用。
+
+最新CPU同起点对照（2026-10-28）：[首周期FK预览8/12/16](reports/fk_first_long_native_20261028.md)三组实际及独立重放完整关闭，各9周期达标但都在cursor9前停止，task/grasp0；1131独立重放周期/675新内环样本的state/q/qvel差异0。更长窗口未扩大实际推进范围，后续定位首周期与未来/terminal约束影响。总目标及原任务门槛未达，GPU继续禁用。
+
+v4最新完整结果（2026-10-28）：[全量独立复核](reports/tracking_wam_integration_20261027.md)已actual wait0/reap，12案例、900请求和31500节点全部校验关闭；任务稳定成功raw 0/6、terminal 0/6，开发门槛未通过，最终留出仍关闭。v5 GPU任务已按用户要求停止，等待明确恢复通知；不能据审核完成宣称总目标实现。
+
+最新运行状态（2026-10-28）：[v5释放阈值WAM开发矩阵](plans/v0.0.1/tracking_wam_v5_20261028.md)已通过129项组件QA、12输入预检、独立metadata及14 CLI dry；模型服务实际就绪，前三案例各600周期/75请求生产已关闭，任务成功均0；第二、三条保存状态确认q7越界，第四条按用户要求停止，GPU任务等待明确恢复通知。保持原12条/900请求/7200周期与任务门槛，尚无新任务成功结论，最终留出仍关闭。完整证据与历史失败见[集成报告](reports/tracking_wam_integration_20261027.md)。
+
+最新CPU控制诊断（2026-10-28）：[多周期实际保持/恢复](reports/reference_recovery_native_20261028.md)及独立重放完整关闭；16新周期全部保持、推进0，保持误差与关节裕量达标但task/grasp均0，未取得原轨迹控制资格。独立395端点和400内环状态核验差异0，GPU继续禁用。
+
+最新恢复分析（2026-10-28）：[首周期可行性优先规划](reports/feasibility_first_recovery_20261028.md)仍未找到推进解；[独立XML复核的静态IK](reports/recovery_pose_ik_20261028.md)确认原下一姿态在.05rad关节裕量内存在合法构型，问题仍在实际状态与固定控制接口下的动态推进。新增物理/模型/fresh均0，未取得任务资格。
+
+最新预览合同检查（2026-10-28）：[完整8点精度约束](reports/trajectory_caps_numeric_20261028.md)在五个较早真实状态中仅首状态找到完整预览模型解，原首点策略全部接收；当前只确认能更早拒绝后续预测失准的计划，无新控制/任务收益。下一步检查同一实际起点的更长因果预览，GPU继续禁用。
+
+最新模型一致性发现（2026-10-28）：[长窗口与可行起点](reports/feasible_start_trajectory_20261028.md)仍未找到12/16点合规解；[独立XML核验](reports/preview_fk_consistency_20261028.md)发现被接收8点模型解的Cartesian预测与同一预测q的FK最大相差17.01mm，后者仅5/8满足原精度。下一步优先修正预测内部运动学一致性，不能据局部模型标签宣称实际控制成功；GPU继续禁用。
+
+最新FK修正与物理核验（2026-10-28）：[FK一致8点模型解](reports/fk_consistent_trajectory_20261028.md)通过独立XML/MuJoCo核验；[原生反馈](reports/fk_feedback_native_20261028.md)两个实际周期误差均达标，随后step370完整未来精度搜索无解而停止。独立370周期/371端点/50内环状态差异0，task/grasp仍0，未到达关键参考点；GPU继续禁用，尚无完整控制或任务资格。
+
+最新首周期反馈证据（2026-10-28）：[同状态对照及原生仿真延续](reports/fk_first_feedback_native_20261028.md)新增7周期实际达标，独立377周期/378端点/175内环状态差异0；连同前两周期仅到cursor8，关键cursor9前仍因模型无解停止，task/grasp0。下一步从早期实际起点检查更长未来成本窗口；原真实验收门槛及GPU禁用保持。
+
 107最新完整结果：[追加wrench覆盖forward](reports/wrench_coverage_forward_20261025.md)5000方程唯一fit、独立增广SVD及三个stage/owner正常退出和来源审查完成；holdout23/24、局部22/24，资格失败，不进入控制。106追加147条/13209周期训练数据完整资格通过。原总目标与最终门槛保持。
 
 104最新完整结果：[当前实测wrench条件forward](reports/wrench_conditioned_arm_forward_20261025.md)4937方程唯一fit、独立增广SVD与三个stage/owner实际wait0和来源核验完成；holdout21/24、局部22/24，资格失败，不进入控制。103[原30轨迹wrench数据](reports/native_wrench_data_20261025.md)6180周期/6210端点及全量数据资格通过。原总目标与最终验收门槛保持。

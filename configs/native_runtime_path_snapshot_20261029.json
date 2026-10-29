@@ -1,0 +1,183 @@
+{
+  "schema": "s2a.native-runtime-path-snapshot-inputs.v1",
+  "original_manifest_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/tracking_preview_wam_development_v5_20261028/development/cases/task0_init0_s42_terminal058/simulation/8400_masked_position_hold/task0_init0_s42/manifest.json",
+    "sha256": "4a42c9647372bfce84f63bde93bb066d0ee06d7157cce9d8cef99271ee3539ab"
+  },
+  "original_config_ref": {
+    "path": "/share-mixed/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/config/config.yaml",
+    "sha256": "d7ece7fb95f0fa9462b60b97632e2b7ece297f074d9c66433c0002018e9a114e"
+  },
+  "osmesa_ref": {
+    "path": "/share-mixed/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/systemlibs/usr/lib/x86_64-linux-gnu/libOSMesa.so.8.0.0",
+    "sha256": "40e28f0f15c4cd13ad3c353509eb2fad79d8041528c59dc56d6e68fae8d1677a"
+  },
+  "current_only_refs": [
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libLLVM.so.20.1",
+        "sha256": "4b93481bd1c9d42c0951275dd275d4a9d30db78c309ae2cc0405669bc6dbbf8a"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+        "sha256": "9b64150b28505a33d6bc3ecf709c279f6de97a1c184dbda65d06ee4537f6d286"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.125.0",
+        "sha256": "ff39219aa058421e46afd36851342370cd1932d2557eb22f54e129755642bf67"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "sha256": "1b87a1a50b496cfead2b0ad134c2ff536705c82608db240c7e8aa48d6c0e4217"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "sha256": "d8db8739a1633c972cec6a4fe0566bdcec6fd088f98723492ab0361f66238f75"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libffi.so.8.1.4",
+        "sha256": "00f593fe192f2851b8ce23b25cec2488d769beb5a8f63e8c9e563071e1075153"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libedit.so.2.0.72",
+        "sha256": "195c607216f8581dbf516346ed38f4c73500cac4b84e18eb0a4fd49931e4cd56"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+        "sha256": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libxml2.so.2.9.14",
+        "sha256": "1a960c92f3a3633832fbecd1345333c07e63807c4e0413b9878d708c5884f88f"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "sha256": "1cd555ac46b7887edeaf3c42aac5408c8135e52f6b37870da2cf82d5fe14e829"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libtinfo.so.6.4",
+        "sha256": "28ab8e2e29d46dc8f7222025ca2d61e0b898364c6426cc631bf4ecc7c7f5ac52"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libbsd.so.0.12.1",
+        "sha256": "e86cd4f0019f42c2ba5e60602e0edc8694d2948377d98c3654d0f6bddb5254bb"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libicuuc.so.74.2",
+        "sha256": "7560aadde38e5f4237a47a1ddd5891f9b36768a77a60faae30beee003ac01901"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/liblzma.so.5.4.5",
+        "sha256": "a9793942a8a5f6f4d0f523ef9e0a5be4f0033f2c6c28520cd2b4e706d53c6e17"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libmd.so.0.1.0",
+        "sha256": "423e18586b6ea740f4465afd64f7a9a4cb7264ed979c8e7256f9085af5345fef"
+      }
+    },
+    {
+      "role": "system_library",
+      "identity": "current_only",
+      "ref": {
+        "path": "/usr/lib/x86_64-linux-gnu/libicudata.so.74.2",
+        "sha256": "ddbb3718b8bd9cbd780e5ab08b4503c30a6c4fa0706ebe5d074ed6b596c1714e"
+      }
+    },
+    {
+      "role": "task_bddl",
+      "identity": "current_only",
+      "ref": {
+        "path": "/share-mixed/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/LIBERO/libero/libero/bddl_files/libero_goal/put_the_bowl_on_the_plate.bddl",
+        "sha256": "358b7781437e412c67d6a7648c1c28796b6b1bf117a25e61316cb8dfeb940e5b"
+      }
+    },
+    {
+      "role": "default_osc_json",
+      "identity": "current_only",
+      "ref": {
+        "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/libero_env311/lib/python3.11/site-packages/robosuite/controllers/config/osc_pose.json",
+        "sha256": "07f3a8b41d3eecc8a36700a85bd8207ee3fbc36eb73f6a2248340c96770d1e45"
+      }
+    }
+  ],
+  "expected_historical_libero_sources": 45,
+  "expected_historical_robosuite_sources": 120,
+  "output_dir": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/native_runtime_path_snapshot_20261029",
+  "max_files": 10000,
+  "max_bytes": 1073741824,
+  "scope": "File preparation only; no imports, dynamic loading, model construction, responses or physics"
+}

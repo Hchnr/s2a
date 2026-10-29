@@ -28,9 +28,17 @@ def synthetic(preparer, tmp_path, monkeypatch):
     """A complete409/49/30 fixture, not a permissive mock of the source guard."""
     config = json.loads(preparer.CONFIG.read_text())
     actual_repo = preparer.REPO
+    historical_repo = Path("/share/project/eai_pwm/home/hcr/repos/s2a")
     for key, _ in preparer.REF_FIELDS:
         if Path(config[key]).is_absolute():
-            config[key] = str(tmp_path / Path(config[key]).relative_to(actual_repo))
+            declared = Path(config[key])
+            if declared.is_relative_to(actual_repo):
+                relative = declared.relative_to(actual_repo)
+            elif declared.is_relative_to(historical_repo):
+                relative = declared.relative_to(historical_repo)
+            else:
+                raise ValueError("Synthetic fixture accepts only explicit current or historical S2A paths")
+            config[key] = str(tmp_path / relative)
     monkeypatch.setattr(preparer, "REPO", tmp_path)
     config_path = tmp_path / "configs/wam_native_training_model_contract_20261021.json"
     plan = tmp_path / "plans/v0.0.1/030_mounted_panda_contract_20261021.md"

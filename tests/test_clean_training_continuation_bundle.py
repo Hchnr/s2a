@@ -206,12 +206,13 @@ def test_drift_during_planning_is_rejected_without_writing(repository, monkeypat
     assert not (repo / NEW).exists()
 
 
-def test_actual040_metadata_readonly_build_and_all_old_source_shas_remain_exact(monkeypatch):
+def test_actual040_metadata_readonly_build_preserves_sources_and_frozen_runtime(monkeypatch):
     path = REPO / OLD / "execution/admitted.json"
     if not path.is_file():
         pytest.skip("actual040 evidence is unavailable in this checkout")
     original = path.read_bytes()
     registration = json.loads(original)
+    current_sources = {source: sha(Path(source).read_bytes()) for source in registration["source_sha256"]}
     # No numpy/torch is needed or imported by the builder. Forbid every output
     # write while processing the real registration, including future artifacts.
     original_open = Path.open
@@ -224,8 +225,15 @@ def test_actual040_metadata_readonly_build_and_all_old_source_shas_remain_exact(
     monkeypatch.setattr(Path, "open", readonly)
     planned = BUNDLE.expected_bundle_sources(registration)
     assert len(planned) == 11 and path.read_bytes() == original
-    for source, digest in registration["source_sha256"].items():
+    # Historical metadata also lists tests that can receive committed fixes.
+    # The builder must preserve every current file and keep its eleven actual
+    # runtime inputs bound to the original registration, without rewriting it.
+    assert set(planned) == {str(REPO / relative) for relative in ORIGINALS}
+    for source, digest in current_sources.items():
         assert sha(Path(source).read_bytes()) == digest
+    for source, entry in planned.items():
+        assert entry["source_sha256"] == registration["source_sha256"][source]
+        assert sha(Path(source).read_bytes()) == entry["source_sha256"]
 
 
 def test_all_ten_published_entrypoint_help_commands_are_cpu_and_do_not_decode_data(repository, tmp_path):

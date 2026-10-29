@@ -1,0 +1,13 @@
+# 提交后CPU回归核验（2026-10-28）
+
+代码基线9db6efa。GPU按用户要求禁用，所有验证显式CUDA_VISIBLE_DEVICES和LD_LIBRARY_PATH为空。
+
+首次默认pytest在test_causal_arm_replay.py收集时缺少scripts导入路径；加入PYTHONPATH=src:scripts后完整运行得到2963 passed、4 failed、12 errors、1 skipped、1 deselected，757.69s。此为真实失败记录，不作为全量通过。
+
+12个准备错误来自synthetic fixture假设原配置绝对路径必在当前REPO下；测试现在仅接受明确的当前/历史S2A根，并将复制的synthetic路径映射到当前仓库outputs下tmp_path，不读取或恢复旧目录、不改原配置/SHA。3个bridge测试失败来自已有真实role_receipts；现在比较调用前后完整文件SHA集合，确保dry metadata/help不新增或修改已有回执，而不要求真实历史目录不存在。另1个子进程启动失败在定向复测未复现；原fixture固定sleep .15可先于父进程身份采集退出，改为等待真实actual_child_identity.json并保留30s失败上限，不放宽生产身份检查。
+
+三个修改测试文件ruff/format通过；同三个文件完整定向复测43 passed in133.16s。修复后全量复测已启动，basetemp outputs/pytest_postfix_20261028，JUnit outputs/pytest_postfix_20261028.xml，当前待最终结果。定向通过不等于全量复测通过，未改变控制算法或任何任务门槛。
+
+修复后全量复测实际结束：2978 passed、1 failed、1 skipped、1 deselected、4 warnings，1091.70s，JUnit保存在outputs/pytest_postfix_20261028.xml。唯一失败为test_clean_training_continuation_bundle的真实040只读构建测试：错误地将整个历史来源清单（包含测试文件）都当成永久不可修改代码，因2f09739中已提交的fixture修复而失败。现改为构建前后所有当前来源SHA一致，并对构建实际消费的完整11份runtime源码继续严格核验历史SHA及来源集合；原注册、runtime校验和拒绝漂移逻辑不改变。该测试文件完整定向复测见下方实际记录；不将定向通过冒充修改后全量通过。
+
+唯一失败所属测试文件修复后完整定向复测17 passed in11.69s，Ruff及格式检查通过，提交9e0b1f5。此前全量结果仍按2978 passed/1 failed保留；未重复完整全量，不宣称修改后全量通过。

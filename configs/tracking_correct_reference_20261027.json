@@ -1,0 +1,42 @@
+{
+  "seed": 42,
+  "prior_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/configs/coupled_preview_control_registered_20261026.json",
+    "sha256": "f1c2d3443f374b694ef904282b201cc3fd77af34474be7cbbf189cb745cd6fe0"
+  },
+  "prior_qualified_summary_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/coupled_preview_control_20261026/regression_summary.json",
+    "sha256": "92b43b1765837e5790718cd101faf5ccda7a80dfa39290ff8df926d654425915"
+  },
+  "case_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "physics_steps": 4907,
+  "stable_success_last_steps": 40,
+  "maximum_position_rmse_m": 0.01,
+  "maximum_so3_rmse_rad": 0.05,
+  "control_freq": 20,
+  "online_chunk_size": 40,
+  "max_observation_interval_steps": 8,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "candidate": "tracking primary; old first pose caps reported only; other stages unchanged",
+  "scope": "correct-reference qualification inputs; not WAM or fresh task acceptance"
+}

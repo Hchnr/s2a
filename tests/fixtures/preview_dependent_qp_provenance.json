@@ -1,0 +1,7 @@
+{
+  "fixture_sha256": "99a93fb2b3eeb6f2a2e73366169bb6eec5a9ac4d0eda43fdfbbe74b14f9ccb70",
+  "origin": "outputs/preview_qp_failure_observed_replay_20261027/failed_qp.npz",
+  "matched_raw_endpoints": 534,
+  "failed_step": 533,
+  "scope": "captured original failed QP; no generated substitute"
+}

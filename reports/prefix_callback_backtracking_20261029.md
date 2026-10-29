@@ -1,0 +1,57 @@
+# H12 callback方向完整响应回缩
+
+本轮按[执行前登记](../plans/v0.0.1/prefix_callback_backtracking_20261029.md)检验首个非零callback方向的固定回缩。保持actual368实测状态、completed367控制历史、chunk46原H12参考、原控制器和完整模型；GPU禁用。目的是找到原全部目标的完整模型解，再决定是否登记实际控制pilot。原18条正确参考、12条WAM开发和24条最终留出门槛不变。
+
+## 实现和证据范围
+
+[求解器](../src/s2a/prefix_callback_backtracking_plan.py)保留原响应、约束、目标、差分与排序数学。每阶段捕获首个非零callback，用固定alpha从1到1/256检验完整响应；仅第一个通过原审计、保住prefix且产生下降的ray点可成为普通新anchor。差分探针不能成为普通下降anchor，任何已完成响应中的完整witness仍优先保留。全局4000响应、60实际迭代、60阶段共享预算，不把回缩次数计成SLSQP迭代。
+
+[独立账本审计](../scripts/prefix_callback_backtracking_audit.py)分别验证请求、缓存、差分、callback捕获、alpha、首个合格点、接受历史、预算和最终排序。[完整复算入口](../scripts/check_tracking_v5_prefix_callback_backtracking.py)另行重构每条唯一轨迹，并核验全部保存ray的完整rollout和审计、每个接受anchor及initial/selected/closest；账本审计本身不代替数值重构。
+
+[来源准入](../src/s2a/prefix_callback_backtracking_evidence.py)要求旧baseline与candidate的4000/3148响应全部独立核验、实际wait/reap成功、无信号且来源未变。完整96资产快照保持不变，仅XML路径迁移；没有复用旧v2 main的AST证明来宣称新入口相同。[进程owner](../scripts/execute_tracking_v5_prefix_callback_backtracking.py)使用独占路径、1200/5400秒时限及同一native QA，拒绝覆盖和自动重试。
+
+实现提交为`046c1eb`（求解器与独立账本）和`c901abc`（来源、生产、完整复算及owner入口）。所有旧已执行来源、测试、计划和失败记录保留。
+
+## CPU测试
+
+统一native QA结果为`outputs/prefix_callback_backtracking_native_qa_20261029_vv9yu8uw/result.json`，SHA`05e3ec58822c9a3a612ab30a3212451c4cceffc0e6edf3cdecf317d1dd6a3add`。252项通过，27.59秒，实际wait退出0，28份来源前后指纹相同；日志SHA`b15de6e069c15aaa119c24f6fad722128ec7f6f9a3b9f97d4f0fcf4c27af2f27`。Python3.11.15、NumPy1.26.4、SciPy1.15.3，空CUDA/LD及单线程CPU。两条SciPy bounds-clipping warning仍来自保留的旧困难例。
+
+覆盖旧156项和新增25项solver、29项独立账本、42项执行集成测试。新增测试包括真实SLSQP困难H2、弯曲前缀的完整响应回缩、精确缓存、末次预算响应中的witness、仅ray普通接纳、完整ray数据变造拒绝、两旧复算闭合门槛和实际状态/计费接线。困难H2真实合成例在预登记参数下找到完整witness，观察到102响应/7迭代/7阶段/17个ray尝试；严格内点例为14响应/1迭代。测试断言实际严格可行和预算，没有硬编码后端迭代数，也未改变生产参数追求测试通过。这些结果不是原H12或实际任务成功。
+
+## 正式执行状态
+
+两旧独立复算均已实际wait/reap0关闭，来源及严格标签一致，确认完整witness0，见[完整对照结果](prefix_trust_region_control_20261028.md)。新CLI准入也已关闭：`outputs/prefix_callback_backtracking_admission_20261029/result.json` SHA`a5f80084ec8bf65e31d3af79b251a42d7822f3ea6f992908af7f300eeaf62b76`。25个Python文件Ruff/format、新producer/checker dry及owner diagnose dry共5条命令实际wait0，无信号或重试，28份来源未变；2241个输入/来源引用通过，owner加QA/日志后2243。共同warm SHA仍为`16bdfbb266ef13d2588c8116e13511d93df936d72ae8a57d19df0b01ed3acee0`，新增响应/查询/内步均0。
+
+本段准入记录生成时新候选尚未启动。后续只能使用已登记的独占输出和同一QA，不因观察超时重启；没有完整独立结果前不授予新数值资格。
+
+随后已启动唯一producer，原tool session为67356，child PID3737042/start_ticks615184030，owner PID3735458。运行快照`outputs/prefix_callback_backtracking_execution_checkpoint_20261029/producer_started.json` SHA`f94afe682b7d7c167cfc7018d10e7b88fa0f4c917c9c97c8d8283dfe60640cc2`记录当时400条完整响应、真实/proc存活及父子身份、8项CPU环境均匹配，28份QA来源未变。owner登记2243份来源，登记SHA`5287ccdfb8f5e9d618a7e20b1fbd8c3c3c3913f6d1b36ed613a30a83eb316f1f`，launch SHA`c71f928f79c36b3d541398b6f01c8238b32544013d92a62995eb1e446481ff19`。快照保留主机实际UTC时间；目录沿用登记日期，不改写时间。
+
+该快照仅证明当时在运行，不是完成凭据；以下完整关闭结果覆盖该历史运行状态。
+
+## 完整搜索和独立关闭
+
+producer原tool67356及checker原tool50104均已实际退出0。producer共1012唯一响应/15实际迭代/15阶段，303600数值内步/315745查询；三个固定半径均耗尽九个alpha后停止，没有耗尽4000响应或60迭代预算。独立checker重构了全部1012轨迹，75份完整ray记录和13份接受anchor审计全部通过，严格标签分歧为0、完整witness仍为0。原`closed_owner`及新准入再次验哈希共2257个去重引用，actual wait/reap成功且无信号或重试。
+
+| 凭据 | SHA256 |
+| --- | --- |
+| `outputs/tracking_v5_prefix_callback_backtracking_20261029/verified.json` | `81051b71f0822b56e52492f87ce5032623212453d228f4e5952514bef036ebbe` |
+| `outputs/tracking_v5_prefix_callback_backtracking_execution_20261029/result.json` | `a233f5c141bf52f1bc0cf26f8c6e0426cf6ff2d4f1e3bf5689c0c3ac9defa427` |
+| `outputs/tracking_v5_prefix_callback_backtracking_check_20261029/verified.json` | `453c76901579b6cd6ff04e8fa2cd5e7d09a49e4dc2cf008def2ff7c2bedf9efd` |
+| `outputs/tracking_v5_prefix_callback_backtracking_check_execution_20261029/result.json` | `630df3a42bcc8ce30d2d71ef55cf0e565dfd98695e2ecba8617178cb59d721c0` |
+
+独立重构与保存值最大差异：TCP误差2.53e-15、归一化平方误差3.93e-13、完整保存内环q约2.00e-15、v约7.88e-15、力矩约1.41e-12。数值容差与严格caps均未放宽；这仍只是局部模型复算证据。
+
+| 同warm结果 | 冻结baseline | 信赖域 | callback回缩 |
+| --- | ---: | ---: | ---: |
+| 响应 / 迭代 / 阶段 | 4000 / 53 / 1 | 3148 / 45 / 9 | 1012 / 15 / 15 |
+| 连续达标端点 / 完整witness | 9 / 0 | 9 / 0 | 9 / 0 |
+| selected cursor9位置/mm | 11.46476035 | 11.48335059 | 11.48317318 |
+| selected cursor9旋转/rad | .05738804160 | .05742253674 | .05741985511 |
+
+新方法使用更少响应，但没有更多达标端点或更好的最优精度，不提升为控制方案。75次ray尝试中15次alpha1为缓存、60次新响应；12次普通下降被接受，prefix始终9。最后anchor912的cursor9最大归一化平方误差从共同warm的1.324948101801降到1.318930796941，仅消除初始超限部分约1.85%。最终selected为FD probe948，分数1.318815904457，并非最后anchor；普通anchor仍全部来自ray。
+
+最后三个半径的27个ray全部丢失原prefix，其中22个只有cursor4旋转超原.05rad，其关节审计、非线性1e-8余量和cursor9下降均通过。最后anchor的cursor4角误差为.049999998260164796rad，距边界约1.74e-9rad；最小半径的alpha1/256仍为.05000000141264858rad。五个同时违反安全的ray均涉及`braking_upper`；不能把所有失败归于安全或无下降。小alpha误差并不单调，现有数据不足以独立归因为浮点细节或曲率，也不能据三条失败ray断言其他方向无解。
+
+下一步已登记[固定前缀优化余量对照](../plans/v0.0.1/prefix_optimization_reserve_20261029.md)，只在优化器前缀约束中减去固定1e-4，原普通接纳与完整witness caps不变。共同warm最小prefix余量.000846374733足够容纳该常数；该新候选尚需自己的QA、准入和独立结果。
+
+实际机器人仿真进度仍为原cursor8、task/grasp0；本次新增物理、世界模型调用、fresh案例均为0。即使后续完整模型witness通过独立复核，也不自动授予实际控制、WAM或留出任务资格，总目标尚未完成。

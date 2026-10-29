@@ -1,0 +1,19 @@
+# 因果inner时间误差分布候选
+
+总目标保持固定机器人/接口下可靠跟踪WM参考并在新初态稳定任务成功，非仅模型可行或局部余量。原逐关节整周期peak候选真实反馈22周期后step390无解停止，未具备完整控制资格。
+
+数据依据：已独立复核的候选22周期，q7历史2ms误差最大.000029230222667209205、50ms及整周期peak.004158755838823858rad；q5分别.00003230208700655268/.002142686920165282。停止时q7实际余量.05066845294205802。旧约束将晚周期peak直接用于第一2ms，可能制造不可恢复的收紧要求；这里是经验模型限制的诊断，不证明真实机器人恢复能力。
+
+新CausalInnerError仅在完成周期后更新25×7位置误差running max，再沿inner时间取前缀最大形成非递减经验profile。首周期空历史；stage预测复制、防当前观测泄漏/周期错配。past_inner_error_joint_plan将第一周期全部inner位置限制收紧.05+profile，后续每个周期仍收紧.05+该profile的每关节peak；不是每周期重置到小误差。原XML、命令box/rate、固定.1s制动、终端方向及初始.05门槛保持。没有速度误差保证，也没有未来位置误差保证。
+
+两项核心native311 CPU测试2.47s通过，含常量profile精确保留旧peak计划及未来周期收紧；两项执行适配器测试3.68s通过，含无解不返回放宽动作。10新增文件ruff/format通过。捕获状态numeric owner已actual_wait0/reaped=true/returncode0：原/制动step382、384从旧peak无解变为profile model_witness；制动step389亦可行，原step389仍因初态buffer外拒绝。numeric verified SHA 108d4659c9cc05de889b7cdbe56984f4254db6c748434501b84b220dcd64c231，时间推进/model/fresh0。数值可行不作为物理资格。
+
+原生反馈对照已启动：原/候选同368原SHA前缀、chunk46已生成40参考，最多816实际周期，candidate自身profile从空开始逐周期更新。无解明确记录停止且不发送当前动作，不进入放宽fallback；不足40不得计为完成。launcher SHA deaae0cec2cae3869a97fbce9d49441560a243139378ffcdc9d1fc1ed290b68c，owner2464234/worker2464311已kernel核实存活，根outputs/tracking_v5_causal_inner_continuation_execution_20261028。尚无结果；后续需独立实际长度回放、独立时间profile与全计划收紧核对；再依次判断18/WAM/fresh资格。冻结v5不修改。
+
+完整关闭更新：producer798+独立798周期，三个owner均实际wait0/reaped=true/returncode0。候选仍22反馈周期后step390无解停止，未完成40；最小实际margin .05037694rad，buffer/XML违例0、任务/抓取0。同22周期TCP误差略差于原分支。物理状态/inner精确重放通过，verified SHA 7d1eff16798a25608d44a8ecc98824ed16ff3617a7f6d79b08e3e32695f47d89；独立profile历史/已执行全计划约束通过，SHA 028d218effd9e1436dcbcbbc69637c237e8546dfc01d12c219e5d5cf7b2204ba。未延长旧peak候选可执行段，不采用为完整控制器。下一步诊断自身停止状态的第一/未来周期可恢复性；原18/WAM/fresh门槛保留。
+
+自身停止状态与速度审计已完成（详见集成报告）：step390第一周期最大误差调整余量.04826658rad，已低于.05，不是仅远期约束导致无解；step389 q7速度预测-.001660/实际+.276589rad/s，残差超过此前最大.140888，实际q+.1v余量.022718而模型.052287。仅过去速度peak同样不能覆盖本次突变，不能宣称稳健保证。下一步先核对实际速度响应突变来源，再验证同时考虑速度误差的提前控制。两个audit均actual wait0/reaped0，physics/model/fresh0；尚无18/WAM/fresh资格。
+
+速度突变内环观测回放已actual wait0/reaped0、390周期，所有状态/inner仍精确复现。step389 inner14首次出现gripper hand与stove burner接触，随后q7 constraint force与向外速度升高，最后3个inner第6关节力矩截断；q7本身未饱和，M/J未见病态。verified SHA bd50996827c470c0e8bfe2c6396cd26bc0ae5ed92ca97b79bc0407981edafcb5。该同步证据尚非干预因果证明；下一步优先检查参考/实际扫掠与接触机制，在线禁止使用对象ground truth，不以单纯再调经验包络替代接触/参考可行性问题。原控制及任务门槛保持。
+
+离线参考几何检查已关闭：实际contact endpoint390 hand/burner轴gap -.00088488m与native contact dist完全相同，而当前参考cursor21仍分离(gap+.06896993m)。真实TCP约.03356m/.52092rad误差，不能把早期接触全归因于该参考端点碰撞。更晚cursor36..39则确实重叠；仅为本地held-chunk40对照，不能外推原每8周期重生成的全量WAM轨迹。verified SHA c4e6d9932be57cee397d8ef8a0cbd179b2c4f1571de609ac4e5a799f0103fdeb，实际wait0/reaped0，physics/model/fresh0。在线仍禁止对象ground truth；跟踪精度、参考可行性和接触恢复必须分开验证，最终任务成功目标保持。
