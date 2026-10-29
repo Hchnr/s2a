@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from s2a.state_conditioned_arm_forward import design, nominal, predict, raw_condition
+from s2a.research.response_models.causal.state_conditioned_arm_forward import design, nominal, predict, raw_condition
 
 
 def sample():

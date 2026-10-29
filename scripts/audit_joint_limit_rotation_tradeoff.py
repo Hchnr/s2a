@@ -6,13 +6,13 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import pose_error, transform
-from s2a.joint_limit_response import build_joint_response, predict_joint_response
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.osc import OSCInterface
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.research.response_models.forward.joint_limit_response import build_joint_response, predict_joint_response
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
 
 
 def main():
@@ -42,7 +42,7 @@ def main():
     rows = read(rows_ref)
     guard = read(CONTROL_REF)["cv2_guard_registration"]
     restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
-    from s2a.libero_simulation import make_environment
+    from s2a.backends.libero.simulation import make_environment
 
     env = None
     records = []

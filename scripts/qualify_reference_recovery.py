@@ -11,11 +11,11 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import load_config, sha256
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
 from s2a.geometry import inverse, pose_error
-from s2a.osc import OSCInterface, OSCStateToAction
-from s2a.reference_governor import ReferenceGovernor, ReferenceGovernorConfig
-from s2a.reference_governor_v2 import RecoveringReferenceGovernor
+from s2a.infrastructure.artifacts import load_config, sha256
+from s2a.research.joint_control.tracking.reference_governor import ReferenceGovernor, ReferenceGovernorConfig
+from s2a.research.joint_control.tracking.reference_governor_v2 import RecoveringReferenceGovernor
 
 
 def write_new(path, value):
@@ -145,7 +145,7 @@ def summarize_rows(rows, references, config):
 
 
 def run_worker(args, config, root):
-    from s2a.libero_simulation import (
+    from s2a.backends.libero.simulation import (
         aperture,
         controller_contract,
         current_observation,

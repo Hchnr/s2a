@@ -3,9 +3,9 @@
 import json
 from pathlib import Path
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, read, reference, require
-from s2a.durable_stage_supervisor import cpu_environment, owned_stage
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import cpu_environment, owned_stage
+from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
 
 AUDIT_OWNERS = ["release_floor_audits_all18_20261028"]
 

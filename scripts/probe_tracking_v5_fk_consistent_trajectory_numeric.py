@@ -6,17 +6,17 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, read, reference, require
-from s2a.fk_consistent_trajectory_joint_plan import solve_interior_plan as all_endpoints
-from s2a.generated_reference_twist import reference_world_twist
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import inverse, pose_error
-from s2a.interior_joint_preview import build_joint_preview
-from s2a.native_environment import strict_native_environment
-from s2a.osc import OSCInterface
-from s2a.preview_result_publication import publish_result as publish
-from s2a.robot_site_kinematics import RobotSiteKinematics
-from s2a.xml_site_kinematics import XMLSiteKinematics
+from s2a.geometry.robot_site import RobotSiteKinematics
+from s2a.geometry.xml_site import XMLSiteKinematics
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.references.generated_twist import reference_world_twist
+from s2a.research.joint_control.preview.interior_joint_preview import build_joint_preview
+from s2a.research.trajectory_search.fk_consistent_trajectory_joint_plan import solve_interior_plan as all_endpoints
+from s2a.research.wam.training.clean.clean_training_runtime import checked, read, reference, require
 
 
 def main():

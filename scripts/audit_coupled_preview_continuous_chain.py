@@ -5,22 +5,22 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_joint_wrench_independent import nominal_prediction
-from audit_wam_position import Evidence
-from coupled_pose_preview_independent import verify_preview
-from current_coupled_independent import response
-from executed_residual_independent import ExecutedResidualReplay
-from full_coupled_arm_log_replay import FullCoupledArmLogReplay, innovation
-from full_coupled_pose_independent import generated_twist, objective
 from scipy.spatial.transform import Rotation
 
-from s2a.coupled_pose_preview_runtime import solve_preview
-from s2a.coupled_response_history import CoupledResponseHistory
-from s2a.current_coupled_response import build_response
-from s2a.durable_stage_supervisor import publish
-from s2a.executed_command_residual import ExecutedCommandResidualOSC
-from s2a.osc import OSCInterface
-from s2a.runtime_response_history import RuntimeResponseHistory
+from s2a.controllers.osc import OSCInterface
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.joint_control.preview.coupled_pose_preview_runtime import solve_preview
+from s2a.research.response_models.causal.coupled_response_history import CoupledResponseHistory
+from s2a.research.response_models.causal.executed_command_residual import ExecutedCommandResidualOSC
+from s2a.research.response_models.causal.runtime_response_history import RuntimeResponseHistory
+from s2a.research.response_models.forward.current_coupled_response import build_response
+from scripts.arm_joint_wrench_independent import nominal_prediction
+from scripts.audit_wam_position import Evidence
+from scripts.coupled_pose_preview_independent import verify_preview
+from scripts.current_coupled_independent import response
+from scripts.executed_residual_independent import ExecutedResidualReplay
+from scripts.full_coupled_arm_log_replay import FullCoupledArmLogReplay, innovation
+from scripts.full_coupled_pose_independent import generated_twist, objective
 
 
 def wire(value):

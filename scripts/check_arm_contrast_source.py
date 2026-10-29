@@ -1,9 +1,10 @@
 """089 actual selected-pair assembly parity before the only parameter fit."""
 
 import numpy as np
-from arm_contrast_independent import equations
-from arm_contrast_training import contrast_rows
-from audit_wam_position import Evidence
+
+from scripts.arm_contrast_independent import equations
+from scripts.arm_contrast_training import contrast_rows
+from scripts.audit_wam_position import Evidence
 
 
 def main():

@@ -6,8 +6,8 @@ does not execute or observe solver callbacks, a solver, or a dynamics evaluator.
 """
 
 import numpy as np
-from directional_derivative_audit import array, exact_array, numerical_compare, require
 
+from scripts.directional_derivative_audit import array, exact_array, numerical_compare, require
 from scripts.tracking.trajectory_search.state_vector_gn_search_audit import (
     _causal_update,
     _error,

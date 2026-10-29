@@ -5,9 +5,9 @@ from types import SimpleNamespace
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-import s2a.interior_rotation_tradeoff as solver
-from s2a.interior_joint_preview import build_joint_preview
-from s2a.osc import OSCInterface
+import s2a.research.joint_control.limits.interior_rotation_tradeoff as solver
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.preview.interior_joint_preview import build_joint_preview
 
 
 def test_exact_so3_objective_gradient_and_later_actions_do_not_change_first_error(monkeypatch):

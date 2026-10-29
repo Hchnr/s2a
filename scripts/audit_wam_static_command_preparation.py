@@ -7,10 +7,10 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image
-from run_wam_short_replan import cpu_environment, verify_hashes, write_new
-from serve_wam_static_command import align_empty_plan
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.run_wam_short_replan import cpu_environment, verify_hashes, write_new
+from scripts.serve_wam_static_command import align_empty_plan
 
 
 def main():

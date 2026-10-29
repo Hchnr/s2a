@@ -8,24 +8,23 @@ import ctypes
 import json
 from pathlib import Path
 
-from audit_wam_position import Evidence as PhysicsEvidence
-from coupled_preview_wam_measured_audit import verify_measured_endpoints
-from tracking_preview_wam_acceptance_checker_v4 import verify_case
-from tracking_wam_review_source_binding import verify_source_binding
-from verify_tracking_preview_wam_development_v4 import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
+from s2a.research.wam.training.clean.clean_training_runtime import read, reference, require
+from scripts.audit_wam_position import Evidence as PhysicsEvidence
+from scripts.coupled_preview_wam_measured_audit import verify_measured_endpoints
+from scripts.tracking_preview_wam_acceptance_checker_v4 import verify_case
+from scripts.tracking_wam_review_source_binding import verify_source_binding
+from scripts.verify_tracking_preview_wam_development_v4 import (
     current_query_evidence_scope,
     label_current_mechanical_evidence,
     normal_owned,
     outcome,
 )
-from verify_wam_clean_training_capture import Evidence
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import read, reference, require
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.terminal_development_execution import CONTROL_REF
-from s2a.terminal_development_policy import case_order
+from scripts.verify_wam_clean_training_capture import Evidence
 
 
 def main():

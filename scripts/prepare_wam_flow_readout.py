@@ -15,8 +15,8 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import birth, write_once
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import birth, write_once
 
 CONFIG = REPO / "configs/wam_flow_consistent_readout_20261021.json"
 CONFIG_SHA = "2d0e45b3ae02ecec4ee45bcaa1928596e347417f945f8903416f0df314a68534"

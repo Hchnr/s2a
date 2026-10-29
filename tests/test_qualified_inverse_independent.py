@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
-import qualified_inverse_independent as audit
 
-from s2a.bounded_response_inverse import translation_command
+import scripts.qualified_inverse_independent as audit
+from s2a.research.response_models.inverse.bounded_response_inverse import translation_command
 
 
 def test_kkt_accepts_constrained_optimum_and_rejects_wrong_feasible_command(monkeypatch):

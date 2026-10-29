@@ -11,9 +11,9 @@ import time
 from pathlib import Path
 
 import requests
-from run_wam_stability_screen import interrupted, stop_child
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
+from scripts.run_wam_stability_screen import interrupted, stop_child
 
 
 def main():

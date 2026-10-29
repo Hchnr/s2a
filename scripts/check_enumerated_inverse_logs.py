@@ -4,11 +4,11 @@ import json
 from pathlib import Path
 
 import numpy as np
-from qualified_inverse_independent import verify_inverse
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import publish, sha
-from s2a.qualified_enumerated_inverse import inverse_translation
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish, sha
+from s2a.research.response_models.inverse.qualified_enumerated_inverse import inverse_translation
+from scripts.qualified_inverse_independent import verify_inverse
 
 
 def main():

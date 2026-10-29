@@ -3,20 +3,20 @@
 import importlib
 import json
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 
-from s2a.directional_derivative_probe import _canonical
-from s2a.terminal_only_tail_repair import probe_terminal_only_tail_repair
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
+from s2a.research.trajectory_search.terminal_only_tail_repair import probe_terminal_only_tail_repair
 from tests.test_terminal_only_tail_repair import case
 
 
 @pytest.fixture
 def checker(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("check_tracking_v5_terminal_only_tail_repair")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.check_tracking_v5_terminal_only_tail_repair")
 
 
 @pytest.fixture

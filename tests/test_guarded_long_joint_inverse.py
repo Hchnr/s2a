@@ -3,11 +3,11 @@
 import numpy as np
 import pytest
 
-from s2a.fast_guarded_long_joint_inverse import refine_long_plan as fast_refine_long_plan
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import pose_error
-from s2a.guarded_long_joint_inverse import refine_long_plan
-from s2a.long_joint_preview import build_joint_preview, rollout_joint_preview
-from s2a.osc import OSCInterface
+from s2a.research.joint_control.preview.fast_guarded_long_joint_inverse import refine_long_plan as fast_refine_long_plan
+from s2a.research.joint_control.preview.guarded_long_joint_inverse import refine_long_plan
+from s2a.research.joint_control.preview.long_joint_preview import build_joint_preview, rollout_joint_preview
 
 
 @pytest.mark.parametrize("solver", [refine_long_plan, fast_refine_long_plan])

@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-from s2a import accepted_point_sqp_core
-from s2a.accepted_point_sqp_core import damped_bfgs, solve_epigraph_qp
+from s2a.research.trajectory_search import accepted_point_sqp_core
+from s2a.research.trajectory_search.accepted_point_sqp_core import damped_bfgs, solve_epigraph_qp
 
 
 def assert_original_units_kkt(result, B, g, A, b, expected):

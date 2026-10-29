@@ -12,12 +12,13 @@ from types import MethodType, SimpleNamespace
 import numpy as np
 import pytest
 
-from s2a.sampler_trace import file_sha
-from s2a.wam_clean_capture import CleanCaptureBridge, NoiseRoster
-from s2a.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.readout.sampler_trace import file_sha
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
+from s2a.research.wam.training.clean.wam_clean_capture import CleanCaptureBridge, NoiseRoster
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-worker = importlib.import_module("qualify_wam_clean_bridge")
+sys.path.insert(0, str(repository_root(anchor=__file__) / "scripts"))
+worker = importlib.import_module("scripts.qualify_wam_clean_bridge")
 torch = pytest.importorskip("torch")
 protocol = importlib.import_module("tests.test_wam_clean_capture")
 

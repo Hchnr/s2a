@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import numpy as np
 
-import s2a.warm_interior_joint_plan as solver
-from s2a.interior_joint_preview import build_joint_preview, rollout_joint_preview
-from s2a.osc import OSCInterface
+import s2a.research.trajectory_search.warm_interior_joint_plan as solver
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.preview.interior_joint_preview import build_joint_preview, rollout_joint_preview
 
 
 def test_feasible_warm_start_is_retained_without_claiming_optimizer_success(monkeypatch):

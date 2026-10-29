@@ -7,7 +7,9 @@ import math
 import os
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 AGGREGATION = "mean within each EP, then equal mean across EPs; point_max_abs denotes mean point maxima"
 CAPTION = "029 | Reused development EPs; no task/fresh result or causal intervention"
 COMPONENTS = ("active10", "position", "rotation6d", "opening")

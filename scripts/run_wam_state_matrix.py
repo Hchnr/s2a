@@ -9,10 +9,10 @@ import numpy as np
 import requests
 import yaml
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
-from s2a.checkpoint_audit import extrapolate_history, state_metrics
+from s2a.evaluation.prediction_audit import audit_action_response
+from s2a.evaluation.wam.checkpoint_audit import extrapolate_history, state_metrics
 from s2a.geometry import integrate_local, pose9_to_transform
-from s2a.prediction_audit import audit_action_response
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 
 
 def main():

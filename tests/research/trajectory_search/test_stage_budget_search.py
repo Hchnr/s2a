@@ -9,7 +9,7 @@ import pytest
 
 import s2a.research.trajectory_search.global_envelope_search as baseline
 import s2a.research.trajectory_search.stage_budget_search as planning
-from s2a.directional_derivative_probe import _canonical
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
 from tests.research.trajectory_search.test_interior_trajectory_search import arguments, entry
 from tests.research.trajectory_search.test_rejected_response_search import failed_case, fake_qp
 

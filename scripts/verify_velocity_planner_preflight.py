@@ -5,7 +5,8 @@ import json
 from pathlib import Path
 
 import numpy as np
-from velocity_plan_independent_audit import audit_plan
+
+from scripts.velocity_plan_independent_audit import audit_plan
 
 
 def digest(path):

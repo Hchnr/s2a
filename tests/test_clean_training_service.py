@@ -13,14 +13,14 @@ from types import ModuleType, SimpleNamespace
 import pytest
 import requests
 
-from s2a.artifacts import REPO
-from s2a.wam_readout import LIBERO_DOMAIN
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.readout.wam_readout import LIBERO_DOMAIN
 
 
 @pytest.fixture
 def server(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("serve_wam_clean_training")
+    return importlib.import_module("scripts.serve_wam_clean_training")
 
 
 def prepared(root):
@@ -207,7 +207,7 @@ def test_abort_is_explicit_and_preserves_case_identity(tmp_path, server):
 
 
 def test_metadata_only_cli_cannot_initialize_model(tmp_path, monkeypatch, server):
-    from s2a.clean_training_runtime import reference
+    from s2a.research.wam.training.clean.clean_training_runtime import reference
 
     monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
     monkeypatch.setenv("LD_LIBRARY_PATH", "")
@@ -247,10 +247,10 @@ def test_actual_run_preserves_cleanup_false_and_exits_nonzero_in_owned_cpu_child
     No CUDA API, model forward, environment, HTTP generation or label reader runs.
     The child must actually exit nonzero after publishing the retained False.
     """
-    numerics = importlib.import_module("audit_wam_current_numerics")
-    features = importlib.import_module("run_wam_readout_features")
-    sampling = importlib.import_module("run_wam_readout_sampling")
-    runtime = importlib.import_module("s2a.wam_runtime")
+    numerics = importlib.import_module("scripts.audit_wam_current_numerics")
+    features = importlib.import_module("scripts.run_wam_readout_features")
+    sampling = importlib.import_module("scripts.run_wam_readout_sampling")
+    runtime = importlib.import_module("s2a.backends.wam.runtime")
 
     class Model:
         def parameters(self):

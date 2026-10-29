@@ -9,9 +9,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.directional_derivative_probe import probe_directional_derivatives
-from s2a.tail_translation_reserve import build_tail_translation_grid, probe_tail_translation_reserve
-from s2a.terminal_secant_probe import (
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.directional_derivative_probe import probe_directional_derivatives
+from s2a.research.trajectory_search.tail_translation_reserve import (
+    build_tail_translation_grid,
+    probe_tail_translation_reserve,
+)
+from s2a.research.trajectory_search.terminal_secant_probe import (
     build_terminal_secant_geometry,
     fit_terminal_secant_row,
     probe_terminal_secant,
@@ -21,8 +25,8 @@ from tests.test_prefix_optimization_reserve_plan import inputs
 
 @pytest.fixture
 def audit(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("tail_translation_reserve_audit")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.tail_translation_reserve_audit")
 
 
 def response(commands, *, terminal=None):

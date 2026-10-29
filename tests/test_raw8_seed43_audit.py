@@ -3,15 +3,16 @@
 import copy
 import importlib.util
 import json
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location("raw8_seed43_audit_test", root / "scripts/audit_wam_raw8_seed43.py")
     module = importlib.util.module_from_spec(spec)
@@ -213,7 +214,7 @@ def test_actual_ticks_parentage_and_physical_gpu_are_mandatory(audit):
 
 
 def test_existing_literal_checker_is_reused_without_mutation(audit):
-    import wam_position_acceptance_checker as original
+    import scripts.wam_position_acceptance_checker as original
 
     assert audit.verify_case is original.verify_case and audit.verify_query is original.verify_query
     assert audit.first_query is not original.verify_query

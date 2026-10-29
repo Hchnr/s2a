@@ -6,14 +6,14 @@ import copy
 import json
 from pathlib import Path
 
-from sample_wam_clean_training_state import historical_source_summaries
-from verify_wam_clean_training_capture import Evidence, require
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, reference
-from s2a.synchronous_state_sampling import paired_entries as baseline_entries
-from s2a.terminal_candidate import candidate_head
-from s2a.terminal_state_execution import ROOT, select_readout
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.current_layout import current_source_path
+from s2a.research.trajectory_search.terminal_candidate import candidate_head
+from s2a.research.wam.readout.synchronous_state_sampling import paired_entries as baseline_entries
+from s2a.research.wam.readout.terminal_state_execution import ROOT, select_readout
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
+from scripts.sample_wam_clean_training_state import historical_source_summaries
+from scripts.verify_wam_clean_training_capture import Evidence, require
 
 
 def body_proofs():
@@ -52,8 +52,8 @@ def body_proofs():
     def functions(path):
         return {n.name: n for n in ast.parse(path.read_text()).body if isinstance(n, ast.FunctionDef)}
 
-    baseline = functions(REPO / "src/s2a/synchronous_state_metrics.py")
-    metrics = functions(REPO / "src/s2a/terminal_state_metrics.py")
+    baseline = functions(current_source_path("src/s2a/synchronous_state_metrics.py"))
+    metrics = functions(current_source_path("src/s2a/terminal_state_metrics.py"))
     for name in ("pool", "state_gate", "diagnosis"):
         require(
             ast.dump(Rename().visit(baseline[name])) == ast.dump(metrics[name]),

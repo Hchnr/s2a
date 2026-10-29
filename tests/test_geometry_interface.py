@@ -3,6 +3,7 @@ import pytest
 from numpy.testing import assert_allclose
 from scipy.spatial.transform import Rotation
 
+from s2a.controllers.droid import DroidReferenceInterface
 from s2a.geometry import (
     advance,
     euler_pose_to_transform,
@@ -14,7 +15,6 @@ from s2a.geometry import (
     rot6d_to_matrix,
     transform,
 )
-from s2a.interface import DroidReferenceInterface
 
 
 def test_column_rot6d_composition_and_integration():

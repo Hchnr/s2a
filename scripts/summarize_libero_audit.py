@@ -8,8 +8,8 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import load_config, sha256, write_json
 from s2a.geometry import pose_error
+from s2a.infrastructure.artifacts import load_config, sha256, write_json
 
 
 def validate_matrix(config_path):

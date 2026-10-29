@@ -3,8 +3,8 @@
 import hashlib
 from pathlib import Path
 
-import verify_wam_clean_training_capture as CAPTURE
-from verify_wam_clean_training_state import point_math, require, zero_sources
+import scripts.verify_wam_clean_training_capture as CAPTURE
+from scripts.verify_wam_clean_training_state import point_math, require, zero_sources
 
 
 def step_head(heads, index):

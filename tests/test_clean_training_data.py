@@ -8,8 +8,8 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a import clean_training_data as data
 from s2a.geometry import integrate_local, transform
+from s2a.research.wam.training.clean import clean_training_data as data
 
 
 def source(task, demo):

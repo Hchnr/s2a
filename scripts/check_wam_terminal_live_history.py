@@ -4,10 +4,10 @@ import os
 from pathlib import Path
 
 import numpy as np
-from verify_wam_clean_training_capture import Evidence, require
 
-from s2a.clean_training_runtime import publish, reference
-from s2a.terminal_history_comparison import INPUTS, OUTPUTS, compare_point
+from s2a.research.joint_control.terminal.terminal_history_comparison import INPUTS, OUTPUTS, compare_point
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
+from scripts.verify_wam_clean_training_capture import Evidence, require
 
 
 def main():

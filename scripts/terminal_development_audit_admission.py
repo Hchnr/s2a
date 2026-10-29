@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 ROOT = REPO / "outputs/terminal_development_20261025"
 CHECK_NAMES = {

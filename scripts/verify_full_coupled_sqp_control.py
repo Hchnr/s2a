@@ -9,16 +9,16 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from full_coupled_sqp_acceptance_checker import verify_case
-from qualified_input_state_audit import verify_inputs as verify_actual_inputs
-from run_matched_oracle_case import CONTROL, CONTROL_SHA
-from verify_settled_native_training import verify_canvas
-from verify_training_recovery_labels import check_labels
 
-from s2a.artifacts import sha256
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from scripts.audit_wam_position import Evidence
+from scripts.full_coupled_sqp_acceptance_checker import verify_case
+from scripts.qualified_input_state_audit import verify_inputs as verify_actual_inputs
+from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.verify_settled_native_training import verify_canvas
+from scripts.verify_training_recovery_labels import check_labels
 
 ROOT = Path("outputs/full_coupled_sqp_control_20261026")
 

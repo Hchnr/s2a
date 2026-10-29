@@ -11,11 +11,10 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-from audit_wam_position import Evidence
-from run_wam_short_replan import cpu_environment, process_record, write_new
-from wam_position_acceptance_checker import source_proof, verify_case
-
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_position import Evidence
+from scripts.run_wam_short_replan import cpu_environment, process_record, write_new
+from scripts.wam_position_acceptance_checker import source_proof, verify_case
 
 ROOT = REPO / "outputs/wam_stability_20261021"
 CONFIG = "configs/seed43_execution_qualification_20261021.json"

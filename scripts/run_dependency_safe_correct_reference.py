@@ -7,10 +7,10 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO, write_json
-from s2a.clean_training_runtime import checked, read, reference, require
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.infrastructure.artifacts import REPO, write_json
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.training.clean.clean_training_runtime import checked, read, reference, require
 
 
 def numeric(value):
@@ -49,23 +49,29 @@ def main():
     guard = read(CONTROL_REF)["cv2_guard_registration"]
     restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
     import mujoco
-    from collect_wam_native_training import endpoint, render_anchor, save_arrays
 
-    from s2a.action_reference import decode_action_targets, encode_oracle_targets
-    from s2a.adaptive_plan_history import AdaptivePlanHistory
-    from s2a.checkpoint_simulation import object_progress
-    from s2a.coupled_response_history import CoupledResponseHistory
-    from s2a.current_coupled_response import build_response
-    from s2a.current_coupled_state import rotation_goal_from_command
-    from s2a.dependency_safe_preview_runtime import solve_preview
+    from s2a.backends.libero.simulation import (
+        aperture,
+        current_observation,
+        make_environment,
+        measured_twist,
+        source_pose,
+    )
+    from s2a.controllers.osc import OSCInterface
+    from s2a.evaluation.task_acceptance import task_outcome
     from s2a.geometry import inverse, pose_error, transform
-    from s2a.gripper_motor_state import preserve_motor_target
-    from s2a.libero_simulation import aperture, current_observation, make_environment, measured_twist, source_pose
-    from s2a.loaded_velocity_control import LoadedVelocityControl
-    from s2a.native_training import pack_gripper_caches, synchronous_labels
-    from s2a.osc import OSCInterface
-    from s2a.task_acceptance import task_outcome
-    from s2a.tracking_margin_native import refine_native_preview
+    from s2a.references.action_reference import decode_action_targets, encode_oracle_targets
+    from s2a.research.gripper.gripper_motor_state import preserve_motor_target
+    from s2a.research.joint_control.native.tracking_margin_native import refine_native_preview
+    from s2a.research.joint_control.preview.dependency_safe_preview_runtime import solve_preview
+    from s2a.research.joint_control.tracking.current_coupled_state import rotation_goal_from_command
+    from s2a.research.joint_control.tracking.loaded_velocity_control import LoadedVelocityControl
+    from s2a.research.response_models.causal.coupled_response_history import CoupledResponseHistory
+    from s2a.research.response_models.forward.current_coupled_response import build_response
+    from s2a.research.trajectory_search.adaptive_plan_history import AdaptivePlanHistory
+    from s2a.research.wam.tracking.runtime.checkpoint_simulation import object_progress
+    from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
+    from scripts.collect_wam_native_training import endpoint, render_anchor, save_arrays
 
     result = dict(
         complete=False,

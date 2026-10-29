@@ -7,10 +7,9 @@ qualifies the preview controller for WAM execution.
 import json
 from pathlib import Path
 
-from audit_wam_position import Evidence
-
-from s2a.coupled_preview_wam_protocol import validate_preview_wam_response
-from s2a.terminal_development_policy import case_order
+from s2a.research.wam.tracking.preview.coupled_preview_wam_protocol import validate_preview_wam_response
+from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
+from scripts.audit_wam_position import Evidence
 
 
 def main():

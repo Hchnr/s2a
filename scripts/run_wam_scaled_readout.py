@@ -6,12 +6,11 @@ import os
 import signal
 from pathlib import Path
 
-from prepare_wam_flow_readout import weight_stats
-from run_wam_flow_readout import check_hashes, completed, environment, read, reference, require, verified
-from run_wam_readout import external_identity, owned_command
-
-from s2a.artifacts import REPO
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.prepare_wam_flow_readout import weight_stats
+from scripts.run_wam_flow_readout import check_hashes, completed, environment, read, reference, require, verified
+from scripts.run_wam_readout import external_identity, owned_command
 
 CONFIG = REPO / "configs/wam_train_scale_readout_20261021.json"
 CONFIG_SHA = "dd0e0124d256a953af48ea2e548cca6603cd9f777d6bd5e4f620548591a2c06b"

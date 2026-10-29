@@ -8,7 +8,7 @@ import pytest
 
 import s2a.research.trajectory_search.state_vector_dual_recovery as planning
 import s2a.research.trajectory_search.state_vector_objective_scale as baseline
-from s2a.directional_derivative_probe import _canonical
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
 from tests.research.trajectory_search.test_state_vector_gn_search import inputs
 
 NEW_FIELDS = {

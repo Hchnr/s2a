@@ -2,15 +2,16 @@
 
 import importlib.util
 from copy import deepcopy
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location("backend_audit_test", root / "scripts/audit_wam_backend_state.py")
     module = importlib.util.module_from_spec(spec)
@@ -89,7 +90,7 @@ def test_generated_state_distance_excludes_padded_future(audit):
 
 
 def test_partial_backend_audit_cannot_generate_a_final_report(audit, tmp_path, monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     spec = importlib.util.spec_from_file_location("backend_report_test", root / "scripts/report_wam_backend_state.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

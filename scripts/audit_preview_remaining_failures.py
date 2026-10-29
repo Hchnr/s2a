@@ -3,15 +3,15 @@
 import json
 
 import numpy as np
-from audit_wam_position import Evidence
-from executed_residual_independent import ExecutedResidualReplay
-from pose_velocity_arm_independent_replay import PoseVelocityArmReplay
-from serialized_rate_preview_independent import verify_plan
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import publish
-from s2a.osc import OSCInterface
-from s2a.rate_constrained_preview_active_set import plan_translation
+from s2a.controllers.osc import OSCInterface
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.joint_control.preview.rate_constrained_preview_active_set import plan_translation
+from scripts.audit_wam_position import Evidence
+from scripts.executed_residual_independent import ExecutedResidualReplay
+from scripts.pose_velocity_arm_independent_replay import PoseVelocityArmReplay
+from scripts.serialized_rate_preview_independent import verify_plan
 
 
 def load_case(e, root, index):

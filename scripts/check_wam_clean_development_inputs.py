@@ -6,9 +6,9 @@ import json
 import sys
 from pathlib import Path
 
-from s2a.clean_training_state_handoff import GPU
-from s2a.durable_stage_supervisor import REPO, publish, read, reference, require
-from s2a.stability_position_simulation import execution_inputs
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO, publish, read, reference, require
+from s2a.research.wam.tracking.control.stability_position_simulation import execution_inputs
+from s2a.research.wam.training.clean.clean_training_state_handoff import GPU
 
 ROOT = REPO / "outputs/clean_training_development_dependency_repair_20261024"
 

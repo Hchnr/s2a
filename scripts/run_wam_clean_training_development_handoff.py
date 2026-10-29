@@ -7,19 +7,7 @@ import signal
 import subprocess
 from pathlib import Path
 
-from run_wam_clean_training_continuation import observe_descendant_cleanup
-
-from s2a.clean_training_d1_admission import Evidence
-from s2a.clean_training_development_handoff import (
-    PREFIX,
-    PREPARED_ROOT,
-    ROOT,
-    absent_outputs,
-    admit,
-    command,
-    environment,
-)
-from s2a.durable_stage_supervisor import (
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     REPO,
     accept_detached_launch,
     check_cpu_environment,
@@ -33,7 +21,18 @@ from s2a.durable_stage_supervisor import (
     reference,
     require,
 )
-from s2a.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from s2a.research.wam.training.clean.clean_training_d1_admission import Evidence
+from s2a.research.wam.training.clean.clean_training_development_handoff import (
+    PREFIX,
+    PREPARED_ROOT,
+    ROOT,
+    absent_outputs,
+    admit,
+    command,
+    environment,
+)
+from scripts.run_wam_clean_training_continuation import observe_descendant_cleanup
 
 ENTRY = "scripts/run_wam_clean_training_development_handoff.py"
 

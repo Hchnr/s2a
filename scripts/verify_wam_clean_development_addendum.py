@@ -7,11 +7,12 @@ import json
 import os
 from pathlib import Path
 
-from s2a.clean_training_seed_plan import apply_seed_plan
-from s2a.development_audit_relocation import audit_tree, equivalent_template
-from s2a.development_repair_admission import ROOT, admit
-from s2a.development_runtime_bridge import extend_sources
-from s2a.durable_stage_supervisor import check_sources, identity, read, reference, require
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import check_sources, identity, read, reference, require
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.tracking.runtime.development_audit_relocation import audit_tree, equivalent_template
+from s2a.research.wam.tracking.runtime.development_repair_admission import ROOT, admit
+from s2a.research.wam.tracking.runtime.development_runtime_bridge import extend_sources
+from s2a.research.wam.training.clean.clean_training_seed_plan import apply_seed_plan
 
 
 def main():
@@ -37,7 +38,7 @@ def main():
         auditor_ref=auditor_ref,
         relocation_ref=registration["relocation_ref"],
         actual_entrypoint_ref=reference(Path(__file__).resolve()),
-        helper_ref=reference(Path(__file__).resolve().parents[1] / "src/s2a/development_audit_relocation.py"),
+        helper_ref=reference(repository_root(anchor=__file__) / "src/s2a/development_audit_relocation.py"),
         transformed_ast_sha256=hashlib.sha256(ast.dump(tree).encode()).hexdigest(),
         identity=identity(os.getpid()),
         original_failure_preserved=True,

@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+from s2a.evaluation.trajectory_audit import trajectory_diagnostics
 from s2a.geometry import matrix_to_rot6d
-from s2a.trajectory_audit import trajectory_diagnostics
 
 
 def test_masked_terminal_is_excluded_and_local_rotations_affect_integrated_translation():

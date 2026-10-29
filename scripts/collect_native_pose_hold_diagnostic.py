@@ -8,10 +8,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
-from collect_wam_native_training import collect_case, write_once
-from run_native_pose_hold_diagnostic import read_prepared, require
 
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from scripts.collect_wam_native_training import collect_case, write_once
+from scripts.run_native_pose_hold_diagnostic import read_prepared, require
 
 
 class GoalRecordingEnvironment:
@@ -81,7 +81,7 @@ def run(args):
         readiness = restore_cv2_environment(prior["cv2_probe_ref"], prior["cv2_runtime_source_refs"])
         write_once(folder / "environment_readiness.json", readiness)
         write_once(folder / "worker_started.json", dict(pid=os.getpid(), ppid=os.getppid(), argv=sys.argv))
-        from s2a import libero_simulation
+        from s2a.backends.libero import simulation as libero_simulation
 
         actual_make = libero_simulation.make_environment
         for method in prepared["config"]["methods"]:

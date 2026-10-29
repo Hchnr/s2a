@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import nullcontext
 from pathlib import Path
 
-from s2a.artifacts import REPO, sha256, write_json
+from s2a.infrastructure.artifacts import REPO, sha256, write_json
 
 
 def process_identity(pid):
@@ -38,7 +38,7 @@ def process_identity(pid):
 
 def protocol(config_path, *, source, variant_name, checkpoint):
     """Validate without creating any output directory, including --dry-run."""
-    from s2a.temporal_ensemble_simulation import _read_oracle, temporal_variant
+    from s2a.research.wam.simulation.temporal_ensemble_simulation import _read_oracle, temporal_variant
 
     path = Path(config_path).resolve()
     if not path.is_relative_to(REPO):
@@ -134,7 +134,11 @@ def main():
         raise ValueError("seed mismatch or invalid CPU worker count")
     if args.source == "wam" and args.workers != 1:
         raise ValueError("one physical worker per WAM service is mandatory")
-    from s2a.temporal_ensemble_simulation import execution_inputs, run_temporal_case, verify_inputs
+    from s2a.research.wam.simulation.temporal_ensemble_simulation import (
+        execution_inputs,
+        run_temporal_case,
+        verify_inputs,
+    )
 
     if args.job_indices is not None:
         raise ValueError("020 forbids subset selection, retry or budget changes")

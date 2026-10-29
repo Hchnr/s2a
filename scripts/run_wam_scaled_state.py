@@ -8,8 +8,10 @@ import signal
 import socket
 from pathlib import Path
 
-from prepare_wam_flow_readout import weight_stats
-from run_wam_flow_readout import (
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.prepare_wam_flow_readout import weight_stats
+from scripts.run_wam_flow_readout import (
     check_hashes,
     completed,
     environment,
@@ -19,11 +21,8 @@ from run_wam_flow_readout import (
     resource_observation,
     wait_release,
 )
-from run_wam_flow_readout import verified as verified_receipt
-from run_wam_readout import external_identity, owned_command
-
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import write_once
+from scripts.run_wam_flow_readout import verified as verified_receipt
+from scripts.run_wam_readout import external_identity, owned_command
 
 CONFIG = REPO / "configs/wam_scaled_readout_state_20261021.json"
 CONFIG_SHA = "183b4a9407bbfaea8e82c1d7c052f5417e32def31805528102e3bd293a6cea26"

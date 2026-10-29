@@ -3,9 +3,9 @@
 import numpy as np
 import pytest
 
-from s2a.wam_flow_readout import FlowReadoutHook, FlowResidualReadout
-from s2a.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
-from s2a.wam_scaled_readout import ScaledFlowReadout, training_normalization
+from s2a.research.wam.readout.wam_flow_readout import FlowReadoutHook, FlowResidualReadout
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
+from s2a.research.wam.readout.wam_scaled_readout import ScaledFlowReadout, training_normalization
 
 
 def test_global_vector_l2_rms_not_column_whitening_or_extra_sqrt_hidden_width():

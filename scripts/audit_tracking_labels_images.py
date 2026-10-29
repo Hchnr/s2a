@@ -8,10 +8,10 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
 from s2a.geometry import validate_transform
-from s2a.native_training import state_sha256
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
+from s2a.research.wam.training.native.native_training import state_sha256
 
 
 def main():
@@ -33,7 +33,7 @@ def main():
             read(replay_ref)["complete"] is read(replay_ref)["passed"] is True,
             "Complete native replay for pixel comparison",
         )
-    from s2a.libero_simulation import canvas
+    from s2a.backends.libero.simulation import canvas
 
     with np.load(checked(result["arrays_ref"]), allow_pickle=False) as a:
         n = result["physics_steps"]

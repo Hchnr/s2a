@@ -5,9 +5,9 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, read, reference, require
-from s2a.loaded_velocity_control import LoadedVelocityControl
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.joint_control.tracking.loaded_velocity_control import LoadedVelocityControl
+from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
 
 
 def main():

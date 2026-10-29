@@ -3,15 +3,16 @@
 import copy
 import importlib.util
 from collections import defaultdict
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def diagnostic(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location(
         "rotation_drift_driver_test", root / "scripts/diagnose_rotation_drift.py"

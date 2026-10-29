@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 import pytest
 
-from s2a.wam_readout import (
+from s2a.research.wam.readout.wam_readout import (
     ACTIVE_MASK,
     HIDDEN_SIZE,
     LIBERO_DOMAIN,

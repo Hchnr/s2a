@@ -1,11 +1,16 @@
 """Prove the ablation retains083 arm execution and non-policy mechanical checks."""
 
 import ast
-from pathlib import Path
+
+from tests.support.source_layout import current_module_name, current_source_path
 
 
 def function(path, name):
-    return next(n for n in ast.parse(Path(path).read_text()).body if isinstance(n, ast.FunctionDef) and n.name == name)
+    return next(
+        n
+        for n in ast.parse(current_source_path(path).read_text()).body
+        if isinstance(n, ast.FunctionDef) and n.name == name
+    )
 
 
 class Normalize(ast.NodeTransformer):
@@ -46,7 +51,7 @@ class Normalize(ast.NodeTransformer):
         return self.generic_visit(node)
 
     def visit_ImportFrom(self, node):
-        return None if node.module == "loaded_velocity_independent_replay" else node
+        return None if node.module == current_module_name("scripts/loaded_velocity_independent_replay.py") else node
 
     def visit_Assert(self, node):
         text = ast.unparse(node.test)

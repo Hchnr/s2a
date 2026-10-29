@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from s2a import clean_training_development_handoff as dev
+from s2a.research.wam.training.clean import clean_training_development_handoff as dev
 
 
 def test_development_environment_drops_state_bridge_and_keeps_cpu_limits(monkeypatch):
@@ -53,9 +53,9 @@ def test_development_supervisor_actual_child_exit_and_guard(tmp_path, monkeypatc
     import json
     import sys
 
-    from s2a import durable_stage_supervisor as durable
+    from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
 
-    owner = importlib.import_module("run_wam_clean_training_development_handoff")
+    owner = importlib.import_module("scripts.run_wam_clean_training_development_handoff")
     root = tmp_path / "synthetic049"
     root.mkdir()
     monkeypatch.setattr(owner, "ROOT", root)
@@ -140,8 +140,8 @@ def test_dry_requires_actual_original_entry_result(monkeypatch, fault):
     import importlib
     from types import SimpleNamespace
 
-    owner = importlib.import_module("run_wam_clean_training_development_handoff")
-    from s2a.durable_stage_supervisor import sha
+    owner = importlib.import_module("scripts.run_wam_clean_training_development_handoff")
+    from s2a.infrastructure.lifecycle.durable_stage_supervisor import sha
 
     sources = {str(dev.REPO / owner.ENTRY): sha(dev.REPO / owner.ENTRY)}
     a = dict(

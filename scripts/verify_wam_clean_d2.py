@@ -11,7 +11,10 @@ import os
 from pathlib import Path
 
 import numpy as np
-from verify_wam_clean_training_capture import (
+
+from s2a.research.wam.training.clean.clean_training_d2_execution import admit
+from s2a.research.wam.training.clean.clean_training_runtime import GPU
+from scripts.verify_wam_clean_training_capture import (
     DOMAIN,
     MASK,
     VISION,
@@ -24,9 +27,6 @@ from verify_wam_clean_training_capture import (
     verify_initial,
     verify_trace,
 )
-
-from s2a.clean_training_d2_execution import admit
-from s2a.clean_training_runtime import GPU
 
 
 def head_parameters(value):

@@ -12,7 +12,10 @@ import shutil
 from pathlib import Path
 
 import numpy as np
-from prepare_wam_flow_readout import (
+
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.prepare_wam_flow_readout import (
     Evidence,
     external_identity,
     reference,
@@ -21,9 +24,6 @@ from prepare_wam_flow_readout import (
     validate_rosters,
     weight_stats,
 )
-
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import write_once
 
 CONFIG = REPO / "configs/wam_train_scale_readout_20261021.json"
 CONFIG_SHA = "dd0e0124d256a953af48ea2e548cca6603cd9f777d6bd5e4f620548591a2c06b"

@@ -12,9 +12,9 @@ import os
 from pathlib import Path
 
 import numpy as np
-import verify_wam_clean_bridge as original
 
-from s2a.artifacts import REPO
+import scripts.verify_wam_clean_bridge as original
+from s2a.infrastructure.artifacts import REPO
 
 AUDIT_ROOT = REPO / "outputs/wam_stability_20261021/clean_bridge_native_mask_audit_20261023"
 VISION_SHAPE = (1, 48, 11, 60, 40)

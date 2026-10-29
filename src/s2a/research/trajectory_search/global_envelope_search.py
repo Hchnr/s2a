@@ -8,8 +8,8 @@ from copy import deepcopy
 
 import numpy as np
 
-from s2a.accepted_point_sqp_core import solve_epigraph_qp
 from s2a.geometry import finite
+from s2a.research.trajectory_search.accepted_point_sqp_core import solve_epigraph_qp
 from s2a.research.trajectory_search.interior_trajectory_search import (
     SearchEvaluationError,
     _entry,
@@ -24,7 +24,7 @@ from s2a.research.trajectory_search.interior_trajectory_search import (
     validate_config,
 )
 from s2a.research.trajectory_search.rejected_response_search import FEEDBACK_POLICY, choose_rejected_source
-from s2a.restored_anchor_sqp_plan import canonical_initial_comparison
+from s2a.research.trajectory_search.restored_anchor_sqp_plan import canonical_initial_comparison
 
 POSE_CEILING_POLICY = "fixed_initial_global_maximum"
 

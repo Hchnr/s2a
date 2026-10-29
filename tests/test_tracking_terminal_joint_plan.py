@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from s2a.interior_joint_preview import build_joint_preview, rollout_joint_preview
-from s2a.osc import OSCInterface
-from s2a.tracking_terminal_joint_plan import solve_interior_plan
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.preview.interior_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.trajectory_search.tracking_terminal_joint_plan import solve_interior_plan
 
 
 def test_original_reference_and_bounds_are_kept_when_first_cap_is_not_enforced():

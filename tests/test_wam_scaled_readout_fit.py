@@ -8,10 +8,12 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def stage(monkeypatch):
-    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    scripts = repository_root(anchor=__file__) / "scripts"
     monkeypatch.syspath_prepend(str(scripts))
     spec = importlib.util.spec_from_file_location("scaled_readout_fit_test", scripts / "fit_wam_scaled_readout.py")
     module = importlib.util.module_from_spec(spec)
@@ -86,9 +88,9 @@ def test_reuse_rejects_nonzero_hidden_control_or_changed_whole_episode_source(st
 
 def test_real_torch_reused026_bias_is_bitwise_same_after027_preprocessing():
     torch = pytest.importorskip("torch")
-    from s2a.wam_flow_readout import FlowResidualReadout
-    from s2a.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
-    from s2a.wam_scaled_readout import ScaledFlowReadout
+    from s2a.research.wam.readout.wam_flow_readout import FlowResidualReadout
+    from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
+    from s2a.research.wam.readout.wam_scaled_readout import ScaledFlowReadout
 
     torch.manual_seed(42)
     hidden = torch.randn(3, 1280).to(torch.bfloat16)

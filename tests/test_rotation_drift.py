@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.rotation_drift import RotationDrift, episode_query_weights, world_rotation_residual
+from s2a.references.rotation_drift import RotationDrift, episode_query_weights, world_rotation_residual
 
 
 def poses():

@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from s2a.artifacts import sha256
-from s2a.source_archive import verify_archived_sources
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.source_archive import verify_archived_sources
 
 
 @pytest.fixture

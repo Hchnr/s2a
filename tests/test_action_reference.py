@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.action_reference import decode_action_targets, encode_oracle_targets
 from s2a.geometry import inverse, transform
+from s2a.references.action_reference import decode_action_targets, encode_oracle_targets
 
 
 def test_oracle_and_wam_share_full_tcp_delta_decoder_in_original_world_frame():

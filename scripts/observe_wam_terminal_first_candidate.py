@@ -3,10 +3,9 @@
 import os
 from pathlib import Path
 
-from verify_wam_clean_training_capture import Evidence, paired_initial, require
-from verify_wam_terminal_development_points import audit_points, head_parameters
-
-from s2a.clean_training_runtime import publish, reference
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
+from scripts.verify_wam_clean_training_capture import Evidence, paired_initial, require
+from scripts.verify_wam_terminal_development_points import audit_points, head_parameters
 
 
 def main():

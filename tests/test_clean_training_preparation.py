@@ -10,13 +10,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 
 @pytest.fixture
 def preparation(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("prepare_wam_clean_training")
+    return importlib.import_module("scripts.prepare_wam_clean_training")
 
 
 def digest(value):

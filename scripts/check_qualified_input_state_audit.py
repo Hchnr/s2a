@@ -3,13 +3,13 @@
 from pathlib import Path
 
 import numpy as np
-from arm_joint_wrench_independent import INPUTS
-from arm_wrench_data import attach_current_wrench
-from audit_wam_position import Evidence
-from collect_wam_native_training import write_once
-from qualified_input_state_audit import verify_inputs
 
-from s2a.joint_wrench_condition_forward import with_history
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import with_history
+from scripts.arm_joint_wrench_independent import INPUTS
+from scripts.arm_wrench_data import attach_current_wrench
+from scripts.audit_wam_position import Evidence
+from scripts.collect_wam_native_training import write_once
+from scripts.qualified_input_state_audit import verify_inputs
 
 
 def main():

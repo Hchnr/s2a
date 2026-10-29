@@ -3,11 +3,16 @@
 import json
 from pathlib import Path
 
-from audit_wam_position import Evidence
-
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import check_sources, cpu_environment, owned_stage, publish, sha
-from s2a.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
+    check_sources,
+    cpu_environment,
+    owned_stage,
+    publish,
+    sha,
+)
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from scripts.audit_wam_position import Evidence
 
 ROOT = REPO / "outputs/coupled_preview_verification_repair_20261026"
 RUN = REPO / "outputs/coupled_preview_control_20261026"

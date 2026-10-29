@@ -1,11 +1,11 @@
 """232 independent raw-state dynamics, native goal, ODE/KKT and dual-history replay."""
 
 import numpy as np
-from arm_joint_wrench_independent import nominal_prediction
-from current_coupled_independent import response, verify_inverse
 from scipy.spatial.transform import Rotation
 
-from s2a.archived_forward_state import verify_forward_state
+from s2a.research.response_models.forward.archived_forward_state import verify_forward_state
+from scripts.arm_joint_wrench_independent import nominal_prediction
+from scripts.current_coupled_independent import response, verify_inverse
 
 
 def close(actual, expected, atol=1e-8):

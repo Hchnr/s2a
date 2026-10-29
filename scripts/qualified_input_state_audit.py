@@ -3,7 +3,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.xml_site_kinematics import XMLSiteKinematics
+from s2a.geometry.xml_site import XMLSiteKinematics
 
 
 def verify_inputs(xml, data, rows):

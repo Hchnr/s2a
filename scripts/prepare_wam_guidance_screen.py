@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
 
 CONFIG = "configs/wam_stability_screen_8400_g30_20261021.json"
 PLAN = "plans/v0.0.1/012_guidance_state_20261021.md"

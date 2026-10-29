@@ -11,7 +11,9 @@ from pathlib import Path
 
 import pytest
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts/verify_wam_clean_training_preparation.py"
+from s2a.infrastructure.repository_paths import repository_root
+
+SCRIPT = repository_root(anchor=__file__) / "scripts/verify_wam_clean_training_preparation.py"
 SPEC = importlib.util.spec_from_file_location("independent_clean_preparation", SCRIPT)
 audit = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(audit)

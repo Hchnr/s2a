@@ -41,6 +41,12 @@ def _moves(root, catalog, manifest_paths):
         manifest = read(path)
         require(manifest["catalog_ref"] == reference, "Migration binds a different baseline catalog")
         references.append(dict(path=relative, sha256=digest(path)))
+        complete_registration = manifest.get("complete_current_layout") is True
+        if complete_registration:
+            require(
+                {item["old_path"] for item in manifest["moves"]} == set(entries),
+                "Complete current layout must register every baseline identity",
+            )
         for item in manifest["moves"]:
             require(
                 set(item) == {"old_path", "original_sha256", "new_path", "current_sha256"},
@@ -51,7 +57,10 @@ def _moves(root, catalog, manifest_paths):
             repo_path(new, root=root)
             require(old in entries and item["original_sha256"] == entries[old]["sha256"], "Unknown original identity")
             require(old not in moves and new not in destinations, "Ambiguous migration entry")
-            require(old != new or item["current_sha256"] != item["original_sha256"], "Redundant unchanged entry")
+            require(
+                complete_registration or old != new or item["current_sha256"] != item["original_sha256"],
+                "Unchanged entries require a complete current layout registration",
+            )
             require(re.fullmatch("[0-9a-f]{64}", item["current_sha256"]) is not None, "Current SHA256 required")
             moves[old] = item
             destinations.add(new)
@@ -137,13 +146,14 @@ def check(
         if move is not None and move["old_path"] != move["new_path"] and repo_path(row["old_path"], root=root).exists():
             errors.append(dict(old_path=row["old_path"], error="old_flat_file_remains"))
     flat = {relative: sum(path.is_file() for path in repo_path(relative, root=root).iterdir()) for relative in AREAS}
-    complete = all(flat[relative] <= limit for relative, limit in FINAL_FLAT_LIMITS.items())
+    expected_depth = all(flat[relative] <= limit for relative, limit in FINAL_FLAT_LIMITS.items())
     nodes = None
     require((baseline_nodes is None) == (current_nodes is None), "Both test discovery lists must be supplied")
     if baseline_nodes is not None:
         nodes = compare_nodes(read(baseline_nodes), read(current_nodes), moves)
         if not nodes["preserved"]:
             errors.append(dict(error="test_nodes_missing", count=len(nodes["missing_nodes"])))
+    complete = expected_depth and not errors
     if require_complete and not complete:
         errors.append(dict(error="repository_still_has_unmigrated_flat_areas"))
     return dict(
@@ -156,7 +166,14 @@ def check(
         baseline_file_count=primary_count,
         additional_baseline_file_count=len(entries) - primary_count,
         migrated_file_count=sum(move["old_path"] != move["new_path"] for move in moves.values()),
-        registered_in_place_edit_count=sum(move["old_path"] == move["new_path"] for move in moves.values()),
+        registered_in_place_edit_count=sum(
+            move["old_path"] == move["new_path"] and move["current_sha256"] != move["original_sha256"]
+            for move in moves.values()
+        ),
+        registered_unchanged_file_count=sum(
+            move["old_path"] == move["new_path"] and move["current_sha256"] == move["original_sha256"]
+            for move in moves.values()
+        ),
         current_byte_identical_count=identity_unchanged,
         current_changed_sources=changed_sources,
         flat_file_counts=flat,

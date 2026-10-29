@@ -5,10 +5,10 @@ import json
 import time
 from pathlib import Path
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.durable_stage_supervisor import cpu_environment, owned_stage
-from s2a.worker_handshake import identity
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import cpu_environment, owned_stage
+from s2a.infrastructure.lifecycle.worker_handshake import identity
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
 
 
 def main():

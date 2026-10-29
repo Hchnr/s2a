@@ -20,11 +20,11 @@ import yaml
 from PIL import Image
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO
-from s2a.gripper import OpeningIntent
-from s2a.gripper_intent_hold import GripperIntentHold, GripperIntentHoldConfig
-from s2a.osc import OSCInterface, OSCStateToAction
-from s2a.task_acceptance import task_outcome
+from s2a.controllers.gripper import OpeningIntent
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
+from s2a.evaluation.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.gripper.gripper_intent_hold import GripperIntentHold, GripperIntentHoldConfig
 
 CONFIGS = (
     ("configs/wam_recovery_executor_qualification_20261021.json", "oracle"),

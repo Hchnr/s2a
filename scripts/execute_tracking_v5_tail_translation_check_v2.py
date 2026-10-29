@@ -5,14 +5,9 @@ import json
 import os
 from pathlib import Path
 
-from execute_tracking_v5_tail_translation_reserve import entry_command as prior_entry_command
-from execute_tracking_v5_tail_translation_reserve import validate_receipt as validate_receipt
-from execute_tracking_v5_tail_translation_reserve import verify_native_qa as verify_prior_qa
-from run_wam_readout import owned_command
-
-from s2a.native_environment import strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.tail_translation_check_v2_evidence import (
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.tail_translation_check_v2_evidence import (
     CPU_ENVIRONMENT,
     FAILED_CHECK_REF,
     FAILED_OWNER_REF,
@@ -35,7 +30,11 @@ from s2a.tail_translation_check_v2_evidence import (
     require,
     verify_failed_replay,
 )
-from s2a.tail_translation_reserve_evidence import QA_SOURCES as PRIOR_QA_SOURCES
+from s2a.research.trajectory_search.tail_translation_reserve_evidence import QA_SOURCES as PRIOR_QA_SOURCES
+from scripts.execute_tracking_v5_tail_translation_reserve import entry_command as prior_entry_command
+from scripts.execute_tracking_v5_tail_translation_reserve import validate_receipt as validate_receipt
+from scripts.execute_tracking_v5_tail_translation_reserve import verify_native_qa as verify_prior_qa
+from scripts.run_wam_readout import owned_command
 
 
 def verify_native_qa(ref):

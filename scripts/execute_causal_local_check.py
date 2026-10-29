@@ -9,9 +9,9 @@ def main():
     p.add_argument("stage", choices=("holdout", "anchors"))
     args = p.parse_args()
     if args.stage == "holdout":
-        import check_causal_local_prequential as check
+        import scripts.check_causal_local_prequential as check
     else:
-        import check_causal_local_anchors as check
+        import scripts.check_causal_local_anchors as check
     check.ROOT = Path("outputs/causal_local_response_20261025/owned/results")
     check.main()
 

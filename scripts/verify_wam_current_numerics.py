@@ -15,7 +15,7 @@ import numpy as np
 import yaml
 from PIL import Image
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 CONFIG = REPO / "configs/wam_current_numerics_20261021.json"
 CONFIG_SHA = "2fbdd966fae22af37f28202ca15cc76e33cdf896c8b3ad0f9df0869c06fb6edd"

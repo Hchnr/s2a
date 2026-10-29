@@ -10,8 +10,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.native_environment import EnvironmentAdmissionError, environment_snapshot
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import EnvironmentAdmissionError, environment_snapshot
 
 
 def worker():
@@ -75,7 +75,7 @@ def continuation(tmp_path, monkeypatch):
 
     monkeypatch.setitem(
         sys.modules,
-        "prepare_wam_native_training_continuation",
+        "scripts.prepare_wam_native_training_continuation",
         SimpleNamespace(read_prepared=read_prepared),
     )
     monkeypatch.setattr(module, "restore_cv2_environment", environment_admission)

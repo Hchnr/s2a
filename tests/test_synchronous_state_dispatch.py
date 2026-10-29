@@ -2,7 +2,7 @@
 
 import pytest
 
-from s2a.synchronous_state_dispatch import select_readout
+from s2a.research.wam.readout.synchronous_state_dispatch import select_readout
 
 
 def test_all_registered_variants_select_exact_supplied_objects():

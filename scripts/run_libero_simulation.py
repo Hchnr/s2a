@@ -2,8 +2,8 @@
 
 import argparse
 
-from s2a.artifacts import load_config
-from s2a.libero_simulation import run_trial
+from s2a.backends.libero.simulation import run_trial
+from s2a.infrastructure.artifacts import load_config
 
 
 def main():

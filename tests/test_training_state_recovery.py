@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.training_state_recovery import recovery_reference
+from s2a.research.wam.training.native.training_state_recovery import recovery_reference
 
 
 def endpoints():

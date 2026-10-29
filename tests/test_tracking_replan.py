@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from s2a.tracking_replan import TrackingReplan, TrackingReplanConfig
+from s2a.research.joint_control.planning.tracking_replan import TrackingReplan, TrackingReplanConfig
 
 
 def advance(policy, errors):

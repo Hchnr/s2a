@@ -3,12 +3,12 @@ import importlib
 
 import pytest
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 
 def test_complete_point_checker_changes_only_explicit_per_node_head(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    helper = importlib.import_module("verify_wam_terminal_points")
+    helper = importlib.import_module("scripts.verify_wam_terminal_points")
     baseline = ast.parse((REPO / "scripts/verify_wam_clean_training_state.py").read_text())
     expected = next(n for n in baseline.body if isinstance(n, ast.FunctionDef) and n.name == "compact_points")
 

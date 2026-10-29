@@ -5,10 +5,9 @@ import json
 import os
 from pathlib import Path
 
-from run_wam_readout import owned_command
-
-from s2a.native_environment import strict_native_environment
-from s2a.prefix_trust_control_evidence import (
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.prefix_trust_control_evidence import (
     BACKTRACKING_CHECK_OWNER_REF,
     BACKTRACKING_REF,
     CPU_ENVIRONMENT,
@@ -27,7 +26,7 @@ from s2a.prefix_trust_control_evidence import (
     remember,
     require,
 )
-from s2a.preview_result_publication import publish_result
+from scripts.run_wam_readout import owned_command
 
 
 def verify_native_qa(ref):

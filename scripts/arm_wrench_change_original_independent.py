@@ -3,9 +3,10 @@
 from pathlib import Path
 
 import numpy as np
-from arm_wrench_change_data_independent import attach_current_wrench
-from arm_wrench_change_independent import INPUTS, augment, feature_matrix, nominal_prediction
 from scipy.spatial.transform import Rotation
+
+from scripts.arm_wrench_change_data_independent import attach_current_wrench
+from scripts.arm_wrench_change_independent import INPUTS, augment, feature_matrix, nominal_prediction
 
 
 def equations(config, e, parameters):

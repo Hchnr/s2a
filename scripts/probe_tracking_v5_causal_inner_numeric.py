@@ -6,18 +6,18 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.causal_inner_error import CausalInnerError
-from s2a.clean_training_runtime import checked, read, reference, require
-from s2a.generated_reference_twist import reference_world_twist
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import inverse
-from s2a.interior_joint_preview import build_joint_preview, rollout_joint_preview
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.osc import OSCInterface
-from s2a.past_inner_error_joint_plan import solve_interior_plan
-from s2a.preview_result_publication import publish_result as publish
-from s2a.terminal_development_execution import CONTROL_REF
-from s2a.velocity_braking_joint_plan import solve_interior_plan as baseline_solve
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.references.generated_twist import reference_world_twist
+from s2a.research.joint_control.preview.interior_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.response_models.causal.causal_inner_error import CausalInnerError
+from s2a.research.trajectory_search.past_inner_error_joint_plan import solve_interior_plan
+from s2a.research.trajectory_search.velocity_braking_joint_plan import solve_interior_plan as baseline_solve
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.training.clean.clean_training_runtime import checked, read, reference, require
 
 
 def main():

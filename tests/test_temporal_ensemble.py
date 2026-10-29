@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.temporal_ensemble import CausalTemporalEqualEnsemble, TemporalEqualConfig
+from s2a.references.temporal_ensemble import CausalTemporalEqualEnsemble, TemporalEqualConfig
 
 
 def path(q, *, offset=0.0, rotation=None, length=40):

@@ -3,14 +3,14 @@
 import json
 import os
 import sys
-from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-import run_wam_clean_training as owner  # noqa: E402
+from s2a.infrastructure.repository_paths import repository_root
 
-from s2a.clean_training_runtime import GPU, read, reference  # noqa: E402
+sys.path.insert(0, str(repository_root(anchor=__file__) / "scripts"))
+import scripts.run_wam_clean_training as owner  # noqa: E402
+from s2a.research.wam.training.clean.clean_training_runtime import GPU, read, reference  # noqa: E402
 
 
 def prepared(tmp_path):

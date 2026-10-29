@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import linprog
 from scipy.sparse.linalg import aslinearoperator
 
-from s2a.terminal_objective_solver import fit_opening_lad, lad_certificate, ridge_quadratic
+from s2a.research.trajectory_search.terminal_objective_solver import fit_opening_lad, lad_certificate, ridge_quadratic
 
 
 def test_matrix_free_quadratic_matches_dense_solution():

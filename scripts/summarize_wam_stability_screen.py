@@ -15,9 +15,9 @@ from pathlib import Path
 import numpy as np
 import yaml
 
-from s2a.checkpoint_audit import extrapolate_history, state_metrics
+from s2a.evaluation.prediction_audit import audit_action_response
+from s2a.evaluation.wam.checkpoint_audit import extrapolate_history, state_metrics
 from s2a.geometry import integrate_local, pose9_to_transform
-from s2a.prediction_audit import audit_action_response
 
 LABELS = ("8800_g15", "8800_g10", "15400_g15", "15400_g10")
 PREFIXES = (8, 16, 40)

@@ -1,12 +1,13 @@
 """Complete080 control loop remains unchanged outside081 grip routing/history."""
 
 import ast
-from pathlib import Path
+
+from tests.support.source_layout import current_source_path
 
 
 def test_only_route_initialization_causal_command_history_and_receipt_change():
-    old = Path("src/s2a/velocity_model_simulation.py").read_text()
-    new = Path("src/s2a/loaded_velocity_simulation.py").read_text()
+    old = current_source_path("src/s2a/velocity_model_simulation.py").read_text()
+    new = current_source_path("src/s2a/loaded_velocity_simulation.py").read_text()
     new = new.replace("def run_loaded_velocity_case(", "def run_velocity_model_case(")
     new = new.replace(
         '    VelocityModelPlanner(response_parameters, velocity_envelope=config["gripper_velocity_envelope"])',

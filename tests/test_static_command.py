@@ -3,17 +3,20 @@
 import copy
 import importlib
 import json
-from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def modules(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("run_wam_static_command"), importlib.import_module("serve_wam_static_command")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.run_wam_static_command"), importlib.import_module(
+        "scripts.serve_wam_static_command"
+    )
 
 
 def test_one_static_command_per_task_excludes_phase_plans(modules):

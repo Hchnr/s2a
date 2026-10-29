@@ -12,7 +12,10 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.clean_training_fit_contract import (
+from s2a.adapters.identified.streaming_ridge_qr import independent_ridge
+from s2a.geometry import validate_transform
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.training.clean.clean_training_fit_contract import (
     FEATURE_COLUMNS,
     FIT_SCHEMA,
     VERIFICATION_SCHEMA,
@@ -24,8 +27,6 @@ from s2a.clean_training_fit_contract import (
     reference,
     require,
 )
-from s2a.geometry import validate_transform
-from s2a.streaming_ridge_qr import independent_ridge
 
 DOMAIN = "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1"
 ACTIVE = np.arange(128) < 10
@@ -381,7 +382,7 @@ def independent_block_factory(context, label_receipts):
 
 def verify_fit(prepared_ref, registration_ref, fit_ref, *, stage, output):
     cpu_environment()
-    from s2a.clean_training_fit_contract import Evidence
+    from s2a.research.wam.training.clean.clean_training_fit_contract import Evidence
 
     initial = Evidence()
     produced = initial.json(fit_ref)
@@ -401,9 +402,9 @@ def verify_fit(prepared_ref, registration_ref, fit_ref, *, stage, output):
         capture_audit_refs=produced["capture_audit_refs"],
         caller_sources=(
             __file__,
-            Path(__file__).resolve().parents[1] / "src/s2a/clean_training_fit_contract.py",
-            Path(__file__).resolve().parents[1] / "src/s2a/streaming_ridge_qr.py",
-            Path(__file__).resolve().parents[1] / "src/s2a/geometry.py",
+            repository_root(anchor=__file__) / "src/s2a/clean_training_fit_contract.py",
+            repository_root(anchor=__file__) / "src/s2a/streaming_ridge_qr.py",
+            repository_root(anchor=__file__) / "src/s2a/geometry.py",
         ),
     )
     context.evidence.inputs.update(initial.inputs)

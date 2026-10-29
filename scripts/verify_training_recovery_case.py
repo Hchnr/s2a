@@ -5,8 +5,9 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from training_recovery_acceptance_checker import verify_case
+
+from scripts.audit_wam_position import Evidence
+from scripts.training_recovery_acceptance_checker import verify_case
 
 
 def main():

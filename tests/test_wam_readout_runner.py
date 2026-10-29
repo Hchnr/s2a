@@ -4,15 +4,16 @@ import importlib.util
 import json
 import os
 import sys
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def owner():
-    path = Path(__file__).resolve().parents[1] / "scripts/run_wam_readout.py"
+    path = repository_root(anchor=__file__) / "scripts/run_wam_readout.py"
     spec = importlib.util.spec_from_file_location("readout_owner_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

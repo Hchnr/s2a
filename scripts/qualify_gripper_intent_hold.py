@@ -10,19 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.action_reference import decode_action_targets, encode_oracle_targets
-from s2a.artifacts import sha256, write_json
-from s2a.checkpoint_simulation import object_progress
-from s2a.geometry import inverse, pose_error
-from s2a.gripper import OpeningIntent, opening_position_target
-from s2a.gripper_intent_hold import (
-    GripperIntentHold as GripperTrackingAdapter,
-)
-from s2a.gripper_intent_hold import (
-    GripperIntentHoldConfig as GripperTrackingConfig,
-)
-from s2a.gripper_tracking import panda_opening_from_motor_target
-from s2a.libero_simulation import (
+from s2a.backends.libero.simulation import (
     aperture,
     controller_contract,
     current_observation,
@@ -31,10 +19,19 @@ from s2a.libero_simulation import (
     sha256_bytes,
     source_pose,
 )
-from s2a.osc import OSCInterface, OSCStateToAction
-from s2a.task_acceptance import task_outcome
+from s2a.controllers.gripper import OpeningIntent, opening_position_target
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
+from s2a.evaluation.task_acceptance import task_outcome
+from s2a.geometry import inverse, pose_error
+from s2a.infrastructure.artifacts import sha256, write_json
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.references.action_reference import decode_action_targets, encode_oracle_targets
+from s2a.research.gripper.gripper_intent_hold import GripperIntentHold as GripperTrackingAdapter
+from s2a.research.gripper.gripper_intent_hold import GripperIntentHoldConfig as GripperTrackingConfig
+from s2a.research.gripper.gripper_tracking import panda_opening_from_motor_target
+from s2a.research.wam.tracking.runtime.checkpoint_simulation import object_progress
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 
 
 def read(path):

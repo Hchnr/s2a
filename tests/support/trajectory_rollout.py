@@ -4,10 +4,10 @@ from types import SimpleNamespace
 
 import numpy as np
 
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import pose_error
-from s2a.joint_preview_constraint_audit import audit_joint_preview_constraints
-from s2a.osc import OSCInterface
-from s2a.tail_translation_reserve import build_tail_translation_grid
+from s2a.research.joint_control.limits.joint_preview_constraint_audit import audit_joint_preview_constraints
+from s2a.research.trajectory_search.tail_translation_reserve import build_tail_translation_grid
 
 
 def synthetic_case(*, terminal=None, base=2e-8, prior_max_abs_residual=1e-6, prefix_error=0.0, full_witness=False):

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.archived_forward_state import verify_forward_state
+from s2a.research.response_models.forward.archived_forward_state import verify_forward_state
 
 
 def fixture():

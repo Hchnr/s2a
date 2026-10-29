@@ -6,10 +6,9 @@ import os
 import types
 from pathlib import Path
 
-from run_wam_short_replan import verify_hashes, write_new
-
-from s2a.artifacts import REPO, sha256
-from s2a.wam_runtime import install_active_slot_mask, load_service
+from s2a.backends.wam.runtime import install_active_slot_mask, load_service
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.run_wam_short_replan import verify_hashes, write_new
 
 
 def align_empty_plan(batch, *, expanded):

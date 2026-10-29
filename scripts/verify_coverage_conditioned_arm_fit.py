@@ -4,9 +4,10 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_coverage_independent import equations
-from arm_history_independent import augment, conditions, feature_matrix, nominal_prediction
-from audit_wam_position import Evidence
+
+from scripts.arm_coverage_independent import equations
+from scripts.arm_history_independent import augment, conditions, feature_matrix, nominal_prediction
+from scripts.audit_wam_position import Evidence
 
 ROOT = Path("outputs/coverage_conditioned_arm_forward_20261025")
 

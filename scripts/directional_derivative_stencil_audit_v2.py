@@ -7,7 +7,8 @@ No producer, controller, response evaluator or simulator is imported.
 """
 
 import numpy as np
-from directional_derivative_audit import (
+
+from scripts.directional_derivative_audit import (
     STAGES,
     array,
     boolean,

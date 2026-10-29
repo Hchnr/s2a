@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.clean_training_data import normalize_active10
+from s2a.research.wam.training.clean.clean_training_data import normalize_active10
 
 
 def main():

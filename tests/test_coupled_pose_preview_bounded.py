@@ -2,12 +2,12 @@ import json
 from pathlib import Path
 
 import numpy as np
-from coupled_pose_preview_independent import verify_preview
 
-from s2a.coupled_pose_preview import plan_pose as original
-from s2a.coupled_pose_preview_bounded import plan_pose
-from s2a.coupled_response_history import CoupledResponseHistory
-from s2a.current_coupled_response import build_response
+from s2a.research.joint_control.preview.coupled_pose_preview import plan_pose as original
+from s2a.research.joint_control.preview.coupled_pose_preview_bounded import plan_pose
+from s2a.research.response_models.causal.coupled_response_history import CoupledResponseHistory
+from s2a.research.response_models.forward.current_coupled_response import build_response
+from scripts.coupled_pose_preview_independent import verify_preview
 
 
 def test_real_strict_commit_failure_is_bounded_and_recertified():

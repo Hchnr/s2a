@@ -2,10 +2,15 @@ import json
 
 import numpy as np
 import pytest
-from current_coupled_independent import orientation_error, response, verify_inverse
 from scipy.spatial.transform import Rotation
 
-from s2a.current_coupled_response import build_response, nominal_prediction, rotation_spring, solve_translation
+from s2a.research.response_models.forward.current_coupled_response import (
+    build_response,
+    nominal_prediction,
+    rotation_spring,
+    solve_translation,
+)
+from scripts.current_coupled_independent import orientation_error, response, verify_inverse
 from tests.test_rate_preview_active_set import contract
 
 
@@ -62,9 +67,8 @@ def test_known_coupled_endpoint_recovers_command_with_completed_innovation():
 
 
 def test_uncoupled_translation_reduces_to_original_constrained_single_period_ls():
-    from pose_velocity_arm_independent_replay import PoseVelocityArmReplay
-
-    from s2a.osc import OSCInterface
+    from s2a.controllers.osc import OSCInterface
+    from scripts.pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 
     c = contract()
     mass, j = np.eye(7), np.c_[np.eye(6), np.zeros(6)]

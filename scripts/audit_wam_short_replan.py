@@ -14,9 +14,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_earlier_position import verify_case
-from audit_wam_position import Evidence
-from run_wam_short_replan import (
+
+from scripts.audit_wam_earlier_position import verify_case
+from scripts.audit_wam_position import Evidence
+from scripts.run_wam_short_replan import (
     CHECKPOINT,
     PRIOR_GATE,
     PRIOR_GATE_SHA,

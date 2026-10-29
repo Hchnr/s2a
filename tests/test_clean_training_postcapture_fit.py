@@ -13,9 +13,11 @@ from types import ModuleType, SimpleNamespace
 import numpy as np
 import pytest
 
-MAIN = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+MAIN = repository_root(anchor=__file__)
 sys.path.insert(0, str(MAIN / "scripts"))
-worker = importlib.import_module("execute_wam_clean_training_postcapture_fit")
+worker = importlib.import_module("scripts.execute_wam_clean_training_postcapture_fit")
 
 
 def dump(filename, value):
@@ -565,50 +567,84 @@ def test_cwd_guard_and_symlink_escape(admission, monkeypatch):
         worker.admit(dict(path=str(alias), sha256=admission.ref["sha256"]))
 
 
-def test_lazy_independent_import_does_not_import_producer_and_unwraps_helper(admission, monkeypatch):
+def assert_lazy_current_import(runtime, repo, registration, monkeypatch):
+    monkeypatch.setattr(runtime, "REPO", repo)
     modules = {}
-    for name, relative, text in (
+    entries = {}
+    for old_path, relative, text in (
         (
-            "verify_wam_clean_training_fit",
             "scripts/verify_wam_clean_training_fit.py",
+            "scripts/verification/wam/training/verify_wam_clean_training_fit.py",
             "def verify_fit(*a, **k): pass\n",
         ),
         (
-            "s2a.clean_training_source_proof",
             "src/s2a/clean_training_source_proof.py",
+            "src/s2a/research/wam/training/clean/clean_training_source_proof.py",
             "from contextlib import contextmanager\n@contextmanager\ndef execution_source_proof(ref):\n    yield None\n",
         ),
         (
-            "s2a.clean_training_fit_contract",
             "src/s2a/clean_training_fit_contract.py",
+            "src/s2a/research/wam/training/clean/clean_training_fit_contract.py",
             "# Synthetic metadata-only contract.\n",
         ),
     ):
-        filename = admission.repo / relative
+        filename = repo / relative
+        filename.parent.mkdir(parents=True, exist_ok=True)
         filename.write_text(text)
+        parts = Path(relative).with_suffix("").parts
+        name = ".".join(parts[1:] if parts[0] == "src" else parts)
         module = ModuleType(name)
         module.__file__ = str(filename)
         exec(compile(text, str(filename), "exec"), module.__dict__)
         modules[name] = module
-        admission.registration["source_sha256"][str(filename)] = worker.sha(filename)
+        entries[old_path] = dict(current_ref=dict(path=relative, sha256=runtime.sha(filename)))
+        registration["source_sha256"][str(filename)] = runtime.sha(filename)
     imported = []
+
+    class FakeCurrentLayout:
+        def __init__(self, *, root):
+            assert root == repo
+
+        def entry(self, old_path):
+            return copy.deepcopy(entries[old_path])
+
+        def source_path(self, old_path):
+            self.finish()
+            return repo / entries[old_path]["current_ref"]["path"]
+
+        def finish(self):
+            for entry in entries.values():
+                ref = entry["current_ref"]
+                if runtime.sha(repo / ref["path"]) != ref["sha256"]:
+                    raise ValueError("fixture current source SHA changed")
 
     def load(name):
         imported.append(name)
-        assert name != "fit_wam_clean_training"
+        assert not name.endswith(".fit_wam_clean_training")
         return modules[name]
 
-    monkeypatch.setattr(worker.importlib, "import_module", load)
-    result = worker._load_modules("independent", admission.registration)
-    assert result[0] is modules["verify_wam_clean_training_fit"].verify_fit
-    assert imported == [
-        "verify_wam_clean_training_fit",
-        "s2a.clean_training_source_proof",
-        "s2a.clean_training_fit_contract",
-    ]
-    modules["verify_wam_clean_training_fit"].__file__ = str(admission.repo / "outputs/fake_checker.py")
+    monkeypatch.setattr(runtime, "CurrentLayout", FakeCurrentLayout)
+    monkeypatch.setattr(runtime.importlib, "import_module", load)
+    result = runtime._load_modules("independent", registration)
+    delegate_name = "scripts.verification.wam.training.verify_wam_clean_training_fit"
+    assert result[0] is modules[delegate_name].verify_fit
+    assert imported == list(modules)
+    assert result[3]["path"] == str(repo / entries["scripts/verify_wam_clean_training_fit.py"]["current_ref"]["path"])
+    old_registration = copy.deepcopy(registration)
+    for old_path, entry in entries.items():
+        old_registration["source_sha256"].pop(str(repo / entry["current_ref"]["path"]))
+        old_registration["source_sha256"][str(repo / old_path)] = entry["current_ref"]["sha256"]
+    imported.clear()
+    with pytest.raises(ValueError, match="loaded delegate/helper source drift"):
+        runtime._load_modules("independent", old_registration)
+    assert not imported
+    modules[delegate_name].__file__ = str(repo / "outputs/fake_checker.py")
     with pytest.raises(ValueError, match="original main-repository"):
-        worker._load_modules("independent", admission.registration)
+        runtime._load_modules("independent", registration)
+
+
+def test_lazy_independent_import_does_not_import_producer_and_unwraps_helper(admission, monkeypatch):
+    assert_lazy_current_import(worker, admission.repo, admission.registration, monkeypatch)
 
 
 def test_help_is_fresh_cpu_process_and_cli_has_no_delegate_overrides():

@@ -6,13 +6,12 @@ import os
 import shutil
 from pathlib import Path
 
-from run_native_motor_hold_diagnostic import read, reference, require, resolve_path
-from run_native_motor_hold_diagnostic import read_prepared as read_motor_prepared
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO, sha256
-from s2a.native_environment import strict_native_environment
-from s2a.settled_native import settled_anchor_indices
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.research.joint_control.native.settled_native import settled_anchor_indices
+from scripts.run_native_motor_hold_diagnostic import read, reference, require, resolve_path
+from scripts.run_native_motor_hold_diagnostic import read_prepared as read_motor_prepared
+from scripts.run_wam_readout import owned_command
 
 CONFIG = REPO / "configs/settled_native_training_20261022.json"
 SOURCES = (

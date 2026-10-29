@@ -15,11 +15,10 @@ import tarfile
 import time
 from pathlib import Path
 
-from run_native_motor_hold_diagnostic import LOCATOR
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.run_native_motor_hold_diagnostic import LOCATOR
+from scripts.run_wam_readout import owned_command
 
 CONFIG = REPO / "configs/wam_clean_bridge_20261022.json"
 PLAN = REPO / "plans/v0.0.1/035_clean_bridge_qualification_20261022.md"

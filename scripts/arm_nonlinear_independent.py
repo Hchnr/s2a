@@ -1,7 +1,8 @@
 """100 independent scalar Fourier columns atop independent83-condition history."""
 
 import numpy as np
-from arm_history_independent import INPUTS, augment, conditions, nominal_prediction
+
+from scripts.arm_history_independent import INPUTS, augment, conditions, nominal_prediction
 
 __all__ = ["INPUTS", "augment", "conditions", "nominal_prediction", "feature_matrix", "prediction"]
 

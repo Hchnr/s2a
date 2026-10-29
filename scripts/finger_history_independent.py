@@ -1,8 +1,9 @@
 """198 independent scalar extension of audited current-condition features."""
 
 import numpy as np
-from arm_joint_wrench_independent import INPUTS as CURRENT_INPUTS
-from arm_joint_wrench_independent import feature_matrix as current_features
+
+from scripts.arm_joint_wrench_independent import INPUTS as CURRENT_INPUTS
+from scripts.arm_joint_wrench_independent import feature_matrix as current_features
 
 INPUTS = (*CURRENT_INPUTS, "x_finger_contact_history")
 

@@ -7,7 +7,7 @@ import pytest
 
 import s2a.research.trajectory_search.interior_trajectory_search as baseline
 import s2a.research.trajectory_search.rejected_response_search as planning
-from s2a.directional_derivative_probe import _canonical
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
 from tests.research.trajectory_search.test_interior_trajectory_search import arguments, entry
 
 

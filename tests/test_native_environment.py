@@ -10,8 +10,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.native_environment import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import (
     EnvironmentAdmissionError,
     environment_snapshot,
     restore_cv2_environment,
@@ -61,7 +61,7 @@ def fake_import(monkeypatch, fixture, *, mutate=None):
             mutate()
         return SimpleNamespace(__file__=fixture["loader"]["path"], __version__="fixture-version")
 
-    monkeypatch.setattr("s2a.native_environment.importlib.import_module", importer)
+    monkeypatch.setattr("s2a.infrastructure.native_environment.importlib.import_module", importer)
 
 
 def test_exact_import_mutation_is_admitted_and_only_local_ld_restored(import_fixture, monkeypatch):
@@ -99,7 +99,7 @@ def test_loader_source_change_rejected_before_import_and_strict_guard_never_rese
     def forbidden_import(name):
         raise AssertionError("changed runtime source must reject before import")
 
-    monkeypatch.setattr("s2a.native_environment.importlib.import_module", forbidden_import)
+    monkeypatch.setattr("s2a.infrastructure.native_environment.importlib.import_module", forbidden_import)
     Path(import_fixture["sources"][1]["path"]).write_text("changed source\n")
     with pytest.raises(EnvironmentAdmissionError, match="runtime source changed"):
         restore_cv2_environment(import_fixture["probe"], import_fixture["sources"])

@@ -5,8 +5,8 @@ import pytest
 from scipy.spatial.transform import Rotation
 
 from s2a.geometry import pose_error, transform
-from s2a.reference_governor import ReferenceGovernor
-from s2a.reference_governor_v2 import RecoveringReferenceGovernor
+from s2a.research.joint_control.tracking.reference_governor import ReferenceGovernor
+from s2a.research.joint_control.tracking.reference_governor_v2 import RecoveringReferenceGovernor
 
 
 def primed(kind, *, rotation=0):

@@ -7,26 +7,26 @@ import os
 import time
 
 import numpy as np
-from audit_wam_position import Evidence
-from executed_residual_independent import ExecutedResidualReplay
-from full_coupled_arm_log_replay import FullCoupledArmLogReplay
-from full_coupled_pose_independent import generated_twist
-from run_matched_oracle_case import CONTROL, CONTROL_SHA
 from scipy.spatial.transform import Rotation
 
-from s2a.archived_forward_state import verify_forward_state
-from s2a.artifacts import REPO, sha256
-from s2a.coupled_response_history import CoupledResponseHistory
-from s2a.current_coupled_response import build_response
-from s2a.current_coupled_state import rotation_goal_from_command
-from s2a.durable_stage_supervisor import publish
-from s2a.executed_command_residual import ExecutedCommandResidualOSC
-from s2a.full_coupled_pose_inverse_sqp import FullCoupledPoseModel, solve_pose
-from s2a.generated_reference_twist import reference_world_twist
-from s2a.joint_wrench_condition_forward import nominal
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.osc import OSCInterface
-from s2a.runtime_response_history import RuntimeResponseHistory
+from s2a.controllers.osc import OSCInterface
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.references.generated_twist import reference_world_twist
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse_sqp import FullCoupledPoseModel, solve_pose
+from s2a.research.joint_control.tracking.current_coupled_state import rotation_goal_from_command
+from s2a.research.response_models.causal.coupled_response_history import CoupledResponseHistory
+from s2a.research.response_models.causal.executed_command_residual import ExecutedCommandResidualOSC
+from s2a.research.response_models.causal.runtime_response_history import RuntimeResponseHistory
+from s2a.research.response_models.forward.archived_forward_state import verify_forward_state
+from s2a.research.response_models.forward.current_coupled_response import build_response
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import nominal
+from scripts.audit_wam_position import Evidence
+from scripts.executed_residual_independent import ExecutedResidualReplay
+from scripts.full_coupled_arm_log_replay import FullCoupledArmLogReplay
+from scripts.full_coupled_pose_independent import generated_twist
+from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
 
 
 def serialized(value):

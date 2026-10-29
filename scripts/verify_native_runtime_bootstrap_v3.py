@@ -7,10 +7,9 @@ import math
 from pathlib import Path
 from types import FunctionType
 
-import verify_native_runtime_bootstrap_v2 as frozen_cli
-from prepare_native_runtime_path_snapshot import checked, read
-
-from s2a.native_runtime_path_snapshot import REPO
+import scripts.verify_native_runtime_bootstrap_v2 as frozen_cli
+from s2a.infrastructure.snapshots.native_runtime_path_snapshot import REPO
+from scripts.prepare_native_runtime_path_snapshot import checked, read
 
 FROZEN_CLI_REF = dict(
     path=str(REPO / "scripts/verify_native_runtime_bootstrap_v2.py"),
@@ -252,7 +251,7 @@ def _repair_predecessor(config, refs):
 
 
 def inspect_inputs(config):
-    from s2a.native_runtime_bootstrap_v3 import compile_repair_proof
+    from s2a.research.native_runtime.bootstrap_v3 import compile_repair_proof
 
     prior_refs = {}
     parent = _repair_parent(config, prior_refs)

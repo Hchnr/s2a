@@ -2,14 +2,18 @@
 
 import json
 from copy import deepcopy
-from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
-from s2a.long_environment import episode_contract, episode_snapshot, validate_episode_settings
-from s2a.long_simulation import _read_oracle, validate_long_config
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.tracking.runtime.long_environment import (
+    episode_contract,
+    episode_snapshot,
+    validate_episode_settings,
+)
+from s2a.research.wam.tracking.runtime.long_simulation import _read_oracle, validate_long_config
 
 
 def clock(step=0, time=1.25, done=False):
@@ -85,7 +89,7 @@ def test_horizon_and_done_policy_are_explicit(settings):
 
 
 def test_only_registered1200_raw8_contract_is_admitted():
-    path = Path(__file__).resolve().parents[1] / "configs/long_raw_qualification_20261021.json"
+    path = repository_root(anchor=__file__) / "configs/long_raw_qualification_20261021.json"
     config = json.loads(path.read_text())
     for source in ("native", "oracle", "wam"):
         validate_long_config(config, source=source)

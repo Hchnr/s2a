@@ -4,20 +4,23 @@ import os
 import sys
 from pathlib import Path
 
-from verify_wam_clean_training_capture import Evidence, require
-
-from s2a.clean_training_runtime import publish, reference
-from s2a.coupled_preview_control_gate import admit_preview_control
-from s2a.terminal_development_gate import ROOT, admit_state
-from s2a.terminal_development_policy import case_order
-from s2a.tracking_control_gate import admit_tracking_control
-from s2a.tracking_preview_wam_control_v2 import BASE_REF, RELOCATION_REF, make_case_profile
-from s2a.tracking_preview_wam_execution_v2 import ROOT as DEVELOPMENT_ROOT
-from s2a.tracking_preview_wam_simulation_v2 import execution_inputs
+from s2a.research.joint_control.preview.coupled_preview_control_gate import admit_preview_control
+from s2a.research.joint_control.tracking.tracking_control_gate import admit_tracking_control
+from s2a.research.wam.tracking.preview.tracking_preview_wam_control_v2 import (
+    BASE_REF,
+    RELOCATION_REF,
+    make_case_profile,
+)
+from s2a.research.wam.tracking.preview.tracking_preview_wam_execution_v2 import ROOT as DEVELOPMENT_ROOT
+from s2a.research.wam.tracking.preview.tracking_preview_wam_simulation_v2 import execution_inputs
+from s2a.research.wam.tracking.runtime.terminal_development_gate import ROOT, admit_state
+from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
+from scripts.verify_wam_clean_training_capture import Evidence, require
 
 
 def tracking_evidence():
-    from s2a.artifacts import REPO
+    from s2a.infrastructure.artifacts import REPO
 
     return {
         key: reference(REPO / path)

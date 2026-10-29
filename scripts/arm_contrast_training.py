@@ -3,10 +3,10 @@
 from pathlib import Path
 
 import numpy as np
-from arm_forward_independent import INPUTS
 from scipy.spatial.transform import Rotation
 
-from s2a.state_conditioned_arm_forward import design, nominal
+from s2a.research.response_models.causal.state_conditioned_arm_forward import design, nominal
+from scripts.arm_forward_independent import INPUTS
 
 
 def contrast_rows(config, e, parameters):

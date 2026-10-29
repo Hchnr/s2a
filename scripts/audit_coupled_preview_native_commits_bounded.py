@@ -5,17 +5,17 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from current_coupled_independent import response as independent_response
-from executed_residual_independent import ExecutedResidualReplay
-from full_coupled_arm_log_replay import innovation
 from scipy.spatial.transform import Rotation
 
-from s2a.coupled_response_history import CoupledResponseHistory
-from s2a.current_coupled_response import build_response
-from s2a.durable_stage_supervisor import publish
-from s2a.executed_command_residual import ExecutedCommandResidualOSC
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.response_models.causal.coupled_response_history import CoupledResponseHistory
+from s2a.research.response_models.causal.executed_command_residual import ExecutedCommandResidualOSC
+from s2a.research.response_models.forward.current_coupled_response import build_response
+from scripts.audit_wam_position import Evidence
+from scripts.current_coupled_independent import response as independent_response
+from scripts.executed_residual_independent import ExecutedResidualReplay
+from scripts.full_coupled_arm_log_replay import innovation
 
 
 def main():

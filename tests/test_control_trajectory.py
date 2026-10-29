@@ -3,9 +3,9 @@ import pytest
 from numpy.testing import assert_allclose
 from scipy.spatial.transform import Rotation
 
-from s2a.control import PIDConfig, PosePID
+from s2a.adapters.feedback.pose_pid import PIDConfig, PosePID
 from s2a.geometry import advance, pose_error, transform
-from s2a.trajectory import ReferenceTrajectory
+from s2a.references.trajectory import ReferenceTrajectory
 
 
 def test_pid_tracking_error_not_delta_first_sample_and_independent_state():

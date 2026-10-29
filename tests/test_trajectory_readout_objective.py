@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.trajectory_readout_objective import readout_objectives
+from s2a.research.wam.readout.trajectory_readout_objective import readout_objectives
 
 
 def test_full_parameter_chain_with_nonidentity_normalization():

@@ -7,13 +7,13 @@ import json
 import pytest
 
 import tests.test_terminal_development_service as prior
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import reference
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import reference
 
 
 @pytest.fixture
 def server():
-    return importlib.import_module("serve_coupled_preview_wam_development")
+    return importlib.import_module("scripts.serve_coupled_preview_wam_development")
 
 
 def test_fixed900_policy_on_new_service(tmp_path, server):

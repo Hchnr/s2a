@@ -4,8 +4,8 @@ import copy
 
 import pytest
 
-from s2a import clean_training_d1_lifecycle_addendum as addendum
-from s2a import clean_training_w2_admission as gate
+from s2a.research.wam.training.clean import clean_training_d1_lifecycle_addendum as addendum
+from s2a.research.wam.training.clean import clean_training_w2_admission as gate
 
 
 class Evidence:

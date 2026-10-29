@@ -6,14 +6,11 @@ import os
 import time
 
 import numpy as np
-from probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 
-from s2a.directional_derivative_probe import _repeat_comparison
-from s2a.mujoco_robot_dynamics import MujocoRobotDynamics
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.native_goal_trajectory import rollout_native_goal_trajectory
-from s2a.osc import OSCInterface
-from s2a.preview_result_publication import publish_result
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
 from s2a.research.trajectory_search.constraint_residual_repair import (
     build_repair_problem,
     classify_repair_entry,
@@ -21,7 +18,9 @@ from s2a.research.trajectory_search.constraint_residual_repair import (
     fixed_repair_commands,
     solve_repair,
 )
-from s2a.restored_anchor_sqp_evidence import (
+from s2a.research.trajectory_search.directional_derivative_probe import _repeat_comparison
+from s2a.research.trajectory_search.native_goal_trajectory import rollout_native_goal_trajectory
+from s2a.research.trajectory_search.restored_anchor_sqp_evidence import (
     CPU_ENVIRONMENT,
     REPO,
     checked,
@@ -32,8 +31,9 @@ from s2a.restored_anchor_sqp_evidence import (
     remember,
     require,
 )
-from s2a.tail_translation_reserve_evidence import admit_anchor
-from s2a.terminal_only_tail_repair import ENTRY_FIELDS
+from s2a.research.trajectory_search.tail_translation_reserve_evidence import admit_anchor
+from s2a.research.trajectory_search.terminal_only_tail_repair import ENTRY_FIELDS
+from scripts.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 
 ROOT = REPO / "outputs/tracking_v5_constraint_residual_repair_20261029"
 INPUT = REPO / "outputs/constraint_residual_repair_inputs_20261029/bundle.json"

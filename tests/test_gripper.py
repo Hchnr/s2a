@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.gripper import OpeningIntent, OpeningLatch, opening_position_target
+from s2a.controllers.gripper import OpeningIntent, OpeningLatch, opening_position_target
 
 
 def test_contact_plateau_preserves_closing_intent_then_releases():

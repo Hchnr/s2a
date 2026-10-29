@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.paired_arm_response import paired_arm_commands
+from s2a.research.response_models.forward.paired_arm_response import paired_arm_commands
 
 
 def test_only_one_translation_channel_at_anchor_changes_and_source_is_immutable():

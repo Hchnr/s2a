@@ -5,10 +5,10 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
 from scipy.linalg import expm
 
-from s2a.paired_response_analysis import axis_response
+from s2a.research.response_models.forward.paired_response_analysis import axis_response
+from scripts.audit_wam_position import Evidence
 
 ROOT = Path("outputs/paired_arm_response_20261025")
 

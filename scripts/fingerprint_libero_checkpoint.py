@@ -4,7 +4,7 @@ import argparse
 import subprocess
 from pathlib import Path
 
-from s2a.artifacts import load_config, sha256, write_json
+from s2a.infrastructure.artifacts import load_config, sha256, write_json
 
 
 def main():

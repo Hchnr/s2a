@@ -13,16 +13,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_earlier_position import verify_first_query006
-from audit_wam_long_qualification import episode_check, exact_prefix, lines
-from audit_wam_position import Evidence
-from audit_wam_tracking_replan import service_artifacts
-from run_wam_long_service import commands, preflight, weight_stats
-from run_wam_short_replan import cpu_environment, process_record, write_new
-from wam_long_position_checker import source_proof, verify_case
 
-from s2a.artifacts import REPO, sha256
-from s2a.task_acceptance import task_outcome
+from s2a.evaluation.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_earlier_position import verify_first_query006
+from scripts.audit_wam_long_qualification import episode_check, exact_prefix, lines
+from scripts.audit_wam_position import Evidence
+from scripts.audit_wam_tracking_replan import service_artifacts
+from scripts.run_wam_long_service import commands, preflight, weight_stats
+from scripts.run_wam_short_replan import cpu_environment, process_record, write_new
+from scripts.wam_long_position_checker import source_proof, verify_case
 
 ROOT = REPO / "outputs/wam_stability_20261021"
 SCHEMA = "s2a.long-raw-readonly-wam-audit.v1"

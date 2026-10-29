@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
 
-from s2a.causal_arm_residual import CausalArmResidualOSC
-from s2a.osc import OSCInterface
-from s2a.pose_velocity_inverse_osc import PoseVelocityInverseOSC
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.inverse.pose_velocity_inverse_osc import PoseVelocityInverseOSC
+from s2a.research.response_models.causal.causal_arm_residual import CausalArmResidualOSC
 
 
 def make(cls, rate=5):

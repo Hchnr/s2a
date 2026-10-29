@@ -1,10 +1,11 @@
 """104 independent feature assembly preserving the old Fourier input contract."""
 
 import numpy as np
-from arm_nonlinear_independent import INPUTS as ORIGINAL_INPUTS
-from arm_nonlinear_independent import augment, nominal_prediction
-from arm_nonlinear_independent import conditions as original_conditions
-from arm_nonlinear_independent import feature_matrix as original_features
+
+from scripts.arm_nonlinear_independent import INPUTS as ORIGINAL_INPUTS
+from scripts.arm_nonlinear_independent import augment, nominal_prediction
+from scripts.arm_nonlinear_independent import conditions as original_conditions
+from scripts.arm_nonlinear_independent import feature_matrix as original_features
 
 INPUTS = (*ORIGINAL_INPUTS, "x_current_wrench_world")
 __all__ = ["INPUTS", "augment", "nominal_prediction", "conditions", "feature_matrix", "prediction"]

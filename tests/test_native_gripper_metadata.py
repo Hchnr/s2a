@@ -2,7 +2,8 @@ import json
 
 import numpy as np
 import pytest
-from collect_wam_native_training import write_once
+
+from scripts.collect_wam_native_training import write_once
 
 
 def test_actual_controller_array_metadata_round_trips_before_file_publication(tmp_path):

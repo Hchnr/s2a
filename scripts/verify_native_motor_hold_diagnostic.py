@@ -11,7 +11,8 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image
-from run_native_motor_hold_diagnostic import publish, read, read_prepared, reference, require, resolve_path
+
+from scripts.run_native_motor_hold_diagnostic import publish, read, read_prepared, reference, require, resolve_path
 
 METHODS = ("baseline", "latched_pose", "motor_hold", "pose_motor_hold")
 NEW_METHODS = METHODS[2:]

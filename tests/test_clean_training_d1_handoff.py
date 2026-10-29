@@ -6,13 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from s2a import clean_training_d1_admission as admission
-from s2a.clean_training_w1_handoff import PREPARED_ROOT
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.training.clean import clean_training_d1_admission as admission
+from s2a.research.wam.training.clean.clean_training_w1_handoff import PREPARED_ROOT
 
 
 @pytest.fixture(autouse=True)
 def script_import_path(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
 
 
 def ref(name):
@@ -55,7 +56,7 @@ def test_changed_proposal_rejected_before_any_handoff_or_model(monkeypatch, key,
 
 @pytest.fixture
 def artifacts(monkeypatch):
-    worker = importlib.import_module("execute_wam_clean_training_d1_handoff")
+    worker = importlib.import_module("scripts.execute_wam_clean_training_d1_handoff")
     registration = {
         key: ref(key)
         for key in (
@@ -141,7 +142,7 @@ def test_partial_capture_wrong_w1_and_incomplete_audit_rejected(artifacts, which
 
 
 def test_supervisor_routes_only_one_cpu_wrapper_and_no_extra_stage():
-    owner = importlib.import_module("run_wam_clean_training_d1_handoff")
+    owner = importlib.import_module("scripts.run_wam_clean_training_d1_handoff")
     command = owner.worker_argv(ref("046_admitted"))
     assert Path(command[0]).name == "python"
     assert command[1] == "scripts/execute_wam_clean_training_d1_handoff.py"
@@ -155,10 +156,10 @@ def test_single_stage_supervisor_real_wait_and_failure_receipts(tmp_path, monkey
     import json
     import sys
 
-    from s2a import durable_stage_supervisor as durable
+    from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
 
     assert tmp_path.is_relative_to(durable.REPO / "outputs")
-    owner = importlib.import_module("run_wam_clean_training_d1_handoff")
+    owner = importlib.import_module("scripts.run_wam_clean_training_d1_handoff")
     root = tmp_path / "synthetic046"
     root.mkdir()
     worker = root / "tiny_cpu.py"

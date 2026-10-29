@@ -8,13 +8,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.accepted_point_sqp_core import damped_bfgs, solve_epigraph_qp
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.accepted_point_sqp_core import damped_bfgs, solve_epigraph_qp
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("accepted_point_sqp_math_audit")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.accepted_point_sqp_math_audit")
 
 
 def analytic_archive():

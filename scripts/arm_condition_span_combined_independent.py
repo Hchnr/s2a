@@ -1,8 +1,9 @@
 """116 independent original135 plus additional63 equation composition."""
 
 import numpy as np
-from arm_condition_span_independent import equations as span_equations
-from arm_joint_wrench_expanded_independent import equations as original_equations
+
+from scripts.arm_condition_span_independent import equations as span_equations
+from scripts.arm_joint_wrench_expanded_independent import equations as original_equations
 
 
 def equations(config, e, parameters):

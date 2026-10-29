@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-import s2a.nonlinear_single_period_plan as planning
-from s2a.osc import OSCInterface
+import s2a.research.trajectory_search.nonlinear_single_period_plan as planning
+from s2a.controllers.osc import OSCInterface
 
 
 def pose(command, translation_scale=0.1):

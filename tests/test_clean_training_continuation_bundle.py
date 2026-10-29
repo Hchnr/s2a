@@ -11,9 +11,11 @@ from pathlib import Path
 
 import pytest
 
-from s2a import clean_training_continuation_bundle as BUNDLE
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.training.clean import clean_training_continuation_bundle as BUNDLE
+from tests.support.source_layout import historical_import_closure, historical_source_bytes, historical_source_ref
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 NAMES = (
     "run_wam_clean_training.py",
     "collect_wam_clean_training.py",
@@ -59,7 +61,9 @@ def repository(tmp_path):
     registration = dict(source_sha256={})
     original_bytes = {}
     for relative in ORIGINALS:
-        data = (REPO / relative).read_bytes()
+        # The040 literal transformation contract consumes registered original
+        # bytes; moved current source is a separate execution identity.
+        data = historical_source_bytes(historical_source_ref(relative))
         path = repo / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
@@ -206,13 +210,17 @@ def test_drift_during_planning_is_rejected_without_writing(repository, monkeypat
     assert not (repo / NEW).exists()
 
 
-def test_actual040_metadata_readonly_build_preserves_sources_and_frozen_runtime(monkeypatch):
+def test_actual040_metadata_readonly_build_preserves_sources_and_frozen_runtime(monkeypatch, repository):
     path = REPO / OLD / "execution/admitted.json"
     if not path.is_file():
         pytest.skip("actual040 evidence is unavailable in this checkout")
     original = path.read_bytes()
     registration = json.loads(original)
-    current_sources = {source: sha(Path(source).read_bytes()) for source in registration["source_sha256"]}
+    repo, isolated_registration, before = repository
+    for relative in ORIGINALS:
+        # The original040 metadata binds precisely these staged baseline bytes.
+        # Its remaining old source closure is not current execution admission.
+        assert registration["source_sha256"][str(REPO / relative)] == sha(before[str(repo / relative)])
     # No numpy/torch is needed or imported by the builder. Forbid every output
     # write while processing the real registration, including future artifacts.
     original_open = Path.open
@@ -223,36 +231,52 @@ def test_actual040_metadata_readonly_build_preserves_sources_and_frozen_runtime(
         return original_open(self, mode, *args, **kwargs)
 
     monkeypatch.setattr(Path, "open", readonly)
-    planned = BUNDLE.expected_bundle_sources(registration)
+    planned = BUNDLE.expected_bundle_sources(isolated_registration, repo=repo)
     assert len(planned) == 11 and path.read_bytes() == original
-    # Historical metadata also lists tests that can receive committed fixes.
-    # The builder must preserve every current file and keep its eleven actual
-    # runtime inputs bound to the original registration, without rewriting it.
-    assert set(planned) == {str(REPO / relative) for relative in ORIGINALS}
-    for source, digest in current_sources.items():
-        assert sha(Path(source).read_bytes()) == digest
+    assert set(planned) == {str(repo / relative) for relative in ORIGINALS}
+    assert {source: Path(source).read_bytes() for source in before} == before
     for source, entry in planned.items():
-        assert entry["source_sha256"] == registration["source_sha256"][source]
+        declared = str(REPO / Path(source).relative_to(repo))
+        assert entry["source_sha256"] == registration["source_sha256"][declared]
         assert sha(Path(source).read_bytes()) == entry["source_sha256"]
 
 
 def test_all_ten_published_entrypoint_help_commands_are_cpu_and_do_not_decode_data(repository, tmp_path):
     repo, registration, _ = repository
     BUNDLE.publish_bundle(registration, repo / NEW, repo=repo)
+    historical = tmp_path / "archival_import_closure"
+    closure = historical_import_closure(ORIGINALS, historical)
+    assert set(ORIGINALS) <= set(closure["sources"])
+    assert closure["identity_scope"] == "isolated_archival_help_only_no_runtime_or_control_qualification"
     guard = tmp_path / "cli_import_guard"
     guard.mkdir()
     (guard / "sitecustomize.py").write_text(
-        "import builtins\n"
+        "import atexit, builtins, json, os, pathlib, sys\n"
         "import numpy as np\n"
+        "attempts = dict(arrays=0, forbidden_imports=0, current_sources=0)\n"
         "def deny_arrays(*args, **kwargs):\n"
+        "    attempts['arrays'] += 1\n"
         "    raise AssertionError('CLI help decoded arrays')\n"
         "np.load = deny_arrays\n"
         "original = builtins.__import__\n"
         "def guarded(name, *args, **kwargs):\n"
         "    if name.split('.')[0] in {'cosmos_framework', 'mujoco', 'robosuite'}:\n"
+        "        attempts['forbidden_imports'] += 1\n"
         "        raise AssertionError('CLI help imported model or physics')\n"
-        "    return original(name, *args, **kwargs)\n"
+        "    result = original(name, *args, **kwargs)\n"
+        f"    current_roots = {tuple(str(REPO / area) + os.sep for area in ('src', 'scripts'))!r}\n"
+        "    for module in tuple(sys.modules.values()):\n"
+        "        source = getattr(module, '__file__', '') or ''\n"
+        "        if source.startswith(current_roots):\n"
+        "            attempts['current_sources'] += 1\n"
+        "            raise AssertionError('Archival help imported current source')\n"
+        "    return result\n"
         "builtins.__import__ = guarded\n"
+        "def save_receipt():\n"
+        "    loaded = {name: getattr(module, '__file__', None) for name, module in tuple(sys.modules.items())}\n"
+        "    with pathlib.Path(os.environ['ARCHIVAL_HELP_RECEIPT']).open('x') as stream:\n"
+        "        json.dump(dict(attempts=attempts, loaded_sources=loaded), stream)\n"
+        "atexit.register(save_receipt)\n"
     )
     environment = dict(
         os.environ,
@@ -262,13 +286,16 @@ def test_all_ten_published_entrypoint_help_commands_are_cpu_and_do_not_decode_da
         OMP_NUM_THREADS="8",
         OPENBLAS_NUM_THREADS="8",
         MKL_NUM_THREADS="8",
-        PYTHONPATH=os.pathsep.join(str(p) for p in (guard, REPO / "src", REPO / "scripts")),
+        PYTHONPATH=os.pathsep.join(
+            str(p) for p in (guard, historical / "src", historical / "scripts", repo / DESTINATION)
+        ),
     )
     for name in NAMES:
+        witness = guard / (name + ".json")
         result = subprocess.run(
             [sys.executable, str(repo / DESTINATION / name), "--help"],
-            cwd=REPO,
-            env=environment,
+            cwd=historical,
+            env=dict(environment, ARCHIVAL_HELP_RECEIPT=str(witness)),
             text=True,
             capture_output=True,
             timeout=30,
@@ -276,4 +303,5 @@ def test_all_ten_published_entrypoint_help_commands_are_cpu_and_do_not_decode_da
         )
         assert result.returncode == 0, (name, result.stdout, result.stderr)
         assert "usage:" in result.stdout
+        assert json.loads(witness.read_text())["attempts"] == dict(arrays=0, forbidden_imports=0, current_sources=0)
         assert not (repo / NEW / "capture").exists()

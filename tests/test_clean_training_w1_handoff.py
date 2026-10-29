@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-import s2a.clean_training_w1_handoff as handoff
+import s2a.research.wam.training.clean.clean_training_w1_handoff as handoff
 
 
 def ref(name):

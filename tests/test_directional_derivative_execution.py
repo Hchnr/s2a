@@ -9,6 +9,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
 from tests.test_accepted_point_sqp_execution import native_qa
 from tests.test_prefix_callback_backtracking_execution import write_json
 from tests.test_prefix_trust_control_execution import CountingDynamics, captured_rollout, source_fixture
@@ -16,11 +17,11 @@ from tests.test_prefix_trust_control_execution import CountingDynamics, captured
 
 @pytest.fixture
 def modules(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
-        producer=importlib.import_module("probe_tracking_v5_directional_derivative"),
-        owner=importlib.import_module("execute_tracking_v5_directional_derivative"),
-        evidence=importlib.import_module("s2a.directional_derivative_evidence"),
+        producer=importlib.import_module("scripts.probe_tracking_v5_directional_derivative"),
+        owner=importlib.import_module("scripts.execute_tracking_v5_directional_derivative"),
+        evidence=importlib.import_module("s2a.research.trajectory_search.directional_derivative_evidence"),
     )
 
 
@@ -213,7 +214,7 @@ def receipt(stage, count=3):
                 outcome="repeated" if index == 79 else "computed" if charged else "cached",
             )
         )
-    owner = importlib.import_module("execute_tracking_v5_directional_derivative")
+    owner = importlib.import_module("scripts.execute_tracking_v5_directional_derivative")
     result.update(
         prediction_calls=count,
         answer=dict(
@@ -400,7 +401,7 @@ def test_existing_output_cannot_be_reused(modules, monkeypatch, tmp_path, stage)
 
 def test_native_qa_binds_all62_sources_and20_modules(modules, monkeypatch, tmp_path):
     qa = native_qa(modules, monkeypatch, tmp_path)
-    old_owner = importlib.import_module("execute_tracking_v5_accepted_point_sqp")
+    old_owner = importlib.import_module("scripts.execute_tracking_v5_accepted_point_sqp")
     monkeypatch.setattr(old_owner, "REPO", tmp_path)
     monkeypatch.setattr(old_owner, "NATIVE_PYTHON", tmp_path / "native_python")
     target = tmp_path / "qa/result.json"
@@ -476,7 +477,7 @@ def test_producer_dry_uses_only_prerequisite_metadata_and_never_constructs_dynam
 
 def saved_h12_answer():
     """Real core records with a small analytic fake rollout, never a simulator."""
-    core = importlib.import_module("s2a.directional_derivative_probe")
+    core = importlib.import_module("s2a.research.trajectory_search.directional_derivative_probe")
     source, anchor, interface = source_fixture()
     fake = complete_synthetic_rollout(source, [])
     dynamics = CountingDynamics()
@@ -518,8 +519,8 @@ def saved_h12_answer():
 
 @pytest.mark.parametrize("defect", [None, "repeat_rollout", "safety_vector", "strict_label", "one_query_missing"])
 def test_checker_full_replays_every_call_before_ledger_even_when_commands_repeat(modules, monkeypatch, defect):
-    checker = importlib.import_module("check_tracking_v5_directional_derivative")
-    frozen = importlib.import_module("check_tracking_v5_prefix_trust_control")
+    checker = importlib.import_module("scripts.check_tracking_v5_directional_derivative")
+    frozen = importlib.import_module("scripts.check_tracking_v5_prefix_trust_control")
     answer = saved_h12_answer()
     reference_entries = copy.deepcopy(answer["evaluated_candidates"])
     assert len(reference_entries) == 4 and answer["unique_command_count"] == 3
@@ -605,8 +606,8 @@ def test_checker_full_replays_every_call_before_ledger_even_when_commands_repeat
 
 @pytest.mark.parametrize("tamper", [False, True])
 def test_historical_anchor_audit_comparison_survives_json_and_rejects_hidden_row_change(modules, tamper):
-    checker = importlib.import_module("check_tracking_v5_directional_derivative")
-    core = importlib.import_module("s2a.directional_derivative_probe")
+    checker = importlib.import_module("scripts.check_tracking_v5_directional_derivative")
+    core = importlib.import_module("s2a.research.trajectory_search.directional_derivative_probe")
     answer = saved_h12_answer()
     new = answer["evaluated_candidates"][0]
     projection = {

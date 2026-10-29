@@ -4,7 +4,7 @@ from itertools import product
 
 import numpy as np
 
-from s2a.convex_mesh_box_diagnostic import axis_clearance
+from s2a.research.joint_control.tracking.convex_mesh_box_diagnostic import axis_clearance
 
 
 def test_known_box_gaps_and_common_rigid_transform():

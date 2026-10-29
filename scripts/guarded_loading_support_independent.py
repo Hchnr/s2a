@@ -1,9 +1,10 @@
 """166 independently audit support choice, learned KKT and executed mixture."""
 
 import numpy as np
-from arm_joint_wrench_independent import conditions, prediction
-from qualified_inverse_independent import verify_inverse
-from tracking_guard_rate_independent import verify_guard
+
+from scripts.arm_joint_wrench_independent import conditions, prediction
+from scripts.qualified_inverse_independent import verify_inverse
+from scripts.tracking_guard_rate_independent import verify_guard
 
 
 def verify_support_inverse(

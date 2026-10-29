@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.anchor_kernel_forward import BLOCKS, condition_features
+from s2a.research.response_models.forward.anchor_kernel_forward import BLOCKS, condition_features
 
 
 def test_scalar_group_distance_parity_and_training_center_identity():
@@ -31,7 +31,7 @@ def test_scalar_group_distance_parity_and_training_center_identity():
 
 
 def test_action_affinity_with_fixed_measured_condition(monkeypatch):
-    import s2a.anchor_kernel_forward as model
+    import s2a.research.response_models.forward.anchor_kernel_forward as model
 
     rng = np.random.default_rng(43)
     raw = rng.normal(size=(2, 89))

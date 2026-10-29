@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.linalg import expm
 
-from s2a.frozen_osc_response import goal_response
+from s2a.dynamics.frozen_osc_response import goal_response
 
 
 def test_decoupled_response_matches_six_independent_pd_systems():

@@ -11,13 +11,17 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.action_reference import decode_action_targets
-from s2a.artifacts import REPO, sha256
 from s2a.geometry import matrix_to_rot6d
-from s2a.gripper_intent_hold import GripperIntentHoldConfig
-from s2a.reference_governor import ReferenceGovernorConfig
-from s2a.stability_recovery_simulation import recovery_variant, sample_model_reference, validate_wam_response
-from s2a.wam_regularization import attenuate_wam_rotation
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.references.action_reference import decode_action_targets
+from s2a.research.gripper.gripper_intent_hold import GripperIntentHoldConfig
+from s2a.research.joint_control.tracking.reference_governor import ReferenceGovernorConfig
+from s2a.research.wam.readout.wam_regularization import attenuate_wam_rotation
+from s2a.research.wam.tracking.control.stability_recovery_simulation import (
+    recovery_variant,
+    sample_model_reference,
+    validate_wam_response,
+)
 
 
 def response():

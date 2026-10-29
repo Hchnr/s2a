@@ -6,12 +6,11 @@ import os
 import shutil
 from pathlib import Path
 
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO, sha256
-from s2a.native_environment import strict_native_environment
-from s2a.relocated_artifacts import RelocatedArtifacts
-from s2a.source_archive import verify_archived_sources
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.infrastructure.relocated_artifacts import RelocatedArtifacts
+from s2a.infrastructure.source_archive import verify_archived_sources
+from scripts.run_wam_readout import owned_command
 
 CONFIG = REPO / "configs/native_motor_hold_20261022.json"
 RECOVERY = REPO / "outputs/external_deletion_recovery_20261022"

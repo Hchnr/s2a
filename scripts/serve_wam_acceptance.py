@@ -5,8 +5,8 @@ import json
 import types
 from pathlib import Path
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
-from s2a.wam_runtime import install_active_slot_mask, load_service
+from s2a.backends.wam.runtime import install_active_slot_mask, load_service
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 
 
 def main():

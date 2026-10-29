@@ -3,9 +3,9 @@
 import numpy as np
 import pytest
 
-from s2a.causal_inner_error import CausalInnerError
-from s2a.past_error_joint_plan import solve_interior_plan as peak_solve
-from s2a.past_inner_error_joint_plan import solve_interior_plan
+from s2a.research.response_models.causal.causal_inner_error import CausalInnerError
+from s2a.research.trajectory_search.past_error_joint_plan import solve_interior_plan as peak_solve
+from s2a.research.trajectory_search.past_inner_error_joint_plan import solve_interior_plan
 from tests.test_configurable_tracking_terminal_plan import inputs
 
 

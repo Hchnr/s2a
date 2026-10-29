@@ -5,16 +5,16 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from coupled_pose_preview_independent import verify_preview
-from current_coupled_independent import response
-from full_coupled_arm_log_replay import innovation
-from full_coupled_pose_independent import generated_twist
 
-from s2a.action_reference import decode_action_targets
-from s2a.coupled_pose_preview import plan_pose
-from s2a.durable_stage_supervisor import publish
-from s2a.generated_reference_twist import reference_world_twist
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.references.action_reference import decode_action_targets
+from s2a.references.generated_twist import reference_world_twist
+from s2a.research.joint_control.preview.coupled_pose_preview import plan_pose
+from scripts.audit_wam_position import Evidence
+from scripts.coupled_pose_preview_independent import verify_preview
+from scripts.current_coupled_independent import response
+from scripts.full_coupled_arm_log_replay import innovation
+from scripts.full_coupled_pose_independent import generated_twist
 
 
 def main():

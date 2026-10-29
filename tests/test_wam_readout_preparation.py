@@ -3,15 +3,17 @@
 import copy
 import importlib.util
 import json
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
+
 
 @pytest.fixture
 def preparer():
-    path = Path(__file__).resolve().parents[1] / "scripts/prepare_wam_readout.py"
+    path = repository_root(anchor=__file__) / "scripts/prepare_wam_readout.py"
     spec = importlib.util.spec_from_file_location("readout_preparation_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -275,7 +277,7 @@ def test_quantization_admission_binds_actual_core_output_worker_and_terminal_bir
     child, owner = dict(pid=6001, start_ticks=123, ppid=6000), dict(pid=6000, start_ticks=122)
     environment = dict(CUDA_VISIBLE_DEVICES="6", LD_LIBRARY_PATH="")
     command = ["python", str(root / "worker.py")]
-    core = preparer.sha256(preparer.REPO / "src/s2a/wam_readout.py")
+    core = preparer.sha256(current_source_path("src/s2a/wam_readout.py"))
     flags = dict(
         bitwise_cpu_cuda_equal=True,
         actual_hook_matches_apply=True,
@@ -332,7 +334,9 @@ def test_quantization_admission_binds_actual_core_output_worker_and_terminal_bir
     )
     write("gpu_before.json", dict(actual_nvidia_smi="6, GPU-synthetic-uuid, 0"))
     write("gpu_after.json", dict(actual_nvidia_smi="6, GPU-synthetic-uuid, 0", memory_released=True))
-    assert preparer.quantization_admission(preparer.Evidence())["owner_and_child_births_terminal"] is True
+    admission = preparer.quantization_admission(preparer.Evidence())
+    assert admission["owner_and_child_births_terminal"] is True
+    assert admission["core_source"] == preparer.reference(current_source_path("src/s2a/wam_readout.py"))
     monkeypatch.setattr(preparer, "absent_owned_birth", lambda _: False)
     with pytest.raises(ValueError, match="still live"):
         preparer.quantization_admission(preparer.Evidence())

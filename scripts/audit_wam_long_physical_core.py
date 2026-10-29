@@ -12,7 +12,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_long_qualification_plan import (
+from scipy.spatial.transform import Rotation
+
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_long_qualification_plan import (
     CONFIG,
     OLD_ORACLE_CONFIG,
     RECORDS,
@@ -20,9 +23,6 @@ from audit_wam_long_qualification_plan import (
     cpu_environment,
     launch_check,
 )
-from scipy.spatial.transform import Rotation
-
-from s2a.artifacts import REPO, sha256
 
 ORIGINAL = REPO / "outputs/wam_stability_20261021/long_raw_preflight/qualification_full6_verified.json"
 ORIGINAL_SHA = "c86569abeb1fb7e57bfd08468cc5e02cf598ef9c51f75a0da66b54e73e95357c"

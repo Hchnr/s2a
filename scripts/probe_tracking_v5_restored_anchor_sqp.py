@@ -7,12 +7,12 @@ import time
 
 import numpy as np
 
-from s2a.mujoco_robot_dynamics import MujocoRobotDynamics
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.native_goal_trajectory import rollout_native_goal_trajectory
-from s2a.osc import OSCInterface
-from s2a.preview_result_publication import publish_result
-from s2a.restored_anchor_sqp_evidence import (
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.native_goal_trajectory import rollout_native_goal_trajectory
+from s2a.research.trajectory_search.restored_anchor_sqp_evidence import (
     CPU_ENVIRONMENT,
     PLAN,
     PREFIX_OPTIMIZATION_MARGIN,
@@ -30,8 +30,11 @@ from s2a.restored_anchor_sqp_evidence import (
     reference,
     require,
 )
-from s2a.restored_anchor_sqp_plan import InitialRecordAdmissionError, verify_restored_algorithm_ast
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.research.trajectory_search.restored_anchor_sqp_plan import (
+    InitialRecordAdmissionError,
+    verify_restored_algorithm_ast,
+)
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
 
 
 def admit_warm(source, warm, interface):
@@ -178,7 +181,10 @@ def run_search(
     progress=None,
 ):
     """One charged first record gate, followed by unchanged full SQP/reset accounting."""
-    from s2a.restored_anchor_sqp_plan import make_initial_record_hook, solve_restored_anchor_sqp_response
+    from s2a.research.trajectory_search.restored_anchor_sqp_plan import (
+        make_initial_record_hook,
+        solve_restored_anchor_sqp_response,
+    )
 
     warm = admit_warm(source, warm, interface)
     expected_commands = np.asarray(expected_initial["commands"], dtype=float)

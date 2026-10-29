@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from s2a.worker_handshake import (
+from s2a.infrastructure.lifecycle.worker_handshake import (
     EXPECTED_ENVIRONMENT,
     birth,
     capture_cpu_identity,
@@ -25,8 +25,9 @@ from s2a.worker_handshake import (
     wait_ready,
     write_once,
 )
+from s2a.infrastructure.repository_paths import repository_root
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 PHYSICS_PYTHON = REPO / "outputs/libero_env311/bin/python"
 CHILD = """
 import json,sys
@@ -226,7 +227,7 @@ def test_short_lived_cpu_child_is_reaped():
 
 def test_production_registry_and_trial_builders_accept_real_command(child):
     sys.path.insert(0, str(REPO / "scripts"))
-    from run_wam_temporal_continuation_matrix import matrix_trial, process_registry
+    from scripts.run_wam_temporal_continuation_matrix import matrix_trial, process_registry
 
     _, observed, _ = admitted_ready(child)
     folder = child[2]
@@ -288,7 +289,7 @@ with owned_child([sys.executable,'-c','import time;time.sleep(10)'],environment=
 
 
 def test_birth_observation_failure_uses_kernel_pidfd_and_reaps_real_child(tmp_path, monkeypatch):
-    import s2a.worker_handshake as handshake
+    import s2a.infrastructure.lifecycle.worker_handshake as handshake
 
     def broken_birth(*args, **kwargs):
         raise OSError("injected birth observation failure")

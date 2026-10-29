@@ -14,8 +14,8 @@ import subprocess
 import uuid
 from pathlib import Path
 
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import (
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import (
     capture_cpu_identity,
     contract_identity,
     digest,
@@ -45,7 +45,7 @@ def registered(relative):
 
 
 def protocol(config_path):
-    from s2a.temporal_ensemble_simulation import temporal_variant
+    from s2a.research.wam.simulation.temporal_ensemble_simulation import temporal_variant
 
     if Path(config_path).resolve() != REPO / CONFIG:
         raise ValueError("021 allows only its explicit registered continuation configuration")
@@ -73,7 +73,7 @@ def protocol(config_path):
 
 
 def execution_inputs(config, config_path):
-    from s2a.temporal_ensemble_simulation import execution_inputs as frozen_inputs
+    from s2a.research.wam.simulation.temporal_ensemble_simulation import execution_inputs as frozen_inputs
 
     signatures = frozen_inputs(config, config_path)
     for relative in (*EXTRA_SOURCES, PLAN):
@@ -103,7 +103,7 @@ def matrix_trial(observed, record, code):
 
 
 def worker(args, config, root, record):
-    from s2a.temporal_ensemble_simulation import run_temporal_case, verify_inputs
+    from s2a.research.wam.simulation.temporal_ensemble_simulation import run_temporal_case, verify_inputs
 
     if not all((args.worker_snapshot, args.handshake_dir, args.handshake_token)) or args.sampling_seed != 42:
         raise ValueError("worker cannot bypass its registered parent handshake")
@@ -141,7 +141,7 @@ def worker(args, config, root, record):
 
 def execute(config, root, record, config_path):
     """One Popen, registered before go; every exit path reaps that owned child."""
-    from s2a.temporal_ensemble_simulation import verify_inputs
+    from s2a.research.wam.simulation.temporal_ensemble_simulation import verify_inputs
 
     logs = root / "simulation/logs/8400_masked_temporal_equal"
     logs.mkdir(parents=True, exist_ok=False)

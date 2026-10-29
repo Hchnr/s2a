@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from s2a import development_repair_admission as repair
-from s2a.durable_stage_supervisor import read, reference
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import read, reference
+from s2a.research.wam.tracking.runtime import development_repair_admission as repair
 
 
 @pytest.fixture
@@ -108,9 +108,9 @@ def test_repair_supervisor_actual_cpu_child_wait_and_false_guard(tmp_path, monke
     import importlib
     import json
 
-    from s2a import durable_stage_supervisor as durable
+    from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
 
-    owner = importlib.import_module("run_wam_clean_development_repair")
+    owner = importlib.import_module("scripts.run_wam_clean_development_repair")
     root = tmp_path / "repair_owner"
     root.mkdir()
     monkeypatch.setattr(owner, "ROOT", root)
@@ -172,8 +172,8 @@ def test_actual_generated_entrypoint_help_uses_repair_runtime_without_inference(
     import os
     import subprocess
 
-    from s2a.clean_training_state_handoff import BUNDLE as original_bundle
-    from s2a.durable_stage_supervisor import REPO
+    from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO
+    from s2a.research.wam.training.clean.clean_training_state_handoff import BUNDLE as original_bundle
 
     old = read(repair.OLD_REF)
     prepared = read(old["prepared_ref"])

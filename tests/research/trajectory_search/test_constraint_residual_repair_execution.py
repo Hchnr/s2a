@@ -8,9 +8,9 @@ import json
 import numpy as np
 import pytest
 
-from s2a.directional_derivative_probe import _canonical
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
 from s2a.research.trajectory_search.constraint_residual_repair import evaluate_repair_entry
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
 from tests.support.trajectory_rollout import CountingDynamics, complete_case, complete_rollout
 
 

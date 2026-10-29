@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.joint_wrench_condition_forward import with_history
-from s2a.runtime_response_history import RuntimeResponseHistory
+from s2a.research.response_models.causal.runtime_response_history import RuntimeResponseHistory
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import with_history
 
 
 def test_completed_runtime_matches_training_prefix_and_rejects_wrong_endpoint():

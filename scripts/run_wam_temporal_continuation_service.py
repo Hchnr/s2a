@@ -12,13 +12,20 @@ from contextlib import ExitStack
 from pathlib import Path
 
 import requests
-from prepare_wam_temporal_continuation import BUDGET, validate_gate
-from run_wam_long_service import weight_stats
-from run_wam_short_replan import cpu_environment, interrupted, process_record, stop_owned, verify_hashes, write_new
-from run_wam_temporal_continuation_matrix import CONFIG, protocol
 
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import owned_child
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import owned_child
+from scripts.prepare_wam_temporal_continuation import BUDGET, validate_gate
+from scripts.run_wam_long_service import weight_stats
+from scripts.run_wam_short_replan import (
+    cpu_environment,
+    interrupted,
+    process_record,
+    stop_owned,
+    verify_hashes,
+    write_new,
+)
+from scripts.run_wam_temporal_continuation_matrix import CONFIG, protocol
 
 
 def preflight(gate_path, gate_sha):

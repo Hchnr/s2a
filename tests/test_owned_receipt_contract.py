@@ -4,7 +4,7 @@ import copy
 
 import pytest
 
-from s2a.owned_receipt_contract import d1_postcheck_failure, normal_receipts
+from s2a.infrastructure.lifecycle.owned_receipt_contract import d1_postcheck_failure, normal_receipts
 
 
 class Evidence:

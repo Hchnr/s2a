@@ -4,17 +4,17 @@ import copy
 import json
 
 import numpy as np
-from audit_wam_position import Evidence
-from executed_residual_independent import ExecutedResidualReplay
-from preview_arm_log_replay_serialized import PreviewArmLogReplay
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import publish
-from s2a.executed_command_residual import ExecutedCommandResidualOSC
-from s2a.joint_wrench_condition_forward import nominal
-from s2a.osc import OSCInterface
-from s2a.preview_translation_runtime import plan_current_translation
-from s2a.runtime_response_history import RuntimeResponseHistory
+from s2a.controllers.osc import OSCInterface
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.joint_control.preview.preview_translation_runtime import plan_current_translation
+from s2a.research.response_models.causal.executed_command_residual import ExecutedCommandResidualOSC
+from s2a.research.response_models.causal.runtime_response_history import RuntimeResponseHistory
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import nominal
+from scripts.audit_wam_position import Evidence
+from scripts.executed_residual_independent import ExecutedResidualReplay
+from scripts.preview_arm_log_replay_serialized import PreviewArmLogReplay
 
 
 def compare(left, right):

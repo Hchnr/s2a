@@ -6,12 +6,12 @@ required D0/D1 capture and normal-release receipt has passed admission.
 
 import argparse
 import json
-from pathlib import Path
 
 import numpy as np
 
-from s2a.clean_training_data import clean_targets, normalize_active10, post_capture_labels
-from s2a.clean_training_fit_contract import (
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.training.clean.clean_training_data import clean_targets, normalize_active10, post_capture_labels
+from s2a.research.wam.training.clean.clean_training_fit_contract import (
     FEATURE_COLUMNS,
     FIT_SCHEMA,
     cpu_environment,
@@ -21,9 +21,13 @@ from s2a.clean_training_fit_contract import (
     reference,
     require,
 )
-from s2a.wam_clean_compact import iter_compact_points
-from s2a.wam_clean_readout import CleanResidualReadout
-from s2a.wam_clean_streaming import CleanFitBlock, CleanFitLayout, fit_clean_residual_streaming
+from s2a.research.wam.training.clean.wam_clean_compact import iter_compact_points
+from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
+from s2a.research.wam.training.clean.wam_clean_streaming import (
+    CleanFitBlock,
+    CleanFitLayout,
+    fit_clean_residual_streaming,
+)
 
 
 def _identity(anchor):
@@ -232,7 +236,7 @@ def run_fit(prepared_ref, registration_ref, *, stage, collection_refs, capture_a
         caller_sources=(
             __file__,
             *(
-                Path(__file__).resolve().parents[1] / "src/s2a" / name
+                repository_root(anchor=__file__) / "src/s2a" / name
                 for name in (
                     "clean_training_fit_contract.py",
                     "clean_training_data.py",

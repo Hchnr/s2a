@@ -8,9 +8,11 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 torch = pytest.importorskip("torch")
 
-from s2a.sampler_trace import (  # noqa: E402
+from s2a.research.wam.readout.sampler_trace import (  # noqa: E402
     SamplerTrace,
     file_sha,
     observation_guard,
@@ -223,7 +225,7 @@ def test_real_serving_generator_has_required_locals_without_assumed_closure():
     # config's actual serving tree, which is distinct from the weight-run tree.
     import json
 
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     c = json.loads((root / "configs/wam_sampler_steps_35_20261021.json").read_text())
     path = Path(c["cosmos_repo"]) / "cosmos_framework/model/generator/omni_mot_model.py"
     code = compile(path.read_text(), str(path), "exec")
@@ -266,7 +268,7 @@ def test_exact35_checks_normalized_and_inactive_slots_without_tolerance():
     import copy
     import importlib.util
 
-    path = Path(__file__).resolve().parents[1] / "scripts/serve_wam_sampler_trace.py"
+    path = repository_root(anchor=__file__) / "scripts/serve_wam_sampler_trace.py"
     spec = importlib.util.spec_from_file_location("sampler_trace_service_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -291,7 +293,7 @@ def test_exact35_checks_normalized_and_inactive_slots_without_tolerance():
 def test_consecutive_prepare_acceptance_records_use_unique_request_directories(tmp_path):
     import importlib.util
 
-    path = Path(__file__).resolve().parents[1] / "scripts/serve_wam_sampler_trace.py"
+    path = repository_root(anchor=__file__) / "scripts/serve_wam_sampler_trace.py"
     spec = importlib.util.spec_from_file_location("sampler_trace_service_prepare_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

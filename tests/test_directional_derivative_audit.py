@@ -4,19 +4,19 @@ import ast
 import importlib
 import json
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 
-from s2a.directional_derivative_probe import probe_directional_derivatives
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.directional_derivative_probe import probe_directional_derivatives
 from tests.test_prefix_optimization_reserve_plan import inputs
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("directional_derivative_audit").audit_directional_derivative_ledger
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.directional_derivative_audit").audit_directional_derivative_ledger
 
 
 def analytic_response(commands, *, quantized=False):
@@ -200,7 +200,7 @@ def test_meaningful_archive_tampering_is_rejected(audit, smooth, defect):
 
 
 def test_auditor_has_no_producer_optimizer_or_dynamics_imports():
-    path = Path(__file__).resolve().parents[1] / "scripts/directional_derivative_audit.py"
+    path = repository_root(anchor=__file__) / "scripts/directional_derivative_audit.py"
     tree = ast.parse(path.read_text())
     imports = set()
     for node in ast.walk(tree):
@@ -213,8 +213,8 @@ def test_auditor_has_no_producer_optimizer_or_dynamics_imports():
 
 @pytest.fixture
 def stencil_audit(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("directional_derivative_audit").audit_saved_stencil_comparison
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.directional_derivative_audit").audit_saved_stencil_comparison
 
 
 @pytest.fixture(scope="module")

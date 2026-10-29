@@ -3,9 +3,9 @@ import pytest
 from scipy.linalg import expm
 from scipy.spatial.transform import Rotation
 
-from s2a.osc import OSCInterface, OSCStateToAction
-from s2a.pose_velocity_inverse_osc import PoseVelocityInverseOSC
-from s2a.reference_linear_velocity import reference_linear_velocity
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
+from s2a.references.linear_velocity import reference_linear_velocity
+from s2a.research.joint_control.inverse.pose_velocity_inverse_osc import PoseVelocityInverseOSC
 
 
 def interface():

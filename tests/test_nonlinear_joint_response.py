@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.joint_limit_response import build_joint_response, predict_joint_response
-from s2a.nonlinear_joint_response import rollout_nonlinear_joint_response
+from s2a.research.response_models.forward.joint_limit_response import build_joint_response, predict_joint_response
+from s2a.research.response_models.nonlinear.nonlinear_joint_response import rollout_nonlinear_joint_response
 
 
 def _cartesian_state(q, velocity, *, mass=None, jacobian=None, bias=None, damping=None):

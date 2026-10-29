@@ -7,7 +7,9 @@ import math
 import os
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 HORIZONS = (8, 16, 40)
 METHODS = ("raw", "adapt", "hold", "constant_velocity")
 LABELS = ("Raw WAM", "Frozen adapted WAM", "Hold", "Constant velocity")

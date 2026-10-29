@@ -9,13 +9,13 @@ from pathlib import Path
 import numpy as np
 import requests
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, read, reference, require
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.serialized_preview_wam_control import CHECKPOINT, make_case_config
-from s2a.serialized_preview_wam_execution import PORT, admit_development
-from s2a.terminal_development_policy import case_order
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.wam.tracking.preview.serialized_preview_wam_control import CHECKPOINT, make_case_config
+from s2a.research.wam.tracking.preview.serialized_preview_wam_execution import PORT, admit_development
+from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
+from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
 
 REQUEST_KEYS = {
     "name",
@@ -157,10 +157,9 @@ def execute(
         readiness = restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
         result["cv2_readiness_ref"] = publish(root / "cv2_readiness.json", readiness)
         # Imports after the explicit, probe-bound preload cannot re-mutate LD.
-        from collect_wam_native_training import endpoint, render_anchor, save_arrays
-
-        from s2a.native_training import pack_gripper_caches, synchronous_labels
-        from s2a.serialized_preview_wam_simulation import run_preview_wam_case
+        from s2a.research.wam.tracking.preview.serialized_preview_wam_simulation import run_preview_wam_case
+        from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
+        from scripts.collect_wam_native_training import endpoint, render_anchor, save_arrays
 
         strict_native_environment()
         fixture = json.loads(Path(config["fixture"]).read_text())

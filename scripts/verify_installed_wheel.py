@@ -11,10 +11,11 @@ from pathlib import Path
 import numpy as np
 
 import s2a
+from s2a.backends.perturbations import ActuatorDelay
+from s2a.controllers.gripper import OpeningIntent
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
 from s2a.geometry import advance
-from s2a.gripper import OpeningIntent
-from s2a.osc import OSCInterface, OSCStateToAction
-from s2a.perturbations import ActuatorDelay
+from s2a.infrastructure.repository_paths import repository_root
 
 
 def main():
@@ -24,7 +25,7 @@ def main():
     args = parser.parse_args()
     if args.seed != 42:
         raise ValueError("seed differs from frozen validation")
-    repo = Path(__file__).resolve().parents[1]
+    repo = repository_root(anchor=__file__)
     installed = Path(s2a.__file__).parent
     if not installed.is_relative_to(Path(sys.prefix)) or installed.is_relative_to(repo / "src"):
         raise ValueError("run with the isolated wheel interpreter and -I")

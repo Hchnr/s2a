@@ -1,7 +1,7 @@
 """Noise suppression must retain a loaded motor but permit deliberate release."""
 
-from s2a.gripper_position_hold import GripperPositionHold as Original
-from s2a.gripper_release_floor import GripperPositionHold
+from s2a.research.gripper.gripper_position_hold import GripperPositionHold as Original
+from s2a.research.gripper.gripper_release_floor import GripperPositionHold
 
 
 def update(control, reference):

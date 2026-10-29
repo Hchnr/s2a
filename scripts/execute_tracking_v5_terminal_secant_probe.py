@@ -6,13 +6,11 @@ import os
 from pathlib import Path
 
 import numpy as np
-from execute_tracking_v5_directional_derivative_check_v3 import verify_native_qa as verify_v3_qa
-from run_wam_readout import owned_command
 
-from s2a.directional_derivative_check_v3_evidence import QA_SOURCES as V3_QA_SOURCES
-from s2a.native_environment import strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.terminal_secant_evidence import (
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.directional_derivative_check_v3_evidence import QA_SOURCES as V3_QA_SOURCES
+from s2a.research.trajectory_search.terminal_secant_evidence import (
     CPU_ENVIRONMENT,
     NATIVE_PYTHON,
     PLAN,
@@ -30,6 +28,8 @@ from s2a.terminal_secant_evidence import (
     remember,
     require,
 )
+from scripts.execute_tracking_v5_directional_derivative_check_v3 import verify_native_qa as verify_v3_qa
+from scripts.run_wam_readout import owned_command
 
 EXPERIMENT = "terminal_secant_probe"
 STEP_SIZES = (1e-3, 7.5e-4, 5e-4, 2.5e-4, 1e-4)

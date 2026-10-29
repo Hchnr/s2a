@@ -7,8 +7,8 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-import s2a.prefix_preserving_trajectory_plan as planning
-from s2a.osc import OSCInterface
+import s2a.research.trajectory_search.prefix_preserving_trajectory_plan as planning
+from s2a.controllers.osc import OSCInterface
 
 
 def response(commands):

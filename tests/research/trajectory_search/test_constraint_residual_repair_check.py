@@ -7,8 +7,8 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from s2a.directional_derivative_probe import _canonical
 from s2a.infrastructure.repository_paths import repo_path, repository_root
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
 from tests.research.trajectory_search.test_constraint_residual_repair_execution import progress, synthetic
 from tests.support.trajectory_rollout import CountingDynamics, complete_rollout
 

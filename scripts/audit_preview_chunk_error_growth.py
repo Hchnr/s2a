@@ -5,9 +5,9 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
 from s2a.geometry import pose_error
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
 
 
 def main():

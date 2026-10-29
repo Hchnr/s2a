@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import sha256
+from s2a.infrastructure.artifacts import sha256
 
 
 def rms(x):

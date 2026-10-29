@@ -6,18 +6,13 @@ import os
 from pathlib import Path
 
 import numpy as np
-import verify_wam_clean_training_capture as CAPTURE
-from verify_wam_clean_training_state import (
-    conditioning_check,
-    response_actions,
-    values_equal,
-    weight_stats,
-)
-from verify_wam_terminal_points import compact_points
 
-from s2a.clean_training_runtime import publish
-from s2a.terminal_candidate import candidate_head
-from s2a.terminal_state_execution import GPU, admit, admit_sampling
+import scripts.verify_wam_clean_training_capture as CAPTURE
+from s2a.research.trajectory_search.terminal_candidate import candidate_head
+from s2a.research.wam.readout.terminal_state_execution import GPU, admit, admit_sampling
+from s2a.research.wam.training.clean.clean_training_runtime import publish
+from scripts.verify_wam_clean_training_state import conditioning_check, response_actions, values_equal, weight_stats
+from scripts.verify_wam_terminal_points import compact_points
 
 require = CAPTURE.require
 

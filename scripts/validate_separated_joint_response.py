@@ -4,15 +4,15 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_joint_wrench_independent import INPUTS, augment, nominal_prediction, prediction
-from arm_wrench_data import attach_current_wrench
-from arm_wrench_data_independent import attach_current_wrench as independent_attach
-from audit_wam_position import Evidence
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import sha256
-from s2a.joint_wrench_condition_forward import nominal, predict, with_history
-from s2a.paired_response_analysis import axis_response
+from s2a.infrastructure.artifacts import sha256
+from s2a.research.response_models.forward.paired_response_analysis import axis_response
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import nominal, predict, with_history
+from scripts.arm_joint_wrench_independent import INPUTS, augment, nominal_prediction, prediction
+from scripts.arm_wrench_data import attach_current_wrench
+from scripts.arm_wrench_data_independent import attach_current_wrench as independent_attach
+from scripts.audit_wam_position import Evidence
 
 ROOT = Path("outputs/separated_joint_response_20261025")
 CHANNELS = ("position", "rotation", "linear_velocity", "angular_velocity")

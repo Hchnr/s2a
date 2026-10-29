@@ -6,11 +6,10 @@ import os
 import signal
 from pathlib import Path
 
-from prepare_wam_native_training import read_prepared
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.prepare_wam_native_training import read_prepared
+from scripts.run_wam_readout import owned_command
 
 
 def require(condition, message):

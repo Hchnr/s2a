@@ -4,10 +4,10 @@ import argparse
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from run_matched_oracle_case import CONTROL, CONTROL_SHA
 
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from scripts.audit_wam_position import Evidence
+from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
 
 ROOT = Path("outputs/native_wrench_data_20261025")
 
@@ -25,13 +25,12 @@ def main():
     e.check(CONTROL, CONTROL_SHA)
     guard = e.json(CONTROL)["cv2_guard_registration"]
     restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
-    from collect_wam_native_training import endpoint, save_arrays, write_once
-
-    from s2a.controller_trace import ControllerTorqueTrace
-    from s2a.current_wrench import read_current_wrench
-    from s2a.libero_simulation import make_environment, measured_twist
-    from s2a.settled_native import SettledGoalEnvironment
-    from s2a.stability_recovery_simulation import simulator_inputs
+    from s2a.backends.libero.simulation import make_environment, measured_twist
+    from s2a.evaluation.controller_trace import ControllerTorqueTrace
+    from s2a.research.gripper.current_wrench import read_current_wrench
+    from s2a.research.joint_control.native.settled_native import SettledGoalEnvironment
+    from s2a.research.wam.tracking.control.stability_recovery_simulation import simulator_inputs
+    from scripts.collect_wam_native_training import endpoint, save_arrays, write_once
 
     strict_native_environment()
     config = e.json("configs/native_wrench_data_20261025.json")

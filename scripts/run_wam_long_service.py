@@ -13,10 +13,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
-from run_wam_long_matrix import protocol
-from run_wam_short_replan import cpu_environment, interrupted, process_record, stop_owned, verify_hashes, write_new
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.run_wam_long_matrix import protocol
+from scripts.run_wam_short_replan import (
+    cpu_environment,
+    interrupted,
+    process_record,
+    stop_owned,
+    verify_hashes,
+    write_new,
+)
 
 
 def config_path(partition):

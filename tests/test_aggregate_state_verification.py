@@ -5,8 +5,8 @@ import copy
 
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import GPU
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import GPU
 
 
 def test_complete_generation_audit_preserves_all_existing_numeric_checks():
@@ -64,7 +64,7 @@ def fixture(tmp_path):
 
 
 def verify_fixture(values):
-    import verify_wam_aggregate_state as verifier
+    import scripts.verify_wam_aggregate_state as verifier
 
     pref, regref, prepared, actual, refs, docs = values
 

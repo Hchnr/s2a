@@ -4,9 +4,9 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, read, reference, require
-from s2a.native_environment import strict_native_environment
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
 
 
 def main():
@@ -24,9 +24,8 @@ def main():
         automatic_retry=False,
     )
     registration_ref = publish(root / "registration.json", registration)
-    import run_preview_chunk_branch as branch
-
-    import s2a.libero_simulation as simulation
+    import s2a.backends.libero.simulation as simulation
+    import scripts.run_preview_chunk_branch as branch
 
     original_make = simulation.make_environment
     inner_rows = []

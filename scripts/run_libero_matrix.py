@@ -9,7 +9,7 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from s2a.artifacts import load_config, write_json
+from s2a.infrastructure.artifacts import load_config, write_json
 
 
 def main():

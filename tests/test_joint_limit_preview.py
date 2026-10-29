@@ -3,10 +3,10 @@
 import numpy as np
 import pytest
 
-from s2a.current_coupled_response import build_response
 from s2a.geometry import pose_error
-from s2a.joint_limit_preview import build_joint_preview, rollout_joint_preview
-from s2a.joint_limit_response import build_joint_response, predict_joint_response
+from s2a.research.joint_control.limits.joint_limit_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.response_models.forward.current_coupled_response import build_response
+from s2a.research.response_models.forward.joint_limit_response import build_joint_response, predict_joint_response
 
 
 def random_problem():

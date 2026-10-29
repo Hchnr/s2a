@@ -1,6 +1,6 @@
 import numpy as np
 
-from s2a.reference_temporal_error import temporal_terms
+from s2a.evaluation.reference_temporal_error import temporal_terms
 
 
 def test_coherent_error_has_positive_temporal_cross_term():

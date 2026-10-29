@@ -11,11 +11,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from run_wam_short_replan import cpu_environment, write_new
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_position import Evidence
+from scripts.run_wam_short_replan import cpu_environment, write_new
 
 AUDITOR = REPO / "scripts/audit_wam_temporal_wam.py"
 AUDITOR_SHA = "441ee4855187550d1bc5188f23b0b5e1431cdbbfb3a4832074d3b3df905eca49"

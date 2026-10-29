@@ -3,9 +3,9 @@
 import numpy as np
 import pytest
 
-from s2a.causal_joint_error import CausalJointError
-from s2a.past_error_joint_plan import solve_interior_plan
-from s2a.velocity_braking_joint_plan import solve_interior_plan as original
+from s2a.research.joint_control.tracking.causal_joint_error import CausalJointError
+from s2a.research.trajectory_search.past_error_joint_plan import solve_interior_plan
+from s2a.research.trajectory_search.velocity_braking_joint_plan import solve_interior_plan as original
 from tests.test_configurable_tracking_terminal_plan import inputs
 
 

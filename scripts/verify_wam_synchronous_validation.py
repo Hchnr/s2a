@@ -5,7 +5,15 @@ import json
 from pathlib import Path
 
 import numpy as np
-from verify_settled_native_training import (
+
+from s2a.research.wam.readout.synchronous_validation import (
+    checked,
+    current_model_input,
+    load_prepared,
+    publish,
+    reference,
+)
+from scripts.verify_settled_native_training import (
     array_file,
     bits,
     verify_canvas,
@@ -14,8 +22,6 @@ from verify_settled_native_training import (
     verify_labels,
     verify_receipts,
 )
-
-from s2a.synchronous_validation import checked, current_model_input, load_prepared, publish, reference
 
 
 def require(condition, message):

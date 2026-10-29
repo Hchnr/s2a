@@ -6,9 +6,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.sampler_trace import file_sha, rng_identity
-from s2a.wam_flow_readout import FlowReadoutHook, FlowResidualReadout, SolverSigmaBridge, design_matrix
-from s2a.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
+from s2a.research.wam.readout.sampler_trace import file_sha, rng_identity
+from s2a.research.wam.readout.wam_flow_readout import (
+    FlowReadoutHook,
+    FlowResidualReadout,
+    SolverSigmaBridge,
+    design_matrix,
+)
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
 
 torch = pytest.importorskip("torch")
 

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.temporal_rotation_residual import decode, encode
+from s2a.research.response_models.causal.temporal_rotation_residual import decode, encode
 
 
 def test_noncommuting_rotation_roundtrip_and_world_frame_equivariance():

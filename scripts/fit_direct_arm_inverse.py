@@ -5,12 +5,18 @@ import json
 from pathlib import Path
 
 import numpy as np
-from direct_arm_inverse_independent import features
 from scipy.linalg import cho_factor, cho_solve, lstsq
 
-from s2a.artifacts import REPO
-from s2a.direct_arm_inverse import feature_matrix
-from s2a.durable_stage_supervisor import check_sources, cpu_environment, owned_stage, publish, sha
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
+    check_sources,
+    cpu_environment,
+    owned_stage,
+    publish,
+    sha,
+)
+from s2a.research.response_models.inverse.direct_arm_inverse import feature_matrix
+from scripts.direct_arm_inverse_independent import features
 
 ROOT = REPO / "outputs/direct_arm_inverse_fit_20261026"
 DATA = REPO / "outputs/direct_arm_inverse_data_checked_20261026"

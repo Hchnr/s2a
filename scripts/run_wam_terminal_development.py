@@ -10,18 +10,18 @@ import time
 from pathlib import Path
 
 import requests
-from run_wam_clean_bridge import check_owned_command, resource_observation
-from run_wam_clean_training import environment as training_environment
-from run_wam_clean_training import observe_release
-from run_wam_readout import owned_command
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import GPU, publish, read, reference, require
-from s2a.durable_stage_supervisor import accept_detached_launch, launch_detached
-from s2a.terminal_development_control import make_case_config
-from s2a.terminal_development_execution import MASTER_PORT, PORT, admit_development
-from s2a.terminal_development_policy import case_order
-from s2a.worker_handshake import identity, owned_child
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import accept_detached_launch, launch_detached
+from s2a.infrastructure.lifecycle.worker_handshake import identity, owned_child
+from s2a.research.wam.tracking.runtime.terminal_development_control import make_case_config
+from s2a.research.wam.tracking.runtime.terminal_development_execution import MASTER_PORT, PORT, admit_development
+from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
+from s2a.research.wam.training.clean.clean_training_runtime import GPU, publish, read, reference, require
+from scripts.run_wam_clean_bridge import check_owned_command, resource_observation
+from scripts.run_wam_clean_training import environment as training_environment
+from scripts.run_wam_clean_training import observe_release
+from scripts.run_wam_readout import owned_command
 
 _original_training_environment = training_environment
 

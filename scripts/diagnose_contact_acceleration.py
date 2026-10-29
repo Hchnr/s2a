@@ -5,8 +5,9 @@ from pathlib import Path
 
 import mujoco
 import numpy as np
-from audit_wam_position import Evidence
 from scipy.linalg import block_diag
+
+from scripts.audit_wam_position import Evidence
 
 ROOT = Path("outputs/contact_acceleration_sensitivity_20261025")
 

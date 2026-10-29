@@ -17,8 +17,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_earlier_recovery import process_environment
-from audit_wam_position import (
+
+from scripts.audit_wam_earlier_recovery import process_environment
+from scripts.audit_wam_position import (
     REPO,
     TARGETS,
     Evidence,

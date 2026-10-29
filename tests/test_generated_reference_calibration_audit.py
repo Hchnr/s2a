@@ -2,16 +2,17 @@
 
 import importlib.util
 import json
-from pathlib import Path
 
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location(
         "generated_reference_audit_test", root / "scripts/audit_generated_reference_calibration.py"

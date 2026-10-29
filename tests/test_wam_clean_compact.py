@@ -11,8 +11,13 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from s2a.wam_clean_capture import CleanCapturePoint
-from s2a.wam_clean_compact import CompactCaptureSink, CompactRequest, iter_compact_points, load_compact_point
+from s2a.research.wam.training.clean.wam_clean_capture import CleanCapturePoint
+from s2a.research.wam.training.clean.wam_clean_compact import (
+    CompactCaptureSink,
+    CompactRequest,
+    iter_compact_points,
+    load_compact_point,
+)
 
 VISION = (1, 1, 2, 2, 2)
 GRID = tuple((float(np.float32(0.875 - i / 128)), 1000 - i) for i in range(35))

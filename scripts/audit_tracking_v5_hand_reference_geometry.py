@@ -6,13 +6,13 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, read, reference, require
-from s2a.convex_mesh_box_diagnostic import axis_clearance
 from s2a.geometry import inverse
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result as publish
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.research.joint_control.tracking.convex_mesh_box_diagnostic import axis_clearance
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.training.clean.clean_training_runtime import checked, read, reference, require
 
 
 def main():

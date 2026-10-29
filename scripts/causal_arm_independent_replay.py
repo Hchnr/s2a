@@ -1,7 +1,8 @@
 """085 independent scalar-response/least-squares and causal endpoint replay."""
 
 import numpy as np
-from pose_velocity_arm_independent_replay import PoseVelocityArmReplay
+
+from scripts.pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 
 
 class CausalArmReplay(PoseVelocityArmReplay):

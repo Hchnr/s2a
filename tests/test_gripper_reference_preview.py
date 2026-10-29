@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.gripper_reference_preview import opening_preview
+from s2a.research.gripper.gripper_reference_preview import opening_preview
 
 
 def test_only_already_generated_monotonic_opening_can_advance():

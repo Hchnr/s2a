@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from s2a.past_inner_error_joint_plan import solve_interior_plan as joint_solve
-from s2a.quality_capped_inner_joint_plan import solve_interior_plan
+from s2a.research.trajectory_search.past_inner_error_joint_plan import solve_interior_plan as joint_solve
+from s2a.research.trajectory_search.quality_capped_inner_joint_plan import solve_interior_plan
 from tests.test_configurable_tracking_terminal_plan import inputs
 
 

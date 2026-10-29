@@ -1,14 +1,15 @@
 """Check the independent audit's bridge gate without physics or runtime governor."""
 
 import importlib.util
-from pathlib import Path
 
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 def auditor():
-    path = Path(__file__).resolve().parents[1] / "scripts/audit_wam_recovery.py"
+    path = repository_root(anchor=__file__) / "scripts/audit_wam_recovery.py"
     spec = importlib.util.spec_from_file_location("recovery_auditor", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

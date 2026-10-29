@@ -10,8 +10,8 @@ from dataclasses import asdict, replace
 import numpy as np
 import pytest
 
-from s2a.gripper import OpeningIntent, opening_position_target
-from s2a.gripper_tracking import (
+from s2a.controllers.gripper import OpeningIntent, opening_position_target
+from s2a.research.gripper.gripper_tracking import (
     GripperTrackingAdapter,
     GripperTrackingConfig,
     panda_opening_from_motor_target,

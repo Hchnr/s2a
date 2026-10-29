@@ -15,10 +15,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_reference_gains import load_cases, pairs, view
 from scipy.spatial.transform import Rotation
 
-ROOT = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.audit_reference_gains import load_cases, pairs, view
+
+ROOT = repository_root(anchor=__file__)
 HELPER_SHA = "6247a296793b35ef1c998ee0a72677657dbd11d834e083f1891f8cd17dbdbf61"
 CONFIG = "configs/generated_reference_calibration_20261021.json"
 PLAN = "plans/v0.0.1/023_generated_reference_calibration_20261021.md"

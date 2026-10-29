@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
 
 CONFIG = REPO / "configs/wam_train_scale_readout_20261021.json"
 CONFIG_SHA = "dd0e0124d256a953af48ea2e548cca6603cd9f777d6bd5e4f620548591a2c06b"

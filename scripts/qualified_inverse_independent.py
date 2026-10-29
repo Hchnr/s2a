@@ -1,7 +1,8 @@
 """Independent affine prediction and KKT audit; never calls the inverse solver."""
 
 import numpy as np
-from arm_joint_wrench_independent import prediction
+
+from scripts.arm_joint_wrench_independent import prediction
 
 
 def verify_inverse(data, parameters, contract, previous, desired_motion, desired_velocity, command):

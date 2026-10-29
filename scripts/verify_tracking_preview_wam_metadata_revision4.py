@@ -6,15 +6,15 @@ import json
 from pathlib import Path
 
 import numpy as np
-from coupled_preview_wam_physical_admission import audit_physical_control
-from verify_tracking_preview_wam_development_v4 import normal_owned
-from verify_wam_clean_training_capture import Evidence, require
-from verify_wam_terminal_development_points import head_parameters
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, reference
-from s2a.dependency_safe_wam_admission import admit_tracking_control
-from s2a.serialized_preview_recovery import recovery_evidence
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.joint_control.preview.serialized_preview_recovery import recovery_evidence
+from s2a.research.wam.tracking.runtime.dependency_safe_wam_admission import admit_tracking_control
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
+from scripts.coupled_preview_wam_physical_admission import audit_physical_control
+from scripts.verify_tracking_preview_wam_development_v4 import normal_owned
+from scripts.verify_wam_clean_training_capture import Evidence, require
+from scripts.verify_wam_terminal_development_points import head_parameters
 
 ROOT = REPO / "outputs/tracking_preview_wam_development_v4_20261027"
 GPU = "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f"

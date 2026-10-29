@@ -10,16 +10,16 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO, sha256
 from s2a.geometry import validate_transform
-from s2a.native_training_sources import (
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from s2a.research.wam.training.native.native_training_sources import (
     initial_state_hash,
     numeric_demo_order,
     select_training_sources,
     training_anchor_frames,
     validate_selected_shapes,
 )
-from s2a.worker_handshake import write_once
 
 CONFIG = REPO / "configs/wam_synchronous_native_training_20261021.json"
 CONFIG_SHA = "966c33348ce0a78f09e310f9d9efcf6d22201502babc8834cc8a2c4aa756115a"

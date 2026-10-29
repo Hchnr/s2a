@@ -1,16 +1,17 @@
 """Independent audit algebra, geometric convention and fail-closed boundaries."""
 
 import importlib.util
-from pathlib import Path
 
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location("rotation_drift_audit_test", root / "scripts/audit_rotation_drift.py")
     module = importlib.util.module_from_spec(spec)

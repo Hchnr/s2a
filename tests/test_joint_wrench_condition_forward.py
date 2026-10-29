@@ -2,8 +2,8 @@ import copy
 
 import numpy as np
 
-from s2a.joint_wrench_condition_forward import design, predict
-from s2a.wrench_conditioned_arm_forward import predict as previous_predict
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import design, predict
+from s2a.research.response_models.wrench.wrench_conditioned_arm_forward import predict as previous_predict
 from tests.test_wrench_conditioned_arm_forward import setup
 
 
@@ -19,7 +19,7 @@ def prepared():
 def test_old_prediction_embeds_exactly_and_new_features_match_scalar_phases():
     data, p, old = prepared()
     np.testing.assert_allclose(predict(data, p), previous_predict(data, old), rtol=0, atol=1e-13)
-    from arm_joint_wrench_independent import feature_matrix
+    from scripts.arm_joint_wrench_independent import feature_matrix
 
     np.testing.assert_allclose(design(data, p), feature_matrix(data, p), rtol=0, atol=1e-12)
 

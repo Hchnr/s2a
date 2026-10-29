@@ -5,7 +5,9 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import (
+from PIL import Image
+
+from scripts.audit_wam_position import (
     REPO,
     TARGETS,
     GripperIntentHold,
@@ -25,7 +27,6 @@ from audit_wam_position import (
     sample,
     task_outcome,
 )
-from PIL import Image
 
 
 def independent_reference_velocity(poses, index, anchor, dt):
@@ -213,7 +214,7 @@ def verify_case(
     assert substeps == 25
     close(substeps * contract["model_timestep"], dt)
     interface = OSCInterface(*(contract[k] for k in ("input_min", "input_max", "output_min", "output_max")))
-    from pose_velocity_arm_independent_replay import PoseVelocityArmReplay
+    from scripts.pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 
     assert controller["arm_inverse_algorithm"] == "083 position-velocity dt-scaled translation rotation0.5"
     arm = PoseVelocityArmReplay(

@@ -9,26 +9,10 @@ import json
 import os
 
 import numpy as np
-from check_tracking_v5_accepted_point_sqp import case_engine
-from check_tracking_v5_prefix_trust_control import compare_contract
-from check_tracking_v5_saved_direction_backtracking import NUMERIC_TOLERANCE, TORQUE_TOLERANCE, native_math_proof
-from check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
-from check_tracking_v5_terminal_secant_probe import verify_response_trace
-from directional_derivative_audit import _response, array, boolean, exact_array, integer
-from tail_translation_reserve_audit import (
-    AXES,
-    STEPS,
-    _admission,
-    _comparison,
-    _comparison_report,
-    _displacement,
-    _grid_specs,
-    audit_tail_translation_grid,
-    compare_tail_causal_rollouts,
-)
-from terminal_secant_audit import _clip_flags, _terminal, _tree
 
-from s2a.accepted_point_sqp_evidence import (
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.accepted_point_sqp_evidence import (
     CPU_ENVIRONMENT,
     PREFIX_CHECK_REF,
     REPO,
@@ -39,9 +23,29 @@ from s2a.accepted_point_sqp_evidence import (
     remember,
     require,
 )
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from scripts.check_tracking_v5_accepted_point_sqp import case_engine
+from scripts.check_tracking_v5_prefix_trust_control import compare_contract
+from scripts.check_tracking_v5_saved_direction_backtracking import (
+    NUMERIC_TOLERANCE,
+    TORQUE_TOLERANCE,
+    native_math_proof,
+)
+from scripts.check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
+from scripts.check_tracking_v5_terminal_secant_probe import verify_response_trace
+from scripts.directional_derivative_audit import _response, array, boolean, exact_array, integer
+from scripts.tail_translation_reserve_audit import (
+    AXES,
+    STEPS,
+    _admission,
+    _comparison,
+    _comparison_report,
+    _displacement,
+    _grid_specs,
+    audit_tail_translation_grid,
+    compare_tail_causal_rollouts,
+)
+from scripts.terminal_secant_audit import _clip_flags, _terminal, _tree
 
 ROOT = REPO / "outputs/tracking_v5_terminal_only_tail_repair_check_20261029"
 
@@ -332,8 +336,8 @@ def verify_replayed_repair(answer, rollouts, metrics):
 
 
 def main(dry=False):
-    from probe_tracking_v5_terminal_only_tail_repair import INPUT, load_inputs
-    from probe_tracking_v5_terminal_only_tail_repair import ROOT as PRODUCER_ROOT
+    from scripts.probe_tracking_v5_terminal_only_tail_repair import INPUT, load_inputs
+    from scripts.probe_tracking_v5_terminal_only_tail_repair import ROOT as PRODUCER_ROOT
 
     strict_native_environment()
     require(all(os.environ.get(key) == value for key, value in CPU_ENVIRONMENT.items()), "Fixed single-thread CPU")

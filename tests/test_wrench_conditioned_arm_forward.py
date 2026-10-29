@@ -3,9 +3,9 @@ import copy
 import numpy as np
 import pytest
 
-from s2a.nonlinear_conditioned_arm_forward import design as original_design
-from s2a.nonlinear_conditioned_arm_forward import predict as original_predict
-from s2a.wrench_conditioned_arm_forward import design, predict
+from s2a.research.response_models.nonlinear.nonlinear_conditioned_arm_forward import design as original_design
+from s2a.research.response_models.nonlinear.nonlinear_conditioned_arm_forward import predict as original_predict
+from s2a.research.response_models.wrench.wrench_conditioned_arm_forward import design, predict
 from tests.test_nonlinear_conditioned_arm_forward import setup as original_setup
 
 

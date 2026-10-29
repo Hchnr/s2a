@@ -10,15 +10,15 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import GPU, reference
-from s2a.wam_readout import LIBERO_DOMAIN
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.readout.wam_readout import LIBERO_DOMAIN
+from s2a.research.wam.training.clean.clean_training_runtime import GPU, reference
 
 
 @pytest.fixture
 def sampler(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("sample_wam_clean_training_state")
+    return importlib.import_module("scripts.sample_wam_clean_training_state")
 
 
 def dump(path, value):

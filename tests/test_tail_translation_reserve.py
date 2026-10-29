@@ -5,8 +5,12 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from s2a.osc import OSCInterface
-from s2a.tail_translation_reserve import SIGNED_STEPS, build_tail_translation_grid, probe_tail_translation_reserve
+from s2a.controllers.osc import OSCInterface
+from s2a.research.trajectory_search.tail_translation_reserve import (
+    SIGNED_STEPS,
+    build_tail_translation_grid,
+    probe_tail_translation_reserve,
+)
 from tests.support.trajectory_rollout import synthetic_case
 
 

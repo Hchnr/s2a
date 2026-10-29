@@ -3,10 +3,10 @@
 import numpy as np
 import pytest
 
-from s2a.interior_joint_preview import build_joint_preview, rollout_joint_preview
-from s2a.osc import OSCInterface
-from s2a.strict_terminal_joint_plan import solve_interior_plan as strict_solve
-from s2a.terminal_joint_plan import solve_interior_plan
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.preview.interior_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.trajectory_search.strict_terminal_joint_plan import solve_interior_plan as strict_solve
+from s2a.research.trajectory_search.terminal_joint_plan import solve_interior_plan
 
 
 @pytest.mark.parametrize("solver", [solve_interior_plan, strict_solve])

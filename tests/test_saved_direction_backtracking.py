@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.osc import OSCInterface
-from s2a.saved_direction_backtracking import build_batch, score_backtracking_response
+from s2a.controllers.osc import OSCInterface
+from s2a.research.trajectory_search.saved_direction_backtracking import build_batch, score_backtracking_response
 
 
 def batch_inputs():

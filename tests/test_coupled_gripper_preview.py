@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.coupled_gripper_preview import coupled_opening_preview
+from s2a.research.gripper.coupled_gripper_preview import coupled_opening_preview
 
 BOUNDS = dict(
     preview_steps=6,

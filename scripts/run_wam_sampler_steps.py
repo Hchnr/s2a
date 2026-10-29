@@ -13,9 +13,10 @@ import subprocess
 import time
 from pathlib import Path
 
-from s2a.sampler_trace import check_sources, file_sha, write_new_json
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.readout.sampler_trace import check_sources, file_sha, write_new_json
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = repository_root(anchor=__file__)
 DEST = ROOT / "outputs/wam_stability_20261021/sampler_steps_state"
 PREPARED = DEST / "orchestration/prepared.json"
 ORIGINAL = ROOT / "outputs/wam_stability_20261021/earlier_screening/8400_g10"

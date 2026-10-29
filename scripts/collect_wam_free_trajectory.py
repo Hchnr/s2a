@@ -11,7 +11,19 @@ import random
 from pathlib import Path
 
 import numpy as np
-from audit_wam_current_numerics import (
+
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.research.wam.readout.wam_flow_readout import FlowReadoutHook, FlowResidualReadout
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, ReadoutHook, ResidualReadout
+from s2a.research.wam.tracking.runtime.wam_trajectory_capture import (
+    TrajectoryCaptureBridge,
+    capture_packed,
+    exact_packed_times,
+    packing_config,
+    require,
+    tensor_array,
+)
+from scripts.audit_wam_current_numerics import (
     bundle,
     check_flow,
     normalize_labels,
@@ -22,23 +34,11 @@ from audit_wam_current_numerics import (
     training_payload,
     write_new,
 )
-from prepare_wam_free_trajectory import read_prepared
-from run_wam_free_trajectory import precision_admission
-from run_wam_readout_features import BoundaryCounter, actual_context, parameter_versions, setup_service
-from run_wam_readout_sampling import InitialCapture
-from sample_wam_scaled_readout import RequestBridge, check_zero
-
-from s2a.artifacts import REPO, sha256
-from s2a.wam_flow_readout import FlowReadoutHook, FlowResidualReadout
-from s2a.wam_readout import ACTIVE_MASK, ReadoutHook, ResidualReadout
-from s2a.wam_trajectory_capture import (
-    TrajectoryCaptureBridge,
-    capture_packed,
-    exact_packed_times,
-    packing_config,
-    require,
-    tensor_array,
-)
+from scripts.prepare_wam_free_trajectory import read_prepared
+from scripts.run_wam_free_trajectory import precision_admission
+from scripts.run_wam_readout_features import BoundaryCounter, actual_context, parameter_versions, setup_service
+from scripts.run_wam_readout_sampling import InitialCapture
+from scripts.sample_wam_scaled_readout import RequestBridge, check_zero
 
 
 def read_ref(reference):
@@ -109,7 +109,7 @@ def teacher_anchor(
     from cosmos_framework.inference.args import OmniSampleOverrides
     from cosmos_framework.utils import misc
 
-    from s2a.libero_simulation import canvas
+    from s2a.backends.libero.simulation import canvas
 
     output.mkdir()
     require(

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.trajectory_objective import opening_loss, position_loss
+from s2a.research.trajectory_search.trajectory_objective import opening_loss, position_loss
 
 
 def test_endpoint_gradient_with_rotating_frame_and_nonuniform_weights():

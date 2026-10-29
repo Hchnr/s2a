@@ -2,7 +2,7 @@ import copy
 
 import pytest
 
-import s2a.terminal_development_gate as gate
+import s2a.research.wam.tracking.runtime.terminal_development_gate as gate
 
 
 def evidence(monkeypatch):

@@ -6,10 +6,10 @@ import json
 from pathlib import Path
 
 import numpy as np
-from verify_wam_clean_training_state import integrate
 
-from s2a.aggregate_state_metrics import diagnosis
-from s2a.clean_training_runtime import publish, read, reference, require
+from s2a.research.wam.readout.aggregate_state_metrics import diagnosis
+from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
+from scripts.verify_wam_clean_training_state import integrate
 
 
 def score(prepared_ref, numerical_ref, output):

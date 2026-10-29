@@ -1,8 +1,9 @@
 """098 independent old9/additional63 equation composition and identities."""
 
 import numpy as np
-from arm_coverage_contrast_independent import equations as additional_equations
-from arm_history_contrast_independent import equations as original_equations
+
+from scripts.arm_coverage_contrast_independent import equations as additional_equations
+from scripts.arm_history_contrast_independent import equations as original_equations
 
 
 def equations(config, e, parameters):

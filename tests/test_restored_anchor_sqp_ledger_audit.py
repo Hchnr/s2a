@@ -4,13 +4,13 @@ import ast
 import importlib
 import json
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 
-from s2a.accepted_point_sqp_plan import solve_accepted_point_sqp_response
-from s2a.restored_anchor_sqp_plan import (
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.accepted_point_sqp_plan import solve_accepted_point_sqp_response
+from s2a.research.trajectory_search.restored_anchor_sqp_plan import (
     InitialRecordAdmissionError,
     canonical_initial_comparison,
     make_initial_record_hook,
@@ -19,14 +19,14 @@ from s2a.restored_anchor_sqp_plan import (
 from tests.test_accepted_point_sqp_ledger_audit import saved_classifications
 from tests.test_prefix_optimization_reserve_plan import inputs, response
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 EXPECTED_REF = dict(path="synthetic/tail.json", sha256="a" * 64, locator="answer.evaluated_candidates[5]")
 
 
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("restored_anchor_sqp_ledger_audit")
+    return importlib.import_module("scripts.restored_anchor_sqp_ledger_audit")
 
 
 def canonical(value):

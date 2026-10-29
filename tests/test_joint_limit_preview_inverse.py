@@ -5,12 +5,16 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import pose_error
-from s2a.joint_limit_preview import build_joint_preview, rollout_joint_preview
-from s2a.joint_limit_preview_feasible_inverse import refine_joint_plan as feasible_refine_joint_plan
-from s2a.joint_limit_preview_inverse import refine_joint_plan
-from s2a.joint_limit_preview_norm_inverse import refine_joint_plan as norm_refine_joint_plan
-from s2a.osc import OSCInterface
+from s2a.research.joint_control.limits.joint_limit_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.joint_control.limits.joint_limit_preview_feasible_inverse import (
+    refine_joint_plan as feasible_refine_joint_plan,
+)
+from s2a.research.joint_control.limits.joint_limit_preview_inverse import refine_joint_plan
+from s2a.research.joint_control.limits.joint_limit_preview_norm_inverse import (
+    refine_joint_plan as norm_refine_joint_plan,
+)
 
 
 def problem():
@@ -79,7 +83,7 @@ def test_weak_face_returns_original_seed_without_claiming_smooth_optimization(so
 
 
 def test_final_backtracking_rejects_infeasible_endpoint_without_loosening_pose_guard(monkeypatch):
-    import s2a.joint_limit_preview_feasible_inverse as implementation
+    import s2a.research.joint_control.limits.joint_limit_preview_feasible_inverse as implementation
 
     model, interface = problem()
     seed = np.array([[0, 0, 0, 0.1, 0, 0]])

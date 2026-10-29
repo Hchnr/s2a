@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.prediction_audit import audit_action_response, denormalize_action
+from s2a.evaluation.prediction_audit import audit_action_response, denormalize_action
 
 
 def test_denormalization_masks_preserve_unscaled_rotation_and_gripper():

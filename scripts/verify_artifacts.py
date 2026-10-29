@@ -5,8 +5,8 @@ import json
 
 import numpy as np
 
-from s2a.artifacts import REPO, load_config, sha256
-from s2a.data import require
+from s2a.infrastructure.artifacts import REPO, load_config, sha256
+from s2a.infrastructure.data.droid_episode import require
 
 
 def main():

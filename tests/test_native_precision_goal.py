@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.current_model_state_native_precision import rotation_goal_delta
+from s2a.research.response_models.forward.current_model_state_native_precision import rotation_goal_delta
 
 
 def test_numeric_decoder_and_zero_command_goal_latch_are_distinct():

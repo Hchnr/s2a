@@ -1,8 +1,8 @@
 import numpy as np
 
-from s2a.terminal_capture import TerminalPolicyBridgeMixin
-from s2a.terminal_readout_policy import TerminalReadoutPolicy
-from s2a.wam_clean_readout import CleanResidualReadout
+from s2a.research.joint_control.terminal.terminal_capture import TerminalPolicyBridgeMixin
+from s2a.research.wam.readout.terminal_readout_policy import TerminalReadoutPolicy
+from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
 
 
 def test_candidate_then_raw_then_zero_do_not_leak_across_requests():

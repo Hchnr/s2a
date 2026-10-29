@@ -4,8 +4,9 @@ import math
 
 import numpy as np
 from scipy.spatial.transform import Rotation
-from velocity_plan_independent_audit import audit_plan, scalar_step
-from verify_gripper_position_hold import GripperReplay
+
+from scripts.velocity_plan_independent_audit import audit_plan, scalar_step
+from scripts.verify_gripper_position_hold import GripperReplay
 
 
 def compare(saved, expected):

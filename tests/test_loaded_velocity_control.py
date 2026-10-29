@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.loaded_velocity_control import LoadedVelocityControl
+from s2a.research.joint_control.tracking.loaded_velocity_control import LoadedVelocityControl
 
 
 def parameters():

@@ -8,13 +8,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 
 @pytest.fixture
 def module(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    value = importlib.import_module("prepare_wam_clean_training_continuation")
+    value = importlib.import_module("scripts.prepare_wam_clean_training_continuation")
     monkeypatch.setattr(np, "load", lambda *a, **k: pytest.fail("preparation must not decode future archives"))
     return value
 

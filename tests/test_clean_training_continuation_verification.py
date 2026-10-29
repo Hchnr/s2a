@@ -14,7 +14,9 @@ from types import SimpleNamespace
 
 import pytest
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts/verify_wam_clean_training_continuation.py"
+from s2a.infrastructure.repository_paths import repository_root
+
+SCRIPT = repository_root(anchor=__file__) / "scripts/verify_wam_clean_training_continuation.py"
 SPEC = importlib.util.spec_from_file_location("independent041", SCRIPT)
 audit = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(audit)

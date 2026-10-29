@@ -8,7 +8,7 @@ import numpy as np
 import pyarrow.parquet as pq
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 
 
 def main():

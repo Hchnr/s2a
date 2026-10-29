@@ -7,7 +7,7 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from s2a.artifacts import load_config, sha256, write_json
+from s2a.infrastructure.artifacts import load_config, sha256, write_json
 
 
 def main():
@@ -43,7 +43,7 @@ def main():
     if len(selected) != len(c["records"]):
         raise ValueError("missing fixture record")
     if args.record:
-        from s2a.stability_simulation import run_stability_case
+        from s2a.research.wam.tracking.control.stability_simulation import run_stability_case
 
         record = next(r for r in selected if r["name"] == args.record)
         if args.sampling_seed not in c["sampling_seeds"]:

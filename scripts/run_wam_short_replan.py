@@ -18,7 +18,7 @@ from pathlib import Path
 
 import requests
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
 
 REGISTRATION_COMMIT = "5b13ea8"
 PLAN = "plans/v0.0.1/010_short_replan_wam_20261021.md"

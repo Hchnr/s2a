@@ -8,7 +8,7 @@ import pytest
 
 @pytest.fixture
 def terminal(tmp_path, monkeypatch):
-    m = importlib.import_module("check_wam_clean_training_state_terminal")
+    m = importlib.import_module("s2a.research.wam.training.state_terminal")
     monkeypatch.setattr(m, "ROOT", tmp_path)
     monkeypatch.setattr(m, "check_cpu_environment", lambda env: None)
     registration = dict(path="registration", sha256="registration-hash")

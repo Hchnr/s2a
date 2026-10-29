@@ -6,17 +6,17 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, read, reference, require
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
 from s2a.geometry import inverse, pose_error
-from s2a.joint_limit_response import build_joint_response
-from s2a.mujoco_robot_dynamics import MujocoRobotDynamics
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.nonlinear_joint_response import rollout_nonlinear_joint_response
-from s2a.osc import OSCInterface
-from s2a.preview_result_publication import publish_result as publish
-from s2a.robot_site_kinematics import RobotSiteKinematics
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.geometry.robot_site import RobotSiteKinematics
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.research.response_models.forward.joint_limit_response import build_joint_response
+from s2a.research.response_models.nonlinear.nonlinear_joint_response import rollout_nonlinear_joint_response
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.training.clean.clean_training_runtime import checked, read, reference, require
 
 ROOT = REPO / "outputs/tracking_v5_state_updated_response_20261028"
 MODES = (

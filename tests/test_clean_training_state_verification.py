@@ -12,15 +12,15 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO
-from s2a.wam_clean_capture import CleanCapturePoint
-from s2a.wam_clean_compact import CompactCaptureSink, CompactRequest
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.wam_clean_capture import CleanCapturePoint
+from s2a.research.wam.training.clean.wam_clean_compact import CompactCaptureSink, CompactRequest
 
 
 @pytest.fixture
 def checker(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("verify_wam_clean_training_state")
+    return importlib.import_module("scripts.verify_wam_clean_training_state")
 
 
 @pytest.fixture
@@ -73,7 +73,7 @@ def test_right_local_translation_rotation_and_absolute_opening(checker):
 
 @pytest.mark.parametrize("frame", [0, 4, 17])
 def test_independent_integration_matches_frozen011_scoring(checker, frame):
-    legacy = importlib.import_module("audit_wam_sampler_steps")
+    legacy = importlib.import_module("scripts.audit_wam_sampler_steps")
     states, anchor, actions = states_and_actions(frame)
     errors = checker.integrate(states, anchor, actions)
     count, original, _ = legacy.integrate_and_score(states, anchor, actions)
@@ -154,7 +154,7 @@ def test_original028_gate_thresholds_match_independent_legacy_gate(checker, faul
     for value in [old["pooled"], *old["by_episode"].values(), *old["by_seed"].values()]:
         for horizon in value.values():
             horizon["adapt"] = horizon.pop("w2")
-    expected = importlib.import_module("verify_wam_readout").independent_state_gate(old)
+    expected = importlib.import_module("scripts.verify_wam_readout").independent_state_gate(old)
     assert actual == expected
     assert actual["passed"] is (fault is None)
 

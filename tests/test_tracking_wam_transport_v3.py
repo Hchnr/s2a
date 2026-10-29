@@ -14,10 +14,10 @@ from tests.test_serialized_preview_wam_collection import request
 
 @pytest.fixture
 def worker(monkeypatch):
-    from s2a.artifacts import REPO
+    from s2a.infrastructure.artifacts import REPO
 
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("collect_tracking_preview_wam_development_v3")
+    return importlib.import_module("scripts.collect_tracking_preview_wam_development_v3")
 
 
 def test_transport_preserves_current_request_and_caps_timeout(tmp_path, monkeypatch, worker):
@@ -65,19 +65,19 @@ def test_invalid_current_request_never_dispatches(tmp_path, monkeypatch, worker,
 
 @pytest.mark.parametrize("route,body", [("/generate", {}), ("/bind_case", {}), ("/finish", {})])
 def test_actual_tracking_service_http_rejects_without_model(tmp_path, monkeypatch, route, body):
-    from s2a.artifacts import REPO
+    from s2a.infrastructure.artifacts import REPO
 
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    service = importlib.import_module("serve_tracking_preview_wam_development_v3")
+    service = importlib.import_module("scripts.serve_tracking_preview_wam_development_v3")
     service_checks.test_real_http_rejection_stops_service_without_generating(tmp_path, service, route, body)
 
 
 def test_old_registration_cannot_start_tracking_model(tmp_path, monkeypatch):
-    from s2a.artifacts import REPO
-    from s2a.clean_training_runtime import reference
+    from s2a.infrastructure.artifacts import REPO
+    from s2a.research.wam.training.clean.clean_training_runtime import reference
 
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    service = importlib.import_module("serve_tracking_preview_wam_development_v3")
+    service = importlib.import_module("scripts.serve_tracking_preview_wam_development_v3")
     path = tmp_path / "old_prepared.json"
     path.write_text(json.dumps(dict(schema_version="s2a.serialized-preview-wam-development-preparation.v1")))
     with pytest.raises(ValueError, match="Fixed preview WAM preparation"):

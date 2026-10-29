@@ -3,12 +3,12 @@
 import json
 
 import numpy as np
-from audit_wam_position import Evidence
-from tracking_guard_rate_independent import verify_guard
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import publish
-from s2a.tracking_guarded_rate import guarded_rate_command
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.joint_control.tracking.tracking_guarded_rate import guarded_rate_command
+from scripts.audit_wam_position import Evidence
+from scripts.tracking_guard_rate_independent import verify_guard
 
 
 def main():

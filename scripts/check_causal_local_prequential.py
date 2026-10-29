@@ -4,13 +4,13 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_history_independent import augment, prediction
-from audit_wam_position import Evidence
 from scipy.spatial.transform import Rotation
-from validate_history_conditioned_arm_forward import scores
 
-from s2a.causal_local_response import CausalLocalResponse
-from s2a.history_conditioned_arm_forward import nominal
+from s2a.research.response_models.causal.causal_local_response import CausalLocalResponse
+from s2a.research.response_models.causal.history_conditioned_arm_forward import nominal
+from scripts.arm_history_independent import augment, prediction
+from scripts.audit_wam_position import Evidence
+from scripts.validate_history_conditioned_arm_forward import scores
 
 ROOT = Path("outputs/causal_local_response_20261025")
 

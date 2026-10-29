@@ -6,8 +6,8 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-import s2a.directional_derivative_probe as probing
-from s2a.osc import OSCInterface
+import s2a.research.trajectory_search.directional_derivative_probe as probing
+from s2a.controllers.osc import OSCInterface
 
 
 def response(commands):

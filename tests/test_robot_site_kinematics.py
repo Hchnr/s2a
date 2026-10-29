@@ -3,8 +3,8 @@
 import numpy as np
 
 from s2a.geometry import pose_error
-from s2a.robot_site_kinematics import RobotSiteKinematics
-from s2a.xml_site_kinematics import XMLSiteKinematics
+from s2a.geometry.robot_site import RobotSiteKinematics
+from s2a.geometry.xml_site import XMLSiteKinematics
 
 XML = """<mujoco><compiler angle="radian"/><worldbody>
 <body name="object"><freejoint/></body>

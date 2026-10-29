@@ -15,8 +15,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from audit_wam_raw8_seed43 import (
+
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_position import Evidence
+from scripts.audit_wam_raw8_seed43 import (
     FIRST_CONDITIONS,
     OLD_AUDIT,
     OLD_AUDIT_SHA,
@@ -27,10 +29,8 @@ from audit_wam_raw8_seed43 import (
     optional_json,
     service_artifacts,
 )
-from run_wam_short_replan import cpu_environment, process_record, write_new
-from wam_temporal_position_checker import CONTRACT, source_proof, verify_case, verify_query
-
-from s2a.artifacts import REPO, sha256
+from scripts.run_wam_short_replan import cpu_environment, process_record, write_new
+from scripts.wam_temporal_position_checker import CONTRACT, source_proof, verify_case, verify_query
 
 REGISTRATION = "7025c45"
 PLAN = "plans/v0.0.1/020_causal_temporal_ensemble_20261021.md"

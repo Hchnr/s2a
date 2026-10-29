@@ -5,9 +5,9 @@ import copy
 import numpy as np
 import pytest
 
-from s2a.clean_training_runtime import reference
-from s2a.synchronous_state_sampling import paired_entries
-from s2a.wam_readout import LIBERO_DOMAIN
+from s2a.research.wam.readout.synchronous_state_sampling import paired_entries
+from s2a.research.wam.readout.wam_readout import LIBERO_DOMAIN
+from s2a.research.wam.training.clean.clean_training_runtime import reference
 
 
 def fixture(tmp_path):
@@ -167,7 +167,7 @@ def head_evidence():
     "violation", ["none", "old_identity", "old_ridge", "partial", "missing_comparison", "tolerance", "target", "params"]
 )
 def test_candidate_requires_own_full_fit_and_independent_qr(monkeypatch, violation):
-    import s2a.synchronous_state_sampling as sampling
+    import s2a.research.wam.readout.synchronous_state_sampling as sampling
 
     values = head_evidence()
     if violation == "old_identity":
@@ -195,9 +195,8 @@ def test_candidate_requires_own_full_fit_and_independent_qr(monkeypatch, violati
 
 @pytest.mark.parametrize("change", [False, True])
 def test_sampler_body_proof_rejects_unregistered_numeric_change(tmp_path, monkeypatch, change):
-    import verify_wam_synchronous_state_metadata as metadata
-
-    from s2a.artifacts import REPO
+    import scripts.verify_wam_synchronous_state_metadata as metadata
+    from s2a.infrastructure.artifacts import REPO
 
     folder = tmp_path / "scripts"
     folder.mkdir()

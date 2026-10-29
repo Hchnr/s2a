@@ -12,7 +12,8 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image
-from run_settled_native_training import publish, read, read_prepared, reference, require, resolve_path
+
+from scripts.run_settled_native_training import publish, read, read_prepared, reference, require, resolve_path
 
 
 def bits(actual, expected, message):

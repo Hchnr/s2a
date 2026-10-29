@@ -8,8 +8,8 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.sampler_trace import SamplerTrace, check_sources, file_sha, json_sha, write_new_json
-from s2a.wam_runtime import install_active_slot_mask, load_service
+from s2a.backends.wam.runtime import install_active_slot_mask, load_service
+from s2a.research.wam.readout.sampler_trace import SamplerTrace, check_sources, file_sha, json_sha, write_new_json
 
 
 def full128(raw):

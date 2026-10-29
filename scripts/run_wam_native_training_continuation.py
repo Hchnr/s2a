@@ -6,11 +6,10 @@ import os
 import signal
 from pathlib import Path
 
-from prepare_wam_native_training_continuation import read_prepared
-from run_wam_native_training import attempt, preserve_attempt_evidence, read, reference, require
-
-from s2a.artifacts import REPO
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.prepare_wam_native_training_continuation import read_prepared
+from scripts.run_wam_native_training import attempt, preserve_attempt_evidence, read, reference, require
 
 AUDIT_SCHEMA = "s2a.native-training-continuation-independent-verification.v1"
 

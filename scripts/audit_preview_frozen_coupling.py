@@ -4,14 +4,14 @@ import json
 
 import mujoco
 import numpy as np
-from audit_wam_position import Evidence
-from pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 from scipy.linalg import expm
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import publish
-from s2a.frozen_osc_response import goal_response
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.frozen_osc_response import goal_response
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from scripts.audit_wam_position import Evidence
+from scripts.pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 
 
 def evolution(coupling, kp, kd):

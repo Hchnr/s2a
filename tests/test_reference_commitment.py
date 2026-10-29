@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.reference_commitment import CommitmentConfig, select_committed_prefix
+from s2a.references.commitment import CommitmentConfig, select_committed_prefix
 
 CONFIG = CommitmentConfig(0.02, 0.1, 0.03, 0.15, 0.9)
 

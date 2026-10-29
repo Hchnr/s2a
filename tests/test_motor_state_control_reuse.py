@@ -1,16 +1,17 @@
 import ast
-from pathlib import Path
+
+from tests.support.source_layout import current_source_path
 
 
 def test_only_motor_initialization_and_its_receipt_change():
     old = next(
         n
-        for n in ast.parse(Path("src/s2a/training_recovery_simulation.py").read_text()).body
+        for n in ast.parse(current_source_path("src/s2a/training_recovery_simulation.py").read_text()).body
         if isinstance(n, ast.FunctionDef) and n.name == "run_training_recovery_case"
     )
     new = next(
         n
-        for n in ast.parse(Path("src/s2a/motor_state_simulation.py").read_text()).body
+        for n in ast.parse(current_source_path("src/s2a/motor_state_simulation.py").read_text()).body
         if isinstance(n, ast.FunctionDef) and n.name == "run_motor_state_case"
     )
     new.name = old.name

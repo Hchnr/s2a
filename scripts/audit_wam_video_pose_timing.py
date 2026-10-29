@@ -15,7 +15,9 @@ import os
 import sys
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 ORIENTATIONS = ["identity", "vertical_flip", "horizontal_flip", "both_flip"]
 OFFSETS = [0, -1, 1, -2, 2]
 

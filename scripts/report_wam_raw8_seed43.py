@@ -6,10 +6,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from run_wam_short_replan import cpu_environment, write_new
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_position import Evidence
+from scripts.run_wam_short_replan import cpu_environment, write_new
 
 OLD_SHA = "a4560bb70cc21e204dc7bd0e35fc3aa2a7cab7365b394a6a4c1727473b60ad12"
 

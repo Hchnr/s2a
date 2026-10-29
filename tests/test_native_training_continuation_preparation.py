@@ -10,11 +10,13 @@ from pathlib import Path
 
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def preparer(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("prepare_wam_native_training_continuation")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.prepare_wam_native_training_continuation")
 
 
 def save(path, value):

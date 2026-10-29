@@ -2,16 +2,17 @@
 
 import ast
 import importlib
-from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+ROOT = repository_root(anchor=__file__)
 
 
 @pytest.fixture
 def owner():
-    return importlib.import_module("run_coupled_preview_wam_development")
+    return importlib.import_module("scripts.run_coupled_preview_wam_development")
 
 
 def test_dry_owner_uses_new_service_and_fixed_uuid_without_creating_output(tmp_path, monkeypatch, owner):

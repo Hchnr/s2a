@@ -16,7 +16,9 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 ORIENTATIONS = ["identity", "vertical_flip", "horizontal_flip", "both_flip"]
 
 
@@ -323,9 +325,9 @@ def run_state(env, config, native, published, tool, resolution, frame, offset, d
     import numpy as np
     from scipy.spatial.transform import Rotation
 
-    from s2a.cameras import render_current_cameras
+    from s2a.backends.libero.cameras import render_current_cameras
+    from s2a.backends.libero.simulation import aperture, current_observation, source_pose
     from s2a.geometry import pose9_to_transform, transform
-    from s2a.libero_simulation import aperture, current_observation, source_pose
 
     index = frame + offset
     requested = native["states"][index].copy()
@@ -475,7 +477,7 @@ def main():
     try:
         import numpy as np
 
-        from s2a.libero_simulation import configure_simulator, make_environment
+        from s2a.backends.libero.simulation import configure_simulator, make_environment
 
         tool = np.asarray(read_json(paths["tool_contract"])["source_from_tcp"])
         for resolution in config["resolutions"]:

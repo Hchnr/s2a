@@ -6,10 +6,10 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from run_matched_oracle_case import CONTROL, CONTROL_SHA
 
-from s2a.artifacts import sha256
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
 
 CONFIG = Path("configs/condition_span_interventions_20261025.json")
 ROOT = Path("outputs/condition_span_interventions_20261025")
@@ -24,13 +24,12 @@ def main():
     assert sha256(CONTROL) == CONTROL_SHA
     guard = json.loads(CONTROL.read_text())["cv2_guard_registration"]
     restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
-    from collect_wam_native_training import endpoint, render_anchor, save_arrays, write_once
-
-    from s2a.libero_simulation import controller_contract, make_environment, measured_twist
-    from s2a.native_training import pack_gripper_caches, synchronous_labels
-    from s2a.paired_arm_response import paired_arm_commands
-    from s2a.settled_native import SettledGoalEnvironment
-    from s2a.stability_recovery_simulation import simulator_inputs
+    from s2a.backends.libero.simulation import controller_contract, make_environment, measured_twist
+    from s2a.research.joint_control.native.settled_native import SettledGoalEnvironment
+    from s2a.research.response_models.forward.paired_arm_response import paired_arm_commands
+    from s2a.research.wam.tracking.control.stability_recovery_simulation import simulator_inputs
+    from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
+    from scripts.collect_wam_native_training import endpoint, render_anchor, save_arrays, write_once
 
     strict_native_environment()
     registration = json.loads(CONFIG.read_text())

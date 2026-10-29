@@ -15,7 +15,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from s2a import durable_stage_supervisor as durable
+from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
 
 TINY_WORKER = r"""
 import hashlib
@@ -111,7 +111,7 @@ def scene(tmp_path, monkeypatch):
     for name in durable.ENV_KEYS:
         monkeypatch.setenv(name, durable.cpu_environment()[name])
     monkeypatch.syspath_prepend(str(durable.REPO / "scripts"))
-    owner = importlib.import_module("run_wam_clean_training_postcapture")
+    owner = importlib.import_module("scripts.run_wam_clean_training_postcapture")
     root = tmp_path / "repair"
     root.mkdir()
     prepared_ref = durable.publish(
@@ -146,7 +146,7 @@ def scene(tmp_path, monkeypatch):
         admissions.append(ref)
         return registration
 
-    monkeypatch.setitem(sys.modules, "execute_wam_clean_training_postcapture_fit", SimpleNamespace(admit=admit))
+    monkeypatch.setitem(sys.modules, "scripts.execute_wam_clean_training_postcapture_fit", SimpleNamespace(admit=admit))
 
     def accepted(directory, *, command, source_sha256):
         assert command == owner.argv(repair_ref, "--run")

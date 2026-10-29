@@ -13,10 +13,12 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def checker():
-    path = Path(__file__).resolve().parents[1] / "scripts/verify_wam_native_training_continuation.py"
+    path = repository_root(anchor=__file__) / "scripts/verify_wam_native_training_continuation.py"
     spec = importlib.util.spec_from_file_location("native_continuation_independent_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -558,7 +560,7 @@ def test_hdf_content_is_never_opened_and_audit_failure_is_saved_without_overwrit
 
 
 def test_real_script_entry_binds_all_phase_helpers_before_main_io():
-    path = Path(__file__).resolve().parents[1] / "scripts/verify_wam_native_training_continuation.py"
+    path = repository_root(anchor=__file__) / "scripts/verify_wam_native_training_continuation.py"
 
     class StopBeforeIO(Exception):
         pass

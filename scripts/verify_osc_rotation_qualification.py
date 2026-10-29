@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import load_config, sha256
+from s2a.infrastructure.artifacts import load_config, sha256
 
 
 def write_new(path, value):

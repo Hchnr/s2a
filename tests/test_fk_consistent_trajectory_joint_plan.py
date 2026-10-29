@@ -4,11 +4,11 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.fk_consistent_joint_preview import fk_consistent_rollout
-from s2a.fk_consistent_trajectory_joint_plan import solve_interior_plan
-from s2a.full_coupled_pose_inverse import left_jacobian
 from s2a.geometry import pose_error, transform
-from s2a.interior_joint_preview import rollout_joint_preview
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse import left_jacobian
+from s2a.research.joint_control.preview.fk_consistent_joint_preview import fk_consistent_rollout
+from s2a.research.joint_control.preview.interior_joint_preview import rollout_joint_preview
+from s2a.research.trajectory_search.fk_consistent_trajectory_joint_plan import solve_interior_plan
 from tests.test_configurable_tracking_terminal_plan import inputs
 
 

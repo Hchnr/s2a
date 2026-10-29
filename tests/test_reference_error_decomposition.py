@@ -3,8 +3,8 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+from s2a.evaluation.reference_error_decomposition import decompose, position_summary
 from s2a.geometry import matrix_to_rot6d
-from s2a.reference_error_decomposition import decompose, position_summary
 
 
 def arrays(n):

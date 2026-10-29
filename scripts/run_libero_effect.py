@@ -7,8 +7,8 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from s2a.artifacts import load_config, write_json
-from s2a.libero_effect import run_effect_case
+from s2a.infrastructure.artifacts import load_config, write_json
+from s2a.research.wam.tracking.runtime.libero_effect import run_effect_case
 
 
 def main():

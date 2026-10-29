@@ -3,10 +3,11 @@
 import math
 
 import numpy as np
-from gripper_release_floor_independent import GripperReplay
 from scipy.spatial.transform import Rotation
-from velocity_plan_compiled_audit import audit_plan
-from velocity_plan_independent_audit import scalar_step
+
+from scripts.gripper_release_floor_independent import GripperReplay
+from scripts.velocity_plan_compiled_audit import audit_plan
+from scripts.velocity_plan_independent_audit import scalar_step
 
 
 def compare(saved, expected):

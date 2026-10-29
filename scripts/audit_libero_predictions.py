@@ -7,9 +7,9 @@ from pathlib import Path
 import numpy as np
 import yaml
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
-from s2a.libero_audit import post_action_reference
-from s2a.prediction_audit import audit_action_response, geometry_roundtrip
+from s2a.evaluation.libero.audit import post_action_reference
+from s2a.evaluation.prediction_audit import audit_action_response, geometry_roundtrip
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 
 
 def main():

@@ -2,9 +2,9 @@ import copy
 
 import numpy as np
 import pytest
-from rate_preview_independent import verify_plan
 
-from s2a.preview_translation_runtime import plan_current_translation
+from s2a.research.joint_control.preview.preview_translation_runtime import plan_current_translation
+from scripts.rate_preview_independent import verify_plan
 from tests.test_rate_preview_active_set import contract
 
 

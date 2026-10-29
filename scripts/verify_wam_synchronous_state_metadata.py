@@ -5,11 +5,10 @@ import ast
 import json
 from pathlib import Path
 
-from sample_wam_clean_training_state import historical_source_summaries
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.synchronous_state_sampling import BUDGET, candidate_head, paired_entries
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.readout.synchronous_state_sampling import BUDGET, candidate_head, paired_entries
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
+from scripts.sample_wam_clean_training_state import historical_source_summaries
 
 
 def worker_body_equivalent():

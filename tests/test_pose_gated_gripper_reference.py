@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.pose_gated_gripper_reference import align_closure
+from s2a.research.gripper.pose_gated_gripper_reference import align_closure
 
 
 def run(poses, values):

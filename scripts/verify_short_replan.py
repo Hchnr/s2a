@@ -2,8 +2,9 @@
 
 import argparse
 
-from audit_wam_position import Evidence, verify_case
-from qualify_short_replan import (
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_position import Evidence, verify_case
+from scripts.qualify_short_replan import (
     CONFIGS,
     PRIOR_CONFIG,
     RECORDS,
@@ -14,8 +15,6 @@ from qualify_short_replan import (
     require_cpu,
     write_new,
 )
-
-from s2a.artifacts import REPO, sha256
 
 
 def qualified(case):

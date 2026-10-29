@@ -5,23 +5,10 @@ import json
 import os
 
 import numpy as np
-from check_tracking_v5_accepted_point_sqp import case_engine
-from check_tracking_v5_prefix_trust_control import compare_contract, numerical_compare
-from check_tracking_v5_saved_direction_backtracking import NUMERIC_TOLERANCE, TORQUE_TOLERANCE, native_math_proof
-from check_tracking_v5_terminal_secant_probe import verify_response_trace as verify_response_trace
-from directional_derivative_audit import exact_array
-from execute_tracking_v5_tail_translation_check_v2 import entry_command, validate_receipt
-from tail_translation_reserve_audit import (
-    _comparison_report,
-    audit_tail_translation_grid,
-    audit_tail_translation_ledger,
-    audit_tail_translation_prior_residuals,
-    compare_tail_causal_rollouts,
-)
 
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.tail_translation_check_v2_evidence import (
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.tail_translation_check_v2_evidence import (
     CPU_ENVIRONMENT,
     FAILED_CHECK_REF,
     FAILED_OWNER_REF,
@@ -43,7 +30,24 @@ from s2a.tail_translation_check_v2_evidence import (
     remember,
     require,
 )
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from scripts.check_tracking_v5_accepted_point_sqp import case_engine
+from scripts.check_tracking_v5_prefix_trust_control import compare_contract, numerical_compare
+from scripts.check_tracking_v5_saved_direction_backtracking import (
+    NUMERIC_TOLERANCE,
+    TORQUE_TOLERANCE,
+    native_math_proof,
+)
+from scripts.check_tracking_v5_terminal_secant_probe import verify_response_trace as verify_response_trace
+from scripts.directional_derivative_audit import exact_array
+from scripts.execute_tracking_v5_tail_translation_check_v2 import entry_command, validate_receipt
+from scripts.tail_translation_reserve_audit import (
+    _comparison_report,
+    audit_tail_translation_grid,
+    audit_tail_translation_ledger,
+    audit_tail_translation_prior_residuals,
+    compare_tail_causal_rollouts,
+)
 
 
 def semantic_compare(label, actual, saved, tolerance=NUMERIC_TOLERANCE):

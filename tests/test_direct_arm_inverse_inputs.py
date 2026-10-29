@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.direct_arm_inverse_inputs import inverse_condition
+from s2a.research.response_models.inverse.direct_arm_inverse_inputs import inverse_condition
 from tests.test_state_conditioned_arm_forward import sample
 
 

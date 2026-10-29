@@ -2,20 +2,20 @@
 
 import importlib
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 
-import s2a.prefix_trust_region_plan as planning
+import s2a.research.trajectory_search.prefix_trust_region_plan as planning
+from s2a.infrastructure.repository_paths import repository_root
 from tests.test_prefix_preserving_trajectory_plan import inputs, optimizer_result, response
 from tests.test_prefix_trajectory_audit_ledger import classify as independently_classify_toy
 
 
 @pytest.fixture
 def checker(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("check_tracking_v5_prefix_trust_control")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.check_tracking_v5_prefix_trust_control")
 
 
 def classifications(answer, arguments):
@@ -175,7 +175,7 @@ def test_tiny_cap_boundary_difference_is_not_relaxed(checker, recentered_archive
 
 
 def test_nested_strings_recurse_locally_without_patching_frozen_modules(checker):
-    import check_tracking_v5_saved_direction_backtracking as frozen
+    import scripts.check_tracking_v5_saved_direction_backtracking as frozen
 
     original = frozen.compare_contract
     actual = {"decisions": [{"rejection_reasons": ["joint_or_command", "safety_buffer"]}]}
@@ -194,8 +194,8 @@ def test_main_contract_and_failure_accounting_without_native_queries(
     """Exercise orchestration with prevalidated toy data and an explicit fake engine."""
     from types import SimpleNamespace
 
-    import s2a.prefix_preserving_trajectory_plan as baseline
-    import s2a.prefix_trust_control_evidence as evidence
+    import s2a.research.trajectory_search.prefix_preserving_trajectory_plan as baseline
+    import s2a.research.trajectory_search.prefix_trust_control_evidence as evidence
 
     monkeypatch.setattr(checker, "REPO", tmp_path)
     values = inputs(horizon=12)  # The complete warm requires no optimizer call.

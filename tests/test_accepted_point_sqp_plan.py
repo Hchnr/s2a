@@ -6,7 +6,7 @@ from inspect import signature
 import numpy as np
 import pytest
 
-import s2a.accepted_point_sqp_plan as planning
+import s2a.research.trajectory_search.accepted_point_sqp_plan as planning
 from tests.test_prefix_optimization_reserve_plan import inputs, response
 
 solve = planning.solve_accepted_point_sqp_response
@@ -194,6 +194,8 @@ def test_fd_full_witness_precedes_qp_and_does_not_require_prefix_reserve(monkeyp
 
 
 def test_public_input_contract_matches_frozen_reserve_planner():
-    from s2a.prefix_optimization_reserve_plan import solve_prefix_optimization_reserve_response
+    from s2a.research.trajectory_search.prefix_optimization_reserve_plan import (
+        solve_prefix_optimization_reserve_response,
+    )
 
     assert signature(solve) == signature(solve_prefix_optimization_reserve_response)

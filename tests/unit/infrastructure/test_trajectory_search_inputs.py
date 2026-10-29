@@ -2,6 +2,7 @@
 
 import ast
 import hashlib
+import importlib
 import json
 import os
 import subprocess
@@ -10,7 +11,9 @@ from pathlib import Path
 
 import pytest
 
+from s2a.infrastructure import current_layout
 from s2a.infrastructure.repository_paths import FORBIDDEN_HISTORICAL_ROOT
+from s2a.infrastructure.snapshots import xml_asset_snapshot as snapshot
 from s2a.research.trajectory_search import inputs
 
 
@@ -51,12 +54,18 @@ def fixture(tmp_path):
     plan.parent.mkdir(parents=True)
     plan.write_text("Original immutable plan.\n")
     source_ref, plan_ref = reference(source), reference(plan)
+    repair_sources = []
+    for relative in inputs.ORIGINAL_REPAIR_SOURCE_PATHS:
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("# immutable original repair source; never imported\n")
+        repair_sources.append(path)
     git(root, "init", "--quiet")
-    git(root, "add", "pyproject.toml", "src", "configs", "plans")
+    git(root, "add", "pyproject.toml", "src", "configs", "plans", "scripts", "tests")
     git(root, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "-m", "base")
     commit = git(root, "rev-parse", "HEAD").decode().strip()
     entries = []
-    for path in (source, old_config, plan):
+    for path in (source, old_config, plan, *repair_sources):
         relative = path.relative_to(root).as_posix()
         mode, _, oid = git(root, "ls-tree", "HEAD", "--", relative).decode().split("\t")[0].split()
         entries.append(
@@ -335,7 +344,7 @@ def test_closed_baseline_and_zero_activity_failures_are_preserved(fixture, which
         load(fixture)
 
 
-@pytest.mark.parametrize("defect", ["stage", "responses", "gate", "format"])
+@pytest.mark.parametrize("defect", ["stage", "responses", "gate", "ratio", "format"])
 def test_current_configuration_must_match_original_values_and_bytes(fixture, defect):
     config = deepcopy(fixture["config"])
     if defect == "stage":
@@ -344,6 +353,8 @@ def test_current_configuration_must_match_original_values_and_bytes(fixture, def
         config["max_responses"] = 123
     elif defect == "gate":
         config["safety_buffer"] = 1e-9
+    elif defect == "ratio":
+        config["accept_ratio"] = 0.01
     if defect == "format":
         fixture["new_config"].write_text(json.dumps(config, separators=(",", ":")))
     else:
@@ -471,6 +482,236 @@ def test_external_allowlist_cannot_be_loaded_from_a_bundle_with_changed_bytes(fi
     Path(fixture["bundle_ref"]["path"]).write_text('{"input_refs": []}\n')
     with pytest.raises(ValueError, match="SHA256 mismatch"):
         ctx.register_external_bundle_artifacts(fixture["bundle_ref"])
+
+
+@pytest.mark.parametrize("approved", [False, True])
+def test_default_context_requires_the_shared_approved_current_manifest(fixture, monkeypatch, approved):
+    monkeypatch.setattr(inputs, "BASELINE_COMMIT", fixture["commit"])
+    monkeypatch.setattr(current_layout, "CURRENT_MIGRATION_REF", fixture["manifest_ref"] if approved else None)
+    kwargs = dict(root=fixture["root"], catalog_ref=fixture["catalog_ref"], additional_catalog_refs=())
+    if approved:
+        ctx = inputs.make_input_context(**kwargs)
+        assert ctx.migration_refs == (fixture["manifest_ref"],)
+        assert inputs.MIGRATION_PATH == current_layout.CURRENT_MIGRATION_PATH
+        ctx.finish()
+    else:
+        with pytest.raises(ValueError, match="explicitly approved and pinned"):
+            inputs.make_input_context(**kwargs)
+        # Explicit fixture references remain available without approving a default.
+        ctx = inputs.make_input_context(**kwargs, migration_refs=(fixture["manifest_ref"],))
+        assert ctx.migration_refs == (fixture["manifest_ref"],)
+
+
+@pytest.fixture
+def model_proof(fixture, monkeypatch):
+    root = fixture["root"]
+    safe = root / "outputs/synthetic_source_assets"
+    safe.mkdir(parents=True)
+    monkeypatch.setattr(snapshot, "REPO", root)
+    monkeypatch.setattr(snapshot, "SAFE_ROOT", safe)
+    assets = []
+    for index in range(96):
+        path = safe / f"mesh_{index:03d}.msh"
+        path.write_bytes(b"synthetic nonphysical mesh " + str(index).encode())
+        assets.append(path)
+    xml = root / inputs.ORIGINAL_XML_PATH
+    xml.parent.mkdir(parents=True)
+    declarations = assets + assets[:3]
+    xml.write_text(
+        "<mujoco><asset>"
+        + "".join(f'<mesh name="m{i}" file="{path}"/>' for i, path in enumerate(declarations))
+        + "</asset></mujoco>\n"
+    )
+    history = root / inputs.HISTORICAL_ASSET_MANIFEST_PATH
+    history_ref = write_json(
+        history, dict(assets={str(path): {"sha256": reference(path)["sha256"]} for path in assets})
+    )
+    snapshot_ref = snapshot.prepare_asset_snapshot(reference(xml), history_ref, root / inputs.SNAPSHOT_ROOT)
+    manifest = snapshot.verify_asset_snapshot(snapshot_ref)
+    compiled = dict(
+        complete=True,
+        passed=True,
+        manifest_ref=deepcopy(snapshot_ref),
+        runtime=dict(mujoco="2.3.7", numpy="1.26.4", python="3.11.synthetic"),
+        environment=deepcopy(inputs.CPU_NATIVE_ENVIRONMENT),
+        model_dimensions=dict(nq=9, nv=9),
+        timestep=0.002,
+        response_evaluations=0,
+        query_count=0,
+        numerical_inner_steps=0,
+        physics_steps=0,
+        world_model_calls=0,
+        fresh_cases=0,
+        source_refs=[reference(root / path) for path in inputs.ORIGINAL_REPAIR_SOURCE_PATHS],
+    )
+    compile_ref = write_json(root / inputs.SNAPSHOT_ROOT / "compile.json", compiled)
+    bundle = dict(
+        input_refs=[snapshot_ref, compile_ref, reference(xml), history_ref],
+    )
+    return dict(
+        bundle=bundle,
+        original_registration=dict(xml_ref=reference(xml), original_control="unchanged"),
+        snapshot_ref=snapshot_ref,
+        compile_ref=compile_ref,
+        manifest=manifest,
+        compiled=compiled,
+    )
+
+
+def prove_model(fixture, model_proof, ctx=None):
+    return inputs.model_registration(
+        model_proof["original_registration"],
+        context(fixture) if ctx is None else ctx,
+        model_proof["bundle"],
+        current_source_paths=(fixture["moved"],),
+    )
+
+
+def repin_compilation(model_proof):
+    old = model_proof["compile_ref"]
+    updated = write_json(Path(old["path"]), model_proof["compiled"])
+    model_proof["bundle"]["input_refs"] = [
+        updated if ref == old else ref for ref in model_proof["bundle"]["input_refs"]
+    ]
+    model_proof["compile_ref"] = updated
+
+
+def test_model_asset_proof_remains_exact_while_migrated_identity_is_separate(fixture, model_proof):
+    # A current repair source may differ while its original compile byte
+    # identity remains available through Git; it is not executed from cache.
+    changed = fixture["root"] / inputs.ORIGINAL_REPAIR_SOURCE_PATHS[0]
+    changed.write_text("# migrated current imports differ\n")
+    ctx = context(fixture)
+    registration, proof = prove_model(fixture, model_proof, ctx)
+    assert registration == dict(
+        model_proof["original_registration"], xml_ref=model_proof["manifest"]["migrated_xml_ref"]
+    )
+    assert proof == dict(
+        snapshot_ref=model_proof["snapshot_ref"],
+        compile_ref=model_proof["compile_ref"],
+        original_xml_ref=model_proof["original_registration"]["xml_ref"],
+        historical_manifest_ref=model_proof["manifest"]["historical_manifest_ref"],
+        migrated_xml_ref=model_proof["manifest"]["migrated_xml_ref"],
+        asset_count=96,
+        complete_model_preserved=True,
+        model_body_or_geom_pruning=False,
+    )
+    receipt = ctx.registration()["model_snapshot_identities"][0]
+    assert receipt["historical_compile_source_refs"] == model_proof["compiled"]["source_refs"]
+    assert receipt["historical_compile_identity_scope"] == "byte_identity_only"
+    assert receipt["current_source_refs"] == [reference(fixture["moved"])]
+    assert receipt["historical_compilation_qualification_migrated"] is receipt["migrated_execution_qualified"] is False
+    assert receipt["new_model_compilations"] == receipt["new_forward_queries"] == 0
+    assert receipt["previous_failed_checker_qualification_changed"] is False
+
+
+@pytest.mark.parametrize("target", ["source_asset", "copied_asset", "model_xml"])
+def test_model_proof_rejects_missing_asset_bytes(fixture, model_proof, target):
+    manifest = model_proof["manifest"]
+    ref = (
+        manifest["assets"][0]["safe_source_ref"]
+        if target == "source_asset"
+        else manifest["assets"][0]["snapshot_ref"]
+        if target == "copied_asset"
+        else manifest["migrated_xml_ref"]
+    )
+    Path(ref["path"]).unlink()
+    with pytest.raises((ValueError, OSError)):
+        prove_model(fixture, model_proof)
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "missing_source",
+        "source_sha",
+        "manifest_ref",
+        "runtime",
+        "environment",
+        "dimensions",
+        "timestep",
+        "query",
+        "passed",
+    ],
+)
+def test_model_proof_preserves_original_compilation_gates(fixture, model_proof, defect):
+    compiled = model_proof["compiled"]
+    if defect == "missing_source":
+        compiled["source_refs"].pop()
+    elif defect == "source_sha":
+        compiled["source_refs"][0]["sha256"] = "0" * 64
+    elif defect == "manifest_ref":
+        compiled["manifest_ref"]["sha256"] = "0" * 64
+    elif defect == "runtime":
+        compiled["runtime"]["mujoco"] = "unexpected"
+    elif defect == "environment":
+        compiled["environment"]["CUDA_VISIBLE_DEVICES"] = "0"
+    elif defect == "dimensions":
+        compiled["model_dimensions"]["nq"] = 0
+    elif defect == "timestep":
+        compiled["timestep"] = 0.004
+    elif defect == "query":
+        compiled["query_count"] = 1
+    else:
+        compiled["passed"] = False
+    repin_compilation(model_proof)
+    with pytest.raises(ValueError, match="compilation|Compilation"):
+        prove_model(fixture, model_proof)
+
+
+@pytest.mark.parametrize(
+    "key,value", [("file_reference_count", 98), ("unique_asset_count", 95), ("byte_exact_inverse", False)]
+)
+def test_model_proof_keeps_all_99_references_96_assets_and_inverse_bytes(fixture, model_proof, monkeypatch, key, value):
+    # The real pure asset verifier is exercised by the other asset tests; this
+    # mutation isolates the additional fixed 99/96 admission assertions.
+    verified = deepcopy(model_proof["manifest"])
+    verified[key] = value
+    monkeypatch.setattr(snapshot, "verify_asset_snapshot", lambda ref: verified)
+    with pytest.raises(ValueError, match="99-reference model"):
+        prove_model(fixture, model_proof)
+
+
+@pytest.mark.parametrize("target", ["copied_asset", "compile", "current_source"])
+def test_model_proof_finish_rechecks_all_consumed_refs(fixture, model_proof, target):
+    ctx = context(fixture)
+    prove_model(fixture, model_proof, ctx)
+    path = (
+        Path(model_proof["manifest"]["assets"][0]["snapshot_ref"]["path"])
+        if target == "copied_asset"
+        else Path(model_proof["compile_ref"]["path"])
+        if target == "compile"
+        else fixture["moved"]
+    )
+    path.write_bytes(b"changed after proof\n")
+    with pytest.raises(ValueError):
+        ctx.finish()
+
+
+@pytest.mark.parametrize("kind", ["probe", "check"])
+def test_actual_entry_checks_current_source_identity_before_inputs_or_numerics(monkeypatch, kind):
+    producer = importlib.import_module(
+        "scripts.tracking.trajectory_search.probe_tracking_v5_state_vector_dual_recovery"
+    )
+    entry = importlib.import_module(f"scripts.tracking.trajectory_search.{kind}_tracking_v5_state_vector_dual_recovery")
+    calls = []
+
+    class RejectBeforeUse:
+        def __init__(self, **kwargs):
+            calls.append("construct current identity guard")
+
+        def verify_present(self):
+            calls.append("verify before use")
+            raise ValueError("synthetic current source drift")
+
+    def no_inputs():
+        raise AssertionError("Inputs or numerical work reached before identity admission")
+
+    monkeypatch.setattr(entry, "CurrentScriptImports", RejectBeforeUse)
+    monkeypatch.setattr(producer, "load_inputs", no_inputs)
+    with pytest.raises(ValueError, match="synthetic current source drift"):
+        entry.main(dry=True)
+    assert calls == ["construct current identity guard", "verify before use"]
 
 
 def test_input_module_never_imports_producer_model_solver_or_old_loaders():

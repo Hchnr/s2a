@@ -4,10 +4,10 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_forward_independent import conditions, feature_matrix, nominal_prediction
 
-from s2a.artifacts import sha256
-from s2a.state_conditioned_arm_forward import design, nominal, raw_condition
+from s2a.infrastructure.artifacts import sha256
+from s2a.research.response_models.causal.state_conditioned_arm_forward import design, nominal, raw_condition
+from scripts.arm_forward_independent import conditions, feature_matrix, nominal_prediction
 
 
 def main():

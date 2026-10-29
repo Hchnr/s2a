@@ -8,10 +8,10 @@ from copy import deepcopy
 
 import numpy as np
 
-from s2a.accepted_point_sqp_core import solve_epigraph_qp
 from s2a.geometry import finite
-from s2a.restored_anchor_sqp_plan import canonical_initial_comparison
-from s2a.terminal_only_tail_repair import ENTRY_FIELDS
+from s2a.research.trajectory_search.accepted_point_sqp_core import solve_epigraph_qp
+from s2a.research.trajectory_search.restored_anchor_sqp_plan import canonical_initial_comparison
+from s2a.research.trajectory_search.terminal_only_tail_repair import ENTRY_FIELDS
 
 DEFAULT_CONFIG = dict(
     seed=42,

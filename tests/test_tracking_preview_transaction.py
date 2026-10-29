@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from s2a.tracking_preview_transaction import TrackingPreviewTransaction
+from s2a.research.joint_control.preview.tracking_preview_transaction import TrackingPreviewTransaction
 
 
 def staged_refiner(*args, **kwargs):

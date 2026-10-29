@@ -5,15 +5,17 @@ import copy
 import difflib
 import hashlib
 import json
-from pathlib import Path
 
 import pytest
 
-from s2a.temporal_ensemble_simulation import temporal_variant
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.simulation import temporal_ensemble_simulation as simulation
+from s2a.research.wam.simulation.temporal_ensemble_simulation import temporal_variant
+from tests.support.source_layout import current_source_path, historical_source_bytes
 
-ROOT = Path(__file__).resolve().parents[1]
-BASE = ROOT / "src/s2a/stability_position_simulation.py"
-NEW = ROOT / "src/s2a/temporal_ensemble_simulation.py"
+ROOT = repository_root(anchor=__file__)
+BASE = current_source_path("src/s2a/stability_position_simulation.py")
+NEW = current_source_path("src/s2a/temporal_ensemble_simulation.py")
 BASE_SHA = "8e807d0fe296899dbda139e143227c23439b579c8de725a2363608f9bee3b136"
 
 CHANGES = [
@@ -60,7 +62,8 @@ CHANGES = [
 
 def source_proof():
     """Return reviewable exact AST/diff evidence without executing physics."""
-    assert hashlib.sha256(BASE.read_bytes()).hexdigest() == BASE_SHA
+    historical = historical_source_bytes(dict(path="src/s2a/stability_position_simulation.py", sha256=BASE_SHA))
+    assert hashlib.sha256(historical).hexdigest() == BASE_SHA
     old, new = BASE.read_text(), NEW.read_text()
     old = old[old.index("def run_position_case") :]
     new = new[new.index("def run_temporal_case") :]
@@ -104,6 +107,24 @@ def test_all_registered020_configs_share_the_same_policy():
         config = json.loads(path.read_text())
         source = "oracle" if "qualification" in path.name else "wam"
         assert temporal_variant(config, "temporal_equal", source=source) == config["variants"][0]
+
+
+def test_frozen_position_sha_still_must_match_its_original_catalog_identity(monkeypatch):
+    config = json.loads((ROOT / "configs/temporal_equal_qualification_20261021.json").read_text())
+    monkeypatch.setattr(simulation, "BASE_POSITION_SHA", "0" * 64)
+    with pytest.raises(ValueError):
+        simulation.temporal_variant(config, "temporal_equal", source="oracle")
+
+
+def test_archival_position_bytes_do_not_waive_current_source_admission(monkeypatch):
+    config = json.loads((ROOT / "configs/temporal_equal_qualification_20261021.json").read_text())
+
+    def current_drift(*args, **kwargs):
+        raise ValueError("synthetic approved current source drift")
+
+    monkeypatch.setattr(simulation, "current_source_path", current_drift)
+    with pytest.raises(ValueError, match="approved current source drift"):
+        simulation.temporal_variant(config, "temporal_equal", source="oracle")
 
 
 @pytest.mark.parametrize("change", ["governor", "alpha", "interval", "label", "seed", "gain"])

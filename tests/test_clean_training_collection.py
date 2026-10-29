@@ -3,24 +3,23 @@
 import copy
 import json
 import sys
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
 from tests.execution_proof_fixture import effective_training_metadata, seal_execution, training_seed_metadata
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from collect_wam_clean_training import admit_round, normalization_spec, same_initial  # noqa: E402
-
-from s2a.clean_training_runtime import (  # noqa: E402
+sys.path.insert(0, str(repository_root(anchor=__file__) / "scripts"))
+from s2a.research.wam.readout.wam_readout import LIBERO_DOMAIN  # noqa: E402
+from s2a.research.wam.training.clean.clean_training_runtime import (
     GPU,
     admit_execution,
     read,
     reference,
     validate_current_request,
 )
-from s2a.wam_readout import LIBERO_DOMAIN  # noqa: E402
+from scripts.collect_wam_clean_training import admit_round, normalization_spec, same_initial  # noqa: E402
 
 
 def save(path, value):
@@ -271,7 +270,7 @@ def test_execution_admission_binds_independent_metadata_code_and_checkpoint_byte
         dict(
             schema_version="s2a.clean-training-preparation.v1",
             root=str(
-                Path(__file__).resolve().parents[1] / "outputs/wam_stability_20261021/clean_residual_training_20261023"
+                repository_root(anchor=__file__) / "outputs/wam_stability_20261021/clean_residual_training_20261023"
             ),
             qualified_model_source_sha256=frozen,
             source_sha256=frozen,

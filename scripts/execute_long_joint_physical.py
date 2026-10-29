@@ -5,9 +5,9 @@ import os
 import subprocess
 from pathlib import Path
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.native_environment import strict_native_environment
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
 
 
 def main():

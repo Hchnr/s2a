@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.checkpoint_audit import extrapolate_history, state_metrics
+from s2a.evaluation.wam.checkpoint_audit import extrapolate_history, state_metrics
 from s2a.geometry import transform
 
 

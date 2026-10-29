@@ -4,7 +4,11 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.generated_reference_calibration import CalibrationConfig, GeneratedReferenceCalibration, reference_features
+from s2a.research.wam.calibration.generated_reference_calibration import (
+    CalibrationConfig,
+    GeneratedReferenceCalibration,
+    reference_features,
+)
 
 
 def references(count=40):

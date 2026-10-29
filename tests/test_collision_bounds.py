@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.spatial.transform import Rotation, Slerp
 
-from s2a.collision_bounds import separation_bound
 from s2a.geometry import transform
+from s2a.geometry.collision_bounds import separation_bound
 
 
 def test_rotating_and_sliding_geometry_bound_is_conservative():

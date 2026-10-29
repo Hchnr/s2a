@@ -7,7 +7,7 @@ from pathlib import Path
 
 import imageio_ffmpeg
 
-from s2a.artifacts import sha256, write_json
+from s2a.infrastructure.artifacts import sha256, write_json
 
 
 def main():

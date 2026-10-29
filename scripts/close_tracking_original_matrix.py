@@ -3,8 +3,8 @@
 import json
 from pathlib import Path
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, read, reference, require
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
 
 
 def stage_ref(path):

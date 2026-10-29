@@ -2,11 +2,10 @@
 
 import json
 
-from audit_wam_position import Evidence
-from wam_position_acceptance_checker import source_proof, verify_case
-
-from s2a.artifacts import REPO
-from s2a.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from scripts.audit_wam_position import Evidence
+from scripts.wam_position_acceptance_checker import source_proof, verify_case
 
 ROOT = REPO / "outputs/matched_oracle_requalification_20261025_v2"
 

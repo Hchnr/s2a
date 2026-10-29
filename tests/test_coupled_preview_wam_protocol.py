@@ -7,8 +7,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.coupled_preview_wam_protocol import validate_preview_wam_response
-from s2a.terminal_development_policy import case_order
+from s2a.research.wam.tracking.preview.coupled_preview_wam_protocol import validate_preview_wam_response
+from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
 
 FIXTURE = Path(__file__).parent / "fixtures/coupled_preview_wam_responses.json"
 

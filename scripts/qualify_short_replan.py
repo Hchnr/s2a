@@ -7,9 +7,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from s2a.artifacts import REPO, sha256
-from s2a.stability_position_simulation import execution_inputs, position_variant
-from s2a.task_acceptance import task_outcome
+from s2a.evaluation.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.research.wam.tracking.control.stability_position_simulation import execution_inputs, position_variant
 
 ROOT = REPO / "outputs/wam_stability_20261021/short_replan_qualification"
 CONFIGS = tuple(REPO / f"configs/short_replan_qualification_{n}_20261021.json" for n in (8, 16))

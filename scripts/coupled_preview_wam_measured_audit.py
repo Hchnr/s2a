@@ -6,9 +6,10 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from qualified_input_state_audit import verify_inputs as verify_actual_inputs
-from verify_settled_native_training import verify_canvas
-from verify_training_recovery_labels import check_labels
+
+from scripts.qualified_input_state_audit import verify_inputs as verify_actual_inputs
+from scripts.verify_settled_native_training import verify_canvas
+from scripts.verify_training_recovery_labels import check_labels
 
 
 def verify_measured_endpoints(evidence, config, collection, case):

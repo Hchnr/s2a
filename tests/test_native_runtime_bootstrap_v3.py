@@ -11,8 +11,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from s2a import native_runtime_bootstrap_v2 as prior
-from s2a import native_runtime_bootstrap_v3 as repaired
+from s2a.research.native_runtime import bootstrap_v2 as prior
+from s2a.research.native_runtime import bootstrap_v3 as repaired
 from tests.test_native_runtime_bootstrap import case as shared_case
 
 REPO = prior.frozen.REPO

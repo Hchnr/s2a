@@ -7,10 +7,10 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-import s2a.prefix_trust_region_plan as planning
-from s2a.joint_preview_constraint_audit import audit_joint_preview_constraints
-from s2a.osc import OSCInterface
-from s2a.prefix_preserving_trajectory_plan import solve_prefix_preserving_trajectory_response
+import s2a.research.trajectory_search.prefix_trust_region_plan as planning
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.limits.joint_preview_constraint_audit import audit_joint_preview_constraints
+from s2a.research.trajectory_search.prefix_preserving_trajectory_plan import solve_prefix_preserving_trajectory_response
 
 
 def response(commands):

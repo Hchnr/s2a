@@ -5,7 +5,7 @@ import json
 import numpy as np
 import pytest
 
-from s2a.wam_clean_readout import (
+from s2a.research.wam.training.clean.wam_clean_readout import (
     CleanResidualReadout,
     active10_from_full128,
     clean_estimate,

@@ -9,9 +9,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from s2a import clean_training_state_handoff as state
-from s2a.clean_training_import_bridge import ENV_PATH, ENV_SHA, load_frozen_delegate, metadata_import_scope
-from s2a.durable_stage_supervisor import REPO, reference
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO, reference
+from s2a.research.wam.training.clean import clean_training_state_handoff as state
+from s2a.research.wam.training.clean.clean_training_import_bridge import (
+    ENV_PATH,
+    ENV_SHA,
+    load_frozen_delegate,
+    metadata_import_scope,
+)
 
 
 def role_receipt_fingerprints():
@@ -30,7 +35,7 @@ def script_path(monkeypatch):
 
 
 def test_production_bridge_matches_fixed_source_template():
-    prepare = importlib.import_module("prepare_wam_clean_training_state_handoff")
+    prepare = importlib.import_module("scripts.prepare_wam_clean_training_state_handoff")
     assert ast.dump(ast.parse(prepare.bridge_source())) == ast.dump(ast.parse(state.BRIDGE_PATH.read_text()))
 
 
@@ -312,9 +317,9 @@ def test_actual_original_sampler_help_imports_production_bridge_without_model(tm
 def test_state_supervisor_real_cpu_child_and_false_final_guard(tmp_path, monkeypatch, fault):
     import json
 
-    from s2a import durable_stage_supervisor as durable
+    from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
 
-    owner = importlib.import_module("run_wam_clean_training_state_handoff")
+    owner = importlib.import_module("scripts.run_wam_clean_training_state_handoff")
     root = tmp_path / "synthetic048"
     root.mkdir()
     monkeypatch.setattr(owner, "ROOT", root)
@@ -362,7 +367,7 @@ with path.open("x") as stream:json.dump(dict(complete=True,passed=True,state_gat
 
 @pytest.fixture
 def state_artifacts(monkeypatch):
-    worker = importlib.import_module("execute_wam_clean_training_state_handoff")
+    worker = importlib.import_module("s2a.research.wam.training.state_stage_checks")
     a = {
         k: ref(k)
         for k in ("prepared_ref", "execution_registration_ref", "w2_fit_ref", "w2_verification_ref", "w2_params_ref")

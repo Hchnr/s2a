@@ -6,7 +6,8 @@ run a response model or certify physical control.
 """
 
 import numpy as np
-from directional_derivative_audit import (
+
+from scripts.directional_derivative_audit import (
     _audit_repeat,
     _json_values,
     _numeric_list,
@@ -19,7 +20,7 @@ from directional_derivative_audit import (
     numerical_compare,
     require,
 )
-from terminal_secant_audit import _clip_flags, _terminal, _tree
+from scripts.terminal_secant_audit import _clip_flags, _terminal, _tree
 
 STEPS = (0.001, -0.001, 0.0005, -0.0005)
 AXES = ("x", "y", "z")

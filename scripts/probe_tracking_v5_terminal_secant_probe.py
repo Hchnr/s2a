@@ -7,13 +7,12 @@ import time
 
 import numpy as np
 
-from s2a.mujoco_robot_dynamics import MujocoRobotDynamics
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.native_goal_trajectory import rollout_native_goal_trajectory
-from s2a.osc import OSCInterface
-from s2a.preview_result_publication import publish_result
-from s2a.terminal_development_execution import CONTROL_REF
-from s2a.terminal_secant_evidence import (
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.native_goal_trajectory import rollout_native_goal_trajectory
+from s2a.research.trajectory_search.terminal_secant_evidence import (
     CPU_ENVIRONMENT,
     DIAGNOSTIC_CLOSURE_REF,
     DIAGNOSTIC_REF,
@@ -30,7 +29,12 @@ from s2a.terminal_secant_evidence import (
     reference,
     require,
 )
-from s2a.terminal_secant_probe import STEP_SIZES, build_terminal_secant_geometry, fit_terminal_secant_row
+from s2a.research.trajectory_search.terminal_secant_probe import (
+    STEP_SIZES,
+    build_terminal_secant_geometry,
+    fit_terminal_secant_row,
+)
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
 
 
 def prepare_case(source, diagnostic, interface):
@@ -123,7 +127,7 @@ def run_probe(
 ):
     """Reset actual368 for every call; permit exactly one final anchor repeat."""
     if probe_fn is None:
-        from s2a.terminal_secant_probe import probe_terminal_secant
+        from s2a.research.trajectory_search.terminal_secant_probe import probe_terminal_secant
 
         probe_fn = probe_terminal_secant
     anchor = admit_anchor(source, geometry["anchor_commands"], interface)

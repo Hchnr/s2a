@@ -9,12 +9,11 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-import audit_wam_earlier_position as old006
-import audit_wam_position as old004
-from run_wam_short_replan import cpu_environment, write_new
-from wam_position_acceptance_checker import source_proof, verify_case, verify_query
-
-from s2a.artifacts import REPO, sha256
+import scripts.audit_wam_earlier_position as old006
+import scripts.audit_wam_position as old004
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.run_wam_short_replan import cpu_environment, write_new
+from scripts.wam_position_acceptance_checker import source_proof, verify_case, verify_query
 
 ROOT = REPO / "outputs/wam_stability_20261021"
 ORACLE_AUDIT = ROOT / "position_full_complete_20261021.json"

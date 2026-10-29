@@ -1,9 +1,10 @@
 """156 independent current-conditioned inverse log replay, no production inverse."""
 
 import numpy as np
-from arm_joint_wrench_independent import nominal_prediction
 from scipy.spatial.transform import Rotation
-from support_inverse_independent import verify_support_inverse
+
+from scripts.arm_joint_wrench_independent import nominal_prediction
+from scripts.support_inverse_independent import verify_support_inverse
 
 
 class SupportedArmLogReplay:

@@ -5,7 +5,7 @@ import inspect
 import numpy as np
 import pytest
 
-from s2a.gripper_position_hold import GripperPositionHold, GripperPositionHoldConfig
+from s2a.research.gripper.gripper_position_hold import GripperPositionHold, GripperPositionHoldConfig
 
 
 def update(adapter, reference, *, measured=0.53, motor=0.0, previous=0.0, dt=0.05):

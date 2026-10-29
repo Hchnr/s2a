@@ -12,8 +12,8 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
 from s2a.geometry import inverse, pose_error, rot6d_to_matrix, transform
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 
 
 def main():

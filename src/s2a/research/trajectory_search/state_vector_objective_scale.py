@@ -9,8 +9,9 @@ from copy import deepcopy
 import numpy as np
 from scipy.optimize import minimize, nnls
 
-from s2a.accepted_point_sqp_core import _array, _inf, _scalar, _spd
 from s2a.geometry import finite
+from s2a.research.trajectory_search.accepted_point_sqp_core import _array, _inf, _scalar, _spd
+from s2a.research.trajectory_search.restored_anchor_sqp_plan import canonical_initial_comparison
 from s2a.research.trajectory_search.state_vector_gn_search import (
     FEEDBACK_POLICY,
     POSE_CEILING_POLICY,
@@ -31,7 +32,6 @@ from s2a.research.trajectory_search.state_vector_gn_search import (
     normalized_error_vector,
     validate_config,
 )
-from s2a.restored_anchor_sqp_plan import canonical_initial_comparison
 
 QP_OBJECTIVE_SCALING_POLICY = "pose_whole_objective_divisor"
 

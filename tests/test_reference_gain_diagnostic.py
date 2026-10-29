@@ -1,12 +1,13 @@
 import importlib
-from pathlib import Path
 
 import numpy as np
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 def test_pooled_opening_mae_uses_absolute_errors_and_matching_prefix(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    module = importlib.import_module("diagnose_reference_gains")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    module = importlib.import_module("scripts.diagnose_reference_gains")
     cases = [
         {
             "methods": {

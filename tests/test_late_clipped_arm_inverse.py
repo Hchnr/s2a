@@ -1,8 +1,8 @@
 import numpy as np
 
-from s2a.direct_arm_inverse import command_prediction as early_prediction
-from s2a.late_clipped_arm_inverse import command_prediction
-from s2a.late_clipped_arm_inverse_runtime import translation_command
+from s2a.research.response_models.inverse.direct_arm_inverse import command_prediction as early_prediction
+from s2a.research.response_models.inverse.late_clipped_arm_inverse import command_prediction
+from s2a.research.response_models.inverse.late_clipped_arm_inverse_runtime import translation_command
 from tests.test_direct_arm_inverse import parameters
 from tests.test_direct_arm_inverse_inputs import prepared
 

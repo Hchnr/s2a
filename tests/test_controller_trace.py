@@ -2,7 +2,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from s2a.controller_trace import ControllerTorqueTrace
+from s2a.evaluation.controller_trace import ControllerTorqueTrace
 
 
 def test_trace_preserves_command_return_and_clipped_torque_and_restores():

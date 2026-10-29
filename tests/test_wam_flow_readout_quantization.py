@@ -1,16 +1,17 @@
 """026 precision reference and real CPU hook checks without CUDA or WAM."""
 
 import importlib
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def probe(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("probe_wam_flow_readout_quantization")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.probe_wam_flow_readout_quantization")
 
 
 def test_independent_rounding_retains_midpoint_direction_subnormals_and_signed_zero(probe):

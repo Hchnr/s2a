@@ -10,8 +10,8 @@ import subprocess
 import time
 from pathlib import Path
 
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import identity, owned_child, write_once
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import identity, owned_child, write_once
 
 
 def reference(path):

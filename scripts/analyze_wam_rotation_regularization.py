@@ -5,12 +5,12 @@ import os
 from pathlib import Path
 
 import numpy as np
-from summarize_wam_stability_screen import LABELS, Evidence, aggregate, equal_metrics, verify_cell
 
-from s2a.artifacts import write_json
-from s2a.checkpoint_audit import state_metrics
+from s2a.evaluation.wam.checkpoint_audit import state_metrics
 from s2a.geometry import integrate_local, pose9_to_transform
-from s2a.wam_regularization import attenuate_wam_rotation
+from s2a.infrastructure.artifacts import write_json
+from s2a.research.wam.readout.wam_regularization import attenuate_wam_rotation
+from scripts.summarize_wam_stability_screen import LABELS, Evidence, aggregate, equal_metrics, verify_cell
 
 
 def main():

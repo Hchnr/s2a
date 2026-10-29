@@ -7,20 +7,20 @@ by the frozen independent test arithmetic before ledger admission.
 
 import importlib
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 
-import s2a.prefix_callback_backtracking_plan as planning
+import s2a.research.trajectory_search.prefix_callback_backtracking_plan as planning
+from s2a.infrastructure.repository_paths import repository_root
 from tests.test_prefix_preserving_trajectory_plan import inputs, optimizer_result, response
 from tests.test_prefix_trajectory_audit_ledger import classify as independent_classify
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("prefix_callback_backtracking_audit").audit_callback_backtracking_ledger
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.prefix_callback_backtracking_audit").audit_callback_backtracking_ledger
 
 
 def classifications(answer, arguments):

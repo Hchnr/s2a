@@ -5,12 +5,8 @@ anchor audit arrays must additionally be checked by the numerical checker.
 """
 
 import numpy as np
-from check_tracking_v5_prefix_trust_control import (
-    command_key,
-    compare_contract,
-    numerical_compare,
-    trace_ranks,
-)
+
+from scripts.check_tracking_v5_prefix_trust_control import command_key, compare_contract, numerical_compare, trace_ranks
 
 RADII = (0.01, 0.005, 0.0025)
 ALPHAS = (1.0, 0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.0078125, 0.00390625)

@@ -5,12 +5,12 @@ import importlib
 
 import pytest
 
-from s2a.wam_readout import LIBERO_DOMAIN
+from s2a.research.wam.readout.wam_readout import LIBERO_DOMAIN
 
 
 @pytest.fixture
 def server():
-    return importlib.import_module("s2a.terminal_development_policy")
+    return importlib.import_module("s2a.research.wam.tracking.runtime.terminal_development_policy")
 
 
 def prepared(root):

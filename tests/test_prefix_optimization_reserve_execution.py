@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 
 import tests.test_prefix_callback_backtracking_execution as prior_tests
+from s2a.infrastructure.repository_paths import repository_root
 from tests.test_prefix_callback_backtracking_execution import write_json
 from tests.test_prefix_trust_control_execution import (
     CountingDynamics,
@@ -22,11 +23,11 @@ from tests.test_prefix_trust_control_execution import (
 
 @pytest.fixture
 def modules(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
-        producer=importlib.import_module("probe_tracking_v5_prefix_optimization_reserve"),
-        evidence=importlib.import_module("s2a.prefix_optimization_reserve_evidence"),
-        owner=importlib.import_module("execute_tracking_v5_prefix_optimization_reserve"),
+        producer=importlib.import_module("scripts.probe_tracking_v5_prefix_optimization_reserve"),
+        evidence=importlib.import_module("s2a.research.trajectory_search.prefix_optimization_reserve_evidence"),
+        owner=importlib.import_module("scripts.execute_tracking_v5_prefix_optimization_reserve"),
     )
 
 
@@ -239,7 +240,7 @@ def test_new_solver_adapter_preserves_reset_warm_and_complete_response_accountin
 
     monkeypatch.setitem(
         sys.modules,
-        "s2a.prefix_optimization_reserve_plan",
+        "s2a.research.trajectory_search.prefix_optimization_reserve_plan",
         SimpleNamespace(solve_prefix_optimization_reserve_response=solver),
     )
     result = modules.producer.run_search(
@@ -281,13 +282,13 @@ def test_owner_rejects_changed_qa_before_starting_the_new_replay(modules, monkey
 
 
 def reserve_checker_run(modules, monkeypatch, tmp_path, *, near_cap_witness=False):
-    checker = importlib.import_module("check_tracking_v5_prefix_optimization_reserve")
+    checker = importlib.import_module("scripts.check_tracking_v5_prefix_optimization_reserve")
     # Reuse the old pure fake-response fixture while executing this new main.
-    monkeypatch.setitem(sys.modules, "check_tracking_v5_prefix_callback_backtracking", checker)
+    monkeypatch.setitem(sys.modules, "scripts.check_tracking_v5_prefix_callback_backtracking", checker)
     run = prior_tests.new_checker_run(modules, monkeypatch, tmp_path)
-    metadata = sys.modules["s2a.prefix_callback_backtracking_evidence"]
+    metadata = sys.modules["s2a.research.trajectory_search.prefix_callback_backtracking_evidence"]
     metadata.PREFIX_OPTIMIZATION_MARGIN = 1e-4
-    monkeypatch.setitem(sys.modules, "s2a.prefix_optimization_reserve_evidence", metadata)
+    monkeypatch.setitem(sys.modules, "s2a.research.trajectory_search.prefix_optimization_reserve_evidence", metadata)
     owner, _ = metadata.closed_owner(None, None)
     metadata.read(owner["owned_command"]["launch"])["command"][1] = str(
         tmp_path / "scripts/probe_tracking_v5_prefix_optimization_reserve.py"
@@ -423,7 +424,7 @@ def test_new_checker_still_rejects_a_tampered_cached_ray_full_record(modules, mo
 
 @pytest.mark.parametrize("defect", [None, "missing_source", "missing_test"])
 def test_new_owner_requires_the_extended_native_qa_roster(modules, monkeypatch, tmp_path, defect):
-    callback_owner = importlib.import_module("execute_tracking_v5_prefix_callback_backtracking")
+    callback_owner = importlib.import_module("scripts.execute_tracking_v5_prefix_callback_backtracking")
     monkeypatch.setattr(callback_owner, "REPO", tmp_path)
     monkeypatch.setattr(callback_owner, "NATIVE_PYTHON", tmp_path / "python")
     prior_tests.test_native_qa_covers_the_complete_new_source_and_test_roster(modules, monkeypatch, tmp_path, defect)

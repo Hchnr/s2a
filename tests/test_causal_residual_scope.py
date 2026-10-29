@@ -1,14 +1,16 @@
 import ast
 from pathlib import Path
 
+from tests.support.source_layout import current_source_path
+
 
 def functions(text):
     return {n.name: n for n in ast.parse(text).body if isinstance(n, ast.FunctionDef)}
 
 
 def test_control_preserves083_except_arm_converter_and_residual_logging():
-    old = functions(Path("src/s2a/pose_velocity_loaded_simulation.py").read_text())
-    text = Path("src/s2a/causal_residual_loaded_simulation.py").read_text()
+    old = functions(current_source_path("src/s2a/pose_velocity_loaded_simulation.py").read_text())
+    text = current_source_path("src/s2a/causal_residual_loaded_simulation.py").read_text()
     text = text.replace("run_causal_residual_loaded_case", "run_pose_velocity_loaded_case").replace(
         "CausalArmResidualOSC", "PoseVelocityInverseOSC"
     )

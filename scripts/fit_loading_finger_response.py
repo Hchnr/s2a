@@ -7,8 +7,14 @@ from pathlib import Path
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve, lstsq
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import check_sources, cpu_environment, owned_stage, publish, sha
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
+    check_sources,
+    cpu_environment,
+    owned_stage,
+    publish,
+    sha,
+)
 
 ROOT = REPO / "outputs/finger_loading_fit_20261025"
 

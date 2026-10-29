@@ -16,9 +16,15 @@ import struct
 from dataclasses import asdict
 from pathlib import Path
 
-from s2a.artifacts import REPO
-from s2a.clean_training_data import ROW_ORDER, SEED_ALGORITHM, SourceIdentity, build_training_roster, noise_roster
-from s2a.relocated_artifacts import RelocatedArtifacts
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.relocated_artifacts import RelocatedArtifacts
+from s2a.research.wam.training.clean.clean_training_data import (
+    ROW_ORDER,
+    SEED_ALGORITHM,
+    SourceIdentity,
+    build_training_roster,
+    noise_roster,
+)
 
 SCHEMA = "s2a.clean-training-preparation.v1"
 CONFIG_SCHEMA = "s2a.clean-training-config.v1"

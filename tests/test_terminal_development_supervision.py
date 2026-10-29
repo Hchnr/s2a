@@ -4,7 +4,7 @@ import importlib
 import numpy as np
 import pytest
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 
 @pytest.fixture
@@ -13,9 +13,9 @@ def modules(monkeypatch):
     return tuple(
         importlib.import_module(n)
         for n in (
-            "run_wam_terminal_development",
-            "verify_wam_terminal_development",
-            "verify_wam_terminal_development_points",
+            "scripts.run_wam_terminal_development",
+            "scripts.verify_wam_terminal_development",
+            "scripts.verify_wam_terminal_development_points",
         )
     )
 

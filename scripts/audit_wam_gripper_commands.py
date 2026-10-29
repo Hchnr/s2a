@@ -9,7 +9,9 @@ from pathlib import Path
 
 import numpy as np
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 TARGETS = ("akita_black_bowl_1", "wine_bottle_1", "cream_cheese_1")
 
 

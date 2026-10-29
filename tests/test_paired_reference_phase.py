@@ -6,13 +6,13 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.osc import OSCInterface
-from s2a.paired_reference_phase import (
+from s2a.controllers.osc import OSCInterface
+from s2a.research.trajectory_search.paired_reference_phase import (
     assess_phase_warm,
     prepare_paired_reference_phases,
     score_phase_response,
 )
-from s2a.prefix_preserving_trajectory_plan import solve_prefix_preserving_trajectory_response
+from s2a.research.trajectory_search.prefix_preserving_trajectory_plan import solve_prefix_preserving_trajectory_response
 
 
 def reference_inputs(*, stationary=False):

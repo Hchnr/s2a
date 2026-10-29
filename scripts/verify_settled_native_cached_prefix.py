@@ -7,12 +7,11 @@ import shutil
 from pathlib import Path
 from unittest.mock import patch
 
-import verify_settled_native_training as audit
-from run_settled_native_training import publish, read, read_prepared, reference, require
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO, sha256
-from s2a.native_environment import strict_native_environment
+import scripts.verify_settled_native_training as audit
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.native_environment import strict_native_environment
+from scripts.run_settled_native_training import publish, read, read_prepared, reference, require
+from scripts.run_wam_readout import owned_command
 
 PLAN = REPO / "plans/v0.0.1/034_cached_task_audit_addendum_20261022.md"
 SOURCES = (PLAN, Path(__file__).resolve(), REPO / "tests/test_settled_native_cached_prefix.py")

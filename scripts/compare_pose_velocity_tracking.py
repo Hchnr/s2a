@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import sha256
+from s2a.infrastructure.artifacts import sha256
 
 ROOT = Path("outputs/pose_velocity_loaded_control_20261025")
 PRIOR = Path("outputs/translation_loaded_control_20261025")

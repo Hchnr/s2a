@@ -5,12 +5,9 @@ import json
 import os
 from pathlib import Path
 
-from execute_tracking_v5_saved_direction_backtracking import verify_native_qa as original_verify_native_qa
-from run_wam_readout import owned_command
-
-from s2a.native_environment import strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.saved_direction_backtracking_check_repair import (
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.saved_direction_backtracking_check_repair import (
     EXECUTION_ROOT,
     FAILED_OWNER_REF,
     FAILED_RESULT_REF,
@@ -20,7 +17,7 @@ from s2a.saved_direction_backtracking_check_repair import (
     REPAIR_ROOT,
     repair_prerequisites,
 )
-from s2a.saved_direction_backtracking_evidence import (
+from s2a.research.trajectory_search.saved_direction_backtracking_evidence import (
     CPU_ENVIRONMENT,
     NATIVE_PYTHON,
     REPO,
@@ -34,6 +31,8 @@ from s2a.saved_direction_backtracking_evidence import (
     remember,
     require,
 )
+from scripts.execute_tracking_v5_saved_direction_backtracking import verify_native_qa as original_verify_native_qa
+from scripts.run_wam_readout import owned_command
 
 
 def verify_native_qa(ref):

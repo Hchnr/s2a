@@ -14,8 +14,8 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO, sha256
 from s2a.geometry import rot6d_to_matrix
+from s2a.infrastructure.artifacts import REPO, sha256
 
 LABELS = ("8800_g10", "15400_g10")
 RECORDS = ("task0_init0", "task1_init0", "task2_init0")

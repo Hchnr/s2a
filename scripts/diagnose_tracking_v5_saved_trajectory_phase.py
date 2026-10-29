@@ -11,8 +11,8 @@ import numpy as np
 import scipy
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO
 from s2a.geometry import validate_transform
+from s2a.infrastructure.artifacts import REPO
 
 HORIZON = 12
 GRID_DIVISIONS = 1000

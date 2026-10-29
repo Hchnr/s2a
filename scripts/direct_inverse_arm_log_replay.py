@@ -1,10 +1,11 @@
 """156 independent current-conditioned inverse log replay, no production inverse."""
 
 import numpy as np
-from arm_joint_wrench_independent import nominal_prediction
-from direct_arm_inverse_independent import features, inputs
-from direct_arm_inverse_independent import nominal as inverse_nominal
 from scipy.spatial.transform import Rotation
+
+from scripts.arm_joint_wrench_independent import nominal_prediction
+from scripts.direct_arm_inverse_independent import features, inputs
+from scripts.direct_arm_inverse_independent import nominal as inverse_nominal
 
 
 class DirectInverseArmLogReplay:

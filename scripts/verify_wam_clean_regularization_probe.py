@@ -6,10 +6,11 @@ import os
 from pathlib import Path
 
 import numpy as np
-from analyze_wam_clean_capacity import checked
-from analyze_wam_release_horizon import reference
 
-from s2a.streaming_ridge_qr import independent_ridge
+from s2a.adapters.identified.streaming_ridge_qr import independent_ridge
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.analyze_wam_clean_capacity import checked
+from scripts.analyze_wam_release_horizon import reference
 
 
 def verify(spec, output):
@@ -140,7 +141,7 @@ def main():
     if spec["entrypoint_ref"] != reference(Path(__file__)):
         raise ValueError("Independent source changed")
     output = args.registration.resolve().parent
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     if Path.cwd().resolve() != root or not output.is_relative_to(root / "outputs"):
         raise ValueError("Requires repository cwd and outputs root")
     with (output / "audit_attempt.json").open("x") as stream:

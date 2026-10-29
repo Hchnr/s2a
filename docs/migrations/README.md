@@ -100,3 +100,42 @@ owner及child实际wait/reap exit0，3317项来源/文档在本轮前后一致�
 `--manifest`显式传迁移清单，`--additional-catalog`显式传根文件补充清单。
 它核当前存储SHA、映射后的pytest节点及根平铺数量；首批结构通过不表示全仓整理
 完成，更不表示控制或运行时资格通过。
+
+## D3a：库分层与当前执行身份
+
+累计清单 `repository_layout_20261029.json` 完整登记主清单及根补充清单的3280个
+历史身份，原声明/SHA与当前路径/SHA分开。`CurrentLayout` 与当前脚本来源核验
+只接受显式批准的清单；原输出及历史Git字节不因此取得新的运行资格。
+
+其余377个库模块已按领域移动，物理移动时原字节逐项相同；导入与当前来源读取
+单独更新。两处库到scripts的依赖抽取到真实库函数；独立审核仍保留独立实现。
+脚本目前已统一scripts.*身份，但大多数物理位置将在D3b整理。
+
+发现收据 `outputs/repository_d3a_collection_20261029/result.json` 中，5169节点保留
+D2全部5096节点及其顺序/参数，新增73项；原5项环境错误单列，pytest实际退出1，
+比较owner退出0。2337个修改/新增Python文件Ruff及format检查通过。
+
+32进程CPU回归初次674项用时49.12秒，669通过、5项旧路径/导入匹配失败；原收据
+`outputs/repository_d3a_cpu_qa_20261029/result.json` 保留，不覆盖成成功。修复只涉及
+明确的当前路径与历史字节读取边界，后续复核收据另存。数值QP单元测试实际执行，
+不能将该QA称为QP零活动。各进程保持数值库单线程，空CUDA/LD、独立临时目录，
+全部实际wait/reap，节点无重复、无遗漏，来源前后一致。
+
+两条当前入口真实dry并行通过，各核验5032条运行引用，QP/响应/查询均0；
+`outputs/repository_d3a_latest_dry_20261029/result.json` SHA256为
+`9867dd53dedfb0e5654240b2fc099563e5ef76488a3e6d255c372d53739dea57`。
+适用范围仍为当前入口准入，未重跑生产、完整checker、模型或GPU任务。
+
+原5项失败随后在新累计清单下独立复核全部通过，5个child实际wait/reap exit0，
+2.37秒，3372项来源/文档前后一致；收据
+`outputs/repository_d3a_failed_nodes_20261029/result.json`，SHA256
+`475bfc2dd691d5e5a6459851c780482e265529a1ac6266a5cc8b7cd10f71c71d`。
+另外temporal/readout两个模块并行10+11项通过，其中新增2项分别拒绝错误历史SHA
+和用正确历史字节掩盖当前来源错误。没有将修复后的复核称作重新执行了全部674项。
+
+修复后的最终发现为5171节点：5096原节点顺序/参数保持，新增75项；5项原环境
+错误仍在。实际pytest退出1与比较owner退出0分别保存于
+`outputs/repository_d3a_collection_v2_20261029/result.json`，SHA256
+`0dcc9125ace894b6b675179b0ba03c9528b2151cfc75e6f136b2a100fe16a043`。
+最终全仓2411个Python文件Ruff/format均通过；结构身份检查通过，脚本/测试/证据
+区域仍有平铺文件，`full_restructure_complete=False`，不得提前称作整理完成。

@@ -12,9 +12,9 @@ import requests
 import torch
 from PIL import Image
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
-from s2a.libero_simulation import canvas, generate_from_canvas
-from s2a.trajectory_audit import trajectory_diagnostics
+from s2a.backends.libero.simulation import canvas, generate_from_canvas
+from s2a.evaluation.trajectory_audit import trajectory_diagnostics
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 
 
 def main():

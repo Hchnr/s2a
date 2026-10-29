@@ -7,11 +7,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from run_wam_short_replan import cpu_environment, write_new
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_position import Evidence
+from scripts.run_wam_short_replan import cpu_environment, write_new
 
 TARGETS = {8: "akita_black_bowl_1", 9: "wine_bottle_1", 6: "cream_cheese_1"}
 TITLES = {8: "Bowl to plate", 9: "Wine bottle to rack", 6: "Cream cheese to bowl"}

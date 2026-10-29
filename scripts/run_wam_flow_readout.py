@@ -11,11 +11,10 @@ import subprocess
 import time
 from pathlib import Path
 
-from prepare_wam_flow_readout import weight_stats
-from run_wam_readout import external_identity, owned_command
-
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.prepare_wam_flow_readout import weight_stats
+from scripts.run_wam_readout import external_identity, owned_command
 
 GPU_UUID = "GPU-7f176867-170c-b508-5c89-1cd819ad3b8e"
 

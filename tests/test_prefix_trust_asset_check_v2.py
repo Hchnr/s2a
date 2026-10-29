@@ -11,11 +11,13 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def repair(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("check_tracking_v5_prefix_trust_control_v2")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.check_tracking_v5_prefix_trust_control_v2")
 
 
 def test_only_the_two_registered_main_ast_changes_are_applied(repair):
@@ -294,7 +296,7 @@ def synthetic_main(repair, monkeypatch, tmp_path, case, *, query_delta=0, wrong_
         reference=ref,
         remember=remember,
     )
-    monkeypatch.setitem(sys.modules, "s2a.prefix_trust_control_evidence", metadata)
+    monkeypatch.setitem(sys.modules, "s2a.research.trajectory_search.prefix_trust_control_evidence", metadata)
     for key, value in metadata.CPU_ENVIRONMENT.items():
         monkeypatch.setenv(key, value)
     for key in ("MUJOCO_GL", "PYOPENGL_PLATFORM"):

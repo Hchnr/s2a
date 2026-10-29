@@ -14,7 +14,9 @@ import re
 import struct
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 OLD_ROOT = Path("/share/project/eai_pwm/home/hcr/repos/s2a")
 RECOVERY = Path("outputs/external_deletion_recovery_20261022")
 GPU = "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f"

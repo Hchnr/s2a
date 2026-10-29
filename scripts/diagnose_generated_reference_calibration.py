@@ -14,12 +14,16 @@ from dataclasses import asdict, fields
 from pathlib import Path
 
 import numpy as np
-from diagnose_reference_gains import load_cases, metrics, pooled, view
-from diagnose_rotation_drift import endpoint_times, fold_plans, pairs_record
-from summarize_wam_stability_screen import Evidence
 
-from s2a.artifacts import REPO, sha256, write_json
-from s2a.generated_reference_calibration import CalibrationConfig, GeneratedReferenceCalibration, reference_features
+from s2a.infrastructure.artifacts import REPO, sha256, write_json
+from s2a.research.wam.calibration.generated_reference_calibration import (
+    CalibrationConfig,
+    GeneratedReferenceCalibration,
+    reference_features,
+)
+from scripts.diagnose_reference_gains import load_cases, metrics, pooled, view
+from scripts.diagnose_rotation_drift import endpoint_times, fold_plans, pairs_record
+from scripts.summarize_wam_stability_screen import Evidence
 
 CONFIG = "configs/generated_reference_calibration_20261021.json"
 PLAN = "plans/v0.0.1/023_generated_reference_calibration_20261021.md"

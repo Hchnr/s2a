@@ -4,7 +4,7 @@ import copy
 
 import pytest
 
-from s2a import clean_training_w2_handoff as gate
+from s2a.research.wam.training.clean import clean_training_w2_handoff as gate
 
 
 def ref(path):

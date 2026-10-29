@@ -3,10 +3,10 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from full_coupled_pose_independent import verify_pose_solution
 
 import tests.test_full_coupled_pose_inverse as original
-from s2a.full_coupled_pose_inverse_sqp import FullCoupledPoseModel, solve_pose
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse_sqp import FullCoupledPoseModel, solve_pose
+from scripts.full_coupled_pose_independent import verify_pose_solution
 
 
 @pytest.mark.parametrize(

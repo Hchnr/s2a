@@ -6,10 +6,10 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
-from s2a.cameras import render_current_cameras
+from s2a.backends.libero.cameras import render_current_cameras
+from s2a.backends.libero.simulation import current_observation, make_environment, source_pose
 from s2a.geometry import pose_error
-from s2a.libero_simulation import current_observation, make_environment, source_pose
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 
 
 def main():

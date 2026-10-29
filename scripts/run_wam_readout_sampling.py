@@ -6,8 +6,11 @@ import os
 from pathlib import Path
 
 import numpy as np
-from audit_wam_current_numerics import bundle, check_hashes, check_weights, numpy_tensor, ref, write_new
-from run_wam_readout_features import (
+
+from s2a.infrastructure.artifacts import sha256
+from s2a.research.wam.readout.wam_readout import ReadoutHook, ResidualReadout
+from scripts.audit_wam_current_numerics import bundle, check_hashes, check_weights, numpy_tensor, ref, write_new
+from scripts.run_wam_readout_features import (
     BoundaryCounter,
     environment,
     generate,
@@ -15,9 +18,6 @@ from run_wam_readout_features import (
     read_prepared,
     setup_service,
 )
-
-from s2a.artifacts import sha256
-from s2a.wam_readout import ReadoutHook, ResidualReadout
 
 
 def checked_json(path, digest):

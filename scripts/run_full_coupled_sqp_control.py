@@ -7,10 +7,8 @@ import subprocess
 import time
 from pathlib import Path
 
-from full_pose_execution_sources import prepare_sources
-
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     accept_detached_launch,
     check_sources,
     cpu_environment,
@@ -20,6 +18,7 @@ from s2a.durable_stage_supervisor import (
     publish,
     sha,
 )
+from scripts.full_pose_execution_sources import prepare_sources
 
 ROOT = REPO / "outputs/full_coupled_sqp_control_20261026"
 CONFIG = REPO / "configs/full_coupled_sqp_control_registered_20261026.json"

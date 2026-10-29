@@ -3,8 +3,8 @@ import copy
 import numpy as np
 import pytest
 
-from s2a.causal_wrench_change_forward import attach_wrench_change, predict
-from s2a.joint_wrench_condition_forward import predict as previous_predict
+from s2a.research.response_models.wrench.causal_wrench_change_forward import attach_wrench_change, predict
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import predict as previous_predict
 from tests.test_joint_wrench_condition_forward import prepared
 
 
@@ -52,9 +52,8 @@ def test_embedding_affinity_future_isolation_and_explicit_history_requirement():
 
 
 def test_independent_feature_assembly_agrees_with_explicit_nonzero_history():
-    from arm_wrench_change_independent import feature_matrix
-
-    from s2a.causal_wrench_change_forward import design
+    from s2a.research.response_models.wrench.causal_wrench_change_forward import design
+    from scripts.arm_wrench_change_independent import feature_matrix
 
     data, parameters, _ = prepared()
     data["x_previous_command_available"] = np.array([False, True])

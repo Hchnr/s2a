@@ -4,9 +4,10 @@ from collections import Counter
 from pathlib import Path
 
 import numpy as np
-from arm_wrench_data_independent import attach_current_wrench
-from audit_wam_position import Evidence
-from collect_wam_native_training import write_once
+
+from scripts.arm_wrench_data_independent import attach_current_wrench
+from scripts.audit_wam_position import Evidence
+from scripts.collect_wam_native_training import write_once
 
 
 def main():

@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from s2a.causal_error_tracking_hybrid import NoCausalWitness, refine_long_plan
+from s2a.research.joint_control.tracking.causal_error_tracking_hybrid import NoCausalWitness, refine_long_plan
 from tests.test_configurable_tracking_terminal_plan import inputs
 
 

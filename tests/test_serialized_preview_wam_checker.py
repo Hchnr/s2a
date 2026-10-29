@@ -2,12 +2,13 @@
 
 import ast
 import json
-from pathlib import Path
 
 import pytest
-from serialized_preview_wam_acceptance_checker import verify_development_identity
 
-ROOT = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.serialized_preview_wam_acceptance_checker import verify_development_identity
+
+ROOT = repository_root(anchor=__file__)
 
 
 def values():

@@ -11,10 +11,12 @@ from types import SimpleNamespace
 
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def driver(monkeypatch):
-    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    scripts = repository_root(anchor=__file__) / "scripts"
     monkeypatch.syspath_prepend(str(scripts))
     spec = importlib.util.spec_from_file_location("readout_continuation_test", scripts / "continue_wam_readout.py")
     module = importlib.util.module_from_spec(spec)

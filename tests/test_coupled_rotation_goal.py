@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.current_coupled_state import rotation_goal_from_command
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.tracking.current_coupled_state import rotation_goal_from_command
 from tests.test_rate_preview_active_set import contract
 
 

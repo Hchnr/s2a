@@ -3,24 +3,24 @@
 import importlib
 import json
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 
-from s2a import saved_direction_backtracking_evidence as evidence
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search import saved_direction_backtracking_evidence as evidence
 
 
 @pytest.fixture
 def producer(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("probe_tracking_v5_saved_direction_backtracking")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.probe_tracking_v5_saved_direction_backtracking")
 
 
 @pytest.fixture
 def execution(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("execute_tracking_v5_saved_direction_backtracking")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.execute_tracking_v5_saved_direction_backtracking")
 
 
 def write_json(path, value):

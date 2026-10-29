@@ -11,7 +11,9 @@ from pathlib import Path
 import h5py
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+ROOT = repository_root(anchor=__file__)
 CONFIG = "configs/wam_stability_fresh_reservation_20261021.json"
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.bounded_response_inverse import translation_command
+from s2a.research.response_models.inverse.bounded_response_inverse import translation_command
 
 
 def solve(j, target, **changes):

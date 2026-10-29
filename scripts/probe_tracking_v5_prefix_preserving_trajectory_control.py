@@ -7,17 +7,17 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, read, reference, require
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
 from s2a.geometry import inverse
-from s2a.mujoco_robot_dynamics import MujocoRobotDynamics
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.native_goal_joint_response import native_goal_rotation
-from s2a.native_goal_trajectory import rollout_native_goal_trajectory
-from s2a.osc import OSCInterface
-from s2a.prefix_preserving_trajectory_plan import solve_prefix_preserving_trajectory_response
-from s2a.preview_result_publication import publish_result as publish
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.research.response_models.forward.native_goal_joint_response import native_goal_rotation
+from s2a.research.trajectory_search.native_goal_trajectory import rollout_native_goal_trajectory
+from s2a.research.trajectory_search.prefix_preserving_trajectory_plan import solve_prefix_preserving_trajectory_response
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.training.clean.clean_training_runtime import checked, read, reference, require
 
 ROOT = REPO / "outputs/tracking_v5_prefix_preserving_trajectory_control_20261028"
 

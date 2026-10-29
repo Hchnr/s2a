@@ -5,7 +5,16 @@ import json
 import os
 import shutil
 
-from s2a.clean_training_development_handoff import (
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
+    REPO,
+    check_cpu_environment,
+    check_sources,
+    publish,
+    read,
+    reference,
+    require,
+)
+from s2a.research.wam.training.clean.clean_training_development_handoff import (
     BUDGET,
     OWNER_PATH,
     PREFIX,
@@ -15,7 +24,6 @@ from s2a.clean_training_development_handoff import (
     command,
     qualified_state,
 )
-from s2a.durable_stage_supervisor import REPO, check_cpu_environment, check_sources, publish, read, reference, require
 
 
 def main():

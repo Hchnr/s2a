@@ -9,7 +9,12 @@ import copy
 import json
 from pathlib import Path
 
-from prepare_wam_clean_training_execution import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_execution_proof import check_execution_proof, validate_envelope
+from s2a.research.wam.training.clean.clean_training_continuation_bundle import BUNDLE_REL, NEW_ROOT_REL, publish_bundle
+from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, publish, read, reference, require, sha
+from s2a.research.wam.training.clean.clean_training_seed_plan import build_seed_plan
+from scripts.prepare_wam_clean_training_execution import (
     DISK_REQUIRED,
     RAM_REQUIRED,
     Evidence,
@@ -17,12 +22,6 @@ from prepare_wam_clean_training_execution import (
     normalization,
     observe_resources,
 )
-
-from s2a.artifacts import REPO
-from s2a.clean_execution_proof import check_execution_proof, validate_envelope
-from s2a.clean_training_continuation_bundle import BUNDLE_REL, NEW_ROOT_REL, publish_bundle
-from s2a.clean_training_runtime import GPU, checked, publish, read, reference, require, sha
-from s2a.clean_training_seed_plan import build_seed_plan
 
 CONFIG = REPO / "configs/wam_clean_training_continuation_20261023.json"
 PLAN = "plans/v0.0.1/041_clean_training_continuation_20261023.md"

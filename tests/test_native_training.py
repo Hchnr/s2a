@@ -14,7 +14,8 @@ import pytest
 from scipy.spatial.transform import Rotation
 
 from s2a.geometry import transform
-from s2a.native_training import (
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.training.native.native_training import (
     gripper_cache_receipt,
     native_anchor_indices,
     native_command_schedule,
@@ -24,7 +25,7 @@ from s2a.native_training import (
     validate_physical_source,
 )
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = repository_root(anchor=__file__)
 
 
 def collector():
@@ -196,7 +197,7 @@ def test_worker_cpu_guard_refuses_overwrite_and_has_real_cli(tmp_path, monkeypat
 def test_case_fixture_keeps_running_after_success_and_renders_only_current_anchors(tmp_path, monkeypatch):
     """Exercise scheduling with a synthetic endpoint clock, not a physics substitute."""
     module = collector()
-    import s2a.libero_simulation as simulation
+    import s2a.backends.libero.simulation as simulation
 
     native = np.zeros((43, 7), dtype=np.float32)
     native[:, 0] = np.linspace(0, 0.2, 43)
@@ -322,7 +323,9 @@ def test_run_startup_receipt_matches_owned_child_contract_before_collection(tmp_
         observed.append(args[2]["name"])
         raise RuntimeError("intentional fixture stop before collection; zero physics")
 
-    monkeypatch.setitem(sys.modules, "prepare_wam_native_training", SimpleNamespace(read_prepared=read_prepared))
+    monkeypatch.setitem(
+        sys.modules, "scripts.prepare_wam_native_training", SimpleNamespace(read_prepared=read_prepared)
+    )
     monkeypatch.setattr(module, "collect_case", stop_before_collection)
     code = module.run(SimpleNamespace(prepared=str(prepared_path), prepared_sha256=prepared_sha, task_index=0, seed=42))
     directory = Path(prepared["output_root"]) / "collection/task0"

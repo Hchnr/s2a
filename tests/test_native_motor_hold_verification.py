@@ -7,13 +7,13 @@ import json
 import numpy as np
 import pytest
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("verify_native_motor_hold_diagnostic")
+    return importlib.import_module("scripts.verify_native_motor_hold_diagnostic")
 
 
 @pytest.fixture

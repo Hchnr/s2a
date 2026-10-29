@@ -3,17 +3,17 @@
 import json
 
 import numpy as np
-from arm_wrench_data import attach_current_wrench
-from audit_measured_finger_history import independently_reconstruct
-from audit_wam_position import Evidence
-from finger_history_independent import INPUTS, feature_matrix
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import publish
-from s2a.finger_contact_history import contact_history
-from s2a.finger_history_forward import design
-from s2a.joint_wrench_condition_forward import with_history
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.gripper.finger_contact_history import contact_history
+from s2a.research.gripper.finger_history_forward import design
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import with_history
+from scripts.arm_wrench_data import attach_current_wrench
+from scripts.audit_measured_finger_history import independently_reconstruct
+from scripts.audit_wam_position import Evidence
+from scripts.finger_history_independent import INPUTS, feature_matrix
 
 
 def main():

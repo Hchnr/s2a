@@ -11,16 +11,16 @@ import sys
 import numpy as np
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.wam_clean_capture import CleanCapturePoint
-from s2a.wam_clean_compact import CompactCaptureSink, CompactRequest
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.wam_clean_capture import CleanCapturePoint
+from s2a.research.wam.training.clean.wam_clean_compact import CompactCaptureSink, CompactRequest
 
 
 @pytest.mark.parametrize("seed", [42, 11])
 @pytest.mark.parametrize("fault", [None, "branch", "future_plan", "subtask", "task"])
 def test_caption_matches_actual_seed_renderer_without_adding_missing_plan(checker, monkeypatch, seed, fault):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    producer = importlib.import_module("collect_wam_clean_training")
+    producer = importlib.import_module("scripts.collect_wam_clean_training")
     # Published renderer gold: seed42 draw=.4583 includes[], seed11=.9012 omits.
     caption = dict(
         task_title="current task",
@@ -58,7 +58,7 @@ def test_caption_matches_actual_seed_renderer_without_adding_missing_plan(checke
 @pytest.fixture
 def checker(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("verify_wam_clean_training_capture")
+    return importlib.import_module("scripts.verify_wam_clean_training_capture")
 
 
 @pytest.fixture

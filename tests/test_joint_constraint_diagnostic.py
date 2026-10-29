@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from s2a.interior_joint_preview import build_joint_preview
-from s2a.joint_constraint_diagnostic import diagnose
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.limits.joint_constraint_diagnostic import diagnose
+from s2a.research.joint_control.preview.interior_joint_preview import build_joint_preview
 
 
 def test_uncontrollable_joint_proves_position_error_budget_is_infeasible():

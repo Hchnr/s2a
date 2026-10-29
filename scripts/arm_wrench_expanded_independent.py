@@ -1,8 +1,9 @@
 """107 independent composition of all135 contrast equations."""
 
 import numpy as np
-from arm_wrench_coverage_independent import equations as coverage_equations
-from arm_wrench_independent_equations import equations as prior_equations
+
+from scripts.arm_wrench_coverage_independent import equations as coverage_equations
+from scripts.arm_wrench_independent_equations import equations as prior_equations
 
 
 def equations(config, e, parameters):

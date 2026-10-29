@@ -1,7 +1,8 @@
 """174 scalar-response replay with history bound to the actually sent command."""
 
 import numpy as np
-from causal_arm_independent_replay import CausalArmReplay
+
+from scripts.causal_arm_independent_replay import CausalArmReplay
 
 
 class ExecutedResidualReplay(CausalArmReplay):

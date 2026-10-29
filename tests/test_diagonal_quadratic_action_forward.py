@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.diagonal_quadratic_action_forward import expand
+from s2a.research.response_models.nonlinear.diagonal_quadratic_action_forward import expand
 
 
 def branch(phi, action):

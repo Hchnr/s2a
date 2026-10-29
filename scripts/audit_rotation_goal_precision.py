@@ -4,13 +4,13 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from collect_wam_native_training import write_once
-from run_matched_oracle_case import CONTROL, CONTROL_SHA
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import sha256
-from s2a.native_environment import restore_cv2_environment
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.native_environment import restore_cv2_environment
+from scripts.audit_wam_position import Evidence
+from scripts.collect_wam_native_training import write_once
+from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
 
 
 def independent_matrix(delta):
@@ -55,7 +55,7 @@ def main():
         else:
             delta = scaled[3:]
             rotation = transform.quat2mat(transform.axisangle2quat(delta))
-            np.testing.assert_allclose(independent_matrix(delta), rotation, rtol=0, atol=4*np.finfo(np.float32).eps)
+            np.testing.assert_allclose(independent_matrix(delta), rotation, rtol=0, atol=4 * np.finfo(np.float32).eps)
             predicted = rotation @ pose[:3, :3]
         np.testing.assert_allclose(predicted, actual, rtol=0, atol=1e-9)
         exact = Rotation.from_matrix(actual @ pose[:3, :3].T).as_rotvec()

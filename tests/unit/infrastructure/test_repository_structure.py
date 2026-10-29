@@ -72,6 +72,47 @@ def test_a_required_importer_edit_is_registered_without_inventing_a_physical_mov
     assert result["passed"] and result["migrated_file_count"] == 0 and result["registered_in_place_edit_count"] == 1
 
 
+@pytest.mark.parametrize("complete", [True, False])
+def test_unchanged_current_entry_requires_an_explicit_complete_registration(repository, complete):
+    old = "src/s2a/example.py"
+    manifest = dict(
+        complete_current_layout=complete,
+        catalog_ref=dict(path=CATALOG, sha256=sha((repository / CATALOG).read_bytes())),
+        moves=[
+            dict(
+                old_path=old,
+                original_sha256=sha(b"original source\n"),
+                new_path=old,
+                current_sha256=sha(b"original source\n"),
+            )
+        ],
+    )
+    relative = "docs/migrations/current.json"
+    (repository / relative).write_text(json.dumps(manifest))
+    if complete:
+        result = check(repository, [relative])
+        assert result["passed"] and result["registered_unchanged_file_count"] == 1
+        assert result["registered_in_place_edit_count"] == result["migrated_file_count"] == 0
+    else:
+        with pytest.raises(ValueError, match="complete current layout"):
+            check(repository, [relative])
+
+
+def test_complete_registration_cannot_omit_an_unmoved_identity(repository):
+    relative = "docs/migrations/incomplete.json"
+    (repository / relative).write_text(
+        json.dumps(
+            dict(
+                complete_current_layout=True,
+                catalog_ref=dict(path=CATALOG, sha256=sha((repository / CATALOG).read_bytes())),
+                moves=[],
+            )
+        )
+    )
+    with pytest.raises(ValueError, match="every baseline identity"):
+        check(repository, [relative])
+
+
 @pytest.mark.parametrize("defect", ["lost", "changed", "old_alias"])
 def test_lost_bytes_source_drift_and_old_flat_file_are_detected(repository, defect):
     manifest = move(repository, original_remains=defect == "old_alias")

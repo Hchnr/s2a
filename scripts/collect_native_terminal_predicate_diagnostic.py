@@ -16,19 +16,20 @@ from pathlib import Path
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+ROOT = repository_root(anchor=__file__)
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from collect_wam_native_training import reference, require, write_once  # noqa: E402
-
-from s2a.native_environment import (  # noqa: E402
+from s2a.infrastructure.native_environment import (  # noqa: E402
     EnvironmentAdmissionError,
     environment_snapshot,
     restore_cv2_environment,
     strict_native_environment,
 )
-from s2a.native_training import state_sha256  # noqa: E402
+from s2a.research.wam.training.native.native_training import state_sha256  # noqa: E402
+from scripts.collect_wam_native_training import reference, require, write_once  # noqa: E402
 
 
 class StaticCallGuard:
@@ -236,7 +237,7 @@ def bootstrap_static_runtime(policy, destination, guard):
     ctypes.CDLL(policy["osmesa_library"], mode=ctypes.RTLD_GLOBAL)
     mujoco = importlib.import_module("mujoco")
     install_low_level_guards(guard, mujoco)
-    from s2a.libero_simulation import configure_simulator
+    from s2a.backends.libero.simulation import configure_simulator
 
     configure_simulator(policy, destination / "runtime_bootstrap")
     install_runtime_guards(guard)
@@ -314,7 +315,7 @@ def under_margins(site_pos, site_mat, python_size, wine_pos, other_height):
 
 
 def capture_endpoint(env, spec, frame, saved_state, expected_source, original_success, receipt, guard):
-    from s2a.libero_simulation import current_observation, source_pose
+    from s2a.backends.libero.simulation import current_observation, source_pose
 
     raw_before_install = raw_state_record(env)
     guard.counts["installed_saved_endpoints"] += 1
@@ -484,7 +485,7 @@ def finalize_collection(result, guard):
 def run(args):
     strict_native_environment()
     require(args.seed == 42, "fixed seed42 required")
-    from run_native_terminal_predicate_diagnostic import read_prepared
+    from scripts.run_native_terminal_predicate_diagnostic import read_prepared
 
     prepared_path = Path(args.prepared).resolve()
     prepared = read_prepared(prepared_path, args.prepared_sha256)
@@ -531,7 +532,7 @@ def run(args):
         )
         guard = StaticCallGuard(destination / "call_ledger.jsonl")
         bootstrap_static_runtime(prepared["policy_config"], destination, guard)
-        from s2a.libero_simulation import make_environment
+        from s2a.backends.libero.simulation import make_environment
 
         for spec in prepared["cases"]:
             selected = checked_case_arrays(spec)

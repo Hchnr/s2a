@@ -6,13 +6,13 @@ import json
 
 import pytest
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 
 @pytest.fixture
 def actual(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    module = importlib.import_module("verify_settled_native_cached_prefix")
+    module = importlib.import_module("scripts.verify_settled_native_cached_prefix")
     config = json.loads((REPO / "configs/settled_native_training_20261022.json").read_text())
     return module, module.read(config["native_collection_ref"])
 

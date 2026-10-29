@@ -1,10 +1,11 @@
 import ast
-from pathlib import Path
+
+from tests.support.source_layout import current_source_path
 
 
 def test_complete081_control_loop_changes_only_translation_inverse_and_receipt():
-    old = Path("src/s2a/loaded_velocity_simulation.py").read_text()
-    new = Path("src/s2a/translation_loaded_simulation.py").read_text()
+    old = current_source_path("src/s2a/loaded_velocity_simulation.py").read_text()
+    new = current_source_path("src/s2a/translation_loaded_simulation.py").read_text()
     assert new.count("        converter = TranslationInverseOSC(") == 1
     new = new.replace("def run_translation_loaded_case(", "def run_loaded_velocity_case(").replace(
         "        converter = TranslationInverseOSC(", "        converter = OSCStateToAction("

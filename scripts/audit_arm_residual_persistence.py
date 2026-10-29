@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 from scipy.linalg import expm
 
-from s2a.artifacts import sha256
+from s2a.infrastructure.artifacts import sha256
 
 
 def rms(values):

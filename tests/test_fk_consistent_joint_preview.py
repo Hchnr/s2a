@@ -3,9 +3,9 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.fk_consistent_joint_preview import fk_consistent_rollout
 from s2a.geometry import transform
-from s2a.joint_limit_preview_objective import preview_objective
+from s2a.research.joint_control.limits.joint_limit_preview_objective import preview_objective
+from s2a.research.joint_control.preview.fk_consistent_joint_preview import fk_consistent_rollout
 
 
 def site_fk(q):

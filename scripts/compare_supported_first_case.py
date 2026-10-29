@@ -3,11 +3,11 @@
 import json
 
 import numpy as np
-from audit_wam_position import Evidence
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import publish
-from s2a.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from scripts.audit_wam_position import Evidence
 
 
 def main():

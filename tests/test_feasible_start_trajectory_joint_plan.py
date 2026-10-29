@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from s2a.feasible_start_trajectory_joint_plan import solve_interior_plan
-from s2a.long_trajectory_capped_joint_plan import solve_interior_plan as prior_solve
+from s2a.research.trajectory_search.feasible_start_trajectory_joint_plan import solve_interior_plan
+from s2a.research.trajectory_search.long_trajectory_capped_joint_plan import solve_interior_plan as prior_solve
 from tests.test_configurable_tracking_terminal_plan import inputs
 from tests.test_trajectory_capped_joint_plan import feasible_inputs
 

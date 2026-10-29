@@ -8,8 +8,11 @@ from pathlib import Path
 
 import pytest
 
-from s2a import clean_training_import_bridge as bridge
-from s2a.durable_stage_supervisor import REPO, reference
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO, reference
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.training.clean import clean_training_import_bridge as bridge
+from s2a.research.wam.training.clean.clean_training_continuation_bundle import SCRIPT_NAMES
+from tests.support.source_layout import historical_import_closure
 
 
 @pytest.fixture
@@ -23,7 +26,7 @@ def scene(tmp_path, monkeypatch):
     delegate = bundle / "original.py"
     delegate.write_text('def original():\n    return "unchanged"\n')
     source = directory / "run_wam_clean_training.py"
-    source.write_text(f"""from s2a.clean_training_import_bridge import load_frozen_delegate
+    source.write_text(f"""from s2a.research.wam.training.clean.clean_training_import_bridge import load_frozen_delegate
 old=load_frozen_delegate({reference(delegate)!r},name="_s2a048_unit_delegate")
 original=old.original
 value="new metadata only"
@@ -121,12 +124,48 @@ def test_actual_original_sampler_help_resolves_bridge_only_with_safe_path(tmp_pa
     sampler = bundle / "sample_wam_clean_training_state.py"
     owner = bundle / "run_wam_clean_training.py"
     before = {str(p): reference(p) for p in (sampler, owner)}
+    historical = tmp_path / "archival_import_closure"
+    closure = historical_import_closure(
+        [*("scripts/" + name for name in SCRIPT_NAMES), "src/s2a/clean_training_runtime.py"], historical
+    )
+    assert closure["identity_scope"] == "isolated_archival_help_only_no_runtime_or_control_qualification"
+
+    # Keep the original041 runtime imports isolated. Only the current metadata
+    # bridge and its two infrastructure dependencies use canonical current code.
+    # The unchanged repository_root locates the real root above this fixture;
+    # no synthetic pyproject or change to the actual041 files is needed.
+    current = {
+        Path(bridge.__file__),
+        Path(reference.__code__.co_filename),
+        Path(repository_root.__code__.co_filename),
+    }
+    for source in tuple(current):
+        parent = source.parent
+        while parent != REPO / "src/s2a":
+            marker = parent / "__init__.py"
+            if marker.is_file():
+                current.add(marker)
+            parent = parent.parent
+    current_before = {str(source): reference(source) for source in current}
+    staged = {}
+    for source in sorted(current):
+        target = historical / source.relative_to(REPO)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("xb") as stream:
+            stream.write(source.read_bytes())
+        staged[str(source)] = reference(target)
+        assert staged[str(source)]["sha256"] == current_before[str(source)]["sha256"]
+    (historical / "current_metadata_helpers.json").write_text(
+        json.dumps(
+            dict(scope="archival_help_and_current_metadata_only", current_refs=current_before, staged_refs=staged)
+        )
+    )
     directory = tmp_path / "bridge"
     directory.mkdir()
     witness = tmp_path / "import_witness.json"
     (directory / "run_wam_clean_training.py").write_text(f"""import atexit,inspect,json,os,sys
 from pathlib import Path
-from s2a.clean_training_import_bridge import load_frozen_delegate
+from s2a.research.wam.training.clean.clean_training_import_bridge import load_frozen_delegate
 old=load_frozen_delegate({reference(owner)!r},name="_s2a048_real_original_owner")
 MASTER_PORT=old.MASTER_PORT
 _flags=old._flags
@@ -142,6 +181,36 @@ def record():
     Path({str(witness)!r}).write_text(json.dumps(dict(bridge_file=__file__,delegate_file=old.__file__,actual_safe_path=sys.flags.safe_path,original_command=sys.argv,pid=os.getpid(),sampler_file=main.__file__,sampler_run_source=inspect.getsourcefile(main.run),prior_source=inspect.getsourcefile(prior),scope="import resolution only; callback denies all W2 lookup; no inference")))
 atexit.register(record)
 """)
+    guard = tmp_path / "cli_import_guard"
+    guard.mkdir()
+    guard_receipt = tmp_path / "cli_import_guard_receipt.json"
+    (guard / "sitecustomize.py").write_text(
+        "import atexit, builtins, json, pathlib, sys\n"
+        "import numpy as np\n"
+        "attempts = dict(arrays=0, forbidden_imports=0, current_sources=0)\n"
+        "def deny_arrays(*args, **kwargs):\n"
+        "    attempts['arrays'] += 1\n"
+        "    raise AssertionError('Archival help decoded arrays')\n"
+        "np.load = deny_arrays\n"
+        "original = builtins.__import__\n"
+        "def guarded(name, *args, **kwargs):\n"
+        "    if name.split('.')[0] in {'cosmos_framework', 'mujoco', 'robosuite', 'torch'}:\n"
+        "        attempts['forbidden_imports'] += 1\n"
+        "        raise AssertionError('Archival help imported model or physics')\n"
+        "    result = original(name, *args, **kwargs)\n"
+        f"    current_roots = {tuple(str(REPO / area) + os.sep for area in ('src', 'scripts'))!r}\n"
+        "    for module in tuple(sys.modules.values()):\n"
+        "        source = getattr(module, '__file__', '') or ''\n"
+        "        if source.startswith(current_roots):\n"
+        "            attempts['current_sources'] += 1\n"
+        "            raise AssertionError('Archival help imported current source tree')\n"
+        "    return result\n"
+        "builtins.__import__ = guarded\n"
+        "def record():\n"
+        f"    with pathlib.Path({str(guard_receipt)!r}).open('x') as stream:\n"
+        "        json.dump(attempts, stream)\n"
+        "atexit.register(record)\n"
+    )
     environment = dict(
         os.environ,
         CUDA_VISIBLE_DEVICES="",
@@ -150,7 +219,7 @@ atexit.register(record)
         OPENBLAS_NUM_THREADS="8",
         MKL_NUM_THREADS="8",
         PYTHONDONTWRITEBYTECODE="1",
-        PYTHONPATH=":".join(map(str, (directory, bundle, REPO / "src", REPO / "scripts"))),
+        PYTHONPATH=":".join(map(str, (directory, bundle, guard, historical / "src", historical / "scripts"))),
     )
     if safe:
         environment["PYTHONSAFEPATH"] = "1"
@@ -160,7 +229,7 @@ atexit.register(record)
     python = str(REPO / ".venv/bin/python") if runtime == "main" else prepared["model_config"]["model_python"]
     result = subprocess.run(
         [python, str(sampler), "--help"],
-        cwd=REPO,
+        cwd=historical,
         env=environment,
         capture_output=True,
         text=True,
@@ -168,6 +237,7 @@ atexit.register(record)
     )
     assert result.returncode == 0, result.stderr
     assert "usage:" in result.stdout
+    assert json.loads(guard_receipt.read_text()) == dict(arrays=0, forbidden_imports=0, current_sources=0)
     assert witness.exists() is safe
     if safe:
         value = json.loads(witness.read_text())
@@ -176,6 +246,8 @@ atexit.register(record)
         assert value["sampler_file"] == value["sampler_run_source"] == str(sampler)
         assert value["prior_source"] == str(directory / "run_wam_clean_training.py")
     assert {str(p): reference(p) for p in (sampler, owner)} == before
+    assert {str(source): reference(source) for source in current} == current_before
+    assert {source: reference(ref["path"]) for source, ref in staged.items()} == staged
 
 
 def test_caller_mutating_expected_sha_cannot_hide_source_change(scene):

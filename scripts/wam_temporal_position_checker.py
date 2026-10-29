@@ -12,7 +12,9 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import (
+from PIL import Image
+
+from scripts.audit_wam_position import (
     REPO,
     TARGETS,
     GripperIntentHold,
@@ -34,8 +36,7 @@ from audit_wam_position import (
     sample,
     task_outcome,
 )
-from PIL import Image
-from wam_position_acceptance_checker import source_proof as original_source_proof
+from scripts.wam_position_acceptance_checker import source_proof as original_source_proof
 
 BASE = "scripts/wam_position_acceptance_checker.py"
 BASE_SHA = "7a90309b1b2ea2b75429f1f0cecb4e5036aab43281cb66c4214a57de4df2d85f"

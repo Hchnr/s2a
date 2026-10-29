@@ -1,18 +1,19 @@
 """Protect all original arm and gripper logic outside the preview seam."""
 
 import ast
-from pathlib import Path
+
+from tests.support.source_layout import current_source_path
 
 
 def test_preview_changes_only_command_reference_and_explicit_log_fields():
     old = next(
         n
-        for n in ast.parse(Path("src/s2a/training_recovery_simulation.py").read_text()).body
+        for n in ast.parse(current_source_path("src/s2a/training_recovery_simulation.py").read_text()).body
         if isinstance(n, ast.FunctionDef) and n.name == "run_training_recovery_case"
     )
     new = next(
         n
-        for n in ast.parse(Path("src/s2a/gripper_preview_simulation.py").read_text()).body
+        for n in ast.parse(current_source_path("src/s2a/gripper_preview_simulation.py").read_text()).body
         if isinstance(n, ast.FunctionDef) and n.name == "run_gripper_preview_case"
     )
     new.name = old.name

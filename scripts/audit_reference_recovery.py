@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import load_config, sha256
+from s2a.infrastructure.artifacts import load_config, sha256
 
 FLOAT_ATOL = 1e-12
 

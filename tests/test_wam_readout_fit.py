@@ -2,16 +2,17 @@
 
 import copy
 import importlib.util
-from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def fit_stage():
-    path = Path(__file__).resolve().parents[1] / "scripts/fit_wam_readout.py"
+    path = repository_root(anchor=__file__) / "scripts/fit_wam_readout.py"
     spec = importlib.util.spec_from_file_location("wam_readout_fit_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

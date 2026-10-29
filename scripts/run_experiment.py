@@ -2,12 +2,12 @@
 
 import argparse
 
-from s2a.analytic import analytic
-from s2a.artifacts import load_config
-from s2a.data import extract
-from s2a.reporting import plot_results, render_report
-from s2a.rollout import compare_controllers
-from s2a.study import calibrate
+from s2a.evaluation.reporting import plot_results, render_report
+from s2a.infrastructure.artifacts import load_config
+from s2a.infrastructure.data.droid_episode import extract
+from s2a.research.droid.analytic import analytic
+from s2a.research.droid.rollout import compare_controllers
+from s2a.research.droid.study import calibrate
 
 
 def main():

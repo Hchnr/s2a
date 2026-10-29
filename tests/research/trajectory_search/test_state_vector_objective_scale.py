@@ -6,10 +6,10 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-import s2a.accepted_point_sqp_core as original_solver
+import s2a.research.trajectory_search.accepted_point_sqp_core as original_solver
 import s2a.research.trajectory_search.state_vector_gn_search as original_search
 import s2a.research.trajectory_search.state_vector_objective_scale as planning
-from s2a.directional_derivative_probe import _canonical
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
 from tests.research.trajectory_search.test_state_vector_gn_search import entry, inputs
 
 EXTRA_FIELDS = {

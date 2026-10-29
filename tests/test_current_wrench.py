@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.current_wrench import world_wrench_at_point
+from s2a.research.gripper.current_wrench import world_wrench_at_point
 
 
 def test_lever_arm_and_rotated_force_have_correct_moment_origin():

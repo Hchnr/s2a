@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.state_conditioned_gripper_inverse import design_features, raw_features, reachable_command
+from s2a.research.gripper.state_conditioned_gripper_inverse import design_features, raw_features, reachable_command
 
 ROOT = Path("outputs/state_conditioned_gripper_inverse_20261025")
 ROSTER = Path("outputs/gripper_forward_identification_20261025/fit_result.json")

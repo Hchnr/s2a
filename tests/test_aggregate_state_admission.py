@@ -5,11 +5,11 @@ import copy
 
 import pytest
 
-from s2a.aggregate_state_metrics import diagnosis as aggregate_diagnosis
-from s2a.artifacts import REPO
-from s2a.clean_aggregation_candidate import candidate_head
-from s2a.clean_training_aggregation import RIDGE, ROWS
-from s2a.synchronous_state_metrics import diagnosis as previous_diagnosis
+from s2a.research.wam.readout.aggregate_state_metrics import diagnosis as aggregate_diagnosis
+from s2a.research.wam.readout.synchronous_state_metrics import diagnosis as previous_diagnosis
+from s2a.research.wam.training.clean.clean_aggregation_candidate import candidate_head
+from s2a.research.wam.training.clean.clean_training_aggregation import RIDGE, ROWS
+from tests.support.source_layout import current_source_path
 
 
 def test_metric_arithmetic_and_gate_thresholds_are_unchanged():
@@ -21,7 +21,9 @@ def test_metric_arithmetic_and_gate_thresholds_are_unchanged():
 
     def functions(name):
         return {
-            n.name: n for n in ast.parse((REPO / "src/s2a" / name).read_text()).body if isinstance(n, ast.FunctionDef)
+            n.name: n
+            for n in ast.parse(current_source_path("src/s2a/" + name).read_text()).body
+            if isinstance(n, ast.FunctionDef)
         }
 
     old = functions("synchronous_state_metrics.py")

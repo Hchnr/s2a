@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.xml_site_kinematics import XMLSiteKinematics
+from s2a.geometry.xml_site import XMLSiteKinematics
 
 
 def test_offset_joint_pivot_and_world_velocity():

@@ -4,8 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
-from s2a.clean_training_w2_admission import verify_proposal
-from s2a.durable_stage_supervisor import publish
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.wam.training.clean.clean_training_w2_admission import verify_proposal
 
 
 def main():

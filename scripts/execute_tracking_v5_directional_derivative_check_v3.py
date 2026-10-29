@@ -5,16 +5,9 @@ import json
 import os
 from pathlib import Path
 
-from execute_tracking_v5_directional_derivative_v2 import (
-    EXPERIMENT,
-    STEP_SIZES,
-    ZERO_FIELDS,
-)
-from execute_tracking_v5_directional_derivative_v2 import validate_receipt as validate_v2_receipt
-from execute_tracking_v5_directional_derivative_v2 import verify_native_qa as verify_v2_qa
-from run_wam_readout import owned_command
-
-from s2a.directional_derivative_check_v3_evidence import (
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.directional_derivative_check_v3_evidence import (
     CPU_ENVIRONMENT,
     NATIVE_PYTHON,
     PLAN,
@@ -34,10 +27,12 @@ from s2a.directional_derivative_check_v3_evidence import (
     remember,
     require,
 )
-from s2a.directional_derivative_v2_evidence import PLAN as PRODUCER_PLAN
-from s2a.directional_derivative_v2_evidence import QA_SOURCES as PRODUCER_QA_SOURCES
-from s2a.native_environment import strict_native_environment
-from s2a.preview_result_publication import publish_result
+from s2a.research.trajectory_search.directional_derivative_v2_evidence import PLAN as PRODUCER_PLAN
+from s2a.research.trajectory_search.directional_derivative_v2_evidence import QA_SOURCES as PRODUCER_QA_SOURCES
+from scripts.execute_tracking_v5_directional_derivative_v2 import EXPERIMENT, STEP_SIZES, ZERO_FIELDS
+from scripts.execute_tracking_v5_directional_derivative_v2 import validate_receipt as validate_v2_receipt
+from scripts.execute_tracking_v5_directional_derivative_v2 import verify_native_qa as verify_v2_qa
+from scripts.run_wam_readout import owned_command
 
 
 def verify_native_qa(ref):

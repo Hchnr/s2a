@@ -9,7 +9,7 @@ import os
 import subprocess
 from pathlib import Path
 
-from s2a.artifacts import sha256, write_json
+from s2a.infrastructure.artifacts import sha256, write_json
 
 
 def main():

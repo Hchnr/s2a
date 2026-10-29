@@ -305,7 +305,7 @@ def test_positive_slack_columns_can_preserve_stationarity_while_breaking_origina
     # mu=(1,0,1) is stationary but not complementary; (0,1,1) is both.
     B, g, A, b = np.eye(72), np.zeros(72), np.zeros((3, 73)), np.array([2e-6, 0.0, 0.0])
     g[0], A[0, 0], A[1, 0], A[2, -1] = 1.0, 1.0, 1.0, 1.0
-    original = importlib.import_module("accepted_point_sqp_math_audit")
+    original = importlib.import_module("scripts.accepted_point_sqp_math_audit")
     bad = annotate(
         classify(certificate_from_point(B, g, A, b, np.zeros(73), np.array([1.0, 0.0, 1.0]))), A, b, "pose", 1.0
     )

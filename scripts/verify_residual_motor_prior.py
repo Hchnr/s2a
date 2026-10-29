@@ -4,7 +4,8 @@ import json
 from pathlib import Path
 
 import numpy as np
-from fit_residual_motor_prior import digest
+
+from scripts.fit_residual_motor_prior import digest
 
 
 def main():

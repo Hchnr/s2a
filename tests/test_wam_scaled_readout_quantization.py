@@ -1,12 +1,13 @@
 """028 actual CPU path with nontrivial center/scale, without WAM weights."""
 
 import importlib.util
-from pathlib import Path
 
 import numpy as np
 import pytest
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 
 
 def module():

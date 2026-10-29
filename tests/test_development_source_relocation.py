@@ -4,9 +4,9 @@ import ast
 
 import pytest
 
-from s2a.clean_training_state_handoff import BUNDLE
-from s2a.development_source_relocation import FILES, PATH_PARTS, transform
-from s2a.durable_stage_supervisor import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO
+from s2a.research.wam.tracking.runtime.development_source_relocation import FILES, PATH_PARTS, transform
+from s2a.research.wam.training.clean.clean_training_state_handoff import BUNDLE
 
 NEW = "outputs/clean_training_development_dependency_repair_20261024/source"
 OLD = str(BUNDLE.relative_to(REPO))

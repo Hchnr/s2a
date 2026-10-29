@@ -8,23 +8,23 @@ import traceback
 from pathlib import Path
 
 import numpy as np
-from collect_wam_native_training import endpoint, render_anchor, save_arrays, write_once
-from run_settled_native_training import read_prepared, reference, require
 
-from s2a.artifacts import sha256
 from s2a.geometry import validate_transform
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.native_training import pack_gripper_caches, synchronous_labels
-from s2a.settled_native import (
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.research.joint_control.native.settled_native import (
     HOLD_SEMANTICS,
     SettledGoalEnvironment,
     settled_anchor_indices,
     settled_command_schedule,
 )
+from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
+from scripts.collect_wam_native_training import endpoint, render_anchor, save_arrays, write_once
+from scripts.run_settled_native_training import read_prepared, reference, require
 
 
 def collect_case(prepared, prepared_ref, record, case_dir, progress):
-    from s2a.libero_simulation import controller_contract, make_environment
+    from s2a.backends.libero.simulation import controller_contract, make_environment
 
     require(sha256(record["expert_path"]) == record["expert_sha256"], "selected native command hash changed")
     native = np.load(record["expert_path"], allow_pickle=False)

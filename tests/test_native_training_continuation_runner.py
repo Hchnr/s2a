@@ -9,7 +9,9 @@ from types import SimpleNamespace
 
 import pytest
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 
 
 def admitted(tmp_path, monkeypatch):
@@ -19,7 +21,7 @@ def admitted(tmp_path, monkeypatch):
     )
     owner = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(owner)
-    import run_wam_readout
+    import scripts.run_wam_readout as run_wam_readout
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(owner, "REPO", tmp_path)

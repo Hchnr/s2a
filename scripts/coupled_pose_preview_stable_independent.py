@@ -1,9 +1,10 @@
 """Independent ODE propagation and finite-difference KKT for tangent preview proposals."""
 
 import numpy as np
-from current_coupled_stable_independent import response
 from scipy.optimize import nnls
 from scipy.spatial.transform import Rotation
+
+from scripts.current_coupled_stable_independent import response
 
 
 def verify_preview(

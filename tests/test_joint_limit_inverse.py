@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from s2a.joint_limit_inverse import refine_command
-from s2a.joint_limit_response import build_joint_response, predict_joint_response
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.limits.joint_limit_inverse import refine_command
+from s2a.research.response_models.forward.joint_limit_response import build_joint_response, predict_joint_response
 
 
 def setup():

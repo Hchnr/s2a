@@ -3,8 +3,9 @@
 import math
 
 import numpy as np
-from arm_wrench_independent import INPUTS, augment, conditions, nominal_prediction
-from arm_wrench_independent import feature_matrix as previous_features
+
+from scripts.arm_wrench_independent import INPUTS, augment, conditions, nominal_prediction
+from scripts.arm_wrench_independent import feature_matrix as previous_features
 
 __all__ = ["INPUTS", "augment", "conditions", "nominal_prediction", "feature_matrix", "prediction"]
 

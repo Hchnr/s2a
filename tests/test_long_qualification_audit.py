@@ -2,14 +2,15 @@
 
 import importlib.util
 import json
-from pathlib import Path
 
 import pytest
+
+from s2a.infrastructure.repository_paths import repository_root
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location("long_audit_test", root / "scripts/audit_wam_long_qualification.py")
     module = importlib.util.module_from_spec(spec)

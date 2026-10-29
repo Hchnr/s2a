@@ -12,7 +12,8 @@ import json
 from pathlib import Path
 
 import numpy as np
-from run_wam_clean_bridge import publish, read, read_prepared, reference, require, resolve_path
+
+from scripts.run_wam_clean_bridge import publish, read, read_prepared, reference, require, resolve_path
 
 ACTIVE = np.array([True] * 10 + [False] * 118)
 LIBERO_DOMAIN = "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1"

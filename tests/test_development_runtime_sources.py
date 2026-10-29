@@ -5,10 +5,14 @@ from pathlib import Path
 
 import pytest
 
-from s2a.clean_training_state_handoff import BUNDLE
-from s2a.development_runtime_sources import overlay_auditor, runtime_bridge_source, verify_generated
-from s2a.development_source_relocation import FILES, transform
-from s2a.durable_stage_supervisor import reference
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import reference
+from s2a.research.wam.tracking.runtime.development_runtime_sources import (
+    overlay_auditor,
+    runtime_bridge_source,
+    verify_generated,
+)
+from s2a.research.wam.tracking.runtime.development_source_relocation import FILES, transform
+from s2a.research.wam.training.clean.clean_training_state_handoff import BUNDLE
 
 
 class UndoOverlay(ast.NodeTransformer):

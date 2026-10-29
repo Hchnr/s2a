@@ -3,11 +3,11 @@
 import math
 
 import numpy as np
-from arm_joint_wrench_independent import conditions
-from pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 from scipy.spatial.transform import Rotation
 
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from scripts.arm_joint_wrench_independent import conditions
+from scripts.pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 
 
 def inputs(data, desired, grip):

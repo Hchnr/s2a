@@ -3,8 +3,8 @@
 import json
 from pathlib import Path
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import sha
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import sha
 
 
 def merge(target, path, signature, aliases=None):

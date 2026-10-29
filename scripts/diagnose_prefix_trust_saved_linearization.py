@@ -14,7 +14,9 @@ from pathlib import Path
 
 import numpy as np
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 PLAN = REPO / "plans/v0.0.1/prefix_trust_saved_linearization_20261029.md"
 HORIZON, WIDTH, TARGET, STEP = 12, 72, 9, 1e-4
 ROLES = {

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.spatial.distance import cdist
 
-from s2a.training_support import TrainingSupport, blend_translation, calibrate_support
+from s2a.research.wam.training.native.training_support import TrainingSupport, blend_translation, calibrate_support
 
 
 def test_calibration_excludes_whole_trajectory_and_matches_brute_force():

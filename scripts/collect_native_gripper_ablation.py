@@ -5,10 +5,10 @@ import json
 from pathlib import Path
 
 import numpy as np
-from run_matched_oracle_case import CONTROL, CONTROL_SHA
 
-from s2a.artifacts import sha256
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
 
 CONFIG = Path("configs/native_gripper_ablation_20261025.json")
 
@@ -23,10 +23,9 @@ def main():
         raise ValueError("Import guard changed")
     guard = json.loads(CONTROL.read_text())["cv2_guard_registration"]
     readiness = restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
-    from collect_wam_native_training import endpoint, render_anchor, save_arrays
-
-    from s2a.native_gripper_ablation_simulation import run_native_gripper_ablation_case
-    from s2a.native_training import pack_gripper_caches, synchronous_labels
+    from s2a.research.gripper.native_gripper_ablation_simulation import run_native_gripper_ablation_case
+    from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
+    from scripts.collect_wam_native_training import endpoint, render_anchor, save_arrays
 
     strict_native_environment()
     registration = json.loads(CONFIG.read_text())

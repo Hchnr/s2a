@@ -6,14 +6,20 @@ import os
 import time
 
 import numpy as np
-from probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 
-from s2a.infrastructure.legacy_script_imports import verify_legacy_modules
-from s2a.mujoco_robot_dynamics import MujocoRobotDynamics
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.osc import OSCInterface
-from s2a.preview_result_publication import publish_result
-from s2a.research.trajectory_search.inputs import load_dual_recovery_inputs, make_input_context
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
+from s2a.infrastructure.legacy_script_imports import CurrentScriptImports
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.inputs import load_dual_recovery_inputs, make_input_context, model_registration
+from s2a.research.trajectory_search.restored_anchor_sqp_evidence import (
+    CPU_ENVIRONMENT,
+    REPO,
+    checked,
+    reference,
+    require,
+)
 from s2a.research.trajectory_search.state_vector_dual_recovery import DUAL_RECOVERY_POLICY, search
 from s2a.research.trajectory_search.state_vector_gn_search import (
     POSE_CEILING_POLICY,
@@ -22,14 +28,7 @@ from s2a.research.trajectory_search.state_vector_gn_search import (
     initial_error_vector_jacobian,
 )
 from s2a.research.trajectory_search.state_vector_objective_scale import QP_OBJECTIVE_SCALING_POLICY
-from s2a.restored_anchor_sqp_evidence import (
-    CPU_ENVIRONMENT,
-    REPO,
-    checked,
-    model_registration,
-    reference,
-    require,
-)
+from scripts.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 from scripts.tracking.trajectory_search.probe_tracking_v5_interior_trajectory_search import initial_model, run_search
 
 ROOT = REPO / "outputs/tracking_v5_state_vector_dual_recovery_20261029"
@@ -74,16 +73,19 @@ def main(dry=False):
     require(
         all(os.environ.get(key) == value for key, value in CPU_ENVIRONMENT.items()), "Single-thread CPU environment"
     )
+    current_imports = CurrentScriptImports(root=REPO)
+    current_imports.verify_present()
     bundle, config, context = load_inputs()
     refs = context.runtime_refs
     source, source_reg, control = (bundle[key] for key in ("source", "source_registration", "control"))
     interface = OSCInterface(*(control[key] for key in ("input_min", "input_max", "output_min", "output_max")))
     Js, Jq = initial_model(bundle)
     Je = initial_error_vector_jacobian(bundle)
-    model_reg, proof = model_registration(source_reg, refs)
+    model_reg, proof = model_registration(source_reg, context, bundle)
     guard = load_environment_guard(refs)
     context.finish()
-    legacy_identity = verify_legacy_modules()
+    current_imports.finish()
+    current_identity = current_imports.verify_present()
     if dry:
         print(
             json.dumps(dict(passed=True, dry=True, qp_solves=0, responses=0, queries=0, source_count=len(refs))),
@@ -98,7 +100,7 @@ def main(dry=False):
             source_refs=[reference(REPO / path) for path in SOURCES],
             input_refs=list(refs.values()),
             migration_input_identity=context.registration(),
-            legacy_import_identity=legacy_identity,
+            current_import_identity=current_identity,
             plan_ref=reference(PLAN),
             config_ref=reference(CONFIG),
             config=config,
@@ -178,6 +180,7 @@ def main(dry=False):
 
         run_search(source, bundle["base"], Js, Jq, config, interface, dynamics, result, search_fn=vector_search)
         context.finish()
+        current_imports.finish()
         strict_native_environment()
         result.update(
             complete=True,

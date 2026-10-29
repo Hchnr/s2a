@@ -4,12 +4,12 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_contrast_training import contrast_rows
-from audit_wam_position import Evidence
 from scipy.linalg import cho_factor, cho_solve
 
-from s2a.artifacts import sha256
-from s2a.state_conditioned_arm_forward import design, nominal, raw_condition, targets
+from s2a.infrastructure.artifacts import sha256
+from s2a.research.response_models.causal.state_conditioned_arm_forward import design, nominal, raw_condition, targets
+from scripts.arm_contrast_training import contrast_rows
+from scripts.audit_wam_position import Evidence
 
 CONFIG = Path("configs/contrast_conditioned_arm_forward_20261025.json")
 ROOT = Path("outputs/contrast_conditioned_arm_forward_20261025")

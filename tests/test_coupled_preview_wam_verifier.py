@@ -1,13 +1,14 @@
 """Keep complete numerical replay and original development outcome gates."""
 
 import ast
-from pathlib import Path
 
 import pytest
-import verify_coupled_preview_wam_development as verifier
-from coupled_preview_wam_audit_admission import admission
 
-ROOT = Path(__file__).resolve().parents[1]
+import scripts.verify_coupled_preview_wam_development as verifier
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.coupled_preview_wam_audit_admission import admission
+
+ROOT = repository_root(anchor=__file__)
 
 
 def cases(failed):

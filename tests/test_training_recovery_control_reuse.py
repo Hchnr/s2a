@@ -1,12 +1,13 @@
 """Prove the recovery collector preserves every original control expression."""
 
 import ast
-from pathlib import Path
+
+from tests.support.source_layout import current_source_path
 
 
 def test_control_body_exact_except_explicit_reference_and_observer_seams():
-    original = ast.parse(Path("src/s2a/stability_position_simulation.py").read_text())
-    fork = ast.parse(Path("src/s2a/training_recovery_simulation.py").read_text())
+    original = ast.parse(current_source_path("src/s2a/stability_position_simulation.py").read_text())
+    fork = ast.parse(current_source_path("src/s2a/training_recovery_simulation.py").read_text())
     old = next(n for n in original.body if isinstance(n, ast.FunctionDef) and n.name == "run_position_case")
     new = next(n for n in fork.body if isinstance(n, ast.FunctionDef) and n.name == "run_training_recovery_case")
     assert [a.arg for a in new.args.kwonlyargs[-2:]] == ["oracle_reference", "endpoint_observer"]

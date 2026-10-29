@@ -5,7 +5,7 @@ import importlib
 
 import pytest
 
-from s2a import clean_training_development_handoff as dev
+from s2a.research.wam.training.clean import clean_training_development_handoff as dev
 
 
 @pytest.fixture
@@ -165,7 +165,7 @@ def test_order_source_and_qa_contracts_rejected(proposal, fault):
 
 @pytest.fixture
 def development_result(monkeypatch):
-    owner = importlib.import_module("run_wam_clean_training_development_handoff")
+    owner = importlib.import_module("scripts.run_wam_clean_training_development_handoff")
     monkeypatch.setattr(owner, "reference", lambda p: str(p))
     a = dict(
         prepared_ref="prepared",

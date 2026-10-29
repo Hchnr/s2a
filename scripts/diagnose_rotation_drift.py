@@ -15,11 +15,11 @@ from dataclasses import asdict
 from pathlib import Path
 
 import numpy as np
-from diagnose_reference_gains import load_cases, metrics, pooled, shuffled_pairs, view
-from summarize_wam_stability_screen import Evidence
 
-from s2a.artifacts import REPO, sha256, write_json
-from s2a.rotation_drift import RotationDrift, episode_query_weights, world_rotation_residual
+from s2a.infrastructure.artifacts import REPO, sha256, write_json
+from s2a.references.rotation_drift import RotationDrift, episode_query_weights, world_rotation_residual
+from scripts.diagnose_reference_gains import load_cases, metrics, pooled, shuffled_pairs, view
+from scripts.summarize_wam_stability_screen import Evidence
 
 CONFIG = "configs/rotation_drift_diagnostic_20261021.json"
 PLAN = "plans/v0.0.1/018_rotation_drift_diagnostic_20261021.md"

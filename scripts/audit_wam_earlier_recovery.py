@@ -14,9 +14,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_recovery import Evidence, verify_case
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
+from scripts.audit_wam_recovery import Evidence, verify_case
 
 CONFIG = "configs/wam_recovery_pilot_8400_g10_20261021.json"
 ORIGINAL_AUDITOR = "scripts/audit_wam_recovery.py"

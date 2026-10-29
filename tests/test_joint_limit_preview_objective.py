@@ -3,8 +3,8 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.joint_limit_preview import build_joint_preview, rollout_joint_preview
-from s2a.joint_limit_preview_objective import preview_objective
+from s2a.research.joint_control.limits.joint_limit_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.joint_control.limits.joint_limit_preview_objective import preview_objective
 
 
 def problem():

@@ -4,8 +4,17 @@ import copy
 import json
 import shutil
 
-from s2a.development_repair_admission import BUDGET, FAILURE_REF, GPU, OLD_REF, PREFIX, ROOT, SOURCES, STATE_AUDIT_REF
-from s2a.durable_stage_supervisor import REPO, check_sources, publish, read, reference, require
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO, check_sources, publish, read, reference, require
+from s2a.research.wam.tracking.runtime.development_repair_admission import (
+    BUDGET,
+    FAILURE_REF,
+    GPU,
+    OLD_REF,
+    PREFIX,
+    ROOT,
+    SOURCES,
+    STATE_AUDIT_REF,
+)
 
 
 def main():

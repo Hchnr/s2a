@@ -1,8 +1,9 @@
 """116 all198 intervention equations with source identities preserved."""
 
 import numpy as np
-from arm_condition_span_training import contrast_rows as span_rows
-from arm_joint_wrench_expanded_training import contrast_rows as original_rows
+
+from scripts.arm_condition_span_training import contrast_rows as span_rows
+from scripts.arm_joint_wrench_expanded_training import contrast_rows as original_rows
 
 
 def contrast_rows(config, e, parameters):

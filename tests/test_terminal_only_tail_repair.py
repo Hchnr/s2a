@@ -6,9 +6,9 @@ import numpy as np
 import pytest
 
 from s2a.geometry import pose_error
-from s2a.joint_preview_constraint_audit import audit_joint_preview_constraints
-from s2a.tail_translation_reserve import SAFETY_NAMES, build_tail_translation_grid
-from s2a.terminal_only_tail_repair import ENTRY_FIELDS, probe_terminal_only_tail_repair
+from s2a.research.joint_control.limits.joint_preview_constraint_audit import audit_joint_preview_constraints
+from s2a.research.trajectory_search.tail_translation_reserve import SAFETY_NAMES, build_tail_translation_grid
+from s2a.research.trajectory_search.terminal_only_tail_repair import ENTRY_FIELDS, probe_terminal_only_tail_repair
 from tests.test_tail_translation_reserve import synthetic_case
 
 

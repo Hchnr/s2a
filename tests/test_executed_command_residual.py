@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
 
-from s2a.causal_arm_residual import CausalArmResidualOSC
-from s2a.executed_command_residual import ExecutedCommandResidualOSC
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.research.response_models.causal.causal_arm_residual import CausalArmResidualOSC
+from s2a.research.response_models.causal.executed_command_residual import ExecutedCommandResidualOSC
 
 
 def make(cls):

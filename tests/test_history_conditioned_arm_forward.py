@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.history_conditioned_arm_forward import design, nominal, predict, with_history
+from s2a.research.response_models.causal.history_conditioned_arm_forward import design, nominal, predict, with_history
 
 
 def contract():

@@ -2,9 +2,9 @@
 
 import pytest
 
-from s2a.clean_training_runtime import GPU
-from s2a.tracking_preview_wam_control_v4 import PORT, validate_checkpoint_endpoint
-from s2a.tracking_preview_wam_simulation_v4 import run_tracking_wam_case
+from s2a.research.wam.tracking.preview.tracking_preview_wam_control_v4 import PORT, validate_checkpoint_endpoint
+from s2a.research.wam.tracking.preview.tracking_preview_wam_simulation_v4 import run_tracking_wam_case
+from s2a.research.wam.training.clean.clean_training_runtime import GPU
 
 
 def config():

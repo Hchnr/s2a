@@ -1,6 +1,6 @@
 import numpy as np
 
-from s2a.terminal_history_comparison import INPUTS, OUTPUTS, compare_point
+from s2a.research.joint_control.terminal.terminal_history_comparison import INPUTS, OUTPUTS, compare_point
 
 
 def arrays():

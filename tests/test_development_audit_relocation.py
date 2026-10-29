@@ -5,8 +5,8 @@ import json
 
 import pytest
 
-from s2a.development_audit_relocation import audit_tree, equivalent_template
-from s2a.durable_stage_supervisor import reference
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import reference
+from s2a.research.wam.tracking.runtime.development_audit_relocation import audit_tree, equivalent_template
 
 
 def migration(tmp_path):

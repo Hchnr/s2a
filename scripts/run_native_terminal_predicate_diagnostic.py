@@ -12,10 +12,9 @@ import signal
 import subprocess
 from pathlib import Path
 
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.run_wam_readout import owned_command
 
 CONFIG = REPO / "configs/native_terminal_predicate_diagnostic_20261021.json"
 CONFIG_SHA = "0dc500ff423a7ade96b537a30d0945a2fc62b36ce228259637739189e68c7992"

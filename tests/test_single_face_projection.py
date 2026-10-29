@@ -2,10 +2,10 @@
 
 import numpy as np
 
-from s2a.fast_long_joint_preview import rollout_joint_preview as fast_rollout
-from s2a.joint_limit_preview import _project as general_projection
-from s2a.long_joint_preview import build_joint_preview, rollout_joint_preview
-from s2a.single_face_projection import project
+from s2a.research.joint_control.limits.joint_limit_preview import _project as general_projection
+from s2a.research.joint_control.limits.single_face_projection import project
+from s2a.research.joint_control.preview.fast_long_joint_preview import rollout_joint_preview as fast_rollout
+from s2a.research.joint_control.preview.long_joint_preview import build_joint_preview, rollout_joint_preview
 
 
 def test_coupled_box_and_multiface_fallback_match_general_qp():

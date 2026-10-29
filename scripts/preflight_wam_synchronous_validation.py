@@ -8,14 +8,16 @@ from pathlib import Path
 
 import h5py
 import numpy as np
-from analyze_wam_release_horizon import reference
+
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.analyze_wam_release_horizon import reference
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     if Path.cwd().resolve() != root or not args.output.resolve().is_relative_to(root / "outputs"):
         raise ValueError("Requires repository cwd and outputs destination")
     if any(os.environ.get(k) != "" for k in ["CUDA_VISIBLE_DEVICES", "LD_LIBRARY_PATH"]):

@@ -8,10 +8,10 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from s2a import clean_execution_proof as generic
-from s2a import clean_training_fit_contract as contract
-from s2a import clean_training_source_proof as repair
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean import clean_execution_proof as generic
+from s2a.research.wam.training.clean import clean_training_fit_contract as contract
+from s2a.research.wam.training.clean import clean_training_source_proof as repair
 
 
 def dump(path, value):

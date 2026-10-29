@@ -6,7 +6,7 @@ import hashlib
 import numpy as np
 import pytest
 
-from s2a.synchronous_validation import ROSTER, current_model_input, validate_records
+from s2a.research.wam.readout.synchronous_validation import ROSTER, current_model_input, validate_records
 
 
 def records():

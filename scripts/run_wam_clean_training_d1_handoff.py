@@ -6,11 +6,7 @@ import os
 import signal
 from pathlib import Path
 
-from run_wam_clean_training_continuation import observe_descendant_cleanup
-
-from s2a.clean_training_d1_admission import PREFIX, absent_outputs, admit
-from s2a.clean_training_w1_handoff import PREPARED_ROOT
-from s2a.durable_stage_supervisor import (
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     REPO,
     accept_detached_launch,
     check_cpu_environment,
@@ -24,6 +20,9 @@ from s2a.durable_stage_supervisor import (
     reference,
     require,
 )
+from s2a.research.wam.training.clean.clean_training_d1_admission import PREFIX, absent_outputs, admit
+from s2a.research.wam.training.clean.clean_training_w1_handoff import PREPARED_ROOT
+from scripts.run_wam_clean_training_continuation import observe_descendant_cleanup
 
 ENTRY = "scripts/run_wam_clean_training_d1_handoff.py"
 WORKER = "scripts/execute_wam_clean_training_d1_handoff.py"
@@ -57,7 +56,7 @@ def worker_argv(registration_ref):
 
 
 def check_worker(registration, registration_ref):
-    from execute_wam_clean_training_d1_handoff import check_stage
+    from scripts.execute_wam_clean_training_d1_handoff import check_stage
 
     ref = reference(Path(registration["root"]) / "worker/result.json")
     value = read(ref)

@@ -1,7 +1,7 @@
 import numpy as np
 
-import s2a.support_aware_inverse as module
-from s2a.training_support import TrainingSupport
+import s2a.research.response_models.inverse.support_aware_inverse as module
+from s2a.research.wam.training.native.training_support import TrainingSupport
 
 
 def test_executed_mixture_reprediction_is_distinct_from_learned_optimum(monkeypatch):
@@ -42,8 +42,9 @@ def test_independent_checker_rejects_wrong_support_weight_and_wrong_mixture(monk
     import copy
 
     import pytest
-    import qualified_inverse_independent as kkt
-    import support_inverse_independent as independent
+
+    import scripts.qualified_inverse_independent as kkt
+    import scripts.support_inverse_independent as independent
 
     condition = np.zeros((1, 89))
     condition[0, 0] = 1.5

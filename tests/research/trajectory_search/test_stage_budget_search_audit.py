@@ -11,8 +11,8 @@ import pytest
 import s2a.research.trajectory_search.global_envelope_search as original_core
 import s2a.research.trajectory_search.interior_trajectory_search as original_config
 import s2a.research.trajectory_search.stage_budget_search as core
-from s2a.directional_derivative_probe import _canonical
 from s2a.research.trajectory_search.constraint_residual_repair import evaluate_repair_entry
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
 from tests.research.trajectory_search.test_interior_trajectory_search_audit import certificate_from_point
 from tests.support.trajectory_rollout import synthetic_case
 

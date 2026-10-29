@@ -2,21 +2,21 @@
 
 import importlib
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-import s2a.prefix_preserving_trajectory_plan as planning
-from s2a.paired_reference_phase import prepare_paired_reference_phases, score_phase_response
+import s2a.research.trajectory_search.prefix_preserving_trajectory_plan as planning
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.paired_reference_phase import prepare_paired_reference_phases, score_phase_response
 from tests.test_prefix_preserving_trajectory_plan import inputs, optimizer_result, response
 
 
 @pytest.fixture
 def checker(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("check_tracking_v5_paired_reference_phase")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.check_tracking_v5_paired_reference_phase")
 
 
 def geometry():

@@ -8,8 +8,8 @@ import copy
 import json
 from pathlib import Path
 
-from audit_wam_position import Evidence
-from coupled_preview_wam_acceptance_checker import verify_query
+from scripts.audit_wam_position import Evidence
+from scripts.coupled_preview_wam_acceptance_checker import verify_query
 
 
 def main():

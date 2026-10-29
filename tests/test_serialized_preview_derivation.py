@@ -1,9 +1,11 @@
 """Recovery changes publication and provenance, never controller or model math."""
 
 import ast
+import hashlib
 import json
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO
+from tests.support.source_layout import current_module_name, current_source_path, historical_source_bytes
 
 
 def canonical_ast(source):
@@ -29,17 +31,40 @@ def canonical_ast(source):
 
 def test_registered_derivation_has_only_declared_changes():
     manifest = json.loads((REPO / "tests/fixtures/serialized_preview_derivation.json").read_text())
+    # Fixture identities retain the registered baseline byte proofs. Compare
+    # current source separately, using only the declared module relocation.
+    import_relocations = {
+        "s2a." + name: current_module_name("src/s2a/" + name + ".py")
+        for name in (
+            "native_environment",
+            "preview_result_publication",
+            "terminal_development_policy",
+            "serialized_preview_recovery",
+            "clean_training_runtime",
+        )
+    }
+
+    def current_imports(fragment):
+        for old, new in import_relocations.items():
+            fragment = fragment.replace("from " + old + " import", "from " + new + " import")
+        return fragment
+
     for row in manifest["files"]:
-        source = REPO / row["original"]
-        assert sha256(source) == row["original_sha256"]
+        historical = historical_source_bytes(dict(path=row["original"], sha256=row["original_sha256"]))
+        assert hashlib.sha256(historical).hexdigest() == row["original_sha256"]
+        source = current_source_path(row["original"])
         expected = source.read_text()
         for old, new in sorted(manifest["changes"].items(), key=lambda item: -len(item[0])):
             expected = expected.replace(old, new)
         if source.name == "collect_coupled_preview_wam_development.py":
             expected = expected.replace(
-                "from s2a.native_environment import restore_cv2_environment, strict_native_environment",
-                "from s2a.native_environment import restore_cv2_environment, strict_native_environment\n"
-                "from s2a.preview_result_publication import publish_result",
+                current_imports(
+                    "from s2a.native_environment import restore_cv2_environment, strict_native_environment"
+                ),
+                current_imports(
+                    "from s2a.native_environment import restore_cv2_environment, strict_native_environment\n"
+                    "from s2a.preview_result_publication import publish_result"
+                ),
             ).replace(
                 'publish(root / "worker_result.json", result)', 'publish_result(root / "worker_result.json", result)'
             )
@@ -56,7 +81,8 @@ def test_registered_derivation_has_only_declared_changes():
                 '"test_serialized_preview_wam_*.py", "test_coupled_preview_wam_protocol.py"',
             )
         for old, new in manifest.get("recovery_binding_changes", {}).get(row["derived"], []):
+            old, new = current_imports(old), current_imports(new)
             assert expected.count(old) == 1
             expected = expected.replace(old, new)
-        actual = (REPO / row["derived"]).read_text()
+        actual = current_source_path(row["derived"]).read_text()
         assert canonical_ast(actual) == canonical_ast(expected), row["derived"]

@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from s2a import coupled_preview_control_gate as gate
-from s2a.artifacts import sha256
+from s2a.infrastructure.artifacts import sha256
+from s2a.research.joint_control.preview import coupled_preview_control_gate as gate
 
 
 def make_closure(tmp_path, monkeypatch, *, failing_case=None):

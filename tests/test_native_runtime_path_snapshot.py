@@ -12,7 +12,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from s2a import native_runtime_path_snapshot as snapshot
+from s2a.infrastructure.snapshots import native_runtime_path_snapshot as snapshot
 
 
 def file_ref(path):

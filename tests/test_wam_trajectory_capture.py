@@ -8,10 +8,10 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from s2a.sampler_trace import file_sha, rng_identity
-from s2a.wam_flow_readout import FlowReadoutHook, FlowResidualReadout
-from s2a.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
-from s2a.wam_trajectory_capture import (
+from s2a.research.wam.readout.sampler_trace import file_sha, rng_identity
+from s2a.research.wam.readout.wam_flow_readout import FlowReadoutHook, FlowResidualReadout
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
+from s2a.research.wam.tracking.runtime.wam_trajectory_capture import (
     TrajectoryCaptureBridge,
     capture_packed,
     exact_packed_times,

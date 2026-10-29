@@ -6,14 +6,14 @@ import json
 
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import reference
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import reference
 
 
 @pytest.fixture
 def owner(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("run_wam_clean_training_state")
+    return importlib.import_module("scripts.run_wam_clean_training_state")
 
 
 def save(path, value):

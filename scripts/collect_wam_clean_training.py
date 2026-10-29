@@ -15,17 +15,11 @@ import random
 from pathlib import Path
 
 import numpy as np
-from qualify_wam_clean_bridge import (
-    CONVERSION_SOURCE,
-    SAMPLER_SOURCE,
-    ConversionWitness,
-    imported_cosmos_sources,
-    response_arrays,
-    runtime_environment,
-)
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.readout.sampler_trace import check_sources, parameters_identity
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN
+from s2a.research.wam.training.clean.clean_training_runtime import (
     GPU,
     VISION_SHAPE,
     admit_execution,
@@ -37,10 +31,16 @@ from s2a.clean_training_runtime import (
     trained_head,
     validate_current_request,
 )
-from s2a.sampler_trace import check_sources, parameters_identity
-from s2a.wam_clean_capture import NoiseRoster
-from s2a.wam_clean_compact import CompactCaptureSink, CompactRequest
-from s2a.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN
+from s2a.research.wam.training.clean.wam_clean_capture import NoiseRoster
+from s2a.research.wam.training.clean.wam_clean_compact import CompactCaptureSink, CompactRequest
+from scripts.qualify_wam_clean_bridge import (
+    CONVERSION_SOURCE,
+    SAMPLER_SOURCE,
+    ConversionWitness,
+    imported_cosmos_sources,
+    response_arrays,
+    runtime_environment,
+)
 
 
 def admit_round(prepared, *, round_name, d0_audit_ref, w1_fit_ref, w1_verification_ref, prepared_ref, registration_ref):
@@ -220,11 +220,11 @@ def run(
     bridge = counter = initial = model = None
     try:
         import torch
-        from audit_wam_current_numerics import require_eval
-        from run_wam_readout_features import BoundaryCounter, actual_context
-        from run_wam_readout_sampling import InitialCapture
 
-        from s2a.wam_runtime import install_active_slot_mask, load_service
+        from s2a.backends.wam.runtime import install_active_slot_mask, load_service
+        from scripts.audit_wam_current_numerics import require_eval
+        from scripts.run_wam_readout_features import BoundaryCounter, actual_context
+        from scripts.run_wam_readout_sampling import InitialCapture
 
         require(
             gpu_uuid == GPU and torch.cuda.is_available() and torch.cuda.device_count() == 1,

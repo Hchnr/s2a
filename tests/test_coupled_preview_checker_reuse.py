@@ -4,8 +4,10 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from coupled_gripper_preview_acceptance_checker import preview_mapping
+from s2a.infrastructure.repository_paths import repository_root
+
+sys.path.insert(0, str(repository_root(anchor=__file__) / "scripts"))
+from scripts.coupled_gripper_preview_acceptance_checker import preview_mapping
 
 
 def case_function(path):

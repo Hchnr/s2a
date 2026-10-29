@@ -1,8 +1,9 @@
 """109 combine all original72 and new63 contrasts with distinct source identities."""
 
 import numpy as np
-from arm_joint_wrench_coverage_training import contrast_rows as coverage_rows
-from arm_joint_wrench_training import contrast_rows as prior_rows
+
+from scripts.arm_joint_wrench_coverage_training import contrast_rows as coverage_rows
+from scripts.arm_joint_wrench_training import contrast_rows as prior_rows
 
 
 def contrast_rows(config, e, parameters):

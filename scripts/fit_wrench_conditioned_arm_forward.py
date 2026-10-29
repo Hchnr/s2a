@@ -4,13 +4,19 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_wrench_data import attach_current_wrench
-from arm_wrench_training import contrast_rows
-from audit_wam_position import Evidence
 from scipy.linalg import cho_factor, cho_solve
 
-from s2a.artifacts import sha256
-from s2a.wrench_conditioned_arm_forward import design, nominal, raw_condition, targets, with_history
+from s2a.infrastructure.artifacts import sha256
+from s2a.research.response_models.wrench.wrench_conditioned_arm_forward import (
+    design,
+    nominal,
+    raw_condition,
+    targets,
+    with_history,
+)
+from scripts.arm_wrench_data import attach_current_wrench
+from scripts.arm_wrench_training import contrast_rows
+from scripts.audit_wam_position import Evidence
 
 CONFIG = Path("configs/wrench_conditioned_arm_forward_20261025.json")
 ROOT = Path("outputs/wrench_conditioned_arm_forward_20261025")

@@ -11,9 +11,10 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.saved_trajectory_differences import diagnose_saved_differences
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.saved_trajectory_differences import diagnose_saved_differences
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 PLAN = REPO / "plans/v0.0.1/saved_trajectory_differences_20261028.md"
 OUTPUT = REPO / "outputs/tracking_v5_saved_differences_20261028"
 SOURCES = (

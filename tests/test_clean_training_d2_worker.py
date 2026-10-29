@@ -5,8 +5,8 @@ import builtins
 
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import GPU
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import GPU
 
 
 def capture_body(path):
@@ -45,7 +45,7 @@ def test_actual_capture_body_changes_only_experiment_variant_and_admission():
 
 
 def test_actual_worker_dry_does_not_import_torch_or_initialize_model(monkeypatch):
-    import collect_wam_clean_d2 as worker
+    import scripts.collect_wam_clean_d2 as worker
 
     calls = []
 
@@ -70,7 +70,7 @@ def test_actual_worker_dry_does_not_import_torch_or_initialize_model(monkeypatch
 
 
 def test_missing_execution_admission_stops_before_model_path(monkeypatch):
-    import collect_wam_clean_d2 as worker
+    import scripts.collect_wam_clean_d2 as worker
 
     def reject(*a, **k):
         raise ValueError("independent execution metadata missing")
@@ -82,7 +82,7 @@ def test_missing_execution_admission_stops_before_model_path(monkeypatch):
 
 
 def test_dry_cannot_bypass_allowed_gpu_identity(monkeypatch):
-    import collect_wam_clean_d2 as worker
+    import scripts.collect_wam_clean_d2 as worker
 
     monkeypatch.setattr(worker, "admit", lambda *a, **k: ({}, {}, {}, None, {}, {}))
     with pytest.raises(ValueError, match="allowed UUID"):
@@ -91,7 +91,8 @@ def test_dry_cannot_bypass_allowed_gpu_identity(monkeypatch):
 
 def test_d2_audit_requires_registered052_ridge_and_finite_parameters():
     import numpy as np
-    from verify_wam_clean_d2 import head_parameters
+
+    from scripts.verify_wam_clean_d2 import head_parameters
 
     params = dict(
         schema_version="s2a.clean-residual-readout.v1",
@@ -143,8 +144,8 @@ def test_lifecycle_proof_preserves_all_receipt_checks_for_new_worker():
 def test_owner_command_parses_through_actual_worker_cli(monkeypatch, capsys):
     import sys
 
-    import collect_wam_clean_d2 as worker
-    from run_wam_clean_d2 import worker_command
+    import scripts.collect_wam_clean_d2 as worker
+    from scripts.run_wam_clean_d2 import worker_command
 
     pref = {"path": str(REPO / "outputs/test/prepared.json"), "sha256": "1" * 64}
     regref = {"path": str(REPO / "outputs/test/registration.json"), "sha256": "2" * 64}
@@ -163,7 +164,7 @@ def test_owner_command_parses_through_actual_worker_cli(monkeypatch, capsys):
 
 
 def test_independent_metadata_body_proof_rejects_sampler_budget_change(tmp_path, monkeypatch):
-    import verify_wam_clean_d2_metadata as metadata
+    import scripts.verify_wam_clean_d2_metadata as metadata
 
     assert metadata.body_proof()["passed"] is True
     scripts = tmp_path / "scripts"

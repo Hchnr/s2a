@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-import s2a.terminal_development_control as control
+import s2a.research.wam.tracking.runtime.terminal_development_control as control
 
 
 @pytest.fixture

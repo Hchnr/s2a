@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
 
 CONFIG = REPO / "configs/wam_native_training_model_contract_20261021.json"
 CONFIG_SHA = "55721ffe9fe472b247a9ee4191754a2ecd5f49a107400b20d9254af5102f3f6f"

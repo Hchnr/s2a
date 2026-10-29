@@ -3,16 +3,17 @@
 import copy
 import importlib.util
 import json
-from pathlib import Path
 
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def driver(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location(
         "generated_reference_diagnostic_test", root / "scripts/diagnose_generated_reference_calibration.py"
@@ -27,7 +28,7 @@ def protocol(driver):
 
 
 def synthetic_cases():
-    from s2a.reference_gains import relative_features
+    from s2a.references.gains import relative_features
 
     result = []
     for episode in range(6):

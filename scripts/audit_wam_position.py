@@ -20,13 +20,13 @@ import numpy as np
 import yaml
 from PIL import Image
 from scipy.spatial.transform import Rotation
-from verify_gripper_position_hold import GripperReplay
 
-from s2a.artifacts import REPO
-from s2a.gripper_intent_hold import GripperIntentHold, GripperIntentHoldConfig
-from s2a.gripper_position_hold import GripperPositionHold, GripperPositionHoldConfig
-from s2a.osc import OSCInterface, OSCStateToAction
-from s2a.task_acceptance import task_outcome
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
+from s2a.evaluation.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.gripper.gripper_intent_hold import GripperIntentHold, GripperIntentHoldConfig
+from s2a.research.gripper.gripper_position_hold import GripperPositionHold, GripperPositionHoldConfig
+from scripts.verify_gripper_position_hold import GripperReplay
 
 CONFIGS = (
     ("configs/gripper_position_hold_qualification_20261021.json", "oracle"),

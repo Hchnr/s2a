@@ -5,7 +5,9 @@ Does not import the producer control gate or any controller/model implementation
 
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 RUN = REPO / "outputs/coupled_preview_control_20261026"
 OWNER = REPO / "outputs/coupled_preview_continuation_20261026"
 REPAIR = REPO / "outputs/coupled_preview_verification_repair_20261026"

@@ -3,11 +3,11 @@
 from pathlib import Path
 
 import numpy as np
-from arm_wrench_data import attach_current_wrench
-from arm_wrench_independent import INPUTS
 from scipy.spatial.transform import Rotation
 
-from s2a.wrench_conditioned_arm_forward import design, nominal, with_history
+from s2a.research.response_models.wrench.wrench_conditioned_arm_forward import design, nominal, with_history
+from scripts.arm_wrench_data import attach_current_wrench
+from scripts.arm_wrench_independent import INPUTS
 
 
 def contrast_rows(config, e, parameters):

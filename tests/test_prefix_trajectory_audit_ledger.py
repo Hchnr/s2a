@@ -7,20 +7,20 @@ the production constraint audit; this is not a native dynamics qualification.
 
 import importlib
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-import s2a.prefix_preserving_trajectory_plan as planning
+import s2a.research.trajectory_search.prefix_preserving_trajectory_plan as planning
+from s2a.infrastructure.repository_paths import repository_root
 from tests.test_prefix_preserving_trajectory_plan import inputs, optimizer_result, response
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    module = importlib.import_module("check_tracking_v5_prefix_preserving_trajectory_control")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    module = importlib.import_module("scripts.check_tracking_v5_prefix_preserving_trajectory_control")
     return module.audit_prefix_search_ledger
 
 

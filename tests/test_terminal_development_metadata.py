@@ -4,13 +4,13 @@ import json
 
 import pytest
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 
 @pytest.fixture
 def metadata(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("verify_wam_terminal_development_metadata")
+    return importlib.import_module("scripts.verify_wam_terminal_development_metadata")
 
 
 def profile(m):

@@ -12,7 +12,10 @@ from pathlib import Path
 
 import numpy as np
 import yaml
-from audit_wam_sampler_steps import (
+from scipy.spatial.transform import Rotation
+
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.audit_wam_sampler_steps import (
     Evidence,
     check_saved_metrics,
     expected_schedule,
@@ -22,10 +25,9 @@ from audit_wam_sampler_steps import (
     tensor_header,
     value_identity,
 )
-from run_wam_short_replan import process_record
-from scipy.spatial.transform import Rotation
+from scripts.run_wam_short_replan import process_record
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = repository_root(anchor=__file__)
 BASE = ROOT / "outputs/wam_stability_20261021"
 STUDY = BASE / "backend_state/8400_flash3_video"
 SDPA = BASE / "sampler_steps_state"

@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from s2a.joint_limit_native import JointLimitResponseHistory
+from s2a.research.joint_control.limits.joint_limit_native import JointLimitResponseHistory
 
 
 def test_completed_history_uses_executed_prediction_and_rejects_pending_replan():

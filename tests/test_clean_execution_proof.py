@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from s2a.clean_execution_proof import check_execution_proof
+from s2a.research.wam.training.clean.clean_execution_proof import check_execution_proof
 from tests.execution_proof_fixture import reference, seal_execution
 
 

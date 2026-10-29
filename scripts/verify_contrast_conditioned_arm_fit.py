@@ -4,9 +4,10 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_contrast_independent import equations
-from arm_forward_independent import conditions, feature_matrix, nominal_prediction
-from audit_wam_position import Evidence
+
+from scripts.arm_contrast_independent import equations
+from scripts.arm_forward_independent import conditions, feature_matrix, nominal_prediction
+from scripts.audit_wam_position import Evidence
 
 ROOT = Path("outputs/contrast_conditioned_arm_forward_20261025")
 

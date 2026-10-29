@@ -17,10 +17,12 @@ from pathlib import Path
 
 import numpy as np
 import yaml
-from audit_wam_earlier_screen import decode_rotation
 from scipy.spatial.transform import Rotation
 
-ROOT = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.audit_wam_earlier_screen import decode_rotation
+
+ROOT = repository_root(anchor=__file__)
 STUDY = ROOT / "outputs/wam_stability_20261021/sampler_steps_state"
 READY = ROOT / "outputs/wam_stability_20261021/short_replan_preflight/sampler_services_ready_resource_snapshot.json"
 READY_SHA = "aab01a6a8b5acea2000e6e50143cdb4c5ad51f7a8551ec818e58a597323ea34e"

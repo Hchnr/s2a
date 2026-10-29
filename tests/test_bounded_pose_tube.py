@@ -3,9 +3,9 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.bounded_pose_tube import closest_pose_in_tube
-from s2a.full_coupled_pose_inverse import left_jacobian
 from s2a.geometry import transform
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse import left_jacobian
+from s2a.research.joint_control.preview.bounded_pose_tube import closest_pose_in_tube
 
 
 def fk(q):

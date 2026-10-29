@@ -4,15 +4,16 @@ import copy
 import hashlib
 import importlib.util
 import subprocess
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location("temporal_wam_audit_test", root / "scripts/audit_wam_temporal_wam.py")
     module = importlib.util.module_from_spec(spec)
@@ -124,7 +125,7 @@ def test_new_coordinator_release_uses_real_ticks_and_wait_statuses(audit):
 
 
 def test_the_independent_ensemble_checker_is_frozen_and_reused(audit):
-    import wam_temporal_position_checker as checker
+    import scripts.wam_temporal_position_checker as checker
 
     assert audit.verify_case is checker.verify_case and audit.verify_query is checker.verify_query
     original = subprocess.check_output(
@@ -137,7 +138,7 @@ def test_the_independent_ensemble_checker_is_frozen_and_reused(audit):
 
 
 def test_only_scope_independent_helpers_are_reused_from019(audit):
-    import audit_wam_raw8_seed43 as previous
+    import scripts.audit_wam_raw8_seed43 as previous
 
     for name in (
         "checkpoint_stats",

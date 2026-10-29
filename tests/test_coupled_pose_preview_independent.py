@@ -2,9 +2,9 @@ import copy
 
 import numpy as np
 import pytest
-from coupled_pose_preview_independent import verify_preview
 
-from s2a.coupled_pose_preview import plan_pose
+from s2a.research.joint_control.preview.coupled_pose_preview import plan_pose
+from scripts.coupled_pose_preview_independent import verify_preview
 from tests.test_coupled_pose_preview import problem
 
 

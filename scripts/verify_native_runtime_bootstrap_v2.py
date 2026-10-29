@@ -6,10 +6,9 @@ import copy
 import hashlib
 from pathlib import Path
 
-from prepare_native_runtime_path_snapshot import checked, read
-from prepare_native_runtime_path_snapshot import reference as reference
-
-from s2a.native_runtime_path_snapshot import REPO
+from s2a.infrastructure.snapshots.native_runtime_path_snapshot import REPO
+from scripts.prepare_native_runtime_path_snapshot import checked, read
+from scripts.prepare_native_runtime_path_snapshot import reference as reference
 
 BASELINE_REF = dict(
     path=str(REPO / "scripts/verify_native_runtime_bootstrap.py"),
@@ -309,7 +308,7 @@ def _repair_parent(config, refs):
 
 
 def inspect_inputs(config):
-    from s2a.native_runtime_bootstrap_v2 import compile_repair_proof
+    from s2a.research.native_runtime.bootstrap_v2 import compile_repair_proof
 
     parent_refs = {}
     parent = _repair_parent(config, parent_refs)

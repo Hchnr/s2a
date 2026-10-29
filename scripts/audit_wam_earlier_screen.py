@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import sha256, write_json
+from s2a.infrastructure.artifacts import sha256, write_json
 
 LABELS = ("8400_g10", "8600_g10", "8800_g10", "15400_g10")
 

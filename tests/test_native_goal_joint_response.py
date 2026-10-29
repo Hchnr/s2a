@@ -16,8 +16,8 @@ runtime and these cases, not a cross-BLAS/backend bitwise guarantee.
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-import s2a.native_goal_joint_response as native_response
-from s2a.nonlinear_joint_response import rollout_nonlinear_joint_response
+import s2a.research.response_models.forward.native_goal_joint_response as native_response
+from s2a.research.response_models.nonlinear.nonlinear_joint_response import rollout_nonlinear_joint_response
 
 # Recorded from archived transform_utils.py SHA256 below, using native
 # NumPy1.26.4/Numba0.68.0 JIT. This exposes dot/normalization and scalar-promotion
@@ -194,7 +194,7 @@ def check_native_jit_fidelity():
     import numba
     import scipy
 
-    from s2a.artifacts import REPO
+    from s2a.infrastructure.artifacts import REPO
 
     assert os.environ.get("CUDA_VISIBLE_DEVICES") == os.environ.get("LD_LIBRARY_PATH") == ""
     assert os.environ.get("PYTHONDONTWRITEBYTECODE") == "1"

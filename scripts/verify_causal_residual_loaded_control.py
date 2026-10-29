@@ -7,12 +7,12 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from causal_residual_loaded_acceptance_checker import verify_case
-from verify_settled_native_training import verify_canvas
-from verify_training_recovery_labels import check_labels
 
-from s2a.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from scripts.audit_wam_position import Evidence
+from scripts.causal_residual_loaded_acceptance_checker import verify_case
+from scripts.verify_settled_native_training import verify_canvas
+from scripts.verify_training_recovery_labels import check_labels
 
 ROOT = Path("outputs/causal_residual_loaded_control_20261025")
 

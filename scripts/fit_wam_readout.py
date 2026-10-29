@@ -7,8 +7,8 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO, sha256
-from s2a.wam_readout import ACTIVE_MASK, HIDDEN_SIZE, LIBERO_DOMAIN, DomainContext, ResidualReadout
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, HIDDEN_SIZE, LIBERO_DOMAIN, DomainContext, ResidualReadout
 
 CONFIG = REPO / "configs/wam_frozen_readout_20261021.json"
 CONFIG_SHA = "6534245a114d89167f6d8cd283e55de8685b4a02abca79706436309477860605"

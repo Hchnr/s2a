@@ -4,8 +4,9 @@ import hashlib
 from pathlib import Path
 
 import numpy as np
-from verify_wam_clean_training_capture import VISION, canonical, require, verify_point
-from verify_wam_terminal_points import step_head
+
+from scripts.verify_wam_clean_training_capture import VISION, canonical, require, verify_point
+from scripts.verify_wam_terminal_points import step_head
 
 
 def audit_points(

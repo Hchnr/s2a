@@ -1,6 +1,6 @@
 import pytest
 
-import s2a.terminal_development_execution as execution
+import s2a.research.wam.tracking.runtime.terminal_development_execution as execution
 
 
 def evidence(tmp_path, monkeypatch):

@@ -13,24 +13,24 @@ import json
 import os
 
 import numpy as np
-from check_tracking_v5_prefix_preserving_trajectory_control import (
+
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.research.trajectory_search.saved_direction_backtracking_evidence import require
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from scripts.check_tracking_v5_prefix_preserving_trajectory_control import (
     audit_prefix_search_ledger,
     finite_max_abs_difference,
     require_absolute_tolerance,
 )
-from check_tracking_v5_saved_direction_backtracking import (
+from scripts.check_tracking_v5_saved_direction_backtracking import (
     NUMERIC_TOLERANCE,
     TORQUE_TOLERANCE,
     case_engine,
     native_math_proof,
 )
-from check_tracking_v5_saved_direction_backtracking_v2 import compare_contract as compare_strings
-
-from s2a.artifacts import REPO
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result as publish
-from s2a.saved_direction_backtracking_evidence import require
-from s2a.terminal_development_execution import CONTROL_REF
+from scripts.check_tracking_v5_saved_direction_backtracking_v2 import compare_contract as compare_strings
 
 CASES = ("baseline", "candidate")
 TRACE_FIELDS = {"commands", "safety_min", "joint_feasible", "tcp_errors", "prefix_length", "feasible"}
@@ -620,7 +620,7 @@ def audit_trust_search_ledger(answer, classifications, *, compare=numerical_comp
 
 
 def main(case, dry=False):
-    from s2a.prefix_trust_control_evidence import (
+    from s2a.research.trajectory_search.prefix_trust_control_evidence import (
         CPU_ENVIRONMENT,
         NATIVE_PYTHON,
         PLAN,

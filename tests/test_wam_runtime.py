@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from s2a.wam_runtime import install_active_slot_mask
+from s2a.backends.wam.runtime import install_active_slot_mask
 
 
 def test_inactive_slots_cannot_enter_forward_or_velocity():

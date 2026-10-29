@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from s2a.fk_consistent_trajectory_joint_plan import solve_interior_plan as all_caps
-from s2a.fk_pose_cap_scope_joint_plan import solve_interior_plan
+from s2a.research.trajectory_search.fk_consistent_trajectory_joint_plan import solve_interior_plan as all_caps
+from s2a.research.trajectory_search.fk_pose_cap_scope_joint_plan import solve_interior_plan
 from tests.test_fk_consistent_trajectory_joint_plan import setup
 
 

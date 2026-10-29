@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.libero_audit import post_action_reference
+from s2a.evaluation.libero.audit import post_action_reference
 
 
 def test_post_action_endpoints_include_first_and_last_without_reanchoring():

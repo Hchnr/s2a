@@ -5,9 +5,9 @@ from pathlib import Path
 
 import mujoco
 import numpy as np
-from audit_wam_position import Evidence
 
-from s2a.frozen_osc_response import goal_response
+from s2a.dynamics.frozen_osc_response import goal_response
+from scripts.audit_wam_position import Evidence
 
 ROOT = Path("outputs/frozen_inertial_coupling_diagnosis_20261025")
 

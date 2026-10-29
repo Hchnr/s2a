@@ -6,15 +6,22 @@ import json
 import subprocess
 from pathlib import Path
 
-from run_wam_clean_training import environment
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import GPU, checked, publish, read, reference, require
-from s2a.terminal_development_control import BASE_REF, RELOCATION_REF
-from s2a.terminal_development_execution import BUDGET, CONTROL_REF, MASTER_PORT, PORT, ROLES, ROOT, admit_execution
-from s2a.terminal_development_gate import ROOT as STATE_ROOT
-from s2a.terminal_development_gate import admit_state
-from s2a.terminal_development_policy import case_order
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.tracking.runtime.terminal_development_control import BASE_REF, RELOCATION_REF
+from s2a.research.wam.tracking.runtime.terminal_development_execution import (
+    BUDGET,
+    CONTROL_REF,
+    MASTER_PORT,
+    PORT,
+    ROLES,
+    ROOT,
+    admit_execution,
+)
+from s2a.research.wam.tracking.runtime.terminal_development_gate import ROOT as STATE_ROOT
+from s2a.research.wam.tracking.runtime.terminal_development_gate import admit_state
+from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
+from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, publish, read, reference, require
+from scripts.run_wam_clean_training import environment
 
 TESTS = sorted(str(p.relative_to(REPO)) for p in (REPO / "tests").glob("test_terminal_development_*.py"))
 
@@ -93,7 +100,7 @@ def prepare():
     )
     for key in ("model_config", "prerequisite_refs", "weight_files", "noise_roster"):
         value[key] = copy.deepcopy(state[key])
-    from prepare_wam_synchronous_validation import source_closure
+    from scripts.prepare_wam_synchronous_validation import source_closure
 
     entries = (
         TESTS

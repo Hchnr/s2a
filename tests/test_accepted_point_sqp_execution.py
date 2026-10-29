@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 
 import tests.test_prefix_callback_backtracking_execution as prior
+from s2a.infrastructure.repository_paths import repository_root
 from tests.test_prefix_callback_backtracking_execution import write_json
 from tests.test_prefix_trust_control_execution import (
     CountingDynamics,
@@ -22,11 +23,11 @@ from tests.test_prefix_trust_control_execution import (
 
 @pytest.fixture
 def modules(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
-        producer=importlib.import_module("probe_tracking_v5_accepted_point_sqp"),
-        evidence=importlib.import_module("s2a.accepted_point_sqp_evidence"),
-        owner=importlib.import_module("execute_tracking_v5_accepted_point_sqp"),
+        producer=importlib.import_module("scripts.probe_tracking_v5_accepted_point_sqp"),
+        evidence=importlib.import_module("s2a.research.trajectory_search.accepted_point_sqp_evidence"),
+        owner=importlib.import_module("scripts.execute_tracking_v5_accepted_point_sqp"),
     )
 
 
@@ -66,7 +67,7 @@ def test_default_new_solver_keeps_same_actual368_reset_and_exact_charge(modules,
 
     monkeypatch.setitem(
         sys.modules,
-        "s2a.accepted_point_sqp_plan",
+        "s2a.research.trajectory_search.accepted_point_sqp_plan",
         SimpleNamespace(solve_accepted_point_sqp_response=solver),
     )
     result = modules.producer.run_search(source, warm, interface, dynamics, rollout_fn=captured_rollout(source, calls))
@@ -159,10 +160,10 @@ def test_owner_cannot_accept_wrong_algorithm_or_qp_budget(modules, key, value):
 def native_qa(modules, monkeypatch, tmp_path):
     native = tmp_path / "native_python"
     names = (
-        "execute_tracking_v5_prefix_optimization_reserve",
-        "execute_tracking_v5_prefix_callback_backtracking",
-        "execute_tracking_v5_prefix_trust_check_v2",
-        "execute_tracking_v5_prefix_trust_control",
+        "scripts.execute_tracking_v5_prefix_optimization_reserve",
+        "scripts.execute_tracking_v5_prefix_callback_backtracking",
+        "scripts.execute_tracking_v5_prefix_trust_check_v2",
+        "scripts.execute_tracking_v5_prefix_trust_control",
     )
     for module in [modules.owner, *(importlib.import_module(name) for name in names)]:
         monkeypatch.setattr(module, "REPO", tmp_path)
@@ -364,12 +365,12 @@ def test_incomplete_or_changed_reserve_replay_cannot_admit_search(modules, monke
 
 
 def checker_run(modules, monkeypatch, tmp_path):
-    checker = importlib.import_module("check_tracking_v5_accepted_point_sqp")
-    monkeypatch.setitem(sys.modules, "check_tracking_v5_prefix_callback_backtracking", checker)
+    checker = importlib.import_module("scripts.check_tracking_v5_accepted_point_sqp")
+    monkeypatch.setitem(sys.modules, "scripts.check_tracking_v5_prefix_callback_backtracking", checker)
     run = prior.new_checker_run(modules, monkeypatch, tmp_path)
-    metadata = sys.modules["s2a.prefix_callback_backtracking_evidence"]
+    metadata = sys.modules["s2a.research.trajectory_search.prefix_callback_backtracking_evidence"]
     metadata.PREFIX_OPTIMIZATION_MARGIN = 1e-4
-    monkeypatch.setitem(sys.modules, "s2a.accepted_point_sqp_evidence", metadata)
+    monkeypatch.setitem(sys.modules, "s2a.research.trajectory_search.accepted_point_sqp_evidence", metadata)
     owner, _ = metadata.closed_owner(None, None)
     metadata.read(owner["owned_command"]["launch"])["command"][1] = str(
         tmp_path / "scripts/probe_tracking_v5_accepted_point_sqp.py"

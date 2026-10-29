@@ -1,14 +1,14 @@
 import copy
 
-import guarded_loading_support_independent as independent
 import numpy as np
 import pytest
-import qualified_inverse_independent as kkt
 
-import s2a.support_aware_inverse as producer
-from s2a.loading_phase_inverse import LoadingPhaseSupport
-from s2a.tracking_guarded_loading_inverse import tracking_guarded_loading_translation
-from s2a.training_support import TrainingSupport
+import s2a.research.response_models.inverse.support_aware_inverse as producer
+import scripts.guarded_loading_support_independent as independent
+import scripts.qualified_inverse_independent as kkt
+from s2a.research.joint_control.inverse.tracking_guarded_loading_inverse import tracking_guarded_loading_translation
+from s2a.research.response_models.inverse.loading_phase_inverse import LoadingPhaseSupport
+from s2a.research.wam.training.native.training_support import TrainingSupport
 
 
 @pytest.mark.parametrize("route,weight", [("native_close_load", 0), ("model_tracking", 0.5)])

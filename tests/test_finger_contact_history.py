@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.finger_contact_history import contact_history
+from s2a.research.gripper.finger_contact_history import contact_history
 
 
 def observations():

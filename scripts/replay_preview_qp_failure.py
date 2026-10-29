@@ -6,10 +6,10 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO, write_json
-from s2a.clean_training_runtime import read, reference
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.infrastructure.artifacts import REPO, write_json
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.training.clean.clean_training_runtime import read, reference
 
 ROOT = REPO / "outputs/preview_qp_failure_replay_20261027"
 CASE = REPO / "outputs/serialized_preview_wam_development_20261026/development/cases/task2_init0_s42_raw"
@@ -23,10 +23,10 @@ def main():
     try:
         guard = read(CONTROL_REF)["cv2_guard_registration"]
         restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
-        from s2a import coupled_pose_preview
-        from s2a.coupled_pose_preview_runtime import solve_preview
-        from s2a.gripper_motor_state import preserve_motor_target
-        from s2a.libero_simulation import current_observation, make_environment, source_pose
+        from s2a.backends.libero.simulation import current_observation, make_environment, source_pose
+        from s2a.research.gripper.gripper_motor_state import preserve_motor_target
+        from s2a.research.joint_control.preview import coupled_pose_preview
+        from s2a.research.joint_control.preview.coupled_pose_preview_runtime import solve_preview
 
         folder = next(CASE.glob("simulation/*/*/manifest.json")).parent
         refs = {

@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from s2a.joint_limit_preview import rollout_joint_preview as short_rollout
-from s2a.joint_limit_response import build_joint_response, predict_joint_response
-from s2a.long_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.joint_control.limits.joint_limit_preview import rollout_joint_preview as short_rollout
+from s2a.research.joint_control.preview.long_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.response_models.forward.joint_limit_response import build_joint_response, predict_joint_response
 
 
 def test_long_preview_reanchors_and_carries_velocity_across_eight_periods():
@@ -45,8 +45,8 @@ def test_long_preview_reanchors_and_carries_velocity_across_eight_periods():
 
 
 def test_eight_period_inverse_recovers_feasible_action_generated_reference():
-    from s2a.long_joint_inverse import refine_long_plan
-    from s2a.osc import OSCInterface
+    from s2a.controllers.osc import OSCInterface
+    from s2a.research.joint_control.preview.long_joint_inverse import refine_long_plan
 
     q = np.zeros(7)
     model = build_joint_preview(

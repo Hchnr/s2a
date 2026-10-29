@@ -6,22 +6,22 @@ import json
 import os
 
 import numpy as np
-from audit_wam_position import Evidence
-from current_coupled_arm_log_replay import CurrentCoupledArmLogReplay
-from executed_residual_independent import ExecutedResidualReplay
-from run_matched_oracle_case import CONTROL, CONTROL_SHA
 
-from s2a.archived_forward_state import verify_forward_state
-from s2a.artifacts import REPO, sha256
-from s2a.coupled_response_history import CoupledResponseHistory
-from s2a.current_coupled_response import build_response, solve_translation
-from s2a.current_coupled_state import rotation_goal_from_command
-from s2a.durable_stage_supervisor import publish
-from s2a.executed_command_residual import ExecutedCommandResidualOSC
-from s2a.joint_wrench_condition_forward import nominal
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.osc import OSCInterface
-from s2a.runtime_response_history import RuntimeResponseHistory
+from s2a.controllers.osc import OSCInterface
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.research.joint_control.tracking.current_coupled_state import rotation_goal_from_command
+from s2a.research.response_models.causal.coupled_response_history import CoupledResponseHistory
+from s2a.research.response_models.causal.executed_command_residual import ExecutedCommandResidualOSC
+from s2a.research.response_models.causal.runtime_response_history import RuntimeResponseHistory
+from s2a.research.response_models.forward.archived_forward_state import verify_forward_state
+from s2a.research.response_models.forward.current_coupled_response import build_response, solve_translation
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import nominal
+from scripts.audit_wam_position import Evidence
+from scripts.current_coupled_arm_log_replay import CurrentCoupledArmLogReplay
+from scripts.executed_residual_independent import ExecutedResidualReplay
+from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
 
 
 def serialized(value):

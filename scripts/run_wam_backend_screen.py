@@ -15,11 +15,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
-from run_wam_sampler_steps import check_weights, stage_admission, validate_prepared
-from run_wam_short_replan import cpu_environment, process_record, stop_owned, write_new
 
-from s2a.artifacts import REPO, sha256
-from s2a.sampler_trace import check_sources
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.research.wam.readout.sampler_trace import check_sources
+from scripts.run_wam_sampler_steps import check_weights, stage_admission, validate_prepared
+from scripts.run_wam_short_replan import cpu_environment, process_record, stop_owned, write_new
 
 CONFIG = REPO / "configs/wam_backend_flash3_video_20261021.json"
 PLAN = REPO / "plans/v0.0.1/013_attention_backend_state_20261021.md"

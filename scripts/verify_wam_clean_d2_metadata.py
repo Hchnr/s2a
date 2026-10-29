@@ -6,9 +6,8 @@ import copy
 import json
 from pathlib import Path
 
-from verify_wam_clean_training_capture import Evidence, current_request, require
-
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
+from scripts.verify_wam_clean_training_capture import Evidence, current_request, require
 
 
 def body_proof():

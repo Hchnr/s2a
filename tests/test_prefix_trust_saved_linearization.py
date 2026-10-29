@@ -3,16 +3,17 @@
 import importlib
 import json
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def diagnostic(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("diagnose_prefix_trust_saved_linearization")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.diagnose_prefix_trust_saved_linearization")
 
 
 class Archive:

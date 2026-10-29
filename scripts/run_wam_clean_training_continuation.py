@@ -8,8 +8,7 @@ import signal
 import uuid
 from pathlib import Path
 
-from s2a.clean_execution_proof import check_execution_proof
-from s2a.durable_stage_supervisor import (
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     REPO,
     accept_detached_launch,
     check_cpu_environment,
@@ -25,6 +24,7 @@ from s2a.durable_stage_supervisor import (
     require,
     sha,
 )
+from s2a.research.wam.training.clean.clean_execution_proof import check_execution_proof
 
 NEW_ROOT_REL = Path("outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023")
 STAGES = ("D0", "W1", "D1", "W2", "STATE", "DEVELOPMENT")

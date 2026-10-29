@@ -5,26 +5,29 @@ import json
 import os
 
 import numpy as np
-from check_tracking_v5_accepted_point_sqp import case_engine
-from check_tracking_v5_prefix_trust_control import compare_contract
-from check_tracking_v5_saved_direction_backtracking import NUMERIC_TOLERANCE, TORQUE_TOLERANCE, native_math_proof
-from check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
-from check_tracking_v5_terminal_secant_probe import verify_response_trace
 
-from s2a.accepted_point_sqp_evidence import PREFIX_CHECK_REF
-from s2a.infrastructure.legacy_script_imports import verify_legacy_modules
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.research.trajectory_search.inputs import validate_historical_registration
-from s2a.restored_anchor_sqp_evidence import (
+from s2a.infrastructure.legacy_script_imports import CurrentScriptImports
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.accepted_point_sqp_evidence import PREFIX_CHECK_REF
+from s2a.research.trajectory_search.inputs import model_registration, validate_historical_registration
+from s2a.research.trajectory_search.restored_anchor_sqp_evidence import (
     CPU_ENVIRONMENT,
     REPO,
-    model_registration,
     read,
     reference,
     remember,
     require,
 )
+from scripts.check_tracking_v5_accepted_point_sqp import case_engine
+from scripts.check_tracking_v5_prefix_trust_control import compare_contract
+from scripts.check_tracking_v5_saved_direction_backtracking import (
+    NUMERIC_TOLERANCE,
+    TORQUE_TOLERANCE,
+    native_math_proof,
+)
+from scripts.check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
+from scripts.check_tracking_v5_terminal_secant_probe import verify_response_trace
 from scripts.tracking.trajectory_search.check_tracking_v5_rejected_response_search import verify_fresh_feedback
 from scripts.tracking.trajectory_search.check_tracking_v5_state_vector_gn_search import verify_fresh_decisions
 from scripts.tracking.trajectory_search.state_vector_dual_recovery_audit import (
@@ -36,8 +39,7 @@ ROOT = REPO / "outputs/tracking_v5_state_vector_dual_recovery_check_20261029"
 
 
 def main(dry=False):
-    from probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
-
+    from scripts.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
     from scripts.tracking.trajectory_search.probe_tracking_v5_state_vector_dual_recovery import (
         CONFIG,
         initial_error_vector_jacobian,
@@ -50,6 +52,8 @@ def main(dry=False):
     require(
         all(os.environ.get(key) == value for key, value in CPU_ENVIRONMENT.items()), "Single-thread CPU environment"
     )
+    current_imports = CurrentScriptImports(root=REPO)
+    current_imports.verify_present()
     bundle, config, context = load_inputs()
     refs = context.runtime_refs
     Js, Jq = initial_model(bundle)
@@ -57,13 +61,14 @@ def main(dry=False):
     np.testing.assert_array_equal(Je, initial_error_vector_jacobian(bundle))
     source, source_reg = bundle["source"], bundle["source_registration"]
     guard = load_environment_guard(refs)
-    _, proof = model_registration(source_reg, refs)
+    _, proof = model_registration(source_reg, context, bundle)
     math_proof = native_math_proof()
     remember(math_proof["source_ref"], refs)
     prefix_check = read(remember(PREFIX_CHECK_REF, refs))
     prefix_check_reg = read(remember(prefix_check["registration_ref"], refs))
     context.finish()
-    legacy_identity = verify_legacy_modules()
+    current_imports.finish()
+    current_identity = current_imports.verify_present()
     if dry:
         print(
             json.dumps(dict(passed=True, dry=True, qp_solves=0, responses=0, queries=0, source_count=len(refs))),
@@ -161,7 +166,7 @@ def main(dry=False):
             config_ref=reference(CONFIG),
             input_refs=list(refs.values()),
             migration_input_identity=context.registration(),
-            legacy_import_identity=legacy_identity,
+            current_import_identity=current_identity,
             math_proof=math_proof,
             numeric_tolerance=NUMERIC_TOLERANCE,
             torque_tolerance=TORQUE_TOLERANCE,
@@ -238,6 +243,7 @@ def main(dry=False):
         )
         result["native_quaternion_jit_signatures"] = [str(value) for value in compiled_goal.nopython_signatures]
         context.finish()
+        current_imports.finish()
         strict_native_environment()
         result.update(
             complete=True,

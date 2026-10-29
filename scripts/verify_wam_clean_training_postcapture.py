@@ -13,7 +13,9 @@ import os
 import re
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 VERIFIER = Path(__file__).resolve()
 OLD_REL = "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023"
 NEW_REL = "outputs/clean_training_postcapture_repair_20261023"

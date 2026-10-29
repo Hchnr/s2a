@@ -16,20 +16,16 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
 import numpy as np
-from collect_wam_clean_training import normalization_spec, qualified_grid, same_initial
-from qualify_wam_clean_bridge import (
-    CONVERSION_SOURCE,
-    SAMPLER_SOURCE,
-    imported_cosmos_sources,
-    response_arrays,
-    runtime_environment,
-)
-from qualify_wam_clean_bridge import (
-    ConversionWitness as OriginalConversionWitness,
-)
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.joint_control.terminal.terminal_capture_identity import TerminalIdentityBridgeMixin
+from s2a.research.wam.readout.sampler_trace import check_sources, parameters_identity
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK
+from s2a.research.wam.tracking.runtime.terminal_development_execution import PORT, admit_execution
+from s2a.research.wam.tracking.runtime.terminal_development_execution import admit_service_state as admit_state
+from s2a.research.wam.tracking.runtime.terminal_development_policy import DevelopmentPolicy, case_order
+from s2a.research.wam.tracking.runtime.terminal_development_policy import case_directory as case_directory
+from s2a.research.wam.training.clean.clean_training_runtime import (
     GPU,
     VISION_SHAPE,
     checked,
@@ -38,15 +34,17 @@ from s2a.clean_training_runtime import (
     reference,
     require,
 )
-from s2a.sampler_trace import check_sources, parameters_identity
-from s2a.terminal_capture_identity import TerminalIdentityBridgeMixin
-from s2a.terminal_development_execution import PORT, admit_execution
-from s2a.terminal_development_execution import admit_service_state as admit_state
-from s2a.terminal_development_policy import DevelopmentPolicy, case_order
-from s2a.terminal_development_policy import case_directory as case_directory
-from s2a.wam_clean_capture import NoiseRoster
-from s2a.wam_clean_compact import CompactCaptureSink, CompactRequest
-from s2a.wam_readout import ACTIVE_MASK
+from s2a.research.wam.training.clean.wam_clean_capture import NoiseRoster
+from s2a.research.wam.training.clean.wam_clean_compact import CompactCaptureSink, CompactRequest
+from scripts.collect_wam_clean_training import normalization_spec, qualified_grid, same_initial
+from scripts.qualify_wam_clean_bridge import (
+    CONVERSION_SOURCE,
+    SAMPLER_SOURCE,
+    imported_cosmos_sources,
+    response_arrays,
+    runtime_environment,
+)
+from scripts.qualify_wam_clean_bridge import ConversionWitness as OriginalConversionWitness
 
 
 class ConversionWitness(TerminalIdentityBridgeMixin, OriginalConversionWitness):
@@ -181,11 +179,11 @@ def run(prepared_ref, registration_ref, *, state_owner_ref, state_verification_r
     bridge = initial = counter = model = httpd = None
     try:
         import torch
-        from audit_wam_current_numerics import require_eval
-        from run_wam_readout_features import BoundaryCounter, actual_context
-        from run_wam_readout_sampling import InitialCapture
 
-        from s2a.wam_runtime import install_active_slot_mask, load_service
+        from s2a.backends.wam.runtime import install_active_slot_mask, load_service
+        from scripts.audit_wam_current_numerics import require_eval
+        from scripts.run_wam_readout_features import BoundaryCounter, actual_context
+        from scripts.run_wam_readout_sampling import InitialCapture
 
         require(
             gpu_uuid == GPU and torch.cuda.is_available() and torch.cuda.device_count() == 1,

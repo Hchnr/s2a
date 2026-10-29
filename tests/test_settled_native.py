@@ -5,7 +5,11 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from s2a.settled_native import SettledGoalEnvironment, settled_anchor_indices, settled_command_schedule
+from s2a.research.joint_control.native.settled_native import (
+    SettledGoalEnvironment,
+    settled_anchor_indices,
+    settled_command_schedule,
+)
 
 
 def test_settled_windows_preserve_native_and_last_gripper():

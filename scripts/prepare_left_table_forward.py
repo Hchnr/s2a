@@ -3,12 +3,12 @@
 from pathlib import Path
 
 import numpy as np
-from arm_left_table_independent import equations
-from arm_left_table_training import contrast_rows
-from audit_wam_position import Evidence
-from collect_wam_native_training import write_once
 
-from s2a.artifacts import sha256
+from s2a.infrastructure.artifacts import sha256
+from scripts.arm_left_table_independent import equations
+from scripts.arm_left_table_training import contrast_rows
+from scripts.audit_wam_position import Evidence
+from scripts.collect_wam_native_training import write_once
 
 
 def main():

@@ -3,13 +3,18 @@ import json
 
 import numpy as np
 import pytest
-from current_coupled_independent import response as independent_response
-from full_coupled_pose_independent import verify_pose_solution
 from scipy.spatial.transform import Rotation
 
-from s2a.current_coupled_state import rotation_goal_from_command
-from s2a.full_coupled_pose_inverse import FullCoupledPoseModel, projected_gradient, solve_pose, task_objective
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse import (
+    FullCoupledPoseModel,
+    projected_gradient,
+    solve_pose,
+    task_objective,
+)
+from s2a.research.joint_control.tracking.current_coupled_state import rotation_goal_from_command
+from scripts.current_coupled_independent import response as independent_response
+from scripts.full_coupled_pose_independent import verify_pose_solution
 from tests.test_current_coupled_response import plant
 from tests.test_rate_preview_active_set import contract
 

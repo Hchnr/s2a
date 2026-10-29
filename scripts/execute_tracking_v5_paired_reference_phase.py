@@ -4,18 +4,17 @@ import argparse
 import json
 from pathlib import Path
 
-from probe_tracking_v5_paired_reference_phase import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
+from scripts.probe_tracking_v5_paired_reference_phase import (
     PLAN,
     PREFIX_OWNER,
     PREFIX_RESULT,
     closed_owner,
     phase_prerequisite,
 )
-from run_tracking_preview_wam_development_v5 import cpu_environment
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
+from scripts.run_tracking_preview_wam_development_v5 import cpu_environment
+from scripts.run_wam_readout import owned_command
 
 QA_TESTS = (
     "tests/test_paired_reference_phase.py",

@@ -5,10 +5,10 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import publish, sha
-from s2a.joint_wrench_condition_forward import raw_condition
-from s2a.qualified_enumerated_inverse import affine_response
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish, sha
+from s2a.research.response_models.inverse.qualified_enumerated_inverse import affine_response
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import raw_condition
 
 
 def main():

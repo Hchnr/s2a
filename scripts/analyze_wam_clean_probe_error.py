@@ -7,11 +7,11 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
-from analyze_wam_clean_capacity import checked
-from analyze_wam_clean_residual_error import add, bucket, finish
-from analyze_wam_release_horizon import reference
 
-from s2a.clean_training_data import normalize_active10
+from s2a.research.wam.training.clean.clean_training_data import normalize_active10
+from scripts.analyze_wam_clean_capacity import checked
+from scripts.analyze_wam_clean_residual_error import add, bucket, finish
+from scripts.analyze_wam_release_horizon import reference
 
 
 def main():

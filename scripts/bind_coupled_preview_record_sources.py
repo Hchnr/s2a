@@ -2,9 +2,8 @@
 
 from pathlib import Path
 
-from audit_wam_position import Evidence
-
-from s2a.durable_stage_supervisor import publish
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from scripts.audit_wam_position import Evidence
 
 
 def main():

@@ -6,12 +6,12 @@ import time
 from pathlib import Path
 
 import numpy as np
-from verify_wam_clean_training_capture import Evidence
-from verify_wam_terminal_development_points import audit_points, head_parameters
-from verify_wam_terminal_points_prefetch import audit_points as prefetched
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, reference, require
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference, require
+from scripts.verify_wam_clean_training_capture import Evidence
+from scripts.verify_wam_terminal_development_points import audit_points, head_parameters
+from scripts.verify_wam_terminal_points_prefetch import audit_points as prefetched
 
 
 def main():

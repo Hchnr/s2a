@@ -8,11 +8,11 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from s2a.action_reference import decode_action_targets
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
-from s2a.checkpoint_audit import state_metrics
+from s2a.backends.libero.simulation import sha256_bytes
+from s2a.evaluation.wam.checkpoint_audit import state_metrics
 from s2a.geometry import integrate_local, inverse, pose9_to_transform
-from s2a.libero_simulation import sha256_bytes
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
+from s2a.references.action_reference import decode_action_targets
 
 
 def fingerprint(c, root):

@@ -3,12 +3,12 @@
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from collect_wam_native_training import write_once
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import sha256
-from s2a.temporal_rotation_residual import decode, encode
+from s2a.infrastructure.artifacts import sha256
+from s2a.research.response_models.causal.temporal_rotation_residual import decode, encode
+from scripts.audit_wam_position import Evidence
+from scripts.collect_wam_native_training import write_once
 
 
 def checked_encode(packet, twist):

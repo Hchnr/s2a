@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.testing import assert_allclose
 
-from s2a.identification import LinearResponse, history_vector, replay_model, temporal_support
+from s2a.adapters.identified.linear_response import LinearResponse, history_vector, replay_model, temporal_support
 
 
 def test_recovers_coupled_gain_bias_and_regularized_inverse_without_test_fit():

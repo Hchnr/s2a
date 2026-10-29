@@ -3,10 +3,9 @@
 import os
 from pathlib import Path
 
-from audit_wam_position import Evidence
-from wam_position_acceptance_checker import source_proof, verify_case
-
-from s2a.clean_training_runtime import publish, reference, require
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference, require
+from scripts.audit_wam_position import Evidence
+from scripts.wam_position_acceptance_checker import source_proof, verify_case
 
 
 def main():

@@ -14,10 +14,12 @@ import pytest
 from PIL import Image
 from scipy.spatial.transform import Rotation
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def checker():
-    path = Path(__file__).resolve().parents[1] / "scripts/verify_wam_native_training.py"
+    path = repository_root(anchor=__file__) / "scripts/verify_wam_native_training.py"
     spec = importlib.util.spec_from_file_location("independent_native_training_checker_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

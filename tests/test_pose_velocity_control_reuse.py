@@ -1,10 +1,11 @@
 import ast
-from pathlib import Path
+
+from tests.support.source_layout import current_source_path
 
 
 def test_complete_loop_changes_only_registered_arm_objective_and_reference_velocity():
-    old = Path("src/s2a/translation_loaded_simulation.py").read_text()
-    new = Path("src/s2a/pose_velocity_loaded_simulation.py").read_text()
+    old = current_source_path("src/s2a/translation_loaded_simulation.py").read_text()
+    new = current_source_path("src/s2a/pose_velocity_loaded_simulation.py").read_text()
     new = new.replace("def run_pose_velocity_loaded_case(", "def run_translation_loaded_case(").replace(
         "        converter = PoseVelocityInverseOSC(", "        converter = TranslationInverseOSC("
     )

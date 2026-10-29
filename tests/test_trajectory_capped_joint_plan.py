@@ -2,11 +2,11 @@
 
 import numpy as np
 
-from s2a.feasibility_first_joint_plan import solve_interior_plan as first_only
 from s2a.geometry import pose_error
-from s2a.interior_joint_preview import rollout_joint_preview
-from s2a.past_inner_error_joint_plan import solve_interior_plan as joint_solve
-from s2a.trajectory_capped_joint_plan import solve_interior_plan
+from s2a.research.joint_control.preview.interior_joint_preview import rollout_joint_preview
+from s2a.research.trajectory_search.feasibility_first_joint_plan import solve_interior_plan as first_only
+from s2a.research.trajectory_search.past_inner_error_joint_plan import solve_interior_plan as joint_solve
+from s2a.research.trajectory_search.trajectory_capped_joint_plan import solve_interior_plan
 from tests.test_configurable_tracking_terminal_plan import inputs
 
 

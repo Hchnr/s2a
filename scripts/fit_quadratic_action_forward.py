@@ -7,8 +7,8 @@ from pathlib import Path
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve, lstsq
 
-from s2a.artifacts import sha256
-from s2a.durable_stage_supervisor import check_sources, cpu_environment, owned_stage, publish
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import check_sources, cpu_environment, owned_stage, publish
 
 ROOT = Path("outputs/quadratic_action_fit_20261025")
 DATA = Path("outputs/quadratic_action_equations_20261025/result.json")

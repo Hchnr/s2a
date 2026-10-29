@@ -1,19 +1,20 @@
 """Preserve the qualified control loop while changing reference acquisition."""
 
 import ast
-from pathlib import Path
 
 import pytest
 
-from s2a import serialized_preview_wam_simulation as wam
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.tracking.preview import serialized_preview_wam_simulation as wam
+from tests.support.source_layout import current_source_path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = repository_root(anchor=__file__)
 
 
 def test_per_period_control_matches_frozen_oracle_except_reference_query():
     bodies = []
     for filename in ("coupled_pose_preview_control_simulation.py", "serialized_preview_wam_simulation.py"):
-        tree = ast.parse((ROOT / "src/s2a" / filename).read_text())
+        tree = ast.parse(current_source_path("src/s2a/" + filename).read_text())
         loops = [
             node
             for node in ast.walk(tree)

@@ -3,11 +3,11 @@
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
 from scipy.spatial.transform import Rotation
 
-from s2a.coupled_pose_preview import plan_pose
-from s2a.durable_stage_supervisor import publish
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.joint_control.preview.coupled_pose_preview import plan_pose
+from scripts.audit_wam_position import Evidence
 
 
 def main():

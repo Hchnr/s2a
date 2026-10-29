@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.reference_gains import ReferenceGains, relative_features
+from s2a.references.gains import ReferenceGains, relative_features
 
 
 def trajectory():

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.qualified_forward_inverse import affine_response, inverse_translation
+from s2a.research.response_models.inverse.qualified_forward_inverse import affine_response, inverse_translation
 
 
 def test_actual_asymmetric_interface_and_bounded_solution_reprediction():

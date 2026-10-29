@@ -16,9 +16,10 @@ import numpy as np
 import yaml
 from PIL import Image
 
-from s2a.artifacts import REPO, sha256
-from s2a.libero_simulation import canvas
-from s2a.worker_handshake import birth, write_once
+from s2a.backends.libero.simulation import canvas
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.current_layout import current_source_path
+from s2a.infrastructure.lifecycle.worker_handshake import birth, write_once
 
 CONFIG = REPO / "configs/wam_frozen_readout_20261021.json"
 CONFIG_SHA = "6534245a114d89167f6d8cd283e55de8685b4a02abca79706436309477860605"
@@ -298,7 +299,7 @@ def quantization_admission(evidence):
         all(set(r) == flags | {"name"} and all(r[k] is True for k in flags) for r in result["cases"]),
         "quantization hook/identity protection failed",
     )
-    core_path = REPO / "src/s2a/wam_readout.py"
+    core_path = current_source_path("src/s2a/wam_readout.py", root=REPO)
     evidence.check(core_path, result["core_sha256"])
     require(result["actual_outputs"]["path"] == str(root / "actual_outputs.npz"), "quantization output path differs")
     outputs = evidence.check(root / "actual_outputs.npz", result["actual_outputs"]["sha256"])

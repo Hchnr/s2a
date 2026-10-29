@@ -3,14 +3,14 @@
 from pathlib import Path
 
 import numpy as np
-from arm_joint_wrench_expanded_independent import equations
-from arm_joint_wrench_expanded_training import contrast_rows
-from arm_joint_wrench_independent import augment, conditions, feature_matrix
-from arm_wrench_data import attach_current_wrench
-from arm_wrench_data_independent import attach_current_wrench as independent_attach
-from audit_wam_position import Evidence
 
-from s2a.joint_wrench_condition_forward import design, raw_condition, with_history
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import design, raw_condition, with_history
+from scripts.arm_joint_wrench_expanded_independent import equations
+from scripts.arm_joint_wrench_expanded_training import contrast_rows
+from scripts.arm_joint_wrench_independent import augment, conditions, feature_matrix
+from scripts.arm_wrench_data import attach_current_wrench
+from scripts.arm_wrench_data_independent import attach_current_wrench as independent_attach
+from scripts.audit_wam_position import Evidence
 
 
 def main():

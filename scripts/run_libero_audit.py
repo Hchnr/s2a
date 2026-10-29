@@ -8,7 +8,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from s2a.artifacts import load_config, write_json
+from s2a.infrastructure.artifacts import load_config, write_json
 
 
 def main():
@@ -24,7 +24,7 @@ def main():
     if args.seed != config["seed"]:
         raise ValueError("seed differs from frozen config")
     if args.case:
-        from s2a.libero_audit import run_audit_case
+        from s2a.evaluation.libero.audit import run_audit_case
 
         case = next(c for c in config["cases"] if c["name"] == args.case)
         print(json.dumps(run_audit_case(config, output, case, args.trial)), flush=True)

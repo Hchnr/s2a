@@ -4,14 +4,14 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
-from s2a.artifacts import REPO
-from s2a.control import PIDConfig
+from s2a.adapters.feedback.pose_pid import PIDConfig
+from s2a.adapters.identified.linear_response import LinearResponse
+from s2a.adapters.state_to_action import StateToActionAdapter
+from s2a.controllers.droid import DroidReferenceInterface
 from s2a.geometry import advance, pose_error
-from s2a.identification import LinearResponse
-from s2a.interface import DroidReferenceInterface
-from s2a.rollout import simulate
-from s2a.runtime import StateToActionAdapter
-from s2a.trajectory import ReferenceTrajectory
+from s2a.infrastructure.artifacts import REPO
+from s2a.references.trajectory import ReferenceTrajectory
+from s2a.research.droid.rollout import simulate
 
 
 def test_runtime_chunk_is_anchored_once_gripper_separate_and_dt_command_planned():

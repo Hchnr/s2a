@@ -18,7 +18,9 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 PRIMARY = REPO / "outputs/wam_independent_20261020"
 DIAGNOSIS = REPO / "outputs/wam_horizon_diagnosis_20261020"
 OUTPUT = PRIMARY / "finalizer"

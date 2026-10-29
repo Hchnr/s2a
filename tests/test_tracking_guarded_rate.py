@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.tracking_guarded_rate import guarded_rate_command
+from s2a.research.joint_control.tracking.tracking_guarded_rate import guarded_rate_command
 
 
 def test_exact_root_and_infeasible_fallback():

@@ -3,10 +3,10 @@
 import numpy as np
 import pytest
 
-from s2a.fast_long_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import pose_error
-from s2a.interior_joint_hybrid import refine_long_plan
-from s2a.osc import OSCInterface
+from s2a.research.joint_control.preview.fast_long_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.joint_control.tracking.interior_joint_hybrid import refine_long_plan
 
 
 @pytest.mark.parametrize("position,selection", [(0.94, "interior_witness"), (0.96, "preventive_fallback")])

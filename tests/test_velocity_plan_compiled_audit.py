@@ -6,11 +6,11 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from velocity_plan_compiled_audit import audit_plan as compiled
-from velocity_plan_independent_audit import audit_plan as scalar
 
-from s2a.preview_result_publication import result_json
-from s2a.velocity_model_planner import VelocityModelPlanner
+from s2a.infrastructure.publication import result_json
+from s2a.research.trajectory_search.velocity_model_planner import VelocityModelPlanner
+from scripts.velocity_plan_compiled_audit import audit_plan as compiled
+from scripts.velocity_plan_independent_audit import audit_plan as scalar
 
 
 @pytest.mark.parametrize("horizon", [1, 4, 8])

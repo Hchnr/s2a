@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.enumerated_response_inverse import translation_command
+from s2a.research.response_models.inverse.enumerated_response_inverse import translation_command
 
 
 def solve(j, target, **changes):
@@ -86,7 +86,7 @@ def test_rank_deficient_response_stays_finite_and_feasible():
 def test_box_solver_matches_independent_scipy_and_kkt_on_degenerate_systems():
     from scipy.optimize import lsq_linear
 
-    from s2a.enumerated_response_inverse import box_least_squares
+    from s2a.research.response_models.inverse.enumerated_response_inverse import box_least_squares
 
     rng = np.random.default_rng(42)
     for case in range(120):
@@ -113,7 +113,7 @@ def test_box_solver_matches_independent_scipy_and_kkt_on_degenerate_systems():
 
 
 def test_fixed_coordinates_and_rank_deficient_face():
-    from s2a.enumerated_response_inverse import box_least_squares
+    from s2a.research.response_models.inverse.enumerated_response_inverse import box_least_squares
 
     matrix = np.array([[1, 1, 0], [0, 0, 1]], dtype=float)
     command = box_least_squares(matrix, [1.5, 2], [0, 0, 0.4], [0.2, 2, 0.4])

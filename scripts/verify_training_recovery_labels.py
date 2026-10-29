@@ -6,7 +6,8 @@ import json
 from pathlib import Path
 
 import numpy as np
-from analyze_wam_release_horizon import reference
+
+from scripts.analyze_wam_release_horizon import reference
 
 
 def check_labels(data, tool):

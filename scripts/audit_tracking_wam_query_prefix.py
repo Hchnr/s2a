@@ -4,12 +4,11 @@ import argparse
 import json
 from pathlib import Path
 
-from audit_wam_position import Evidence
-from tracking_preview_wam_acceptance_checker_review import verify_query
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.terminal_development_policy import case_order
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
+from scripts.audit_wam_position import Evidence
+from scripts.tracking_preview_wam_acceptance_checker_review import verify_query
 
 
 def main():

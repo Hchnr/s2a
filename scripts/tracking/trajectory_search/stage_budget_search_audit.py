@@ -5,8 +5,7 @@ envelope contract. Raising the stage cap raises the possible algebraic QP cost;
 it neither grants extra responses nor changes any control qualification.
 """
 
-from directional_derivative_audit import numerical_compare, require
-
+from scripts.directional_derivative_audit import numerical_compare, require
 from scripts.tracking.trajectory_search.global_envelope_search_audit import audit_search as audit_global_search
 
 _FIXED_CONFIG = dict(

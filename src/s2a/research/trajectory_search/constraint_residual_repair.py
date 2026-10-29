@@ -8,10 +8,10 @@ from copy import deepcopy
 
 import numpy as np
 
-from s2a.accepted_point_sqp_core import solve_epigraph_qp
 from s2a.geometry import finite, pose_error, validate_transform
-from s2a.joint_preview_constraint_audit import audit_joint_preview_constraints
-from s2a.tail_translation_reserve import SAFETY_NAMES
+from s2a.research.joint_control.limits.joint_preview_constraint_audit import audit_joint_preview_constraints
+from s2a.research.trajectory_search.accepted_point_sqp_core import solve_epigraph_qp
+from s2a.research.trajectory_search.tail_translation_reserve import SAFETY_NAMES
 
 RADIUS = 0.0025
 STAGE_RADIUS = 0.005

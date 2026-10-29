@@ -16,7 +16,9 @@ import subprocess
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import (
+from PIL import Image
+
+from scripts.audit_wam_position import (
     REPO,
     TARGETS,
     GripperIntentHold,
@@ -38,7 +40,6 @@ from audit_wam_position import (
     sample,
     task_outcome,
 )
-from PIL import Image
 
 BASE_CASE = "scripts/audit_wam_earlier_position.py"
 BASE_CASE_SHA = "35c7e332f1fdfc6ff2b5e95c0af3311bba67b2815450d75a572c1432526b1119"

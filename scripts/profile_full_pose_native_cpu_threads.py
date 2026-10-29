@@ -8,11 +8,11 @@ import time
 
 import numpy as np
 import scipy
-from full_coupled_pose_independent import verify_pose_solution
 
-from s2a.artifacts import REPO, sha256
-from s2a.durable_stage_supervisor import publish
-from s2a.full_coupled_pose_inverse import FullCoupledPoseModel, solve_pose
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse import FullCoupledPoseModel, solve_pose
+from scripts.full_coupled_pose_independent import verify_pose_solution
 
 
 def main():

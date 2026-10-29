@@ -15,7 +15,9 @@ from types import ModuleType, SimpleNamespace
 
 import pytest
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts/prepare_native_runtime_path_snapshot.py"
+from s2a.infrastructure.repository_paths import repository_root
+
+SCRIPT = repository_root(anchor=__file__) / "scripts/prepare_native_runtime_path_snapshot.py"
 
 
 @pytest.fixture

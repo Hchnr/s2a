@@ -10,10 +10,10 @@ from pathlib import Path
 
 import pytest
 
-from s2a import durable_stage_supervisor as durable
+from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
 
 sys.path.insert(0, str(durable.REPO / "scripts"))
-import run_wam_clean_training_continuation as continuation  # noqa: E402
+import scripts.run_wam_clean_training_continuation as continuation  # noqa: E402
 
 
 @pytest.fixture(autouse=True)

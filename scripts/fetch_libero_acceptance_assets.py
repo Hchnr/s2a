@@ -7,7 +7,7 @@ import json
 import urllib.request
 from pathlib import Path
 
-from s2a.artifacts import code_fingerprint, load_config, write_json
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, write_json
 
 
 def main():

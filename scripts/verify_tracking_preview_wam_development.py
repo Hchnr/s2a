@@ -12,14 +12,15 @@ import json
 import os
 from pathlib import Path
 
-import verify_wam_clean_training_capture as numerics
-from audit_wam_position import Evidence as PhysicsEvidence
-from coupled_preview_wam_measured_audit import verify_measured_endpoints
-from tracking_preview_wam_acceptance_checker import verify_case
-from verify_wam_terminal_development_points import audit_points as audit_terminal_points
-from verify_wam_terminal_development_points import head_parameters
+import scripts.verify_wam_clean_training_capture as numerics
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.audit_wam_position import Evidence as PhysicsEvidence
+from scripts.coupled_preview_wam_measured_audit import verify_measured_endpoints
+from scripts.tracking_preview_wam_acceptance_checker import verify_case
+from scripts.verify_wam_terminal_development_points import audit_points as audit_terminal_points
+from scripts.verify_wam_terminal_development_points import head_parameters
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 GPU = "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f"
 FIXTURE_SHA = "f522ee333827d51ab66b5b8d1c2a7ebd8ceca3832403b3c54dfa56a821fb2a8e"
 CONTROL_SHA = "106f45543f8bc0aa0e336c0ad9b5c01e0bce252a5e5dad0ec3ebbba349e5fda0"
@@ -142,7 +143,7 @@ def normal_owned(ev, command, cuda):
 
 
 def admission(ev, prepared_ref, registration_ref, run_ref):
-    from tracking_preview_wam_audit_admission import admission as independent_admission
+    from scripts.tracking_preview_wam_audit_admission import admission as independent_admission
 
     return independent_admission(
         ev, prepared_ref, registration_ref, run_ref, require=require, normal_owned=normal_owned, gpu=GPU, order=order
@@ -548,13 +549,13 @@ def verify(args):
         output.resolve() == output and output.is_relative_to(REPO / "outputs") and not output.exists(),
         "audit output outside repo outputs or exists",
     )
-    from s2a.native_environment import restore_cv2_environment, strict_native_environment
+    from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
 
     strict_native_environment()
     guard_doc = json.loads(
         (REPO / "outputs/clean_training_development_preflight_20261023/dependency_addendum.json").read_text()
     )
-    from s2a.artifacts import sha256
+    from s2a.infrastructure.artifacts import sha256
 
     require(
         sha256(REPO / "outputs/clean_training_development_preflight_20261023/dependency_addendum.json") == CONTROL_SHA,

@@ -11,8 +11,18 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from audit_wam_sampler_steps import METRIC_KEYS, PREFIXES, ROOT, STEPS, STUDY, Evidence, process_snapshot, promotion
 from matplotlib.backends.backend_pdf import PdfPages
+
+from scripts.audit_wam_sampler_steps import (
+    METRIC_KEYS,
+    PREFIXES,
+    ROOT,
+    STEPS,
+    STUDY,
+    Evidence,
+    process_snapshot,
+    promotion,
+)
 
 SHIFT_REVIEW = STUDY.parent / "sampler_steps_shift_contract_review_20261021/review.json"
 SHIFT_REVIEW_SHA = "16a9a409ef46978a7fd96e552c347fcb0efabd41cd43414dc5e77f6f9610a774"

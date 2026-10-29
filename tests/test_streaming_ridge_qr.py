@@ -7,7 +7,7 @@ import weakref
 import numpy as np
 import pytest
 
-from s2a import streaming_ridge_qr as audit
+from s2a.adapters.identified import streaming_ridge_qr as audit
 
 
 def gold(features, targets, weights, ridge):

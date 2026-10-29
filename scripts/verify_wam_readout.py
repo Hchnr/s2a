@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 import yaml
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 CONFIG = REPO / "configs/wam_frozen_readout_20261021.json"
 CONFIG_SHA = "6534245a114d89167f6d8cd283e55de8685b4a02abca79706436309477860605"
@@ -929,7 +929,7 @@ def frozen_integrator(evidence):
     script_dir = str(REPO / "scripts")
     sys.path.insert(0, script_dir)
     try:
-        return importlib.import_module("audit_wam_sampler_steps").integrate_and_score
+        return importlib.import_module("scripts.audit_wam_sampler_steps").integrate_and_score
     finally:
         sys.path.remove(script_dir)
 

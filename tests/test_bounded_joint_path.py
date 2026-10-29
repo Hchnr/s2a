@@ -4,9 +4,9 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.bounded_joint_path import plan_joint_path
-from s2a.full_coupled_pose_inverse import left_jacobian
 from s2a.geometry import pose_error, transform
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse import left_jacobian
+from s2a.research.joint_control.tracking.bounded_joint_path import plan_joint_path
 
 
 def fk(q):

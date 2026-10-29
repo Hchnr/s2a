@@ -14,13 +14,13 @@ from contextlib import nullcontext
 from dataclasses import asdict
 from pathlib import Path
 
-from s2a.artifacts import REPO, sha256, write_json
+from s2a.infrastructure.artifacts import REPO, sha256, write_json
 
 
 def protocol(config_path, *, source, variant_name, checkpoint):
     """Validate without creating any output directory, including --dry-run."""
-    from s2a.stability_tracking_simulation import position_variant
-    from s2a.tracking_replan import TrackingReplanConfig
+    from s2a.research.joint_control.planning.tracking_replan import TrackingReplanConfig
+    from s2a.research.wam.tracking.preview.stability_tracking_simulation import position_variant
 
     path = Path(config_path).resolve()
     if not path.is_relative_to(REPO):
@@ -82,7 +82,7 @@ def protocol(config_path, *, source, variant_name, checkpoint):
         raise ValueError("fixture has missing or duplicate record identities")
     selected = [records[name] for name in c["records"]]
     if source == "oracle":
-        from s2a.stability_recovery_simulation import _read_oracle
+        from s2a.research.wam.tracking.control.stability_recovery_simulation import _read_oracle
 
         if "oracle_reference_root" not in c:
             raise ValueError("oracle qualification requires its explicit privileged reference root")
@@ -117,7 +117,11 @@ def main():
         raise ValueError("seed mismatch or invalid CPU worker count")
     if args.source == "wam" and args.workers != 1:
         raise ValueError("one physical worker per WAM service is mandatory")
-    from s2a.stability_tracking_simulation import execution_inputs, run_tracking_case, verify_inputs
+    from s2a.research.wam.tracking.preview.stability_tracking_simulation import (
+        execution_inputs,
+        run_tracking_case,
+        verify_inputs,
+    )
 
     if args.record is not None:
         if (

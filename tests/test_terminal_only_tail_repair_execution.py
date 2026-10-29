@@ -10,9 +10,10 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from s2a.directional_derivative_probe import _canonical
-from s2a.osc import OSCInterface
-from s2a.terminal_only_tail_repair import ENTRY_FIELDS, probe_terminal_only_tail_repair
+from s2a.controllers.osc import OSCInterface
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
+from s2a.research.trajectory_search.terminal_only_tail_repair import ENTRY_FIELDS, probe_terminal_only_tail_repair
 from tests.test_prefix_callback_backtracking_execution import write_json
 from tests.test_prefix_trust_control_execution import CountingDynamics
 from tests.test_tail_translation_execution import complete_case, complete_rollout
@@ -20,8 +21,8 @@ from tests.test_tail_translation_execution import complete_case, complete_rollou
 
 @pytest.fixture
 def producer(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("probe_tracking_v5_terminal_only_tail_repair")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.probe_tracking_v5_terminal_only_tail_repair")
 
 
 @pytest.mark.parametrize("repairs", [False, True])

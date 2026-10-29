@@ -11,9 +11,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from s2a.artifacts import REPO, sha256
-from s2a.stability_position_simulation import execution_inputs, position_variant
-from s2a.task_acceptance import task_outcome
+from s2a.evaluation.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.research.wam.tracking.control.stability_position_simulation import execution_inputs, position_variant
 
 VARIANTS = ("baseline_v2", "position_hold", "recovering_position_hold")
 RECORDS = ("task0_init0", "task1_init0", "task2_init0")
@@ -207,7 +207,7 @@ def main():
             )
             raise SystemExit(code)
         if variant == "baseline_v2":
-            from verify_gripper_position_hold import verify_baseline
+            from scripts.verify_gripper_position_hold import verify_baseline
 
             check = verify_baseline(c, root)
             write_new(root / "baseline_exact_repetition.json", check)

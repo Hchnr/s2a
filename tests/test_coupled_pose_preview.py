@@ -6,8 +6,8 @@ import pytest
 from scipy.optimize import nnls
 from scipy.spatial.transform import Rotation
 
-from s2a.coupled_pose_preview import plan_pose
-from s2a.current_coupled_response import build_response
+from s2a.research.joint_control.preview.coupled_pose_preview import plan_pose
+from s2a.research.response_models.forward.current_coupled_response import build_response
 
 
 def problem():

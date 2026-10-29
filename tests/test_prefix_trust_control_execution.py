@@ -3,25 +3,25 @@
 import importlib
 import json
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 
-from s2a.prefix_trust_control_evidence import reference
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.prefix_trust_control_evidence import reference
 from tests.support.trajectory_rollout import CountingDynamics, captured_rollout, source_fixture
 
 
 @pytest.fixture
 def producer(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("probe_tracking_v5_prefix_trust_control")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.probe_tracking_v5_prefix_trust_control")
 
 
 @pytest.fixture
 def execution(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("execute_tracking_v5_prefix_trust_control")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.execute_tracking_v5_prefix_trust_control")
 
 
 def three_response_solver(source, dynamics, calls):

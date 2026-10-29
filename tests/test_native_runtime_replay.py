@@ -3,12 +3,14 @@
 import copy
 import hashlib
 import json
+import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
-from s2a import native_runtime_replay as replay
+from s2a.research.native_runtime import replay as replay
 
 
 def saved_branch():
@@ -392,8 +394,9 @@ def test_failed_replay_cleanup_cannot_dispatch_and_preserves_primary_error(tmp_p
 
 
 def test_cli_dry_default_and_qa_gate(monkeypatch, capsys):
-    import verify_native_runtime_replay as cli
+    import scripts.verify_native_runtime_replay as cli
 
+    monkeypatch.setattr(cli, "NATIVE_PYTHON", Path(sys.executable))
     for key, value in cli.CPU_ENVIRONMENT.items():
         monkeypatch.setenv(key, value)
     monkeypatch.setattr(cli, "read", lambda _: dict(output_dir="unused"))
@@ -407,7 +410,7 @@ def test_cli_dry_default_and_qa_gate(monkeypatch, capsys):
 
 
 def test_cli_forbids_retired_and_user_file_without_reading():
-    import verify_native_runtime_replay as cli
+    import scripts.verify_native_runtime_replay as cli
 
     for path in ("/share/project/never/read", str(cli.REPO / "long_joint_inverse.py")):
         with pytest.raises(ValueError, match="Forbidden source"):
@@ -416,7 +419,7 @@ def test_cli_forbids_retired_and_user_file_without_reading():
 
 @pytest.mark.parametrize("mutation", ["environment", "command", "source"])
 def test_qa_binding_rejects_changed_execution_contract(monkeypatch, mutation):
-    import verify_native_runtime_replay as cli
+    import scripts.verify_native_runtime_replay as cli
 
     qa = dict(
         complete=True,
@@ -452,20 +455,32 @@ def test_qa_binding_rejects_changed_execution_contract(monkeypatch, mutation):
 
 
 def test_saved_input_admission_uses_current_files_only():
-    import verify_native_runtime_replay as cli
+    import scripts.verify_native_runtime_replay as cli
 
-    config = json.loads(cli.CONFIG.read_text())
-    inputs = cli.inspect_inputs(config)
-    assert inputs["commands"].shape == (377, 7)
-    assert inputs["states"].shape == (378, 79)
-    assert len(inputs["periods"]) == 9
-    assert all(not path.startswith("/share/project/") for path in inputs["refs"])
-    assert all(str(cli.REPO / relative) in inputs["refs"] for relative in cli.ADDITIONAL_RUNTIME_SOURCES)
+    original = cli.CONFIG.read_bytes()
+    config = json.loads(original)
+    # This historical registration binds the old source locations and bytes.
+    # A layout migration cannot grant it current execution qualification.
+    with pytest.raises((FileNotFoundError, ValueError), match="src/s2a/|Changed source"):
+        cli.inspect_inputs(config)
+    assert cli.CONFIG.read_bytes() == original
+
+    # Inspect only the separately hash-checked saved branch. Its dimensions do
+    # not imply that the old registration admits the current runtime.
+    producer = cli.read(config["producer_ref"])
+    commands = np.asarray(cli.read(producer["commands_ref"]))
+    with np.load(cli.checked(producer["states_ref"]), allow_pickle=False) as archive:
+        states = archive["sim_states"].copy()
+    periods = cli.read(producer["periods_ref"])
+    replay.validate_saved_branch(commands, states, periods)
+    assert commands.shape == (377, 7)
+    assert states.shape == (378, 79)
+    assert len(periods) == 9
 
 
 @pytest.mark.parametrize("key,value", [("physics_budget", 378), ("absolute_tolerance", 1e-8), ("world_model_calls", 1)])
 def test_metadata_rejects_changed_protocol(key, value):
-    import verify_native_runtime_replay as cli
+    import scripts.verify_native_runtime_replay as cli
 
     config = copy.deepcopy(json.loads(cli.CONFIG.read_text()))
     config[key] = value

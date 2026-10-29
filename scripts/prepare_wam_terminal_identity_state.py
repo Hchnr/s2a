@@ -6,21 +6,20 @@ import json
 import subprocess
 from pathlib import Path
 
-from run_wam_clean_training import environment
-from run_wam_terminal_identity_state import PORT, worker_command
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import GPU, checked, publish, read, reference, require
-from s2a.terminal_candidate import candidate_head
-from s2a.terminal_identity_state_execution import BUDGET, ROOT, admit, admit_sampling
-from s2a.terminal_identity_state_sampling import paired_entries
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.trajectory_search.terminal_candidate import candidate_head
+from s2a.research.wam.readout.terminal_identity_state_execution import BUDGET, ROOT, admit, admit_sampling
+from s2a.research.wam.readout.terminal_identity_state_sampling import paired_entries
+from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, publish, read, reference, require
+from scripts.run_wam_clean_training import environment
+from scripts.run_wam_terminal_identity_state import PORT, worker_command
 
 
 def prepare():
     require(not ROOT.exists(), "Terminal058 validation directory exists; no overwrite/retry")
     owner_ref = reference(REPO / "outputs/terminal_solver_convergence_20261025/fit_verified.json")
     _, params_ref = candidate_head(owner_ref)
-    from prepare_wam_synchronous_validation import source_closure
+    from scripts.prepare_wam_synchronous_validation import source_closure
 
     bref = reference(REPO / "outputs/synchronous_state_probe052_continuation_20261024/prepared.json")
     baseline = read(bref)

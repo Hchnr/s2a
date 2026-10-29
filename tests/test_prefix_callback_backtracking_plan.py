@@ -7,9 +7,9 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-import s2a.prefix_callback_backtracking_plan as planning
-from s2a.joint_preview_constraint_audit import audit_joint_preview_constraints
-from s2a.osc import OSCInterface
+import s2a.research.trajectory_search.prefix_callback_backtracking_plan as planning
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.limits.joint_preview_constraint_audit import audit_joint_preview_constraints
 
 solve = planning.solve_prefix_callback_backtracking_response
 

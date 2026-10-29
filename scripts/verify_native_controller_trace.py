@@ -4,10 +4,10 @@ import argparse
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from collect_wam_native_training import write_once
 
-from s2a.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from scripts.audit_wam_position import Evidence
+from scripts.collect_wam_native_training import write_once
 
 ROOT = Path("outputs/native_controller_trace_20261025")
 

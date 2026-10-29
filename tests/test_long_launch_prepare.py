@@ -3,13 +3,14 @@
 import hashlib
 import importlib.util
 import json
-from pathlib import Path
 
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 def test_prepare_rejects_false_normal_release_before_creating_any_gate(tmp_path, monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location("long_prepare_test", root / "scripts/prepare_wam_long_launch.py")
     module = importlib.util.module_from_spec(spec)

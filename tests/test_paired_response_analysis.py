@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.paired_response_analysis import axis_response
+from s2a.research.response_models.forward.paired_response_analysis import axis_response
 
 
 def packet(u, axis=1):

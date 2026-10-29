@@ -14,20 +14,10 @@ import random
 from pathlib import Path
 
 import numpy as np
-from collect_wam_clean_training import normalization_spec, qualified_grid, same_initial
-from qualify_wam_clean_bridge import (
-    CONVERSION_SOURCE,
-    SAMPLER_SOURCE,
-    ConversionWitness,
-    imported_cosmos_sources,
-    outputs_exact,
-    response_arrays,
-    runtime_environment,
-)
-from run_wam_clean_training import prior
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.readout.sampler_trace import check_sources, parameters_identity
+from s2a.research.wam.training.clean.clean_training_runtime import (
     GPU,
     VISION_SHAPE,
     admit_execution,
@@ -39,10 +29,20 @@ from s2a.clean_training_runtime import (
     trained_head,
     validate_current_request,
 )
-from s2a.sampler_trace import check_sources, parameters_identity
-from s2a.wam_clean_capture import NoiseRoster
-from s2a.wam_clean_compact import CompactCaptureSink, CompactRequest
-from s2a.wam_clean_readout import CleanResidualReadout
+from s2a.research.wam.training.clean.wam_clean_capture import NoiseRoster
+from s2a.research.wam.training.clean.wam_clean_compact import CompactCaptureSink, CompactRequest
+from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
+from scripts.collect_wam_clean_training import normalization_spec, qualified_grid, same_initial
+from scripts.qualify_wam_clean_bridge import (
+    CONVERSION_SOURCE,
+    SAMPLER_SOURCE,
+    ConversionWitness,
+    imported_cosmos_sources,
+    outputs_exact,
+    response_arrays,
+    runtime_environment,
+)
+from scripts.run_wam_clean_training import prior
 
 SCHEMA = "s2a.clean-training-state-sampling.v1"
 VAL_EPISODES = (1254, 1126, 868, 1139, 1209, 1176)
@@ -277,11 +277,11 @@ def run(prepared_ref, registration_ref, *, w2_fit_ref, w2_verification_ref, gpu_
             gold[entry["name"]] = historical_source_summaries(original)
             result["historical_model_capture_archives_decoded"] += 35
         import torch
-        from audit_wam_current_numerics import require_eval
-        from run_wam_readout_features import BoundaryCounter, actual_context
-        from run_wam_readout_sampling import InitialCapture
 
-        from s2a.wam_runtime import install_active_slot_mask, load_service
+        from s2a.backends.wam.runtime import install_active_slot_mask, load_service
+        from scripts.audit_wam_current_numerics import require_eval
+        from scripts.run_wam_readout_features import BoundaryCounter, actual_context
+        from scripts.run_wam_readout_sampling import InitialCapture
 
         require(
             torch.cuda.is_available() and torch.cuda.device_count() == 1,
@@ -310,7 +310,7 @@ def run(prepared_ref, registration_ref, *, w2_fit_ref, w2_verification_ref, gpu_
         for parameter in model.parameters():
             parameter.requires_grad_(False)
         result["parameters_before"] = parameters_identity(model)
-        from s2a.wam_readout import ACTIVE_MASK
+        from s2a.research.wam.readout.wam_readout import ACTIVE_MASK
 
         result["mask_evidence"] = install_active_slot_mask(model, ACTIVE_MASK)
         result["cosmos_imported_sources_after_load"] = imported_cosmos_sources(qualified)

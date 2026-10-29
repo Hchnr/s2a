@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.async_reference import AsyncReferenceBuffer, TimedReference
 from s2a.geometry import matrix_to_rot6d, transform
+from s2a.references.async_reference import AsyncReferenceBuffer, TimedReference
 
 
 def actions(count=8):

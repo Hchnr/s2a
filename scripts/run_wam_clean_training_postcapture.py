@@ -6,7 +6,7 @@ import os
 import signal
 from pathlib import Path
 
-from s2a.durable_stage_supervisor import (
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     REPO,
     accept_detached_launch,
     check_cpu_environment,
@@ -135,7 +135,7 @@ def check_worker(registration, repair_ref, role):
 def execute(repair_ref, *, mode):
     require(Path.cwd().resolve() == REPO, "043 owner must run from the current S2A repository")
     check_cpu_environment(os.environ)
-    from execute_wam_clean_training_postcapture_fit import admit
+    from scripts.execute_wam_clean_training_postcapture_fit import admit
 
     registration = admit(repair_ref)
     sources = registration["source_sha256"]

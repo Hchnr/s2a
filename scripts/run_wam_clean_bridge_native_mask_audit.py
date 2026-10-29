@@ -7,11 +7,10 @@ import shutil
 import signal
 from pathlib import Path
 
-import run_wam_clean_bridge as bridge
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import write_once
+import scripts.run_wam_clean_bridge as bridge
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.run_wam_readout import owned_command
 
 CONFIG = REPO / "configs/wam_clean_bridge_native_mask_audit_20261023.json"
 PLAN = REPO / "plans/v0.0.1/039_native_mask_audit_addendum_20261023.md"

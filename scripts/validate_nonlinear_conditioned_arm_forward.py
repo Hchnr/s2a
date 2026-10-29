@@ -4,13 +4,13 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_nonlinear_independent import INPUTS, augment, nominal_prediction, prediction
-from audit_wam_position import Evidence
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import sha256
-from s2a.nonlinear_conditioned_arm_forward import nominal, predict, with_history
-from s2a.paired_response_analysis import axis_response
+from s2a.infrastructure.artifacts import sha256
+from s2a.research.response_models.forward.paired_response_analysis import axis_response
+from s2a.research.response_models.nonlinear.nonlinear_conditioned_arm_forward import nominal, predict, with_history
+from scripts.arm_nonlinear_independent import INPUTS, augment, nominal_prediction, prediction
+from scripts.audit_wam_position import Evidence
 
 ROOT = Path("outputs/nonlinear_conditioned_arm_forward_20261025")
 CHANNELS = ("position", "rotation", "linear_velocity", "angular_velocity")

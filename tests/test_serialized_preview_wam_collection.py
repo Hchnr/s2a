@@ -9,10 +9,10 @@ import requests
 
 @pytest.fixture
 def worker(monkeypatch):
-    from s2a.artifacts import REPO
+    from s2a.infrastructure.artifacts import REPO
 
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("collect_serialized_preview_wam_development")
+    return importlib.import_module("scripts.collect_serialized_preview_wam_development")
 
 
 def request(directory):
@@ -92,7 +92,7 @@ def test_transport_rejects_causal_or_resource_escape(tmp_path, monkeypatch, faul
 def test_fixed12_configs_preserve_preview_parameters_and_no_expert_input(monkeypatch):
     from pathlib import Path
 
-    from s2a import serialized_preview_wam_control as control
+    from s2a.research.wam.tracking.preview import serialized_preview_wam_control as control
 
     base = json.loads(Path(control.BASE_REF["path"]).read_text())
     qualified = json.loads((control.REPO / "configs/coupled_preview_control_registered_20261026.json").read_text())

@@ -3,15 +3,15 @@
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from full_coupled_pose_independent import objective as independent_objective
 from scipy.optimize import nnls
 from scipy.spatial.transform import Rotation
 
-from s2a.durable_stage_supervisor import publish
-from s2a.full_coupled_pose_inverse import FullCoupledPoseModel
-from s2a.osc import OSCInterface
-from s2a.strict_convex_qp import solve_qp
+from s2a.adapters.solvers.strict_convex_qp import solve_qp
+from s2a.controllers.osc import OSCInterface
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse import FullCoupledPoseModel
+from scripts.audit_wam_position import Evidence
+from scripts.full_coupled_pose_independent import objective as independent_objective
 
 
 def so3_rollout(record, horizon, contract, measured, desired, previous_goal):

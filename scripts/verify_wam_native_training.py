@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
 
 CONFIG = REPO / "configs/wam_synchronous_native_training_20261021.json"
 CONFIG_SHA = "966c33348ce0a78f09e310f9d9efcf6d22201502babc8834cc8a2c4aa756115a"

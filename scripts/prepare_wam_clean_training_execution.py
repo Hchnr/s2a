@@ -14,13 +14,12 @@ import shutil
 import socket
 from pathlib import Path
 
-from run_wam_clean_bridge import resource_observation
-
-from s2a.artifacts import REPO
-from s2a.clean_execution_proof import validate_envelope
-from s2a.clean_training_runtime import GPU, checked, publish, read, reference, require, sha
-from s2a.clean_training_seed_plan import build_seed_plan
-from s2a.relocated_artifacts import RelocatedArtifacts
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.relocated_artifacts import RelocatedArtifacts
+from s2a.research.wam.training.clean.clean_execution_proof import validate_envelope
+from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, publish, read, reference, require, sha
+from s2a.research.wam.training.clean.clean_training_seed_plan import build_seed_plan
+from scripts.run_wam_clean_bridge import resource_observation
 
 CONFIG = REPO / "configs/wam_clean_training_execution_20261023.json"
 PLAN = "plans/v0.0.1/040_clean_training_execution_20261023.md"
@@ -200,7 +199,7 @@ def normalization(config_ref, evidence):
     config = yaml.safe_load(evidence.check(config_ref).read_text())
     spec = config["model"]["config"]["action128_spec"]
     require("${" not in json.dumps(spec), "Action128 spec has unresolved interpolation")
-    from collect_wam_clean_training import normalization_spec
+    from scripts.collect_wam_clean_training import normalization_spec
 
     actual = normalization_spec(spec)
     require(
@@ -347,7 +346,7 @@ def prepare(config_ref, qa_ref):
         evidence.check(normal_ref)
         evidence.check(seed_ref)
         snapshots, snapshot_refs = freeze_sources(root, sources)
-        from serve_wam_clean_training import case_order
+        from scripts.serve_wam_clean_training import case_order
 
         proposal = dict(
             schema_version="s2a.clean-training-execution-proposal.v1",

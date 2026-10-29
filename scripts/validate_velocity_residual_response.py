@@ -6,7 +6,10 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.velocity_residual_response import VelocityResidualResponse, motor_after_native_period
+from s2a.research.response_models.causal.velocity_residual_response import (
+    VelocityResidualResponse,
+    motor_after_native_period,
+)
 
 ROOT = Path("outputs/velocity_residual_response_20261025")
 COLLECTION = Path("outputs/native_gripper_response_interventions_20261025_v3")

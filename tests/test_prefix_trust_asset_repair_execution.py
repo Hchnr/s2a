@@ -6,18 +6,19 @@ from pathlib import Path
 
 import pytest
 
-from s2a.prefix_trust_control_evidence import reference
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.prefix_trust_control_evidence import reference
 
 
 @pytest.fixture
 def repair():
-    return importlib.import_module("s2a.prefix_trust_asset_repair")
+    return importlib.import_module("s2a.research.trajectory_search.prefix_trust_asset_repair")
 
 
 @pytest.fixture
 def execution(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("execute_tracking_v5_prefix_trust_check_v2")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.execute_tracking_v5_prefix_trust_check_v2")
 
 
 def write_json(path, value):
@@ -223,7 +224,7 @@ def test_failed_execution_cannot_hide_work_or_incomplete_ownership(repair, monke
 
 
 def snapshot_fixture(repair, monkeypatch, tmp_path, defect=None):
-    from s2a import xml_asset_snapshot
+    from s2a.infrastructure.snapshots import xml_asset_snapshot
 
     monkeypatch.setattr(repair, "REPO", tmp_path)
     monkeypatch.setattr(repair, "SNAPSHOT_ROOT", tmp_path / "snapshot")

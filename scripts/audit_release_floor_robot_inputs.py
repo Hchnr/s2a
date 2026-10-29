@@ -8,11 +8,11 @@ import mujoco
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.current_coupled_response import build_response, nominal_prediction
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import transform
-from s2a.osc import OSCInterface
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.response_models.forward.current_coupled_response import build_response, nominal_prediction
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
 
 
 def main():

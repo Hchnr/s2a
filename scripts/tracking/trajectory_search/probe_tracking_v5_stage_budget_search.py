@@ -6,14 +6,12 @@ import os
 import time
 
 import numpy as np
-from probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 
-from s2a.mujoco_robot_dynamics import MujocoRobotDynamics
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.osc import OSCInterface
-from s2a.preview_result_publication import publish_result
-from s2a.research.trajectory_search.stage_budget_search import POSE_CEILING_POLICY, search
-from s2a.restored_anchor_sqp_evidence import (
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.restored_anchor_sqp_evidence import (
     CPU_ENVIRONMENT,
     REPO,
     checked,
@@ -24,6 +22,8 @@ from s2a.restored_anchor_sqp_evidence import (
     remember,
     require,
 )
+from s2a.research.trajectory_search.stage_budget_search import POSE_CEILING_POLICY, search
+from scripts.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 from scripts.tracking.trajectory_search.probe_tracking_v5_global_envelope_search import CONFIG as BASELINE_CONFIG
 from scripts.tracking.trajectory_search.probe_tracking_v5_global_envelope_search import load_inputs as load_prior_inputs
 from scripts.tracking.trajectory_search.probe_tracking_v5_interior_trajectory_search import initial_model, run_search

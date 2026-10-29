@@ -9,9 +9,9 @@ from pathlib import Path
 import numpy as np
 import yaml
 
-from s2a.artifacts import code_fingerprint, load_config, write_json
-from s2a.libero_simulation import canvas
-from s2a.wam_runtime import load_service
+from s2a.backends.libero.simulation import canvas
+from s2a.backends.wam.runtime import load_service
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, write_json
 
 
 def original_backend_forward(model, packed, source):

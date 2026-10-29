@@ -12,10 +12,12 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def checker():
-    path = Path(__file__).resolve().parents[1] / "scripts/verify_native_terminal_predicate_diagnostic.py"
+    path = repository_root(anchor=__file__) / "scripts/verify_native_terminal_predicate_diagnostic.py"
     spec = importlib.util.spec_from_file_location("independent_terminal_predicate_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -608,7 +610,7 @@ def test_cli_saves_false_and_refuses_overwrite_without_real_data(checker, tmp_pa
 
 
 def test_real_main_entry_binds_all_helpers_before_any_io():
-    path = Path(__file__).resolve().parents[1] / "scripts/verify_native_terminal_predicate_diagnostic.py"
+    path = repository_root(anchor=__file__) / "scripts/verify_native_terminal_predicate_diagnostic.py"
 
     class StopBeforeIO(Exception):
         pass

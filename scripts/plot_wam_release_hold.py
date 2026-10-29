@@ -10,14 +10,15 @@ from pathlib import Path
 import matplotlib
 import numpy as np
 
-from s2a.artifacts import sha256
+from s2a.evaluation.task_acceptance import task_outcome
 from s2a.geometry import pose_error
-from s2a.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.repository_paths import repository_root
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 ROOT = REPO / "outputs/wam_release_hold_20261020"
 MODES = ("baseline", "hold20", "hold40")
 COLORS = dict(baseline="#0072B2", hold20="#D55E00", hold40="#009E73")

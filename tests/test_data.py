@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
 
-from s2a.data import align_original, pose_transition_mask, split_indices
+from s2a.infrastructure.data.droid_episode import align_original, pose_transition_mask, split_indices
 
 
 def test_pose_mask_does_not_confuse_gripper_only_terminal_or_control_mask():

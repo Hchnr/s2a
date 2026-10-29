@@ -14,15 +14,16 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
-from verify_wam_acceptance import verify_case
 
-from s2a.artifacts import code_fingerprint, load_config, sha256
+from s2a.controllers.gripper import OpeningIntent, opening_position_target
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
+from s2a.evaluation.task_acceptance import task_outcome
 from s2a.geometry import pose_error
-from s2a.gripper import OpeningIntent, opening_position_target
-from s2a.osc import OSCInterface, OSCStateToAction
-from s2a.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.verify_wam_acceptance import verify_case
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 MODES = {"baseline": 0, "hold20": 20, "hold40": 40}
 CASE_RECORDS = ["task0_init0", "task0_init1", "task1_init0", "task1_init2"]
 CASE_NAMES = ["8800_bowl_init0_s43", "8800_bowl_init1_s43", "8800_wine_init0_s43", "8800_wine_init2_s43"]
@@ -277,9 +278,8 @@ def baseline_gate(c, root, prepared):
 def run_worker(c, root, prepared, name, mode):
     from PIL import Image
 
-    from s2a.cameras import render_current_cameras
-    from s2a.checkpoint_simulation import object_progress
-    from s2a.libero_simulation import (
+    from s2a.backends.libero.cameras import render_current_cameras
+    from s2a.backends.libero.simulation import (
         aperture,
         canvas,
         controller_contract,
@@ -288,6 +288,7 @@ def run_worker(c, root, prepared, name, mode):
         measured_twist,
         source_pose,
     )
+    from s2a.research.wam.tracking.runtime.checkpoint_simulation import object_progress
 
     if Path(sys.prefix).resolve() != (REPO / c["simulation_python"]).parent.parent.resolve():
         raise ValueError("physics worker requires the registered isolated simulation Python")

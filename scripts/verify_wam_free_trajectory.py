@@ -16,7 +16,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
 
 CONFIG = REPO / "configs/wam_free_trajectory_diagnostic_20261021.json"
 CONFIG_SHA = "a271cacaf0e011f0dd497173437f09cf3f256cb384e66bdf9d8a71928dd2cb73"

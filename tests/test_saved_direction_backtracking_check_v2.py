@@ -2,16 +2,17 @@
 
 import importlib
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def repair(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    module = importlib.import_module("check_tracking_v5_saved_direction_backtracking_v2")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    module = importlib.import_module("scripts.check_tracking_v5_saved_direction_backtracking_v2")
     # Restore the frozen module after each synthetic test, including nested calls.
     monkeypatch.setattr(module.frozen, "compare_contract", module.compare_contract)
     return module
@@ -134,7 +135,7 @@ def test_repair_refs_merge_without_changing_original_inputs(monkeypatch, repair)
     monkeypatch.setattr(repair, "ORIGINAL_LOAD_PREREQUISITES", lambda: values)
     monkeypatch.setitem(
         sys.modules,
-        "s2a.saved_direction_backtracking_check_repair",
+        "s2a.research.trajectory_search.saved_direction_backtracking_check_repair",
         SimpleNamespace(repair_prerequisites=lambda: {"failed-owner": extra_ref}),
     )
     bound, finished = [], []

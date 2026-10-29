@@ -5,16 +5,11 @@ import json
 import os
 
 import numpy as np
-from check_tracking_v5_accepted_point_sqp import case_engine
-from check_tracking_v5_prefix_trust_control import compare_contract
-from check_tracking_v5_saved_direction_backtracking import NUMERIC_TOLERANCE, TORQUE_TOLERANCE, native_math_proof
-from check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
-from check_tracking_v5_terminal_secant_probe import verify_response_trace
 
-from s2a.accepted_point_sqp_evidence import PREFIX_CHECK_REF
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.restored_anchor_sqp_evidence import (
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.accepted_point_sqp_evidence import PREFIX_CHECK_REF
+from s2a.research.trajectory_search.restored_anchor_sqp_evidence import (
     CPU_ENVIRONMENT,
     REPO,
     finish,
@@ -24,6 +19,15 @@ from s2a.restored_anchor_sqp_evidence import (
     remember,
     require,
 )
+from scripts.check_tracking_v5_accepted_point_sqp import case_engine
+from scripts.check_tracking_v5_prefix_trust_control import compare_contract
+from scripts.check_tracking_v5_saved_direction_backtracking import (
+    NUMERIC_TOLERANCE,
+    TORQUE_TOLERANCE,
+    native_math_proof,
+)
+from scripts.check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
+from scripts.check_tracking_v5_terminal_secant_probe import verify_response_trace
 from scripts.tracking.trajectory_search.check_tracking_v5_interior_trajectory_search import verify_fresh_decisions
 from scripts.tracking.trajectory_search.rejected_response_search_audit import audit_search
 
@@ -67,8 +71,7 @@ def verify_fresh_feedback(answer, metrics, config):
 
 
 def main(dry=False):
-    from probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
-
+    from scripts.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
     from scripts.tracking.trajectory_search.probe_tracking_v5_rejected_response_search import (
         CONFIG,
         PLAN,

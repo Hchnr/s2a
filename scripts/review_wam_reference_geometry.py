@@ -7,7 +7,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
 
 DIRECTORY = REPO / "outputs/wam_stability_20261021/reference_geometry_diagnosis"
 

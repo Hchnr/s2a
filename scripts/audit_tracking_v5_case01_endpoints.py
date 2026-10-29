@@ -5,11 +5,11 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from coupled_preview_wam_measured_audit import verify_measured_endpoints
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, reference, require
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference, require
+from scripts.audit_wam_position import Evidence
+from scripts.coupled_preview_wam_measured_audit import verify_measured_endpoints
 
 
 def main():

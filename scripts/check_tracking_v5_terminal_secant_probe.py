@@ -5,27 +5,10 @@ import json
 import os
 
 import numpy as np
-from check_tracking_v5_accepted_point_sqp import case_engine
-from check_tracking_v5_prefix_trust_control import (
-    check_full_candidate,
-    command_key,
-    compare_contract,
-    numerical_compare,
-    validate_trace_entry,
-)
-from check_tracking_v5_saved_direction_backtracking import NUMERIC_TOLERANCE, TORQUE_TOLERANCE, native_math_proof
-from directional_derivative_audit import exact_array
-from execute_tracking_v5_terminal_secant_probe import entry_command, validate_receipt
-from terminal_secant_audit import (
-    audit_terminal_secant_fit,
-    audit_terminal_secant_geometry,
-    audit_terminal_secant_ledger,
-)
 
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.terminal_development_execution import CONTROL_REF
-from s2a.terminal_secant_evidence import (
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.terminal_secant_evidence import (
     CPU_ENVIRONMENT,
     DIAGNOSTIC_CLOSURE_REF,
     DIAGNOSTIC_REF,
@@ -42,6 +25,27 @@ from s2a.terminal_secant_evidence import (
     reference,
     remember,
     require,
+)
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from scripts.check_tracking_v5_accepted_point_sqp import case_engine
+from scripts.check_tracking_v5_prefix_trust_control import (
+    check_full_candidate,
+    command_key,
+    compare_contract,
+    numerical_compare,
+    validate_trace_entry,
+)
+from scripts.check_tracking_v5_saved_direction_backtracking import (
+    NUMERIC_TOLERANCE,
+    TORQUE_TOLERANCE,
+    native_math_proof,
+)
+from scripts.directional_derivative_audit import exact_array
+from scripts.execute_tracking_v5_terminal_secant_probe import entry_command, validate_receipt
+from scripts.terminal_secant_audit import (
+    audit_terminal_secant_fit,
+    audit_terminal_secant_geometry,
+    audit_terminal_secant_ledger,
 )
 
 

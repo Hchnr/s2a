@@ -5,9 +5,9 @@ import json
 
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.clean_training_aggregation import RIDGE, ROWS, admit_aggregation, normal_exit
-from s2a.clean_training_runtime import reference
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_aggregation import RIDGE, ROWS, admit_aggregation, normal_exit
+from s2a.research.wam.training.clean.clean_training_runtime import reference
 
 
 def policy():
@@ -60,7 +60,7 @@ def test_receipt_identity_and_normal_exit_are_required(fault):
 
 def test_real_producer_rejects_live_capture_before_label_or_fit(tmp_path, monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    import fit_wam_clean_aggregation as producer
+    import scripts.fit_wam_clean_aggregation as producer
 
     path = tmp_path / "live_owner.json"
     path.write_text(json.dumps(dict(schema_version="s2a.clean-d2-owner.v1", complete=False, passed=False)))
@@ -166,7 +166,7 @@ def test_cpu_owner_reaps_failed_real_child_and_never_starts_qr(tmp_path, monkeyp
     import sys
 
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    import run_wam_clean_aggregation as owner
+    import scripts.run_wam_clean_aggregation as owner
 
     command = [sys.executable, "-c", "raise SystemExit(7)"]
     regref = dict(path=str(tmp_path / "registration.json"), sha256="1" * 64)

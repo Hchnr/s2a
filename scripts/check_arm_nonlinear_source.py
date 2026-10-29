@@ -3,12 +3,12 @@
 from pathlib import Path
 
 import numpy as np
-from arm_nonlinear_independent import augment, conditions, feature_matrix
-from arm_nonlinear_independent_equations import equations
-from arm_nonlinear_training import contrast_rows
-from audit_wam_position import Evidence
 
-from s2a.nonlinear_conditioned_arm_forward import design, raw_condition, with_history
+from s2a.research.response_models.nonlinear.nonlinear_conditioned_arm_forward import design, raw_condition, with_history
+from scripts.arm_nonlinear_independent import augment, conditions, feature_matrix
+from scripts.arm_nonlinear_independent_equations import equations
+from scripts.arm_nonlinear_training import contrast_rows
+from scripts.audit_wam_position import Evidence
 
 
 def main():

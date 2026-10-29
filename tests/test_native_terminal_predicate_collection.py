@@ -10,8 +10,8 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.native_training import state_sha256
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.native.native_training import state_sha256
 
 
 def collector():
@@ -161,7 +161,7 @@ def test_fixed_full_denominator_and_official_phase_budget(tmp_path):
 def test_capture_preserves_original_mismatch_and_all_active_positive_distance_contact(tmp_path, monkeypatch):
     """Source values are synthetic; this only exercises serialization/order."""
     module = collector()
-    import s2a.libero_simulation as simulation
+    import s2a.backends.libero.simulation as simulation
 
     raw = np.array([0.0, 0.0], dtype=np.float64)
     state = np.array([8.7, 0.25], dtype=np.float64)
@@ -292,7 +292,7 @@ def test_complete_sixteen_mismatch_returns_zero_for_independent_negative_audit(t
 
 def test_osmesa_preload_and_low_level_guards_precede_runtime_imports(tmp_path, monkeypatch):
     module, events = collector(), []
-    import s2a.libero_simulation as simulation
+    import s2a.backends.libero.simulation as simulation
 
     monkeypatch.chdir(REPO)
     for key, value in dict(CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONDONTWRITEBYTECODE="1").items():

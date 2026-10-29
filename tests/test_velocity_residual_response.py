@@ -1,7 +1,10 @@
 import numpy as np
 import pytest
 
-from s2a.velocity_residual_response import VelocityResidualResponse, motor_after_native_period
+from s2a.research.response_models.causal.velocity_residual_response import (
+    VelocityResidualResponse,
+    motor_after_native_period,
+)
 
 
 def parameters():

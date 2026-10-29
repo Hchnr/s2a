@@ -5,11 +5,9 @@ import json
 import os
 from pathlib import Path
 
-from execute_tracking_v5_prefix_callback_backtracking import verify_native_qa as verify_callback_qa
-from run_wam_readout import owned_command
-
-from s2a.native_environment import strict_native_environment
-from s2a.prefix_optimization_reserve_evidence import (
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.prefix_optimization_reserve_evidence import (
     CALLBACK_CHECK_REG_REF,
     CPU_ENVIRONMENT,
     NATIVE_PYTHON,
@@ -29,7 +27,8 @@ from s2a.prefix_optimization_reserve_evidence import (
     remember,
     require,
 )
-from s2a.preview_result_publication import publish_result
+from scripts.execute_tracking_v5_prefix_callback_backtracking import verify_native_qa as verify_callback_qa
+from scripts.run_wam_readout import owned_command
 
 
 def verify_native_qa(ref):

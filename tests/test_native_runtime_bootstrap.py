@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from s2a import native_runtime_bootstrap as bootstrap
+from s2a.research.native_runtime import bootstrap as bootstrap
 
 
 @pytest.fixture

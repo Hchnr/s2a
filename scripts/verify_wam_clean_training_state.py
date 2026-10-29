@@ -13,8 +13,9 @@ import os
 from pathlib import Path
 
 import numpy as np
-import verify_wam_clean_training_capture as CAPTURE
 from scipy.spatial.transform import Rotation
+
+import scripts.verify_wam_clean_training_capture as CAPTURE
 
 REPO = CAPTURE.REPO
 GPU = CAPTURE.GPU

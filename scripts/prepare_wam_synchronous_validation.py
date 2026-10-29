@@ -9,8 +9,8 @@ from pathlib import Path
 import h5py
 import numpy as np
 
-from s2a.artifacts import REPO, sha256
-from s2a.synchronous_validation import ROSTER, checked, publish, reference, validate_records
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.research.wam.readout.synchronous_validation import ROSTER, checked, publish, reference, validate_records
 
 
 def source_closure(entries):

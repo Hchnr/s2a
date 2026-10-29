@@ -7,17 +7,11 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import requests
-from run_wam_clean_training_development import (
-    CHECKPOINT,
-    PORT,
-    admit_development,
-    case_order,
-    make_case_config,
-)
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, read, reference, require
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
+from scripts.run_wam_clean_training_development import CHECKPOINT, PORT, admit_development, case_order, make_case_config
 
 REQUEST_KEYS = {
     "name",
@@ -150,7 +144,7 @@ def execute(prepared_ref, registration_ref, state_owner_ref, state_verification_
         readiness = restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
         result["cv2_readiness_ref"] = publish(root / "cv2_readiness.json", readiness)
         # Imports after the explicit, probe-bound preload cannot re-mutate LD.
-        from s2a.stability_position_simulation import execution_inputs, run_position_case
+        from s2a.research.wam.tracking.control.stability_position_simulation import execution_inputs, run_position_case
 
         strict_native_environment()
         fixture = json.loads(Path(config["fixture"]).read_text())

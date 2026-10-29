@@ -2,14 +2,15 @@
 
 import copy
 import importlib.util
-from pathlib import Path
 
 import pytest
+
+from s2a.infrastructure.repository_paths import repository_root
 
 
 @pytest.fixture
 def supplement(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location(
         "temporal_metadata_test", root / "scripts/audit_wam_temporal_qualification_alpha_metadata.py"

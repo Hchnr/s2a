@@ -6,15 +6,15 @@ import os
 from pathlib import Path
 
 import numpy as np
-from probe_wam_flow_readout_quantization import bf16_bits, tensor_bits
-from probe_wam_flow_readout_quantization import case_inputs as flow_cases
-from run_wam_scaled_state import read_prepared, reference, require
 
-from s2a.artifacts import REPO, sha256
-from s2a.wam_flow_readout import FlowReadoutHook
-from s2a.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext, _bfloat16_rne
-from s2a.wam_scaled_readout import ScaledFlowReadout
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from s2a.research.wam.readout.wam_flow_readout import FlowReadoutHook
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext, _bfloat16_rne
+from s2a.research.wam.readout.wam_scaled_readout import ScaledFlowReadout
+from scripts.probe_wam_flow_readout_quantization import bf16_bits, tensor_bits
+from scripts.probe_wam_flow_readout_quantization import case_inputs as flow_cases
+from scripts.run_wam_scaled_state import read_prepared, reference, require
 
 
 def case_inputs(model, sigmas):

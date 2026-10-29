@@ -9,7 +9,9 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import (
+from PIL import Image
+
+from scripts.audit_wam_position import (
     REPO,
     TARGETS,
     GripperIntentHold,
@@ -30,7 +32,6 @@ from audit_wam_position import (
     sample,
     task_outcome,
 )
-from PIL import Image
 
 
 def verify_query(config, case, index, chunk, evidence, checkpoint, *, sampling_seed):
@@ -206,7 +207,7 @@ def verify_case(
     gripper = gripper_type(initial, config=config_type(**config[config_name]))
     assert controller["gripper_config"] == asdict(gripper.config)
     assert asdict(gripper.config) == asdict(config_type())
-    from residual_motor_scalar_replay import replay
+    from scripts.residual_motor_scalar_replay import replay
 
     parameter_ref = config["residual_parameters_ref"]
     evidence.check(parameter_ref["path"], parameter_ref["sha256"])

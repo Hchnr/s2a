@@ -5,7 +5,8 @@ import json
 from pathlib import Path
 
 import numpy as np
-from run_native_pose_hold_diagnostic import publish, read, read_prepared, reference, require
+
+from scripts.run_native_pose_hold_diagnostic import publish, read, read_prepared, reference, require
 
 
 def arrays(case):

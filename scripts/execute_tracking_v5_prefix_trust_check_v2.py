@@ -5,14 +5,10 @@ import json
 import os
 from pathlib import Path
 
-from execute_tracking_v5_prefix_trust_control import verify_native_qa as original_verify_native_qa
-from run_wam_readout import owned_command
-
-from s2a.native_environment import strict_native_environment
-from s2a.prefix_trust_asset_repair import (
-    ALL_QA_TESTS as QA_TESTS,
-)
-from s2a.prefix_trust_asset_repair import (
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.prefix_trust_asset_repair import ALL_QA_TESTS as QA_TESTS
+from s2a.research.trajectory_search.prefix_trust_asset_repair import (
     FAILED_OWNER_REF,
     FAILED_RESULT_REF,
     PLAN,
@@ -23,7 +19,7 @@ from s2a.prefix_trust_asset_repair import (
     load_snapshot,
     repair_root,
 )
-from s2a.prefix_trust_control_evidence import (
+from s2a.research.trajectory_search.prefix_trust_control_evidence import (
     CPU_ENVIRONMENT,
     NATIVE_PYTHON,
     REPO,
@@ -34,7 +30,8 @@ from s2a.prefix_trust_control_evidence import (
     remember,
     require,
 )
-from s2a.preview_result_publication import publish_result
+from scripts.execute_tracking_v5_prefix_trust_control import verify_native_qa as original_verify_native_qa
+from scripts.run_wam_readout import owned_command
 
 
 def verify_native_qa(ref):

@@ -11,14 +11,22 @@ import time
 from pathlib import Path
 
 import requests
-from run_wam_clean_bridge import check_owned_command, resource_observation
-from run_wam_clean_training import environment as training_environment
-from run_wam_clean_training import observe_release
-from run_wam_readout import owned_command
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import GPU, admit_execution, checked, publish, read, reference, require
-from s2a.worker_handshake import identity, owned_child
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.worker_handshake import identity, owned_child
+from s2a.research.wam.training.clean.clean_training_runtime import (
+    GPU,
+    admit_execution,
+    checked,
+    publish,
+    read,
+    reference,
+    require,
+)
+from scripts.run_wam_clean_bridge import check_owned_command, resource_observation
+from scripts.run_wam_clean_training import environment as training_environment
+from scripts.run_wam_clean_training import observe_release
+from scripts.run_wam_readout import owned_command
 
 PORT = 31339
 CHECKPOINT = "8400_masked"

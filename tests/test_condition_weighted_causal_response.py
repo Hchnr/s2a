@@ -1,6 +1,6 @@
 import numpy as np
 
-from s2a.condition_weighted_causal_response import ConditionWeightedCausalResponse
+from s2a.research.response_models.causal.condition_weighted_causal_response import ConditionWeightedCausalResponse
 
 
 def test_completed_history_copy_query_purity_and_remote_shrinkage():

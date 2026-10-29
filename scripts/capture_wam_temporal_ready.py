@@ -7,11 +7,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
-from audit_wam_position import Evidence
-from capture_wam_long_ready import live_identity
-from run_wam_short_replan import cpu_environment, write_new
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_position import Evidence
+from scripts.capture_wam_long_ready import live_identity
+from scripts.run_wam_short_replan import cpu_environment, write_new
 
 
 def capture(part, evidence):

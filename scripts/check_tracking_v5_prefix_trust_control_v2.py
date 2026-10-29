@@ -12,20 +12,20 @@ import copy
 import hashlib
 from pathlib import Path
 
-import check_tracking_v5_prefix_trust_control as frozen
+import scripts.check_tracking_v5_prefix_trust_control as frozen
 
 OLD_SUFFIX = "_check_20261028"
 NEW_SUFFIX = "_check_v2_20261029"
 
 
 def load_asset_repair_prerequisites():
-    from s2a.prefix_trust_asset_repair import load_asset_repair_prerequisites as load
+    from s2a.research.trajectory_search.prefix_trust_asset_repair import load_asset_repair_prerequisites as load
 
     return load()
 
 
 def load_snapshot():
-    from s2a.prefix_trust_asset_repair import load_snapshot as load
+    from s2a.research.trajectory_search.prefix_trust_asset_repair import load_snapshot as load
 
     return load()
 

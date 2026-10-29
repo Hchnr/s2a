@@ -4,11 +4,11 @@ import os
 from pathlib import Path
 
 import numpy as np
-from verify_wam_clean_training_capture import Evidence, require
 
-from s2a.clean_training_runtime import publish, reference
-from s2a.terminal_objective_solver import fit_opening_lad, ridge_quadratic
-from s2a.terminal_trajectory_operators import operators
+from s2a.research.trajectory_search.terminal_objective_solver import fit_opening_lad, ridge_quadratic
+from s2a.research.trajectory_search.terminal_trajectory_operators import operators
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
+from scripts.verify_wam_clean_training_capture import Evidence, require
 
 
 def main():

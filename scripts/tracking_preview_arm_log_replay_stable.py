@@ -1,13 +1,13 @@
 """247 independent raw-state/preview/native goal and continuous dual-history replay."""
 
 import numpy as np
-from arm_joint_wrench_independent import nominal_prediction
-from coupled_pose_preview_stable_independent import verify_preview
-from current_coupled_stable_independent import response
-from full_coupled_pose_independent import generated_twist, objective
 from scipy.spatial.transform import Rotation
 
-from s2a.archived_forward_state import verify_forward_state
+from s2a.research.response_models.forward.archived_forward_state import verify_forward_state
+from scripts.arm_joint_wrench_independent import nominal_prediction
+from scripts.coupled_pose_preview_stable_independent import verify_preview
+from scripts.current_coupled_stable_independent import response
+from scripts.full_coupled_pose_independent import generated_twist, objective
 
 
 def close(actual, expected, atol=1e-8):

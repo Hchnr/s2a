@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from s2a.development_runtime_bridge import admit_runtime, extend_sources
-from s2a.durable_stage_supervisor import reference
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import reference
+from s2a.research.wam.tracking.runtime.development_runtime_bridge import admit_runtime, extend_sources
 
 
 @pytest.fixture

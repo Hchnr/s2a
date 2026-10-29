@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.task_acceptance import chunk_opening_diagnostics, scene_bootstrap, task_outcome
+from s2a.evaluation.task_acceptance import chunk_opening_diagnostics, scene_bootstrap, task_outcome
 
 
 def test_transient_success_and_incomplete_budget_cannot_pass_stability():

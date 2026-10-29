@@ -7,9 +7,9 @@ import signal
 import sys
 from pathlib import Path
 
-from s2a.clean_training_d1_admission import PREFIX, admit
-from s2a.clean_training_w1_handoff import OWNER_PATH, PREPARED_ROOT, qualified_w1_prior
-from s2a.durable_stage_supervisor import check_sources, publish, read, reference, require
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import check_sources, publish, read, reference, require
+from s2a.research.wam.training.clean.clean_training_d1_admission import PREFIX, admit
+from s2a.research.wam.training.clean.clean_training_w1_handoff import OWNER_PATH, PREPARED_ROOT, qualified_w1_prior
 
 
 def load_original(path, name):

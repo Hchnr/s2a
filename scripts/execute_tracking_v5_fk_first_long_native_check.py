@@ -7,12 +7,11 @@ import signal
 import subprocess
 from pathlib import Path
 
-from run_tracking_preview_wam_development_v5 import cpu_environment
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.durable_stage_supervisor import accept_detached_launch, launch_detached
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import accept_detached_launch, launch_detached
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
+from scripts.run_tracking_preview_wam_development_v5 import cpu_environment
+from scripts.run_wam_readout import owned_command
 
 
 def main(horizon):

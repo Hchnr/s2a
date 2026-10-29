@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.state_conditioned_gripper_inverse import design_features, reachable_command
+from s2a.research.gripper.state_conditioned_gripper_inverse import design_features, reachable_command
 
 BASE = Path("outputs/state_conditioned_gripper_inverse_20261025")
 ROOT = Path("outputs/residual_motor_prior_20261025")

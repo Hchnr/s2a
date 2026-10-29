@@ -1,9 +1,10 @@
 """239 independent ODE/objective, finite-difference gradient and bound KKT replay."""
 
 import numpy as np
-from current_coupled_independent import response
 from scipy.optimize import nnls
 from scipy.spatial.transform import Rotation
+
+from scripts.current_coupled_independent import response
 
 
 def generated_twist(poses, index, anchor, dt):

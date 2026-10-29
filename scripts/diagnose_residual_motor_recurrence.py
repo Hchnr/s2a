@@ -5,7 +5,8 @@ import json
 from pathlib import Path
 
 import numpy as np
-from residual_motor_scalar_replay import replay
+
+from scripts.residual_motor_scalar_replay import replay
 
 
 def digest(path):

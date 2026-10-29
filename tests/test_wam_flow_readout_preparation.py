@@ -3,15 +3,16 @@
 import copy
 import importlib.util
 import json
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def preparer():
-    path = Path(__file__).resolve().parents[1] / "scripts/prepare_wam_flow_readout.py"
+    path = repository_root(anchor=__file__) / "scripts/prepare_wam_flow_readout.py"
     spec = importlib.util.spec_from_file_location("flow_readout_preparation_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

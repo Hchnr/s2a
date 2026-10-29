@@ -5,8 +5,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a import dependency_safe_qp
-from s2a.strict_convex_qp import solve_qp as original_solve
+from s2a.adapters.solvers.strict_convex_qp import solve_qp as original_solve
+from s2a.research.joint_control.tracking import dependency_safe_qp
 
 
 def test_successful_original_solution_is_unchanged():

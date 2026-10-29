@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.perturbations import ActuatorDelay
+from s2a.backends.perturbations import ActuatorDelay
 
 
 def test_actuator_delay_is_causal_and_keeps_issued_commands_immutable():

@@ -7,7 +7,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from s2a.artifacts import code_fingerprint, write_json
+from s2a.infrastructure.artifacts import code_fingerprint, write_json
 
 
 def process_identity(pid):

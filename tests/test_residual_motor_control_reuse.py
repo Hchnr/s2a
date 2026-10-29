@@ -1,13 +1,18 @@
 """Prove the entire physical loop is unchanged outside the registered intervention."""
 
 import ast
-from pathlib import Path
+
+from tests.support.source_layout import current_module_name, current_source_path
 
 
 def test_only_residual_gripper_and_causal_history_change():
-    old = Path("src/s2a/motor_state_simulation.py").read_text()
-    new = Path("src/s2a/residual_motor_simulation.py").read_text()
-    new = new.replace("from s2a.residual_motor_inverse import ResidualMotorInverse\n", "")
+    old = current_source_path("src/s2a/motor_state_simulation.py").read_text()
+    new = current_source_path("src/s2a/residual_motor_simulation.py").read_text()
+    residual_import = (
+        "from " + current_module_name("src/s2a/residual_motor_inverse.py") + " import ResidualMotorInverse\n"
+    )
+    assert new.count(residual_import) == 1
+    new = new.replace(residual_import, "")
     new = new.replace("def run_residual_motor_case(", "def run_motor_state_case(")
     new = new.replace("    inverse_parameters,\n", "")
     new = new.replace(

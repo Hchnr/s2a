@@ -2,9 +2,9 @@ import ast
 from pathlib import Path
 
 import numpy as np
-from pose_velocity_loaded_acceptance_checker import independent_reference_velocity
 
-from s2a.reference_linear_velocity import reference_linear_velocity
+from s2a.references.linear_velocity import reference_linear_velocity
+from scripts.pose_velocity_loaded_acceptance_checker import independent_reference_velocity
 
 
 def test_reference_modes_match_independent_replay():

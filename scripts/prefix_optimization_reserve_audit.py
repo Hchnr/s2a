@@ -8,10 +8,11 @@ import ast
 import hashlib
 from pathlib import Path
 
-from check_tracking_v5_prefix_trust_control import numerical_compare
-from prefix_callback_backtracking_audit import audit_callback_backtracking_ledger
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.check_tracking_v5_prefix_trust_control import numerical_compare
+from scripts.prefix_callback_backtracking_audit import audit_callback_backtracking_ledger
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 BASELINE_SOURCE = REPO / "src/s2a/prefix_callback_backtracking_plan.py"
 RESERVE_SOURCE = REPO / "src/s2a/prefix_optimization_reserve_plan.py"
 BASELINE_SHA256 = "46e78f95e8725bba5d98236f31a33140ed138e9f8d2755b3593b74ea75401460"

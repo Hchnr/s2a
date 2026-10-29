@@ -5,10 +5,10 @@ import json
 from pathlib import Path
 
 import numpy as np
-from run_matched_oracle_case import CONTROL, CONTROL_SHA
 
-from s2a.artifacts import sha256
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
 
 CONFIG = Path("configs/residual_motor_physical_20261025_v2.json")
 
@@ -23,10 +23,9 @@ def main():
         raise ValueError("Import guard changed")
     guard = json.loads(CONTROL.read_text())["cv2_guard_registration"]
     readiness = restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
-    from collect_wam_native_training import endpoint, render_anchor, save_arrays
-
-    from s2a.native_training import pack_gripper_caches, synchronous_labels
-    from s2a.residual_motor_simulation import run_residual_motor_case
+    from s2a.research.response_models.causal.residual_motor_simulation import run_residual_motor_case
+    from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
+    from scripts.collect_wam_native_training import endpoint, render_anchor, save_arrays
 
     strict_native_environment()
     registration = json.loads(CONFIG.read_text())
@@ -63,7 +62,7 @@ def main():
     if sha256(parameter_ref["path"]) != parameter_ref["sha256"]:
         raise ValueError("Frozen073 parameters changed")
     inverse_parameters = json.loads(Path(parameter_ref["path"]).read_text())
-    from s2a.residual_motor_inverse import ResidualMotorInverse
+    from s2a.research.response_models.inverse.residual_motor_inverse import ResidualMotorInverse
 
     ResidualMotorInverse(inverse_parameters)
     if args.dry_run:

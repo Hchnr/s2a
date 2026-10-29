@@ -7,15 +7,19 @@ import time
 
 import numpy as np
 import scipy
-from audit_wam_position import Evidence
-from full_coupled_pose_independent import objective as independent_objective
 from scipy.optimize import minimize
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import publish
-from s2a.full_coupled_pose_inverse import FullCoupledPoseModel, projected_gradient, task_objective
-from s2a.generated_reference_twist import reference_world_twist
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.references.generated_twist import reference_world_twist
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse import (
+    FullCoupledPoseModel,
+    projected_gradient,
+    task_objective,
+)
+from scripts.audit_wam_position import Evidence
+from scripts.full_coupled_pose_independent import objective as independent_objective
 
 
 def main():

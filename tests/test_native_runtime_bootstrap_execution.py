@@ -9,7 +9,9 @@ from types import SimpleNamespace
 
 import pytest
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts/verify_native_runtime_bootstrap.py"
+from s2a.infrastructure.repository_paths import repository_root
+
+SCRIPT = repository_root(anchor=__file__) / "scripts/verify_native_runtime_bootstrap.py"
 
 
 @pytest.fixture
@@ -119,9 +121,8 @@ def test_sources_cannot_be_rebound_or_output_escape(execution, tmp_path):
 @pytest.fixture
 def admitted(execution, monkeypatch):
     e = execution
-    import prepare_native_runtime_path_snapshot as preparation
-
-    import s2a.native_runtime_bootstrap as core
+    import s2a.research.native_runtime.bootstrap as core
+    import scripts.prepare_native_runtime_path_snapshot as preparation
 
     artifact = e.repo / "outputs/inputs"
     original = dict(record=dict(initial_state=[0.0] * 79, model_xml="<mujoco/>"), runtime_config={})

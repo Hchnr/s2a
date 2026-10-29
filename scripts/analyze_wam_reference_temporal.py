@@ -7,11 +7,11 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
-from verify_wam_clean_training_capture import Evidence, require
 
-from s2a.clean_training_runtime import publish, reference
-from s2a.reference_error_decomposition import decompose, position_summary
-from s2a.reference_temporal_error import temporal_terms
+from s2a.evaluation.reference_error_decomposition import decompose, position_summary
+from s2a.evaluation.reference_temporal_error import temporal_terms
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
+from scripts.verify_wam_clean_training_capture import Evidence, require
 
 
 def opening_summary(error, predicted, truth):

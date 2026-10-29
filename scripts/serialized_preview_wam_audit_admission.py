@@ -2,9 +2,8 @@
 
 from pathlib import Path
 
-from coupled_preview_wam_physical_admission import audit_physical_control
-
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
+from scripts.coupled_preview_wam_physical_admission import audit_physical_control
 
 ROOT = REPO / "outputs/serialized_preview_wam_development_20261026"
 CHECK_NAMES = {

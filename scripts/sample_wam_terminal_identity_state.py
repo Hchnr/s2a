@@ -14,27 +14,36 @@ import random
 from pathlib import Path
 
 import numpy as np
-from collect_wam_clean_training import normalization_spec, qualified_grid, same_initial
-from qualify_wam_clean_bridge import (
+
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.joint_control.terminal.terminal_capture_identity import TerminalIdentityBridgeMixin
+from s2a.research.wam.readout.sampler_trace import check_sources, parameters_identity
+from s2a.research.wam.readout.terminal_identity_state_execution import GPU, admit, admit_sampling, select_readout
+from s2a.research.wam.training.clean.clean_training_runtime import (
+    VISION_SHAPE,
+    checked,
+    publish,
+    read,
+    reference,
+    require,
+)
+from s2a.research.wam.training.clean.wam_clean_capture import NoiseRoster
+from s2a.research.wam.training.clean.wam_clean_compact import CompactCaptureSink, CompactRequest
+from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
+from scripts.collect_wam_clean_training import normalization_spec, qualified_grid, same_initial
+from scripts.qualify_wam_clean_bridge import (
     CONVERSION_SOURCE,
     SAMPLER_SOURCE,
     imported_cosmos_sources,
     response_arrays,
     runtime_environment,
 )
-from qualify_wam_clean_bridge import (
-    ConversionWitness as OriginalConversionWitness,
+from scripts.qualify_wam_clean_bridge import ConversionWitness as OriginalConversionWitness
+from scripts.sample_wam_clean_training_state import (
+    historical_source_summaries,
+    require_zero_response,
+    require_zero_sources,
 )
-from sample_wam_clean_training_state import historical_source_summaries, require_zero_response, require_zero_sources
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import VISION_SHAPE, checked, publish, read, reference, require
-from s2a.sampler_trace import check_sources, parameters_identity
-from s2a.terminal_capture_identity import TerminalIdentityBridgeMixin
-from s2a.terminal_identity_state_execution import GPU, admit, admit_sampling, select_readout
-from s2a.wam_clean_capture import NoiseRoster
-from s2a.wam_clean_compact import CompactCaptureSink, CompactRequest
-from s2a.wam_clean_readout import CleanResidualReadout
 
 
 class ConversionWitness(TerminalIdentityBridgeMixin, OriginalConversionWitness):
@@ -93,11 +102,11 @@ def run(prepared_ref, registration_ref, *, candidate_proof_ref, gpu_uuid):
             gold[entry["name"]] = historical_source_summaries(original)
             result["historical_model_capture_archives_decoded"] += 35
         import torch
-        from audit_wam_current_numerics import require_eval
-        from run_wam_readout_features import BoundaryCounter, actual_context
-        from run_wam_readout_sampling import InitialCapture
 
-        from s2a.wam_runtime import install_active_slot_mask, load_service
+        from s2a.backends.wam.runtime import install_active_slot_mask, load_service
+        from scripts.audit_wam_current_numerics import require_eval
+        from scripts.run_wam_readout_features import BoundaryCounter, actual_context
+        from scripts.run_wam_readout_sampling import InitialCapture
 
         require(
             torch.cuda.is_available() and torch.cuda.device_count() == 1,
@@ -126,7 +135,7 @@ def run(prepared_ref, registration_ref, *, candidate_proof_ref, gpu_uuid):
         for parameter in model.parameters():
             parameter.requires_grad_(False)
         result["parameters_before"] = parameters_identity(model)
-        from s2a.wam_readout import ACTIVE_MASK
+        from s2a.research.wam.readout.wam_readout import ACTIVE_MASK
 
         result["mask_evidence"] = install_active_slot_mask(model, ACTIVE_MASK)
         result["cosmos_imported_sources_after_load"] = imported_cosmos_sources(qualified)

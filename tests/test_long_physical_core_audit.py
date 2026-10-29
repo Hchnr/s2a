@@ -2,16 +2,18 @@
 
 import copy
 import importlib.util
-from pathlib import Path
 
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
+from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
+
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location(
         "long_physical_audit_test", root / "scripts/audit_wam_long_physical_core.py"
@@ -69,7 +71,7 @@ def test_terminal_and_interior_branches_refer_to_the_same_endpoint(audit):
 
 
 def test_actual_source_consumes_diagnostic_pose_only_in_logged_metrics(audit, tmp_path):
-    source = audit.REPO / "src/s2a/long_simulation.py"
+    source = current_source_path("src/s2a/long_simulation.py")
     assert audit.diagnostic_only_source(source)["control_uses_actual_targets_index"]
     changed = tmp_path / "invalid_control.py"
     changed.write_text(

@@ -5,9 +5,9 @@ import json
 from pathlib import Path
 
 import pytest
-import verify_serialized_preview_wam_metadata as audit
 
-from s2a import serialized_preview_wam_control as control
+import scripts.verify_serialized_preview_wam_metadata as audit
+from s2a.research.wam.tracking.preview import serialized_preview_wam_control as control
 
 
 @pytest.fixture

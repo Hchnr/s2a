@@ -5,17 +5,17 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.generated_reference_twist import reference_world_twist
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import transform
-from s2a.joint_limit_preview_objective import preview_objective
-from s2a.joint_limit_response import build_joint_response, predict_joint_response
-from s2a.long_joint_preview import build_joint_preview
-from s2a.long_joint_preview import rollout_joint_preview as original_rollout
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.osc import OSCInterface
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.references.generated_twist import reference_world_twist
+from s2a.research.joint_control.limits.joint_limit_preview_objective import preview_objective
+from s2a.research.joint_control.preview.long_joint_preview import build_joint_preview
+from s2a.research.joint_control.preview.long_joint_preview import rollout_joint_preview as original_rollout
+from s2a.research.response_models.forward.joint_limit_response import build_joint_response, predict_joint_response
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
 
 
 def main():
@@ -71,8 +71,8 @@ def main():
     )
     guard = read(CONTROL_REF)["cv2_guard_registration"]
     restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
-    from s2a.coupled_pose_preview_runtime import solve_preview
-    from s2a.libero_simulation import make_environment
+    from s2a.backends.libero.simulation import make_environment
+    from s2a.research.joint_control.preview.coupled_pose_preview_runtime import solve_preview
 
     producer_ref = reference(REPO / "outputs/terminal_joint_plan_probe_20261027/verified.json")
     producer = read(producer_ref)

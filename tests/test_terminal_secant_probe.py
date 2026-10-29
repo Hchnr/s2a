@@ -5,10 +5,10 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import pose_error
-from s2a.joint_preview_constraint_audit import audit_joint_preview_constraints
-from s2a.osc import OSCInterface
-from s2a.terminal_secant_probe import (
+from s2a.research.joint_control.limits.joint_preview_constraint_audit import audit_joint_preview_constraints
+from s2a.research.trajectory_search.terminal_secant_probe import (
     FIT_STEP_SIZES,
     STEP_SIZES,
     build_terminal_secant_geometry,

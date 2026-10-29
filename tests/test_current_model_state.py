@@ -2,8 +2,8 @@ from types import SimpleNamespace
 
 import numpy as np
 
-import s2a.current_model_state as module
-from s2a.runtime_response_history import RuntimeResponseHistory
+import s2a.research.response_models.forward.current_model_state as module
+from s2a.research.response_models.causal.runtime_response_history import RuntimeResponseHistory
 
 
 def test_explicit_joint_indexes_scalar_motor_and_readonly_candidate(monkeypatch):

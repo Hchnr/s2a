@@ -7,12 +7,11 @@ import os
 import types
 from pathlib import Path
 
-from serve_wam_sampler_trace import full128, save_acceptance_input
-
-from s2a.artifacts import code_fingerprint
-from s2a.sampler_trace import SamplerTrace, check_sources, file_sha, json_sha, write_new_json
-from s2a.wam_backend_runtime import load_service as load_backend_service
-from s2a.wam_runtime import install_active_slot_mask
+from s2a.backends.wam.backend_runtime import load_service as load_backend_service
+from s2a.backends.wam.runtime import install_active_slot_mask
+from s2a.infrastructure.artifacts import code_fingerprint
+from s2a.research.wam.readout.sampler_trace import SamplerTrace, check_sources, file_sha, json_sha, write_new_json
+from scripts.serve_wam_sampler_trace import full128, save_acceptance_input
 
 
 def main():
@@ -27,7 +26,7 @@ def main():
     p = json.loads(args.prepared.read_text())
     check_sources(p["source_sha256"])
     check_sources(p["input_sha256"])
-    from run_wam_sampler_steps import check_weights
+    from scripts.run_wam_sampler_steps import check_weights
 
     check_weights(p["weight_files"])
     root = Path(p["root"])

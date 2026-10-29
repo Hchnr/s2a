@@ -6,9 +6,9 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import code_fingerprint, sha256, write_json
+from s2a.evaluation.task_acceptance import task_outcome
 from s2a.geometry import pose_error
-from s2a.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import code_fingerprint, sha256, write_json
 
 ROOT = Path("outputs/wam_independent_20261020")
 TARGETS = ("akita_black_bowl_1", "wine_bottle_1", "cream_cheese_1")

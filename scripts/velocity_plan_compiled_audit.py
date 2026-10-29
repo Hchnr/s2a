@@ -4,10 +4,10 @@ import ctypes
 import math
 
 import numpy as np
-from velocity_plan_independent_audit import scalar_step
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, read, reference
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import checked, read, reference
+from scripts.velocity_plan_independent_audit import scalar_step
 
 BUILD_REF = reference(REPO / "outputs/velocity_scalar_audit_native_20261028/build.json")
 _build = read(BUILD_REF)

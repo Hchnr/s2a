@@ -12,13 +12,14 @@ import json
 import os
 from pathlib import Path
 
-import verify_wam_clean_training_capture as numerics
-from audit_wam_position import Evidence as PhysicsEvidence
-from verify_wam_terminal_development_points import audit_points as audit_terminal_points
-from verify_wam_terminal_development_points import head_parameters
-from wam_position_acceptance_checker import source_proof, verify_case
+import scripts.verify_wam_clean_training_capture as numerics
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.audit_wam_position import Evidence as PhysicsEvidence
+from scripts.verify_wam_terminal_development_points import audit_points as audit_terminal_points
+from scripts.verify_wam_terminal_development_points import head_parameters
+from scripts.wam_position_acceptance_checker import source_proof, verify_case
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 GPU = "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f"
 FIXTURE_SHA = "f522ee333827d51ab66b5b8d1c2a7ebd8ceca3832403b3c54dfa56a821fb2a8e"
 CONTROL_SHA = "106f45543f8bc0aa0e336c0ad9b5c01e0bce252a5e5dad0ec3ebbba349e5fda0"
@@ -141,7 +142,7 @@ def normal_owned(ev, command, cuda):
 
 
 def admission(ev, prepared_ref, registration_ref, run_ref):
-    from terminal_development_audit_admission import admission as independent_admission
+    from scripts.terminal_development_audit_admission import admission as independent_admission
 
     return independent_admission(
         ev, prepared_ref, registration_ref, run_ref, require=require, normal_owned=normal_owned, gpu=GPU, order=order

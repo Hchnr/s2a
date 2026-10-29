@@ -6,8 +6,9 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from s2a.artifacts import sha256, write_json
-from s2a.libero_simulation import sha256_bytes
+from s2a.backends.libero.simulation import sha256_bytes
+from s2a.infrastructure.artifacts import sha256, write_json
+from s2a.infrastructure.repository_paths import repository_root
 from scripts.verify_wam_acceptance import verify_case
 
 
@@ -316,7 +317,7 @@ def test_request_conditioning_must_match_frozen_protocol_and_current_image(saved
 
 
 def test_summary_uses_the_eight_executed_endpoints_of_the_last_h16_chunk(saved_wam_case, monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     from scripts import summarize_wam_independent as summary
 
     path, c, fixtures, variants = saved_wam_case

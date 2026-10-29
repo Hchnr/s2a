@@ -7,13 +7,7 @@ import signal
 import subprocess
 from pathlib import Path
 
-from run_wam_clean_training_continuation import observe_descendant_cleanup
-
-from s2a.clean_training_d1_admission import Evidence
-from s2a.clean_training_development_handoff import environment as original_environment
-from s2a.clean_training_w1_handoff import PREPARED_ROOT
-from s2a.development_repair_admission import BUNDLE, ENV_PATH, ENV_SHA, PREFIX, ROOT, admit
-from s2a.durable_stage_supervisor import (
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     REPO,
     accept_detached_launch,
     check_cpu_environment,
@@ -27,7 +21,19 @@ from s2a.durable_stage_supervisor import (
     reference,
     require,
 )
-from s2a.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from s2a.research.wam.tracking.runtime.development_repair_admission import (
+    BUNDLE,
+    ENV_PATH,
+    ENV_SHA,
+    PREFIX,
+    ROOT,
+    admit,
+)
+from s2a.research.wam.training.clean.clean_training_d1_admission import Evidence
+from s2a.research.wam.training.clean.clean_training_development_handoff import environment as original_environment
+from s2a.research.wam.training.clean.clean_training_w1_handoff import PREPARED_ROOT
+from scripts.run_wam_clean_training_continuation import observe_descendant_cleanup
 
 NAMESPACE = "development_dependency_repair_20261024"
 ENTRY = "scripts/run_wam_clean_development_repair.py"

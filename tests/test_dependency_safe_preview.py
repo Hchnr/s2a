@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-from s2a.coupled_pose_preview_runtime import solve_preview as original_solve
-from s2a.dependency_safe_preview_runtime import solve_preview
+from s2a.research.joint_control.preview.coupled_pose_preview_runtime import solve_preview as original_solve
+from s2a.research.joint_control.preview.dependency_safe_preview_runtime import solve_preview
 from tests.test_coupled_pose_preview import problem
 
 

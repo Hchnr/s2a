@@ -3,16 +3,17 @@
 import copy
 import importlib
 from contextlib import contextmanager
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def sampling(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("run_wam_flow_readout_sampling")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.run_wam_flow_readout_sampling")
 
 
 def test_generation_request_delegates_domain_name_and_actual_seed_once(sampling):

@@ -16,11 +16,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from run_wam_short_replan import cpu_environment, process_record, write_new
-from wam_position_acceptance_checker import source_proof, verify_case, verify_query
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_position import Evidence
+from scripts.run_wam_short_replan import cpu_environment, process_record, write_new
+from scripts.wam_position_acceptance_checker import source_proof, verify_case, verify_query
 
 ROOT = REPO / "outputs/wam_stability_20261021"
 REGISTRATION = "8401aa3"

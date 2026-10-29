@@ -7,14 +7,17 @@ import os
 import socket
 from pathlib import Path
 
-from run_wam_clean_bridge import check_owned_command, resource_observation
-from run_wam_clean_training import environment, observe_release
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, read, reference, require
-from s2a.durable_stage_supervisor import accept_detached_launch, cpu_environment, launch_detached
-from s2a.terminal_state_execution import GPU, admit
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
+    accept_detached_launch,
+    cpu_environment,
+    launch_detached,
+)
+from s2a.research.wam.readout.terminal_state_execution import GPU, admit
+from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
+from scripts.run_wam_clean_bridge import check_owned_command, resource_observation
+from scripts.run_wam_clean_training import environment, observe_release
+from scripts.run_wam_readout import owned_command
 
 PORT = 31359
 

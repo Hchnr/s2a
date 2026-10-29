@@ -7,14 +7,18 @@ import time
 
 import numpy as np
 
-from s2a.mujoco_robot_dynamics import MujocoRobotDynamics
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.native_goal_trajectory import rollout_native_goal_trajectory
-from s2a.osc import OSCInterface
-from s2a.paired_reference_phase import score_phase_response
-from s2a.preview_result_publication import publish_result
-from s2a.saved_direction_backtracking import CASE_ORDER, build_batch, score_backtracking_response
-from s2a.saved_direction_backtracking_evidence import (
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.native_goal_trajectory import rollout_native_goal_trajectory
+from s2a.research.trajectory_search.paired_reference_phase import score_phase_response
+from s2a.research.trajectory_search.saved_direction_backtracking import (
+    CASE_ORDER,
+    build_batch,
+    score_backtracking_response,
+)
+from s2a.research.trajectory_search.saved_direction_backtracking_evidence import (
     CPU_ENVIRONMENT,
     DIAGNOSTIC_REF,
     PLAN,
@@ -28,7 +32,7 @@ from s2a.saved_direction_backtracking_evidence import (
     reference,
     require,
 )
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
 
 EXPECTED_COUNTS = dict(
     prefix=dict(response_evaluations=60, numerical_inner_steps=18000, query_count=18721),

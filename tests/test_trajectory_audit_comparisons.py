@@ -1,16 +1,17 @@
 """Compare the cheaper audit predicates with the original NumPy assertions."""
 
 import importlib
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def comparisons(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("check_tracking_v5_state_updated_trajectory_control_v2")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.check_tracking_v5_state_updated_trajectory_control_v2")
 
 
 def accepted(check, *args, **kwargs):

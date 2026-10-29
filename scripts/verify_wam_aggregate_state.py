@@ -6,17 +6,17 @@ import os
 from pathlib import Path
 
 import numpy as np
-import verify_wam_clean_training_capture as CAPTURE
-from verify_wam_clean_training_state import (
+
+import scripts.verify_wam_clean_training_capture as CAPTURE
+from s2a.research.wam.readout.aggregate_state_execution import GPU, admit, admit_sampling
+from s2a.research.wam.training.clean.clean_training_runtime import publish
+from scripts.verify_wam_clean_training_state import (
     compact_points,
     conditioning_check,
     response_actions,
     values_equal,
     weight_stats,
 )
-
-from s2a.aggregate_state_execution import GPU, admit, admit_sampling
-from s2a.clean_training_runtime import publish
 
 require = CAPTURE.require
 

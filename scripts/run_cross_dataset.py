@@ -2,8 +2,8 @@
 
 import argparse
 
-from s2a.artifacts import load_config
-from s2a.cross_dataset import run_cross_dataset
+from s2a.infrastructure.artifacts import load_config
+from s2a.research.droid.cross_dataset import run_cross_dataset
 
 
 def main():

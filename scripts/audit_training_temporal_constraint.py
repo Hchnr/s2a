@@ -3,9 +3,10 @@
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from collect_wam_native_training import write_once
 from scipy.spatial.transform import Rotation
+
+from scripts.audit_wam_position import Evidence
+from scripts.collect_wam_native_training import write_once
 
 
 def error(a, b):

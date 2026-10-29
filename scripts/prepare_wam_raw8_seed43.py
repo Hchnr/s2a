@@ -6,12 +6,11 @@ import json
 import subprocess
 from pathlib import Path
 
-from run_wam_long_service import weight_stats
-from run_wam_position_matrix import protocol
-from run_wam_short_replan import cpu_environment, process_record, verify_hashes, write_new
-
-from s2a.artifacts import REPO, sha256
-from s2a.stability_position_simulation import execution_inputs
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.research.wam.tracking.control.stability_position_simulation import execution_inputs
+from scripts.run_wam_long_service import weight_stats
+from scripts.run_wam_position_matrix import protocol
+from scripts.run_wam_short_replan import cpu_environment, process_record, verify_hashes, write_new
 
 ROOT = REPO / "outputs/wam_stability_20261021"
 REGISTRATION = "8401aa3"

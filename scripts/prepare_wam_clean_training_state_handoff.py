@@ -5,11 +5,28 @@ import copy
 import json
 import shutil
 
-from s2a.clean_training_state_handoff import BRIDGE_DIRECTORY, BRIDGE_PATH, BUDGET, BUNDLE, GPU, PREFIX, ROOT, SOURCES
-from s2a.clean_training_w2_admission import D1_REGISTRATION_REF
-from s2a.clean_training_w2_admission import ROOT as W2_ROOT
-from s2a.clean_training_w2_handoff import qualified_w2
-from s2a.durable_stage_supervisor import REPO, check_cpu_environment, check_sources, publish, read, reference, require
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
+    REPO,
+    check_cpu_environment,
+    check_sources,
+    publish,
+    read,
+    reference,
+    require,
+)
+from s2a.research.wam.training.clean.clean_training_state_handoff import (
+    BRIDGE_DIRECTORY,
+    BRIDGE_PATH,
+    BUDGET,
+    BUNDLE,
+    GPU,
+    PREFIX,
+    ROOT,
+    SOURCES,
+)
+from s2a.research.wam.training.clean.clean_training_w2_admission import D1_REGISTRATION_REF
+from s2a.research.wam.training.clean.clean_training_w2_admission import ROOT as W2_ROOT
+from s2a.research.wam.training.clean.clean_training_w2_handoff import qualified_w2
 
 
 def bridge_source():

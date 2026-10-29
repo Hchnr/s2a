@@ -4,10 +4,11 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_wrench_data_independent import attach_current_wrench
-from arm_wrench_independent import augment, conditions, feature_matrix, nominal_prediction
-from arm_wrench_independent_equations import equations
-from audit_wam_position import Evidence
+
+from scripts.arm_wrench_data_independent import attach_current_wrench
+from scripts.arm_wrench_independent import augment, conditions, feature_matrix, nominal_prediction
+from scripts.arm_wrench_independent_equations import equations
+from scripts.audit_wam_position import Evidence
 
 ROOT = Path("outputs/wrench_conditioned_arm_forward_20261025")
 

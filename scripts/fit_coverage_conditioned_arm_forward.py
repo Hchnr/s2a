@@ -4,12 +4,18 @@ import json
 from pathlib import Path
 
 import numpy as np
-from arm_coverage_training import contrast_rows
-from audit_wam_position import Evidence
 from scipy.linalg import cho_factor, cho_solve
 
-from s2a.artifacts import sha256
-from s2a.history_conditioned_arm_forward import design, nominal, raw_condition, targets, with_history
+from s2a.infrastructure.artifacts import sha256
+from s2a.research.response_models.causal.history_conditioned_arm_forward import (
+    design,
+    nominal,
+    raw_condition,
+    targets,
+    with_history,
+)
+from scripts.arm_coverage_training import contrast_rows
+from scripts.audit_wam_position import Evidence
 
 CONFIG = Path("configs/coverage_conditioned_arm_forward_20261025.json")
 ROOT = Path("outputs/coverage_conditioned_arm_forward_20261025")

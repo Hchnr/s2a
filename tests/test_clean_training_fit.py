@@ -12,21 +12,23 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a import clean_training_fit_contract as contract
-from s2a.artifacts import REPO
-from s2a.clean_training_seed_plan import apply_seed_plan
+from s2a.adapters.identified.streaming_ridge_qr import independent_ridge
 from s2a.geometry import transform
-from s2a.native_training import synchronous_labels
-from s2a.streaming_ridge_qr import independent_ridge
-from s2a.wam_clean_readout import CleanResidualReadout
-from s2a.wam_clean_streaming import CleanFitBlock, CleanFitLayout
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean import clean_training_fit_contract as contract
+from s2a.research.wam.training.clean.clean_training_seed_plan import apply_seed_plan
+from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
+from s2a.research.wam.training.clean.wam_clean_streaming import CleanFitBlock, CleanFitLayout
+from s2a.research.wam.training.native.native_training import synchronous_labels
 from tests.execution_proof_fixture import effective_training_metadata, seal_execution, training_seed_metadata
 
 
 @pytest.fixture
 def scripts(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("fit_wam_clean_training"), importlib.import_module("verify_wam_clean_training_fit")
+    return importlib.import_module("scripts.fit_wam_clean_training"), importlib.import_module(
+        "scripts.verify_wam_clean_training_fit"
+    )
 
 
 def dump(path, value):

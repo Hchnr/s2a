@@ -10,7 +10,7 @@ from PIL import Image
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from s2a.artifacts import load_config, sha256, write_json
+from s2a.infrastructure.artifacts import load_config, sha256, write_json
 
 
 def success_examples(summary, native, root, out, config):

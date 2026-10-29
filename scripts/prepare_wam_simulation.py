@@ -7,8 +7,8 @@ from pathlib import Path
 import h5py
 import numpy as np
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
-from s2a.libero_simulation import configure_simulator, sha256_bytes
+from s2a.backends.libero.simulation import configure_simulator, sha256_bytes
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 
 
 def main():

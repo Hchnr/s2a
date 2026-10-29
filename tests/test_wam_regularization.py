@@ -5,7 +5,7 @@ import pytest
 from scipy.spatial.transform import Rotation
 
 from s2a.geometry import integrate_local, matrix_to_rot6d, rot6d_to_matrix
-from s2a.wam_regularization import attenuate_wam_rotation
+from s2a.research.wam.readout.wam_regularization import attenuate_wam_rotation
 
 
 def example():

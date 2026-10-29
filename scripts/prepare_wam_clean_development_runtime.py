@@ -3,12 +3,12 @@
 import json
 import sys
 
-from s2a.clean_training_state_handoff import BUNDLE
-from s2a.development_repair_admission import BUNDLE as DESTINATION
-from s2a.development_repair_admission import OLD_REF, ROOT
-from s2a.development_runtime_sources import overlay_auditor, runtime_bridge_source
-from s2a.development_source_relocation import FILES, transform
-from s2a.durable_stage_supervisor import REPO, check_sources, publish, read, reference, require
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO, check_sources, publish, read, reference, require
+from s2a.research.wam.tracking.runtime.development_repair_admission import BUNDLE as DESTINATION
+from s2a.research.wam.tracking.runtime.development_repair_admission import OLD_REF, ROOT
+from s2a.research.wam.tracking.runtime.development_runtime_sources import overlay_auditor, runtime_bridge_source
+from s2a.research.wam.tracking.runtime.development_source_relocation import FILES, transform
+from s2a.research.wam.training.clean.clean_training_state_handoff import BUNDLE
 
 
 def main():

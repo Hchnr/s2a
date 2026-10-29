@@ -3,10 +3,10 @@
 import copy
 import json
 
-from s2a.artifacts import REPO
-from s2a.clean_training_d2 import BUDGET, SCHEMA, validate_roster
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.synchronous_state_sampling import candidate_head
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.readout.synchronous_state_sampling import candidate_head
+from s2a.research.wam.training.clean.clean_training_d2 import BUDGET, SCHEMA, validate_roster
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
 
 ROOT = REPO / "outputs/clean_on_policy_aggregation_20261024"
 

@@ -5,14 +5,13 @@ import json
 import subprocess
 from pathlib import Path
 
-from prepare_wam_synchronous_validation import source_closure
-from run_wam_clean_d2 import PORT, worker_command
-from run_wam_clean_training import environment
-
-from s2a.artifacts import REPO
-from s2a.clean_training_d2 import BUDGET
-from s2a.clean_training_d2_execution import ROOT, admit
-from s2a.clean_training_runtime import GPU, checked, publish, read, reference, require
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_d2 import BUDGET
+from s2a.research.wam.training.clean.clean_training_d2_execution import ROOT, admit
+from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, publish, read, reference, require
+from scripts.prepare_wam_synchronous_validation import source_closure
+from scripts.run_wam_clean_d2 import PORT, worker_command
+from scripts.run_wam_clean_training import environment
 
 
 def prepare():

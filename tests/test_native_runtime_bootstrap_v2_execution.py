@@ -10,8 +10,9 @@ from types import SimpleNamespace
 import pytest
 
 import tests.test_native_runtime_bootstrap_execution as original_tests
+from s2a.infrastructure.repository_paths import repository_root
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts/verify_native_runtime_bootstrap_v2.py"
+SCRIPT = repository_root(anchor=__file__) / "scripts/verify_native_runtime_bootstrap_v2.py"
 
 
 def load_cli():
@@ -24,8 +25,8 @@ def load_cli():
 @pytest.fixture
 def admitted_v2(monkeypatch, tmp_path):
     """Reuse the original file admission fixture, adding a closed failed parent."""
-    import s2a.native_runtime_bootstrap as old_core
-    import s2a.native_runtime_bootstrap_v2 as core
+    import s2a.research.native_runtime.bootstrap as old_core
+    import s2a.research.native_runtime.bootstrap_v2 as core
 
     base = original_tests.execution.__wrapped__(monkeypatch, tmp_path)
     cli = load_cli()

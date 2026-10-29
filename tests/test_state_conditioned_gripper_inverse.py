@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.state_conditioned_gripper_inverse import design_features, raw_features, reachable_command
+from s2a.research.gripper.state_conditioned_gripper_inverse import design_features, raw_features, reachable_command
 
 
 def test_only_requested_generated_prefix_affects_features():

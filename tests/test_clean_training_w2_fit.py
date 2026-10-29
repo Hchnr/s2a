@@ -1,6 +1,7 @@
 """W2 interface, no-retry and finite-template tests with synthetic delegates."""
 
 import ast
+import hashlib
 import importlib
 import importlib.util
 import json
@@ -10,7 +11,9 @@ from types import SimpleNamespace
 
 import pytest
 
-MAIN = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.repository_paths import repository_root
+
+MAIN = repository_root(anchor=__file__)
 
 
 @pytest.fixture(autouse=True)
@@ -22,31 +25,71 @@ def ref(name):
     return dict(path=str(name), sha256="a" * 64)
 
 
+def test_lazy_independent_import_resolves_only_current_registered_sources(tmp_path, monkeypatch):
+    from tests.test_clean_training_postcapture_fit import assert_lazy_current_import
+
+    worker = importlib.import_module("scripts.execute_wam_clean_training_w2_fit")
+    repo = tmp_path / "synthetic_current_repo"
+    repo.mkdir()
+    assert_lazy_current_import(worker, repo, dict(source_sha256={}), monkeypatch)
+
+
 def dump(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("x") as stream:
         json.dump(value, stream)
-    from s2a.durable_stage_supervisor import reference
+    from s2a.infrastructure.lifecycle.durable_stage_supervisor import reference
 
     return reference(path)
 
 
-def test_finite_templates_match_actual_entry_asts():
+def test_finite_templates_match_actual_entry_asts(tmp_path, monkeypatch):
+    from tests.support.source_layout import historical_source_bytes, historical_source_ref
+
     path = (
         MAIN
         / "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/runtime_w2_fit_20261024/preparation/build_entries.py"
     )
+    registration_path = path.parents[1] / "execution/admitted.json"
+    registration_bytes = registration_path.read_bytes()
+    assert hashlib.sha256(registration_bytes).hexdigest() == (
+        "a4fc6899b9dc9228d13599cb5ca79feb9f180b6c2475625cc11b1c86f25004ca"
+    )
+    registration = json.loads(registration_bytes)
+    assert registration["schema_version"] == "s2a.clean-training-w2-runtime-fit-registration.v1"
+    assert registration["complete"] is registration["passed"] is True
+    builder_sha = "739b0c8b79ff258afad3e96660d30db7df7800964aa0e22b1ed69043d314f2d6"
+    assert registration["source_sha256"][str(path)] == builder_sha
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == builder_sha
+    # The frozen builder proves the registered original template, rather than
+    # granting its old registration to the current canonical loader glue.
+    staged = tmp_path / "historical_template"
+    for relative in (
+        "scripts/execute_wam_clean_training_postcapture_fit.py",
+        "scripts/run_wam_clean_training_postcapture.py",
+    ):
+        declared = historical_source_ref(relative)
+        assert registration["source_sha256"][str(MAIN / relative)] == declared["sha256"]
+        target = staged / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(historical_source_bytes(declared))
     spec = importlib.util.spec_from_file_location("_s2a047_templates", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    monkeypatch.setattr(module, "REPO", staged)
     for name, expected in module.build().items():
-        assert ast.dump(ast.parse(expected)) == ast.dump(ast.parse((MAIN / "scripts" / name).read_text()))
+        relative = "scripts/" + name
+        declared = historical_source_ref(relative)
+        assert registration["source_sha256"][str(MAIN / relative)] == declared["sha256"]
+        assert ast.dump(ast.parse(expected)) == ast.dump(ast.parse(historical_source_bytes(declared)))
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == builder_sha
+    assert registration_path.read_bytes() == registration_bytes
 
 
 @pytest.fixture
 def scene(tmp_path, monkeypatch):
     assert tmp_path.is_relative_to(MAIN / "outputs")
-    worker = importlib.import_module("execute_wam_clean_training_w2_fit")
+    worker = importlib.import_module("scripts.execute_wam_clean_training_w2_fit")
     registration = {
         key: ref(key)
         for key in (
@@ -181,7 +224,7 @@ def test_two_round_dry_context_and_840k_rows(scene, role):
 
 
 def test_actual_wrapper_interface_passes_two_rounds_then_binds_independent_result(scene):
-    owner = importlib.import_module("run_wam_clean_training_w2_fit")
+    owner = importlib.import_module("scripts.run_wam_clean_training_w2_fit")
     first = scene.worker.execute(scene.registered, role="producer")
     assert json.loads(Path(first["path"]).read_text())["producer_fits"] == 1
     owner.check_worker(scene.registration, scene.registered, "producer")
@@ -208,7 +251,7 @@ def test_wrong_dry_rounds_rejected_before_math(scene):
 
 
 def test_owner_rejects_changed_d1_provenance(scene):
-    owner = importlib.import_module("run_wam_clean_training_w2_fit")
+    owner = importlib.import_module("scripts.run_wam_clean_training_w2_fit")
     output = scene.worker.execute(scene.registered, role="producer")
     p = Path(output["path"])
     value = json.loads(p.read_text())
@@ -219,7 +262,7 @@ def test_owner_rejects_changed_d1_provenance(scene):
 
 
 def test_w2_owner_routes_only_the_qualified_sim_interpreter():
-    owner = importlib.import_module("run_wam_clean_training_w2_fit")
+    owner = importlib.import_module("scripts.run_wam_clean_training_w2_fit")
     for role in ("producer", "independent"):
         command = owner.worker_argv(ref("registered"), role)
         assert (
@@ -233,8 +276,8 @@ def test_w2_supervisor_real_serial_cpu_children(tmp_path, monkeypatch, fault):
     import os
     import sys
 
-    from s2a import clean_training_w2_admission as admission
-    from s2a import durable_stage_supervisor as durable
+    from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
+    from s2a.research.wam.training.clean import clean_training_w2_admission as admission
 
     assert tmp_path.is_relative_to(MAIN / "outputs")
     source = MAIN / "tests/test_clean_training_postcapture_owner.py"
@@ -285,7 +328,7 @@ def test_w2_supervisor_real_serial_cpu_children(tmp_path, monkeypatch, fault):
     )
     worker = root / "tiny.py"
     worker.write_text(tiny)
-    owner = importlib.import_module("run_wam_clean_training_w2_fit")
+    owner = importlib.import_module("scripts.run_wam_clean_training_w2_fit")
     registration["source_sha256"] = {str(p): durable.sha(p) for p in (MAIN / owner.ENTRY, MAIN / owner.WORKER, worker)}
     monkeypatch.setattr(admission, "admit", lambda r: registration)
     monkeypatch.setattr(owner, "accept_detached_launch", lambda *args, **kwargs: launch)

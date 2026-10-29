@@ -6,14 +6,14 @@ import os
 from pathlib import Path
 
 import numpy as np
-from run_wam_readout_features import BoundaryCounter, generate, parameter_versions, setup_service
-from run_wam_readout_sampling import InitialCapture
-from run_wam_scaled_state import read, read_prepared, reference, require, sampling_admission
 
-from s2a.artifacts import sha256
-from s2a.wam_flow_readout import FlowReadoutHook, SolverSigmaBridge
-from s2a.wam_scaled_readout import ScaledFlowReadout
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from s2a.research.wam.readout.wam_flow_readout import FlowReadoutHook, SolverSigmaBridge
+from s2a.research.wam.readout.wam_scaled_readout import ScaledFlowReadout
+from scripts.run_wam_readout_features import BoundaryCounter, generate, parameter_versions, setup_service
+from scripts.run_wam_readout_sampling import InitialCapture
+from scripts.run_wam_scaled_state import read, read_prepared, reference, require, sampling_admission
 
 
 class RequestBridge:

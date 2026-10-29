@@ -11,11 +11,11 @@ import numpy as np
 import yaml
 from PIL import Image
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
-from s2a.async_reference import TimedReference
+from s2a.evaluation.prediction_audit import audit_action_response
+from s2a.evaluation.trajectory_audit import trajectory_diagnostics
 from s2a.geometry import inverse, pose_error
-from s2a.prediction_audit import audit_action_response
-from s2a.trajectory_audit import trajectory_diagnostics
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
+from s2a.references.async_reference import TimedReference
 
 
 def require(condition, message):

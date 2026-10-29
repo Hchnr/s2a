@@ -1,8 +1,9 @@
 """100 nonlinear producer merge of old9 and additional63 physically paired equations."""
 
 import numpy as np
-from arm_nonlinear_additional_training import contrast_rows as additional_rows
-from arm_nonlinear_original_training import contrast_rows as original_rows
+
+from scripts.arm_nonlinear_additional_training import contrast_rows as additional_rows
+from scripts.arm_nonlinear_original_training import contrast_rows as original_rows
 
 
 def contrast_rows(config, e, parameters):

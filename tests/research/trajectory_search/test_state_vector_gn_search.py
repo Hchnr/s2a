@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 import s2a.research.trajectory_search.state_vector_gn_search as planning
-from s2a.directional_derivative_probe import _canonical
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
 from s2a.research.trajectory_search.interior_trajectory_search import build_stage_problem as original_problem
 from tests.research.trajectory_search.test_interior_trajectory_search import arguments
 from tests.research.trajectory_search.test_rejected_response_search import fake_qp

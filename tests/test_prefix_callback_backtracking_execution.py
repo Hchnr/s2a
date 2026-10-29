@@ -10,7 +10,8 @@ from types import FunctionType, SimpleNamespace
 import numpy as np
 import pytest
 
-from s2a.prefix_trust_control_evidence import reference
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.prefix_trust_control_evidence import reference
 from tests.test_prefix_trust_asset_check_v2 import synthetic_main
 from tests.test_prefix_trust_control_execution import (
     CountingDynamics,
@@ -22,11 +23,11 @@ from tests.test_prefix_trust_control_execution import (
 
 @pytest.fixture
 def modules(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
-        producer=importlib.import_module("probe_tracking_v5_prefix_callback_backtracking"),
-        evidence=importlib.import_module("s2a.prefix_callback_backtracking_evidence"),
-        owner=importlib.import_module("execute_tracking_v5_prefix_callback_backtracking"),
+        producer=importlib.import_module("scripts.probe_tracking_v5_prefix_callback_backtracking"),
+        evidence=importlib.import_module("s2a.research.trajectory_search.prefix_callback_backtracking_evidence"),
+        owner=importlib.import_module("scripts.execute_tracking_v5_prefix_callback_backtracking"),
     )
 
 
@@ -39,7 +40,7 @@ def write_json(path, value):
 def install_solver(monkeypatch, solver):
     monkeypatch.setitem(
         sys.modules,
-        "s2a.prefix_callback_backtracking_plan",
+        "s2a.research.trajectory_search.prefix_callback_backtracking_plan",
         SimpleNamespace(solve_prefix_callback_backtracking_response=solver),
     )
 
@@ -122,7 +123,7 @@ def test_model_registration_changes_only_the_bound_xml_locator(modules, monkeypa
 
 
 def test_checker_engine_wrapper_preserves_all_frozen_inputs_except_xml(modules, monkeypatch, tmp_path):
-    checker = importlib.import_module("check_tracking_v5_prefix_callback_backtracking")
+    checker = importlib.import_module("scripts.check_tracking_v5_prefix_callback_backtracking")
     snapshot, refs = snapshot_fixture(monkeypatch, tmp_path, modules.evidence)
     source, _, _ = source_fixture()
     registration = dict(xml_ref=snapshot["original_xml_ref"], states_ref={"actual": 368}, controller={"latch": 367})
@@ -351,15 +352,15 @@ def test_owner_rejects_unbilled_or_partial_or_relaxed_receipts(modules, stage, f
 
 
 def new_checker_run(modules, monkeypatch, tmp_path):
-    checker = importlib.import_module("check_tracking_v5_prefix_callback_backtracking")
-    frozen = importlib.import_module("check_tracking_v5_prefix_trust_control")
+    checker = importlib.import_module("scripts.check_tracking_v5_prefix_callback_backtracking")
+    frozen = importlib.import_module("scripts.check_tracking_v5_prefix_trust_control")
     isolated = FunctionType(
         checker.main.__code__, dict(vars(checker)), checker.main.__name__, checker.main.__defaults__
     )
     run = synthetic_main(
         SimpleNamespace(build_main=lambda: isolated, frozen=frozen), monkeypatch, tmp_path, "candidate"
     )
-    metadata = sys.modules["s2a.prefix_trust_control_evidence"]
+    metadata = sys.modules["s2a.research.trajectory_search.prefix_trust_control_evidence"]
     metadata.load_prerequisites = isolated.__globals__["load_asset_repair_prerequisites"]
 
     def root(case_name="candidate", *, check=False, owner=False):
@@ -367,7 +368,7 @@ def new_checker_run(modules, monkeypatch, tmp_path):
         return tmp_path / ("callback" + ("_check" if check else "") + ("_owner" if owner else ""))
 
     metadata.case_root = root
-    monkeypatch.setitem(sys.modules, "s2a.prefix_callback_backtracking_evidence", metadata)
+    monkeypatch.setitem(sys.modules, "s2a.research.trajectory_search.prefix_callback_backtracking_evidence", metadata)
     owner, _ = metadata.closed_owner(None, None)
     owner["result_ref"] = metadata.reference(root() / "verified.json")
     metadata.read(owner["owned_command"]["launch"])["command"] = [
@@ -628,8 +629,8 @@ def test_native_qa_covers_the_complete_new_source_and_test_roster(modules, monke
     native = tmp_path / "python"
     for module in (
         owner,
-        importlib.import_module("execute_tracking_v5_prefix_trust_check_v2"),
-        importlib.import_module("execute_tracking_v5_prefix_trust_control"),
+        importlib.import_module("scripts.execute_tracking_v5_prefix_trust_check_v2"),
+        importlib.import_module("scripts.execute_tracking_v5_prefix_trust_control"),
     ):
         monkeypatch.setattr(module, "REPO", tmp_path)
         monkeypatch.setattr(module, "NATIVE_PYTHON", native)

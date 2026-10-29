@@ -8,13 +8,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.saved_direction_backtracking import build_batch
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.saved_direction_backtracking import build_batch
 
 
 @pytest.fixture
 def checker(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("check_tracking_v5_saved_direction_backtracking")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.check_tracking_v5_saved_direction_backtracking")
 
 
 def fixed_sources():

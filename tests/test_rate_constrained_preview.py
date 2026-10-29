@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
-from rate_preview_independent import verify_plan
 
-from s2a.rate_constrained_preview import plan_translation
+from s2a.research.joint_control.preview.rate_constrained_preview import plan_translation
+from scripts.rate_preview_independent import verify_plan
 from tests.test_direct_arm_inverse import parameters
 
 
@@ -21,9 +21,8 @@ def contract():
 
 
 def test_one_period_matches_unconstrained_position_velocity_least_squares():
-    from pose_velocity_arm_independent_replay import PoseVelocityArmReplay
-
-    from s2a.osc import OSCInterface
+    from s2a.controllers.osc import OSCInterface
+    from scripts.pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 
     c = contract()
     interface = OSCInterface(*(c[k] for k in ("input_min", "input_max", "output_min", "output_max")))

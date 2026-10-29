@@ -2,10 +2,10 @@
 
 import numpy as np
 
-from s2a.configurable_tracking_terminal_plan import solve_interior_plan
-from s2a.interior_joint_preview import build_joint_preview, rollout_joint_preview
-from s2a.osc import OSCInterface
-from s2a.tracking_terminal_joint_plan import solve_interior_plan as original_solve
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.preview.interior_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.joint_control.terminal.configurable_tracking_terminal_plan import solve_interior_plan
+from s2a.research.trajectory_search.tracking_terminal_joint_plan import solve_interior_plan as original_solve
 
 
 def inputs():

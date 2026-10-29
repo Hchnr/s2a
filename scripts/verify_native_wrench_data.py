@@ -5,11 +5,11 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from collect_wam_native_training import write_once
 
-from s2a.owned_receipt_contract import normal_receipts
-from s2a.xml_site_kinematics import XMLSiteKinematics
+from s2a.geometry.xml_site import XMLSiteKinematics
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from scripts.audit_wam_position import Evidence
+from scripts.collect_wam_native_training import write_once
 
 ROOT = Path("outputs/native_wrench_data_20261025")
 

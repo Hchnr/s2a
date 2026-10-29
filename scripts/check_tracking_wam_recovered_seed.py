@@ -4,13 +4,13 @@ import json
 from pathlib import Path
 
 import numpy as np
-from coupled_pose_preview_independent import verify_preview
 
-from s2a import coupled_pose_preview
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.coupled_pose_preview_runtime import solve_preview
-from s2a.dependency_safe_qp import solve_qp
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.joint_control.preview import coupled_pose_preview
+from s2a.research.joint_control.preview.coupled_pose_preview_runtime import solve_preview
+from s2a.research.joint_control.tracking.dependency_safe_qp import solve_qp
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
+from scripts.coupled_pose_preview_independent import verify_preview
 
 
 def main():

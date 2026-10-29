@@ -3,8 +3,8 @@ import pytest
 from scipy.integrate import solve_ivp
 from scipy.spatial.transform import Rotation
 
-from s2a.osc import OSCInterface
-from s2a.osc_rotation import bounded_osc_rotation_inverse, predict_osc_orientation
+from s2a.controllers.osc import OSCInterface
+from s2a.controllers.osc_rotation import bounded_osc_rotation_inverse, predict_osc_orientation
 
 
 def interface():

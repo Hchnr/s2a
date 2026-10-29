@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
 
 CONFIG = Path("configs/matched_oracle_requalification_20261025.json")
 CONTROL = Path("outputs/clean_training_development_preflight_20261023/dependency_addendum.json")
@@ -22,10 +22,9 @@ def main():
         raise ValueError("Qualified import guard changed")
     guard = json.loads(CONTROL.read_text())["cv2_guard_registration"]
     readiness = restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
-    from run_wam_position_matrix import protocol
-
-    from s2a.stability_position_simulation import execution_inputs, run_position_case
-    from s2a.stability_recovery_simulation import _read_oracle
+    from s2a.research.wam.tracking.control.stability_position_simulation import execution_inputs, run_position_case
+    from s2a.research.wam.tracking.control.stability_recovery_simulation import _read_oracle
+    from scripts.run_wam_position_matrix import protocol
 
     strict_native_environment()
     config, root, records, _ = protocol(CONFIG, source="oracle", variant_name="position_hold", checkpoint=None)

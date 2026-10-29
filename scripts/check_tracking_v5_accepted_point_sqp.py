@@ -10,8 +10,13 @@ import json
 import os
 
 import numpy as np
-from accepted_point_sqp_ledger_audit import audit_accepted_point_sqp_ledger
-from check_tracking_v5_prefix_trust_control import (
+
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.research.trajectory_search.accepted_point_sqp_evidence import REPO, model_registration, require
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from scripts.accepted_point_sqp_ledger_audit import audit_accepted_point_sqp_ledger
+from scripts.check_tracking_v5_prefix_trust_control import (
     check_full_candidate,
     command_key,
     compare_contract,
@@ -19,19 +24,12 @@ from check_tracking_v5_prefix_trust_control import (
     numerical_compare,
     validate_trace_entry,
 )
-from check_tracking_v5_saved_direction_backtracking import (
+from scripts.check_tracking_v5_saved_direction_backtracking import (
     NUMERIC_TOLERANCE,
     TORQUE_TOLERANCE,
     native_math_proof,
 )
-from check_tracking_v5_saved_direction_backtracking import (
-    case_engine as frozen_case_engine,
-)
-
-from s2a.accepted_point_sqp_evidence import REPO, model_registration, require
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result as publish
-from s2a.terminal_development_execution import CONTROL_REF
+from scripts.check_tracking_v5_saved_direction_backtracking import case_engine as frozen_case_engine
 
 
 def case_engine(name, original, source_reg, prefix_check_reg, result, refs, compare):
@@ -63,7 +61,7 @@ def full_ray_records(answer):
 
 def main(dry=False):
     case = "candidate"
-    from s2a.accepted_point_sqp_evidence import (
+    from s2a.research.trajectory_search.accepted_point_sqp_evidence import (
         CPU_ENVIRONMENT,
         NATIVE_PYTHON,
         PLAN,

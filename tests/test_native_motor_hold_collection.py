@@ -6,12 +6,12 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from s2a.artifacts import REPO
+from s2a.infrastructure.artifacts import REPO
 
 
 def load(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("collect_native_motor_hold_diagnostic")
+    return importlib.import_module("scripts.collect_native_motor_hold_diagnostic")
 
 
 def test_only_terminal_gripper_commands_change(monkeypatch):

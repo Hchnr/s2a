@@ -6,20 +6,20 @@ use must first obtain them from the separate complete response replay.
 
 import importlib
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 import pytest
 
-from s2a.accepted_point_sqp_core import damped_bfgs
-from s2a.accepted_point_sqp_plan import solve_accepted_point_sqp_response
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.accepted_point_sqp_core import damped_bfgs
+from s2a.research.trajectory_search.accepted_point_sqp_plan import solve_accepted_point_sqp_response
 from tests.test_prefix_optimization_reserve_plan import inputs, response
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("accepted_point_sqp_ledger_audit").audit_accepted_point_sqp_ledger
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.accepted_point_sqp_ledger_audit").audit_accepted_point_sqp_ledger
 
 
 def saved_classifications(answer):

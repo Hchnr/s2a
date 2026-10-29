@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.velocity_model_planner import VelocityModelPlanner, fit_velocity_envelope
+from s2a.research.trajectory_search.velocity_model_planner import VelocityModelPlanner, fit_velocity_envelope
 
 ROOT = Path("outputs/velocity_model_planner_preflight_20261025")
 MODEL = Path("outputs/velocity_residual_response_20261025")

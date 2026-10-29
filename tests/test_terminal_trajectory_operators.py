@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.terminal_trajectory_operators import operators
-from s2a.trajectory_objective import opening_loss, position_loss
+from s2a.research.trajectory_search.terminal_trajectory_operators import operators
+from s2a.research.trajectory_search.trajectory_objective import opening_loss, position_loss
 
 
 def test_maps_match_independent_physical_objectives_and_adjoint():

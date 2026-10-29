@@ -18,7 +18,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
 
 CONFIG = REPO / "configs/wam_current_numerics_20261021.json"
 CONFIG_SHA = "2fbdd966fae22af37f28202ca15cc76e33cdf896c8b3ad0f9df0869c06fb6edd"
@@ -545,7 +545,7 @@ def run_case(service, case, directory, budget, comparison, settings):
     from cosmos_framework.inference.args import OmniSampleOverrides
     from cosmos_framework.utils import misc
 
-    from s2a.libero_simulation import canvas
+    from s2a.backends.libero.simulation import canvas
 
     model, sample = service.model, case["sample"]
     directory.mkdir()
@@ -850,7 +850,7 @@ def run(args):
         sys.path.insert(0, prepared["config"]["cosmos_repo"])
         import torch
 
-        from s2a.wam_runtime import install_active_slot_mask, load_service
+        from s2a.backends.wam.runtime import install_active_slot_mask, load_service
 
         service = load_service(prepared["config"], "8400_masked", output)
         model = service.model

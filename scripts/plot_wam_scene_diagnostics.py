@@ -6,11 +6,11 @@ from pathlib import Path
 
 import matplotlib
 import numpy as np
-from verify_wam_acceptance import verify_case
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
+from s2a.evaluation.task_acceptance import task_outcome
 from s2a.geometry import pose_error
-from s2a.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
+from scripts.verify_wam_acceptance import verify_case
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402

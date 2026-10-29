@@ -4,8 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
-from s2a.development_repair_admission import PREFIX, validate
-from s2a.durable_stage_supervisor import REPO, publish, reference
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO, publish, reference
+from s2a.research.wam.tracking.runtime.development_repair_admission import PREFIX, validate
 
 
 def main():

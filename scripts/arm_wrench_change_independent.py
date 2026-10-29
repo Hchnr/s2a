@@ -1,9 +1,10 @@
 """112 independent feature columns; explicit full-prefix wrench-change input."""
 
 import numpy as np
-from arm_joint_wrench_independent import INPUTS as PREVIOUS_INPUTS
-from arm_joint_wrench_independent import augment, conditions, nominal_prediction
-from arm_joint_wrench_independent import feature_matrix as previous_features
+
+from scripts.arm_joint_wrench_independent import INPUTS as PREVIOUS_INPUTS
+from scripts.arm_joint_wrench_independent import augment, conditions, nominal_prediction
+from scripts.arm_joint_wrench_independent import feature_matrix as previous_features
 
 INPUTS = (*PREVIOUS_INPUTS, "x_wrench_change_world")
 __all__ = ["INPUTS", "augment", "conditions", "nominal_prediction", "feature_matrix", "prediction"]

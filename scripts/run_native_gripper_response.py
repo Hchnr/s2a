@@ -7,8 +7,8 @@ import subprocess
 import time
 from pathlib import Path
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     accept_detached_launch,
     check_sources,
     cpu_environment,

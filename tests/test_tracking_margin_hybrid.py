@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from s2a.fast_long_joint_preview import build_joint_preview, rollout_joint_preview
-from s2a.osc import OSCInterface
-from s2a.tracking_margin_hybrid import refine_long_plan
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.preview.fast_long_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.joint_control.tracking.tracking_margin_hybrid import refine_long_plan
 
 
 def test_selector_keeps_bounds_and_reports_primary_old_cap_violation():

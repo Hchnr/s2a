@@ -14,10 +14,9 @@ import subprocess
 import time
 from pathlib import Path
 
-import run_wam_readout as frozen
-
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import birth, write_once
+import scripts.run_wam_readout as frozen
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import birth, write_once
 
 REGISTRATION = REPO / "plans/v0.0.1/025_release_observation_addendum_20261021.md"
 REGISTRATION_SHA = "ad5b1565517d8c23024b5f26ac21c1c69956558c8e4a652e64d22fe43c209500"

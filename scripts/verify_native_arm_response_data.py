@@ -4,11 +4,11 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence, native_delta_rotation
 from scipy.spatial.transform import Rotation
 
-from s2a.owned_receipt_contract import normal_receipts
-from s2a.xml_site_kinematics import XMLSiteKinematics
+from s2a.geometry.xml_site import XMLSiteKinematics
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from scripts.audit_wam_position import Evidence, native_delta_rotation
 
 ROOT = Path("outputs/native_arm_response_data_20261025")
 

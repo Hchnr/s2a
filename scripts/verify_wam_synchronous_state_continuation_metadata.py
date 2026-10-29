@@ -5,13 +5,18 @@ import ast
 import json
 from pathlib import Path
 
-from audit_wam_synchronous_state_prefix import verify as verify_prefix
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.synchronous_state_continuation import BUDGET, ROOT, checkpoint_stats, dispatch_matrix, prefix_evidence
-from s2a.synchronous_state_dispatch import select_readout
-from s2a.synchronous_state_sampling import candidate_head, paired_entries
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.readout.synchronous_state_continuation import (
+    BUDGET,
+    ROOT,
+    checkpoint_stats,
+    dispatch_matrix,
+    prefix_evidence,
+)
+from s2a.research.wam.readout.synchronous_state_dispatch import select_readout
+from s2a.research.wam.readout.synchronous_state_sampling import candidate_head, paired_entries
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
+from scripts.audit_wam_synchronous_state_prefix import verify as verify_prefix
 
 
 def worker_expected_text(original):

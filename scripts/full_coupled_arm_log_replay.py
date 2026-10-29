@@ -1,12 +1,12 @@
 """242 independent raw-state/full-pose modes/native goal and dual-history replay."""
 
 import numpy as np
-from arm_joint_wrench_independent import nominal_prediction
-from current_coupled_independent import response
-from full_coupled_pose_independent import verify_pose_solution
 from scipy.spatial.transform import Rotation
 
-from s2a.archived_forward_state import verify_forward_state
+from s2a.research.response_models.forward.archived_forward_state import verify_forward_state
+from scripts.arm_joint_wrench_independent import nominal_prediction
+from scripts.current_coupled_independent import response
+from scripts.full_coupled_pose_independent import verify_pose_solution
 
 
 def close(actual, expected, atol=1e-8):

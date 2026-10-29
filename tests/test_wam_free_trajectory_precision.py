@@ -1,16 +1,17 @@
 """Observe the original conversion's actual product, including BF16 promotion."""
 
 import importlib
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def module(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("probe_wam_free_trajectory_precision")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.probe_wam_free_trajectory_precision")
 
 
 @pytest.mark.parametrize("dtype", ["bfloat16", "float32"])
@@ -52,7 +53,8 @@ def test_observer_rejects_a_repeated_product_in_real_method(module):
 
 def test_cpu_scalar_promotion_quantizes_sigma_before_bfloat16_product(module):
     import torch
-    from verify_wam_readout import quantize_bfloat16
+
+    from scripts.verify_wam_readout import quantize_bfloat16
 
     _, value = module.precision_payload("signed_normal")
     velocity = torch.tensor(value).to(torch.bfloat16)

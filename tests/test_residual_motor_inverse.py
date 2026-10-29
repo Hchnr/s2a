@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.residual_motor_inverse import ResidualMotorInverse
+from s2a.research.response_models.inverse.residual_motor_inverse import ResidualMotorInverse
 
 
 def parameters():

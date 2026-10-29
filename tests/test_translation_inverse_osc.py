@@ -1,13 +1,13 @@
 import ast
-from pathlib import Path
 
 import numpy as np
 import pytest
 from scipy.linalg import expm
 from scipy.spatial.transform import Rotation
 
-from s2a.osc import OSCInterface, OSCStateToAction
-from s2a.translation_inverse_osc import TranslationInverseOSC
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
+from s2a.research.response_models.inverse.translation_inverse_osc import TranslationInverseOSC
+from tests.support.source_layout import current_source_path
 
 
 def interface():
@@ -58,8 +58,8 @@ def test_rate_state_and_input_saturation_are_retained():
 
 
 def test_entire_conversion_diff_is_only_registered_translation_weights():
-    old = Path("src/s2a/osc.py").read_text()
-    new = Path("src/s2a/translation_inverse_osc.py").read_text()
+    old = current_source_path("src/s2a/osc.py").read_text()
+    new = current_source_path("src/s2a/translation_inverse_osc.py").read_text()
     new = new.replace(
         "            weights = np.array([1.0, 1.0, 1.0, self.inverse_weight, self.inverse_weight, self.inverse_weight])\n            delta += weights * (inverse_delta - endpoint_error)",
         "            delta += self.inverse_weight * (inverse_delta - endpoint_error)",

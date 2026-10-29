@@ -6,7 +6,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from s2a.artifacts import sha256
+from s2a.infrastructure.artifacts import sha256
 
 ROOT = Path("outputs/residual_motor_physical_20261025_v2")
 OWNER_PID = 3496816

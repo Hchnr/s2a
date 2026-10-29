@@ -11,19 +11,20 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
 from tests.test_prefix_callback_backtracking_execution import write_json
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 
 
 @pytest.fixture
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
     return SimpleNamespace(
-        checker=importlib.import_module("check_tracking_v5_tail_translation_reserve_v2"),
-        owner=importlib.import_module("execute_tracking_v5_tail_translation_check_v2"),
-        evidence=importlib.import_module("s2a.tail_translation_check_v2_evidence"),
-        audit=importlib.import_module("tail_translation_reserve_audit"),
+        checker=importlib.import_module("scripts.check_tracking_v5_tail_translation_reserve_v2"),
+        owner=importlib.import_module("scripts.execute_tracking_v5_tail_translation_check_v2"),
+        evidence=importlib.import_module("s2a.research.trajectory_search.tail_translation_check_v2_evidence"),
+        audit=importlib.import_module("scripts.tail_translation_reserve_audit"),
     )
 
 
@@ -90,7 +91,7 @@ def test_floating_comparison_is_the_original_function_and_boundary(modules, monk
 @pytest.fixture(scope="module")
 def saved_archives():
     """The two preregistered saved JSON archives, read once with exact SHA binding."""
-    from s2a.tail_translation_check_v2_evidence import PRIOR_PRODUCER_REF, PRODUCER_REF
+    from s2a.research.trajectory_search.tail_translation_check_v2_evidence import PRIOR_PRODUCER_REF, PRODUCER_REF
 
     def load(ref):
         raw = Path(ref["path"]).read_bytes()
@@ -222,7 +223,7 @@ def test_new_source_change_after_qa_is_rejected(modules, monkeypatch, tmp_path):
 
 def test_check_only_paths_preserve_original_producer_and_new_checker(modules):
     owner, evidence = modules.owner, modules.evidence
-    old = importlib.import_module("execute_tracking_v5_tail_translation_reserve")
+    old = importlib.import_module("scripts.execute_tracking_v5_tail_translation_reserve")
     assert owner.entry_command("diagnose") == old.entry_command("diagnose")
     assert owner.entry_command("check") == [
         str(owner.NATIVE_PYTHON),

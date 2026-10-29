@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose, assert_array_equal
 
-from s2a.cross_dataset import align_native, geometry_checks, native_to_tcp, quaternion_pose
+from s2a.research.droid.cross_dataset import align_native, geometry_checks, native_to_tcp, quaternion_pose
 
 
 def test_native_wxyz_quaternion_order_is_not_scipy_xyzw_order():
@@ -64,7 +64,7 @@ def test_cumulative_geometry_resets_across_invalid_observation_and_excludes_term
 
 
 def test_nominal_urdf_chain_respects_axis_origin_and_fixed_tool(tmp_path):
-    from s2a.kinematics import URDFChain
+    from s2a.geometry.urdf import URDFChain
 
     path = tmp_path / "arm.urdf"
     path.write_text("""<robot name="test"><joint name="hinge" type="revolute">

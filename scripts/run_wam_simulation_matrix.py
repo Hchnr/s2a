@@ -8,8 +8,8 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from s2a.artifacts import load_config, write_json
-from s2a.checkpoint_simulation import run_case
+from s2a.infrastructure.artifacts import load_config, write_json
+from s2a.research.wam.tracking.runtime.checkpoint_simulation import run_case
 
 
 def main():

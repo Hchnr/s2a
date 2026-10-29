@@ -11,7 +11,10 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import numpy as np
-from audit_wam_current_numerics import (
+
+from s2a.infrastructure.artifacts import sha256
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, DomainContext, ReadoutHook, ResidualReadout
+from scripts.audit_wam_current_numerics import (
     bundle,
     check_flow,
     check_hashes,
@@ -25,9 +28,6 @@ from audit_wam_current_numerics import (
     training_payload,
     write_new,
 )
-
-from s2a.artifacts import sha256
-from s2a.wam_readout import ACTIVE_MASK, DomainContext, ReadoutHook, ResidualReadout
 
 
 def read_prepared(path, digest):
@@ -48,7 +48,7 @@ def environment():
 
 
 def setup_service(prepared, output):
-    from s2a.wam_runtime import install_active_slot_mask, load_service
+    from s2a.backends.wam.runtime import install_active_slot_mask, load_service
 
     c = prepared["config"]
     service_config = dict(c, checkpoints=[c["checkpoint"]])
@@ -152,7 +152,7 @@ def teacher_anchor(service, prepared, anchor, entries, directory, counter, hook,
     from cosmos_framework.inference.args import OmniSampleOverrides
     from cosmos_framework.utils import misc
 
-    from s2a.libero_simulation import canvas
+    from s2a.backends.libero.simulation import canvas
 
     directory.mkdir()
     model = service.model

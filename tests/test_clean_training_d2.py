@@ -4,7 +4,7 @@ import copy
 
 import pytest
 
-from s2a.clean_training_d2 import BUDGET, PARAMETER_SHA, SCHEMA, validate_roster
+from s2a.research.wam.training.clean.clean_training_d2 import BUDGET, PARAMETER_SHA, SCHEMA, validate_roster
 
 
 def manifest():

@@ -1,10 +1,10 @@
-"""Explicit access to eleven retained scripts under their original bare names.
+"""Separate current import verification from explicit historical fixture access.
 
-This boundary checks origin and baseline source bytes at each access. It does
-not modify import search paths, install import hooks, call a script's main, or
-qualify its transitive dependencies or any control/runtime behavior. Imports
-outside this boundary remain ordinary Python imports; finish detects alias or
-source drift introduced after an access.
+The default verifies present modules against an approved current manifest.
+LegacyScriptImports retains explicit baseline-byte access for old fixtures.
+Neither boundary changes import search paths, installs hooks, invokes main,
+or qualifies transitive dependencies or control behavior. Finish detects late
+alias, source, metadata, or module-object drift.
 """
 
 import copy
@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
 
+from s2a.infrastructure.current_layout import CurrentLayout
 from s2a.infrastructure.repository_paths import repo_path, repository_root
 from s2a.infrastructure.source_identity import _invalid_constant, _json_object, _reference, _stream_digest
 
@@ -280,6 +281,180 @@ class LegacyScriptImports:
                 self.verify_loaded(name)
 
 
+@dataclass(frozen=True)
+class CurrentScriptAccess:
+    """An existing module and its separately approved current identity."""
+
+    module: ModuleType
+    identity_receipt: dict
+
+
+class CurrentScriptImports:
+    """Verify present modules against an approved cumulative current manifest.
+
+    Catalog bytes establish the original identity only. Actual names, paths,
+    and SHA values come from the current manifest. Nothing is imported here.
+    """
+
+    def __init__(
+        self,
+        *,
+        root=None,
+        migration_ref=None,
+        catalog_ref=CATALOG_REF,
+        baseline_commit=BASELINE_COMMIT,
+        allowed_names=LEGACY_MODULE_NAMES,
+        approved_main_modules=(),
+    ):
+        self.layout = CurrentLayout(
+            root=root, migration_ref=migration_ref, baseline_commit=baseline_commit, catalog_ref=catalog_ref
+        )
+        _require(self.layout.script_namespace == "canonical_scripts", "Approved canonical scripts namespace required")
+        self.root = self.layout.root
+        self.allowed_names = tuple(allowed_names)
+        _require(
+            bool(self.allowed_names)
+            and len(set(self.allowed_names)) == len(self.allowed_names)
+            and all(isinstance(name, str) and name.isidentifier() for name in self.allowed_names),
+            "Unique historical bare identities required",
+        )
+        self._sources = {}
+        for name in self.allowed_names:
+            old_path = f"scripts/{name}.py"
+            source = self.layout.entry(old_path)
+            relative = Path(source["current_ref"]["path"])
+            _require(
+                relative.parts[0] == "scripts"
+                and relative.suffix == ".py"
+                and relative.stem != "__init__"
+                and all(part.isidentifier() for part in relative.with_suffix("").parts),
+                "Explicit current script target required",
+            )
+            module_name = ".".join(relative.with_suffix("").parts)
+            source.update(module_name=module_name, namespace="canonical")
+            self._sources[name] = source
+        approved_main_modules = tuple(approved_main_modules)
+        _require(all(isinstance(name, str) for name in approved_main_modules), "Explicit canonical main names required")
+        self.approved_main_modules = frozenset(approved_main_modules)
+        _require(
+            self.approved_main_modules
+            <= {row["module_name"] for row in self._sources.values() if row["namespace"] == "canonical"},
+            "Only explicitly mapped canonical entries may be approved as __main__",
+        )
+        self._accesses = {}
+
+    def _loaded(self, name):
+        _require(name in self._sources, f"Unknown current script identity: {name}")
+        source = self._sources[name]
+        expected = source["module_name"]
+        expected_path = str(repo_path(source["current_ref"]["path"], root=self.root))
+        matches = []
+        for alias, module in tuple(sys.modules.items()):
+            named = alias in {name, f"scripts.{name}", expected}
+            if not isinstance(module, ModuleType):
+                _require(not named, f"Current module is not a module object: {alias}")
+                continue
+            spec = vars(module).get("__spec__")
+            approved_main = (
+                alias == "__main__"
+                and expected in self.approved_main_modules
+                and spec is not None
+                and spec.name == expected
+            )
+            same_origin = any(_lexical_origin(value) == expected_path for value in _origins(module))
+            if named or same_origin or approved_main:
+                _require(alias == expected or approved_main, f"Duplicate/obsolete import identity: {name} as {alias}")
+                matches.append((alias, module))
+        _require(len(matches) <= 1, f"Duplicate current module identity: {name}")
+        return None if not matches else matches[0]
+
+    def verify_loaded(self, name):
+        """Verify a present current module without importing or invoking main."""
+        with _LOCK:
+            self.layout.finish()
+            loaded = self._loaded(name)
+            _require(loaded is not None, f"Current module is not loaded: {name}")
+            runtime_key, module = loaded
+            source = self._sources[name]
+            path = self.layout.source_path(f"scripts/{name}.py")
+            namespace, spec = vars(module), vars(module).get("__spec__")
+            expected_package = source["module_name"].rpartition(".")[0]
+            _require(
+                namespace.get("__name__") == runtime_key
+                and namespace.get("__package__") == expected_package
+                and spec is not None
+                and spec.name == source["module_name"]
+                and all(value == str(path) for value in _origins(module)),
+                f"Current module origin/namespace drift: {name}",
+            )
+            prior = self._accesses.get(name)
+            _require(prior is None or prior.module is module, f"Current module object was replaced: {name}")
+            receipt = dict(
+                module_name=source["module_name"],
+                runtime_module_key=runtime_key,
+                namespace=source["namespace"],
+                original_ref=copy.deepcopy(source["original_ref"]),
+                source_ref=dict(path=str(path), sha256=source["current_ref"]["sha256"]),
+                catalog_ref=copy.deepcopy(self.layout.catalog_ref),
+                migration_ref=copy.deepcopy(self.layout.migration_ref),
+                baseline_commit=self.layout.baseline_commit,
+                historical_identity_scope="byte_identity_only",
+                identity_scope="approved_current_source_origin_only",
+                load_kind="verified_existing",
+                transitive_dependencies_qualified=False,
+                main_invoked_by_boundary=False,
+            )
+            access = CurrentScriptAccess(module=module, identity_receipt=receipt)
+            self._accesses[name] = access
+            self.layout.finish()
+            return access
+
+    @property
+    def receipts(self):
+        return {name: copy.deepcopy(access.identity_receipt) for name, access in self._accesses.items()}
+
+    def verify_present(self, names=None, *, require_loaded=False):
+        selected = self.allowed_names if names is None else tuple(names)
+        _require(len(set(selected)) == len(selected), "Duplicate requested current identity")
+        verified = {}
+        with _LOCK:
+            self.layout.finish()
+            for name in selected:
+                if self._loaded(name) is not None:
+                    verified[name] = self.verify_loaded(name).identity_receipt
+                else:
+                    _require(not require_loaded, f"Current module is not loaded: {name}")
+            self.layout.finish()
+        return dict(
+            schema_version="s2a.approved-current-script-imports.v1",
+            baseline_commit=self.layout.baseline_commit,
+            catalog_ref=copy.deepcopy(self.layout.catalog_ref),
+            migration_ref=copy.deepcopy(self.layout.migration_ref),
+            additional_catalog_refs=copy.deepcopy(list(self.layout.additional_catalog_refs)),
+            verified_modules=copy.deepcopy(verified),
+            source_refs=[copy.deepcopy(row["source_ref"]) for row in verified.values()],
+            require_loaded=require_loaded,
+            historical_identity_scope="byte_identity_only",
+            identity_scope="approved_current_source_origin_only",
+            transitive_dependencies_qualified=False,
+        )
+
+    def finish(self):
+        with _LOCK:
+            self.layout.finish()
+            for name in tuple(self._accesses):
+                self.verify_loaded(name)
+
+
+def verify_current_imports(
+    names=None, *, require_loaded=False, root=None, migration_ref=None, approved_main_modules=()
+):
+    """Check present current identities against an explicitly approved manifest."""
+    return CurrentScriptImports(
+        root=root, migration_ref=migration_ref, approved_main_modules=approved_main_modules
+    ).verify_present(names, require_loaded=require_loaded)
+
+
 def verify_legacy_modules(names=None, *, require_loaded=False, root=None):
-    """Default D2 package boot check; it never imports an absent old helper."""
-    return LegacyScriptImports(root=root).verify_present(names, require_loaded=require_loaded)
+    """Temporary D3a call-site compatibility; no historical bytes are executed."""
+    return verify_current_imports(names, require_loaded=require_loaded, root=root)

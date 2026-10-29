@@ -5,7 +5,7 @@ import json
 import numpy as np
 import pytest
 
-from s2a import preview_result_publication as publication
+from s2a.infrastructure import publication as publication
 
 
 def test_measured_anchor_roundtrip():

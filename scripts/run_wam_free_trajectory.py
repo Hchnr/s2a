@@ -8,14 +8,13 @@ import signal
 import socket
 from pathlib import Path
 
-from prepare_wam_flow_readout import reference, require
-from prepare_wam_free_trajectory import BACKEND_CONTRACT, read_prepared
-from run_wam_flow_readout import check_hashes, completed, environment, read, resource_observation, wait_release
-from run_wam_flow_readout import verified as verified_receipt
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.prepare_wam_flow_readout import reference, require
+from scripts.prepare_wam_free_trajectory import BACKEND_CONTRACT, read_prepared
+from scripts.run_wam_flow_readout import check_hashes, completed, environment, read, resource_observation, wait_release
+from scripts.run_wam_flow_readout import verified as verified_receipt
+from scripts.run_wam_readout import owned_command
 
 
 def owner_completed(root, stage, prepared_path):

@@ -15,11 +15,11 @@ import numpy as np
 from PIL import Image
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import sha256
+from s2a.controllers.gripper import OpeningIntent
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
+from s2a.evaluation.task_acceptance import task_outcome
 from s2a.geometry import inverse, rot6d_to_matrix
-from s2a.gripper import OpeningIntent
-from s2a.osc import OSCInterface, OSCStateToAction
-from s2a.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import sha256
 
 LABELS = ("8800_g15", "8800_g10", "15400_g15", "15400_g10")
 TARGETS = {8: "akita_black_bowl_1", 9: "wine_bottle_1", 6: "cream_cheese_1"}

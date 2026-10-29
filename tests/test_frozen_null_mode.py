@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from s2a.frozen_null_mode import forecast_null_modes
-from s2a.joint_limit_response import build_joint_response, predict_joint_response
+from s2a.research.joint_control.native.frozen_null_mode import forecast_null_modes
+from s2a.research.response_models.forward.joint_limit_response import build_joint_response, predict_joint_response
 
 
 def test_mass_weighted_mode_matches_full_joint_response_independently_of_task_command():

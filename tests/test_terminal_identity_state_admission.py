@@ -6,11 +6,11 @@ import copy
 import numpy as np
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.synchronous_state_metrics import diagnosis as previous_diagnosis
-from s2a.terminal_candidate import ROOT, candidate_head
-from s2a.terminal_identity_state_metrics import diagnosis as aggregate_diagnosis
-from s2a.wam_clean_readout import CleanResidualReadout
+from s2a.research.trajectory_search.terminal_candidate import ROOT, candidate_head
+from s2a.research.wam.readout.synchronous_state_metrics import diagnosis as previous_diagnosis
+from s2a.research.wam.readout.terminal_identity_state_metrics import diagnosis as aggregate_diagnosis
+from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
+from tests.support.source_layout import current_source_path
 
 
 def test_metric_arithmetic_and_gate_thresholds_are_unchanged():
@@ -22,7 +22,9 @@ def test_metric_arithmetic_and_gate_thresholds_are_unchanged():
 
     def functions(name):
         return {
-            n.name: n for n in ast.parse((REPO / "src/s2a" / name).read_text()).body if isinstance(n, ast.FunctionDef)
+            n.name: n
+            for n in ast.parse(current_source_path("src/s2a/" + name).read_text()).body
+            if isinstance(n, ast.FunctionDef)
         }
 
     old = functions("synchronous_state_metrics.py")

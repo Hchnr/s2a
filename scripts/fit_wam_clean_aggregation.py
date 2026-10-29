@@ -7,13 +7,17 @@ import os
 from pathlib import Path
 
 import numpy as np
-from analyze_wam_clean_capacity import checked
-from analyze_wam_release_horizon import reference
 
-from s2a.artifacts import REPO
-from s2a.clean_training_aggregation import ROWS, admit_aggregation
-from s2a.clean_training_data import normalize_active10
-from s2a.wam_clean_streaming import CleanFitBlock, CleanFitLayout, fit_clean_residual_streaming
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_aggregation import ROWS, admit_aggregation
+from s2a.research.wam.training.clean.clean_training_data import normalize_active10
+from s2a.research.wam.training.clean.wam_clean_streaming import (
+    CleanFitBlock,
+    CleanFitLayout,
+    fit_clean_residual_streaming,
+)
+from scripts.analyze_wam_clean_capacity import checked
+from scripts.analyze_wam_release_horizon import reference
 
 
 def execute(spec, output):

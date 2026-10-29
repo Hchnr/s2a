@@ -2,16 +2,17 @@
 
 import importlib.util
 import json
-from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def stage(monkeypatch):
-    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    scripts = repository_root(anchor=__file__) / "scripts"
     monkeypatch.syspath_prepend(str(scripts))
     spec = importlib.util.spec_from_file_location("flow_readout_fit_test", scripts / "fit_wam_flow_readout.py")
     module = importlib.util.module_from_spec(spec)

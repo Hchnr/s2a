@@ -4,11 +4,10 @@ import argparse
 import json
 from pathlib import Path
 
-import verify_wam_clean_training_capture as CAPTURE
-from verify_wam_clean_training_state import compact_points, conditioning_check, response_actions, values_equal
-
-from s2a.clean_training_runtime import publish, reference
-from s2a.synchronous_state_sampling import admit
+import scripts.verify_wam_clean_training_capture as CAPTURE
+from s2a.research.wam.readout.synchronous_state_sampling import admit
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
+from scripts.verify_wam_clean_training_state import compact_points, conditioning_check, response_actions, values_equal
 
 require = CAPTURE.require
 

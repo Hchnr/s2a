@@ -9,17 +9,10 @@ import json
 import os
 
 import numpy as np
-from accepted_point_sqp_math_audit import audit_qp_certificate
-from check_tracking_v5_accepted_point_sqp import case_engine
-from check_tracking_v5_prefix_trust_control import compare_contract
-from check_tracking_v5_saved_direction_backtracking import NUMERIC_TOLERANCE, TORQUE_TOLERANCE, native_math_proof
-from check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
-from check_tracking_v5_terminal_secant_probe import verify_response_trace
-from directional_derivative_audit import _response, array, boolean, exact_array, integer
-from tail_translation_reserve_audit import _comparison, _comparison_report
-from terminal_secant_audit import _tree
 
-from s2a.accepted_point_sqp_evidence import (
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.accepted_point_sqp_evidence import (
     CPU_ENVIRONMENT,
     PREFIX_CHECK_REF,
     REPO,
@@ -30,8 +23,19 @@ from s2a.accepted_point_sqp_evidence import (
     remember,
     require,
 )
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result
+from scripts.accepted_point_sqp_math_audit import audit_qp_certificate
+from scripts.check_tracking_v5_accepted_point_sqp import case_engine
+from scripts.check_tracking_v5_prefix_trust_control import compare_contract
+from scripts.check_tracking_v5_saved_direction_backtracking import (
+    NUMERIC_TOLERANCE,
+    TORQUE_TOLERANCE,
+    native_math_proof,
+)
+from scripts.check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
+from scripts.check_tracking_v5_terminal_secant_probe import verify_response_trace
+from scripts.directional_derivative_audit import _response, array, boolean, exact_array, integer
+from scripts.tail_translation_reserve_audit import _comparison, _comparison_report
+from scripts.terminal_secant_audit import _tree
 
 ROOT = REPO / "outputs/tracking_v5_constraint_residual_repair_check_20261029"
 ALPHAS = tuple(2.0**-index for index in range(9))
@@ -353,8 +357,7 @@ def audit_execution_costs(producer, *, admitted):
 
 
 def main(dry=False):
-    from probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
-
+    from scripts.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
     from scripts.tracking.trajectory_search.probe_tracking_v5_constraint_residual_repair import INPUT, PLAN, load_inputs
     from scripts.tracking.trajectory_search.probe_tracking_v5_constraint_residual_repair import ROOT as PRODUCER_ROOT
 

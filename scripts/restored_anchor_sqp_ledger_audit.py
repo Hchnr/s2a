@@ -10,15 +10,16 @@ Full ray/anchor rollout and audit arrays remain the numerical checker's duty.
 from collections.abc import Mapping
 
 import numpy as np
-from accepted_point_sqp_math_audit import audit_curvature_update, audit_qp_certificate
-from check_tracking_v5_prefix_trust_control import (
+
+from scripts.accepted_point_sqp_math_audit import audit_curvature_update, audit_qp_certificate
+from scripts.check_tracking_v5_prefix_trust_control import (
     TRACE_FIELDS,
     command_key,
     compare_contract,
     numerical_compare,
     trace_ranks,
 )
-from prefix_callback_backtracking_audit import (
+from scripts.prefix_callback_backtracking_audit import (
     ALPHAS,
     RADII,
     STEP,

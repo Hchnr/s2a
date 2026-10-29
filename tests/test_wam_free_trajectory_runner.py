@@ -3,15 +3,16 @@
 import argparse
 import importlib
 import json
-from pathlib import Path
 
 import pytest
+
+from s2a.infrastructure.repository_paths import repository_root
 
 
 @pytest.fixture
 def module(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("run_wam_free_trajectory")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.run_wam_free_trajectory")
 
 
 def args(tmp_path):

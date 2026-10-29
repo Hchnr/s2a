@@ -1,13 +1,13 @@
 """Independent cache-side comparator for live152 inputs; labels never enter reader."""
 
 import numpy as np
-from arm_joint_wrench_independent import INPUTS
-from arm_wrench_data import attach_current_wrench
-from audit_wam_position import Evidence
 
-from s2a.current_model_state import current_model_state
-from s2a.joint_wrench_condition_forward import with_history
-from s2a.runtime_response_history import RuntimeResponseHistory
+from s2a.research.response_models.causal.runtime_response_history import RuntimeResponseHistory
+from s2a.research.response_models.forward.current_model_state import current_model_state
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import with_history
+from scripts.arm_joint_wrench_independent import INPUTS
+from scripts.arm_wrench_data import attach_current_wrench
+from scripts.audit_wam_position import Evidence
 
 
 class RuntimePrefixChecker:

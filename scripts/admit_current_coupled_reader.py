@@ -6,15 +6,15 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
-from current_coupled_independent import response, verify_inverse
-from run_matched_oracle_case import CONTROL, CONTROL_SHA
 
-from s2a.artifacts import REPO, sha256
-from s2a.current_coupled_response import build_response, solve_translation
-from s2a.current_coupled_state import read_current_dynamics
-from s2a.durable_stage_supervisor import publish
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.research.joint_control.tracking.current_coupled_state import read_current_dynamics
+from s2a.research.response_models.forward.current_coupled_response import build_response, solve_translation
+from scripts.audit_wam_position import Evidence
+from scripts.current_coupled_independent import response, verify_inverse
+from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
 
 
 def main():
@@ -22,7 +22,7 @@ def main():
     assert sha256(CONTROL) == CONTROL_SHA
     guard = json.loads(CONTROL.read_text())["cv2_guard_registration"]
     restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
-    from s2a.libero_simulation import configure_simulator, make_environment
+    from s2a.backends.libero.simulation import configure_simulator, make_environment
 
     root = REPO / "outputs/current_coupled_reader_admission_20261026"
     assert not root.exists()

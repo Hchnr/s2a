@@ -6,10 +6,10 @@ from pathlib import Path
 import mujoco
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import checked, read, reference, require
 from s2a.geometry import inverse
-from s2a.preview_result_publication import publish_result as publish
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.research.wam.training.clean.clean_training_runtime import checked, read, reference, require
 
 
 def main():

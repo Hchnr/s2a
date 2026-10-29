@@ -4,12 +4,11 @@ import json
 import subprocess
 from pathlib import Path
 
-from prepare_wam_synchronous_validation import source_closure
-
-from s2a.artifacts import REPO
-from s2a.clean_training_aggregation import RIDGE, ROWS, admit_aggregation
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.durable_stage_supervisor import cpu_environment
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import cpu_environment
+from s2a.research.wam.training.clean.clean_training_aggregation import RIDGE, ROWS, admit_aggregation
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
+from scripts.prepare_wam_synchronous_validation import source_closure
 
 ROOT = REPO / "outputs/clean_on_policy_aggregation_20261024"
 

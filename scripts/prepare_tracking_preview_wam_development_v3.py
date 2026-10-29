@@ -6,18 +6,25 @@ import json
 import subprocess
 from pathlib import Path
 
-from run_wam_clean_training import environment
-
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import GPU, checked, publish, read, reference, require
-from s2a.coupled_preview_control_gate import admit_preview_control
-from s2a.serialized_preview_recovery import recovery_evidence
-from s2a.terminal_development_gate import ROOT as STATE_ROOT
-from s2a.terminal_development_gate import admit_state
-from s2a.terminal_development_policy import case_order
-from s2a.tracking_control_gate import admit_tracking_control
-from s2a.tracking_preview_wam_control_v3 import BASE_REF, RELOCATION_REF, make_case_config
-from s2a.tracking_preview_wam_execution_v3 import BUDGET, CONTROL_REF, MASTER_PORT, PORT, ROLES, ROOT, admit_execution
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.joint_control.preview.coupled_preview_control_gate import admit_preview_control
+from s2a.research.joint_control.preview.serialized_preview_recovery import recovery_evidence
+from s2a.research.joint_control.tracking.tracking_control_gate import admit_tracking_control
+from s2a.research.wam.tracking.preview.tracking_preview_wam_control_v3 import BASE_REF, RELOCATION_REF, make_case_config
+from s2a.research.wam.tracking.preview.tracking_preview_wam_execution_v3 import (
+    BUDGET,
+    CONTROL_REF,
+    MASTER_PORT,
+    PORT,
+    ROLES,
+    ROOT,
+    admit_execution,
+)
+from s2a.research.wam.tracking.runtime.terminal_development_gate import ROOT as STATE_ROOT
+from s2a.research.wam.tracking.runtime.terminal_development_gate import admit_state
+from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
+from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, publish, read, reference, require
+from scripts.run_wam_clean_training import environment
 
 TESTS = sorted(
     {
@@ -43,7 +50,7 @@ TESTS = sorted(
 
 
 def tracking_evidence():
-    from s2a.artifacts import REPO
+    from s2a.infrastructure.artifacts import REPO
 
     return {
         key: reference(REPO / path)
@@ -135,7 +142,7 @@ def prepare():
     require(preflight["physical_control_admission"] == physical, "Actual preflight physical qualification differs")
     tracking = admit_tracking_control(value["tracking_admission"])
     value.update(root=str(ROOT), preview_control_closure_ref=closure_ref, physical_control_admission=physical)
-    from prepare_wam_synchronous_validation import source_closure
+    from scripts.prepare_wam_synchronous_validation import source_closure
 
     entries = (
         TESTS

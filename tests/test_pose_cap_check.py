@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from s2a.pose_cap_check import within_pose_caps
+from s2a.evaluation.pose_caps import within_pose_caps
 
 
 @pytest.mark.parametrize("component,cap", [(0, 0.01), (3, 0.05)])

@@ -2,14 +2,15 @@
 
 import hashlib
 import importlib.util
-from pathlib import Path
 
 import pytest
+
+from s2a.infrastructure.repository_paths import repository_root
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location(
         "long_plan_audit_test", root / "scripts/audit_wam_long_qualification_plan.py"
@@ -52,7 +53,7 @@ def test_absent_or_conflicting_identity_cannot_be_replaced_with_a_claim(audit):
 
 
 def test_original_physics_helpers_and_both_prior_checker_bytes_stay_frozen(audit):
-    import audit_wam_long_qualification as original
+    import scripts.audit_wam_long_qualification as original
 
     for path, digest in (
         (audit.ORIGINAL_CHECKER, audit.ORIGINAL_CHECKER_SHA),

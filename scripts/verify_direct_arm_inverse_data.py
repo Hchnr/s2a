@@ -1,14 +1,14 @@
 """209 independently rebuild current/desired inputs, teacher targets and physical baseline."""
 
 import numpy as np
-from arm_joint_wrench_independent import augment
-from arm_wrench_data_independent import attach_current_wrench
-from audit_wam_position import Evidence
-from direct_arm_inverse_independent import features, inputs, nominal
 
-from s2a.artifacts import REPO
-from s2a.direct_arm_inverse import feature_matrix
-from s2a.durable_stage_supervisor import publish
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from s2a.research.response_models.inverse.direct_arm_inverse import feature_matrix
+from scripts.arm_joint_wrench_independent import augment
+from scripts.arm_wrench_data_independent import attach_current_wrench
+from scripts.audit_wam_position import Evidence
+from scripts.direct_arm_inverse_independent import features, inputs, nominal
 
 
 def main():

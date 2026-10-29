@@ -6,10 +6,19 @@ the caller's separate responsibility.
 """
 
 import numpy as np
-from accepted_point_sqp_math_audit import audit_qp_certificate
-from directional_derivative_audit import _response, array, boolean, exact_array, integer, numerical_compare, require
-from restored_anchor_sqp_ledger_audit import compare_initial_records
-from terminal_secant_audit import _tree
+
+from scripts.accepted_point_sqp_math_audit import audit_qp_certificate
+from scripts.directional_derivative_audit import (
+    _response,
+    array,
+    boolean,
+    exact_array,
+    integer,
+    numerical_compare,
+    require,
+)
+from scripts.restored_anchor_sqp_ledger_audit import compare_initial_records
+from scripts.terminal_secant_audit import _tree
 
 
 def _periods():

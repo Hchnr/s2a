@@ -11,9 +11,10 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-from audit_wam_earlier_position import verify_case
-from audit_wam_position import Evidence
-from audit_wam_short_replan import (
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_earlier_position import verify_case
+from scripts.audit_wam_position import Evidence
+from scripts.audit_wam_short_replan import (
     COORDINATOR,
     COORDINATOR_SHA,
     LAUNCH,
@@ -23,8 +24,8 @@ from audit_wam_short_replan import (
     resource_snapshot,
     service_artifacts,
 )
-from audit_wam_short_replan_outcomes import describe
-from run_wam_short_replan import (
+from scripts.audit_wam_short_replan_outcomes import describe
+from scripts.run_wam_short_replan import (
     CHECKPOINT,
     PRIOR_GATE,
     PRIOR_GATE_SHA,
@@ -33,8 +34,6 @@ from run_wam_short_replan import (
     cpu_environment,
     write_new,
 )
-
-from s2a.artifacts import REPO, sha256
 
 ROOT = REPO / "outputs/wam_stability_20261021"
 FAILURE = ROOT / "short_replan_audit/final_unrelated_weight_stat_failure.json"

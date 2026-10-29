@@ -13,9 +13,9 @@ import yaml
 from PIL import Image
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import code_fingerprint, sha256, write_json
-from s2a.collision_bounds import separation_bound
-from s2a.prediction_audit import audit_action_response
+from s2a.evaluation.prediction_audit import audit_action_response
+from s2a.geometry.collision_bounds import separation_bound
+from s2a.infrastructure.artifacts import code_fingerprint, sha256, write_json
 
 
 def require(value, message):

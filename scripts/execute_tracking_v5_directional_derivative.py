@@ -6,10 +6,10 @@ import os
 from pathlib import Path
 
 import numpy as np
-from execute_tracking_v5_accepted_point_sqp import verify_native_qa as verify_sqp_qa
-from run_wam_readout import owned_command
 
-from s2a.directional_derivative_evidence import (
+from s2a.infrastructure.native_environment import strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.directional_derivative_evidence import (
     CPU_ENVIRONMENT,
     NATIVE_PYTHON,
     PLAN,
@@ -27,8 +27,8 @@ from s2a.directional_derivative_evidence import (
     remember,
     require,
 )
-from s2a.native_environment import strict_native_environment
-from s2a.preview_result_publication import publish_result
+from scripts.execute_tracking_v5_accepted_point_sqp import verify_native_qa as verify_sqp_qa
+from scripts.run_wam_readout import owned_command
 
 EXPERIMENT = "directional_derivative_consistency"
 STEP_SIZES = (1e-2, 5e-3, 1e-3, 5e-4, 1e-4, 5e-5, 1e-5, 5e-6, 1e-6, 5e-7, 1e-7, 5e-8, 1e-8)

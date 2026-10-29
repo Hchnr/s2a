@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import load_config
 from s2a.geometry import rot6d_to_matrix
+from s2a.infrastructure.artifacts import load_config
 
 
 def main():

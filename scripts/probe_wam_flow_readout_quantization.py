@@ -6,12 +6,12 @@ import os
 from pathlib import Path
 
 import numpy as np
-from run_wam_flow_readout import read_prepared, reference, require
 
-from s2a.artifacts import REPO, sha256
-from s2a.wam_flow_readout import FlowReadoutHook, FlowResidualReadout
-from s2a.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext, _bfloat16_rne
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from s2a.research.wam.readout.wam_flow_readout import FlowReadoutHook, FlowResidualReadout
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext, _bfloat16_rne
+from scripts.run_wam_flow_readout import read_prepared, reference, require
 
 
 def expected_bits(hidden, base, weights, sigma):

@@ -3,12 +3,12 @@
 from pathlib import Path
 
 import numpy as np
-from arm_coverage_independent import equations
-from arm_coverage_training import contrast_rows
-from arm_history_independent import augment, conditions, feature_matrix
-from audit_wam_position import Evidence
 
-from s2a.history_conditioned_arm_forward import design, raw_condition, with_history
+from s2a.research.response_models.causal.history_conditioned_arm_forward import design, raw_condition, with_history
+from scripts.arm_coverage_independent import equations
+from scripts.arm_coverage_training import contrast_rows
+from scripts.arm_history_independent import augment, conditions, feature_matrix
+from scripts.audit_wam_position import Evidence
 
 
 def main():

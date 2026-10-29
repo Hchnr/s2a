@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from s2a.clean_training_seed_plan import apply_seed_plan, build_seed_plan
+from s2a.research.wam.training.clean.clean_training_seed_plan import apply_seed_plan, build_seed_plan
 
 
 def reference(path):

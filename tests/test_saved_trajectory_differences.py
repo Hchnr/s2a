@@ -5,7 +5,7 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from s2a.saved_trajectory_differences import diagnose_saved_differences
+from s2a.research.trajectory_search.saved_trajectory_differences import diagnose_saved_differences
 
 STEP = 1e-4
 PREVIOUS = np.zeros(6)

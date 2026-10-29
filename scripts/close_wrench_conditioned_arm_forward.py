@@ -3,10 +3,9 @@
 import json
 from pathlib import Path
 
-from audit_wam_position import Evidence
-
-from s2a.artifacts import sha256
-from s2a.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from scripts.audit_wam_position import Evidence
 
 ROOT = Path("outputs/wrench_conditioned_arm_forward_20261025")
 

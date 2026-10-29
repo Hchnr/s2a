@@ -3,15 +3,16 @@
 import importlib.util
 import json
 import sys
-from pathlib import Path
 
 import numpy as np
 import pytest
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def checker():
-    path = Path(__file__).resolve().parents[1] / "scripts/verify_wam_current_numerics.py"
+    path = repository_root(anchor=__file__) / "scripts/verify_wam_current_numerics.py"
     spec = importlib.util.spec_from_file_location("current_numerics_checker_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

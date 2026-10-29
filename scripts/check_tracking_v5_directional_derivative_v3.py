@@ -5,24 +5,10 @@ import json
 import os
 
 import numpy as np
-from check_tracking_v5_accepted_point_sqp import case_engine
-from check_tracking_v5_prefix_trust_control import (
-    check_full_candidate,
-    command_key,
-    compare_contract,
-    numerical_compare,
-    validate_trace_entry,
-)
-from check_tracking_v5_saved_direction_backtracking import NUMERIC_TOLERANCE, TORQUE_TOLERANCE, native_math_proof
-from directional_derivative_audit import (
-    _audit_repeat,
-    audit_directional_derivative_ledger,
-    exact_array,
-)
-from directional_derivative_stencil_audit_v2 import audit_saved_stencil_comparison
-from execute_tracking_v5_directional_derivative_check_v3 import entry_command, validate_receipt
 
-from s2a.directional_derivative_check_v3_evidence import (
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.directional_derivative_check_v3_evidence import (
     CPU_ENVIRONMENT,
     FAILED_CHECK_REF,
     PLAN,
@@ -43,9 +29,23 @@ from s2a.directional_derivative_check_v3_evidence import (
     remember,
     require,
 )
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from scripts.check_tracking_v5_accepted_point_sqp import case_engine
+from scripts.check_tracking_v5_prefix_trust_control import (
+    check_full_candidate,
+    command_key,
+    compare_contract,
+    numerical_compare,
+    validate_trace_entry,
+)
+from scripts.check_tracking_v5_saved_direction_backtracking import (
+    NUMERIC_TOLERANCE,
+    TORQUE_TOLERANCE,
+    native_math_proof,
+)
+from scripts.directional_derivative_audit import _audit_repeat, audit_directional_derivative_ledger, exact_array
+from scripts.directional_derivative_stencil_audit_v2 import audit_saved_stencil_comparison
+from scripts.execute_tracking_v5_directional_derivative_check_v3 import entry_command, validate_receipt
 
 
 def verify_response_trace(answer, reconstruct, compare_rollout, classify, check_audit, result, *, compare):

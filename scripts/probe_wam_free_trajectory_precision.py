@@ -7,11 +7,11 @@ import os
 from pathlib import Path
 
 import numpy as np
-from prepare_wam_flow_readout import GPU_UUID, reference, require
-from prepare_wam_free_trajectory import BACKEND_CONTRACT, read_prepared
 
-from s2a.artifacts import sha256
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.prepare_wam_flow_readout import GPU_UUID, reference, require
+from scripts.prepare_wam_free_trajectory import BACKEND_CONTRACT, read_prepared
 
 
 def precision_payload(name):

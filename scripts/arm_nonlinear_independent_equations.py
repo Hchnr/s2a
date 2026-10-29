@@ -1,8 +1,9 @@
 """100 nonlinear independent old9/additional63 equation composition and identities."""
 
 import numpy as np
-from arm_nonlinear_additional_independent import equations as additional_equations
-from arm_nonlinear_original_independent import equations as original_equations
+
+from scripts.arm_nonlinear_additional_independent import equations as additional_equations
+from scripts.arm_nonlinear_original_independent import equations as original_equations
 
 
 def equations(config, e, parameters):

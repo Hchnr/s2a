@@ -6,12 +6,12 @@ import json
 from pathlib import Path
 
 import numpy as np
-from verify_wam_clean_training_capture import Evidence, require
-from verify_wam_terminal_development import normal_owned
-from verify_wam_terminal_development_points import head_parameters
 
-from s2a.artifacts import REPO
-from s2a.clean_training_runtime import publish, reference
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
+from scripts.verify_wam_clean_training_capture import Evidence, require
+from scripts.verify_wam_terminal_development import normal_owned
+from scripts.verify_wam_terminal_development_points import head_parameters
 
 ROOT = REPO / "outputs/terminal_development_20261025"
 GPU = "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f"

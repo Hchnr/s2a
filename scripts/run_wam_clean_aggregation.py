@@ -5,13 +5,16 @@ import json
 import os
 from pathlib import Path
 
-from run_wam_clean_bridge import check_owned_command
-from run_wam_readout import owned_command
-
-from s2a.artifacts import REPO
-from s2a.clean_training_aggregation import ROWS, admit_aggregation
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.durable_stage_supervisor import accept_detached_launch, cpu_environment, launch_detached
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
+    accept_detached_launch,
+    cpu_environment,
+    launch_detached,
+)
+from s2a.research.wam.training.clean.clean_training_aggregation import ROWS, admit_aggregation
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
+from scripts.run_wam_clean_bridge import check_owned_command
+from scripts.run_wam_readout import owned_command
 
 ROOT = REPO / "outputs/clean_on_policy_aggregation_20261024/aggregate_fit"
 

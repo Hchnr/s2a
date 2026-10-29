@@ -5,8 +5,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.nullspace_convex_qp import solve_qp
-from s2a.strict_convex_qp import solve_qp as original
+from s2a.adapters.solvers.nullspace_convex_qp import solve_qp
+from s2a.adapters.solvers.strict_convex_qp import solve_qp as original
 
 
 def test_captured_failure_and_original_kkt():

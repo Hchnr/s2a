@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from s2a.relocated_artifacts import RelocatedArtifacts
+from s2a.infrastructure.relocated_artifacts import RelocatedArtifacts
 
 
 def write_json(path, value):

@@ -13,18 +13,12 @@ import os
 from pathlib import Path
 
 import numpy as np
-from check_tracking_v5_prefix_preserving_trajectory_control import (
-    finite_max_abs_difference,
-    require_absolute_tolerance,
-    require_finite_array_equal,
-)
-from check_tracking_v5_state_updated_response import native_functions
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.preview_result_publication import publish_result as publish
-from s2a.saved_direction_backtracking_evidence import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.research.trajectory_search.saved_direction_backtracking_evidence import (
     CHECK_ROOT,
     CPU_ENVIRONMENT,
     DIAGNOSTIC_REF,
@@ -40,10 +34,14 @@ from s2a.saved_direction_backtracking_evidence import (
     reference,
     require,
 )
-from s2a.saved_direction_backtracking_evidence import (
-    remember as bind_reference,
+from s2a.research.trajectory_search.saved_direction_backtracking_evidence import remember as bind_reference
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from scripts.check_tracking_v5_prefix_preserving_trajectory_control import (
+    finite_max_abs_difference,
+    require_absolute_tolerance,
+    require_finite_array_equal,
 )
-from s2a.terminal_development_execution import CONTROL_REF
+from scripts.check_tracking_v5_state_updated_response import native_functions
 
 NUMERIC_TOLERANCE = 1e-10
 TORQUE_TOLERANCE = 1e-8

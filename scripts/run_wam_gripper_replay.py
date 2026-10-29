@@ -8,15 +8,16 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
-from verify_wam_acceptance import verify_case
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
-from s2a.task_acceptance import task_outcome
-from s2a.wam_reference_replay import run_replay
+from s2a.evaluation.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.tracking.references.wam_reference_replay import run_replay
+from scripts.verify_wam_acceptance import verify_case
 
 
 def report_destination(c):
-    repo = Path(__file__).resolve().parents[1]
+    repo = repository_root(anchor=__file__)
     path = (repo / c.get("report_path", "reports/wam_gripper_replay_20261020.md")).resolve()
     if not path.is_relative_to(repo / "reports"):
         raise ValueError("replay report_path must resolve inside repository reports/")

@@ -9,12 +9,14 @@ from pathlib import Path
 
 import matplotlib
 
+from s2a.infrastructure.repository_paths import repository_root
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = repository_root(anchor=__file__)
 VARIANTS = (
     "position_hold",
     "recovering_position_hold",

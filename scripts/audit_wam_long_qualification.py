@@ -10,13 +10,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence, close, error
-from run_wam_short_replan import cpu_environment, process_record, write_new
-from verify_wam_acceptance import verify_case as verify_native_generic
-from wam_long_position_checker import source_proof, verify_case
 
-from s2a.artifacts import REPO, sha256
-from s2a.task_acceptance import task_outcome
+from s2a.evaluation.task_acceptance import task_outcome
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_position import Evidence, close, error
+from scripts.run_wam_short_replan import cpu_environment, process_record, write_new
+from scripts.verify_wam_acceptance import verify_case as verify_native_generic
+from scripts.wam_long_position_checker import source_proof, verify_case
 
 CONFIG = REPO / "configs/long_raw_qualification_20261021.json"
 PLAN = REPO / "plans/v0.0.1/017_long_raw_development_20261021.md"

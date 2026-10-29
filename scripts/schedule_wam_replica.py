@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 import requests
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 
 
 def wait_file(path, predicate):

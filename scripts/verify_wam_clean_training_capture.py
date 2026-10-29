@@ -13,10 +13,11 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.clean_execution_proof import check_execution_proof
-from s2a.clean_training_seed_plan import apply_seed_plan
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.training.clean.clean_execution_proof import check_execution_proof
+from s2a.research.wam.training.clean.clean_training_seed_plan import apply_seed_plan
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = repository_root(anchor=__file__)
 GPU = "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f"
 VISION = (1, 48, 11, 60, 40)
 DOMAIN = "franka_panda__parallel_gripper/eef20/observed_local_delta/libero_closed_pad_observed_endpoint_eef10_v1"

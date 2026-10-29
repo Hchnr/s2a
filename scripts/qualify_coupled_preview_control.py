@@ -4,10 +4,15 @@ import argparse
 import json
 from pathlib import Path
 
-from audit_wam_position import Evidence
-
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import check_sources, cpu_environment, owned_stage, publish, sha
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
+    check_sources,
+    cpu_environment,
+    owned_stage,
+    publish,
+    sha,
+)
+from scripts.audit_wam_position import Evidence
 
 ROOT = REPO / "outputs/coupled_preview_qualification_20261026"
 CHAIN = REPO / "outputs/coupled_pose_preview_continuous_chain_20261026/verified.json"

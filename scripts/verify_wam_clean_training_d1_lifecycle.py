@@ -5,8 +5,8 @@ import json
 import os
 from pathlib import Path
 
-from s2a.clean_training_d1_lifecycle_addendum import ROOT, verify
-from s2a.durable_stage_supervisor import REPO, check_cpu_environment, publish, require
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO, check_cpu_environment, publish, require
+from s2a.research.wam.training.clean.clean_training_d1_lifecycle_addendum import ROOT, verify
 
 
 def main():

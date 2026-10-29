@@ -3,8 +3,9 @@
 from pathlib import Path
 
 import numpy as np
-from arm_forward_independent import INPUTS, feature_matrix, nominal_prediction
 from scipy.spatial.transform import Rotation
+
+from scripts.arm_forward_independent import INPUTS, feature_matrix, nominal_prediction
 
 
 def equations(config, e, parameters):

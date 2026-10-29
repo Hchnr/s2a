@@ -6,13 +6,13 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import REPO
-from s2a.bounded_joint_path import plan_joint_path
-from s2a.clean_training_runtime import checked, publish, read, reference, require
-from s2a.full_coupled_pose_inverse import hat
 from s2a.geometry import transform
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse import hat
+from s2a.research.joint_control.tracking.bounded_joint_path import plan_joint_path
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
 
 
 def main():
@@ -58,7 +58,7 @@ def main():
     )
     guard = read(CONTROL_REF)["cv2_guard_registration"]
     restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
-    from s2a.libero_simulation import make_environment
+    from s2a.backends.libero.simulation import make_environment
 
     cases = []
     for index in (0, 1):

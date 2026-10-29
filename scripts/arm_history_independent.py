@@ -1,10 +1,11 @@
 """090 independent absolute-rotation history and scalar conditional features."""
 
 import numpy as np
-from arm_forward_independent import INPUTS as BASE_INPUTS
-from arm_forward_independent import conditions as base_conditions
-from arm_forward_independent import nominal_prediction
 from scipy.spatial.transform import Rotation
+
+from scripts.arm_forward_independent import INPUTS as BASE_INPUTS
+from scripts.arm_forward_independent import conditions as base_conditions
+from scripts.arm_forward_independent import nominal_prediction
 
 INPUTS = (*BASE_INPUTS, "x_response_residual")
 

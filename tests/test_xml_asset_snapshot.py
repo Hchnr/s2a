@@ -7,7 +7,7 @@ from xml.sax.saxutils import escape
 
 import pytest
 
-from s2a import xml_asset_snapshot as snapshot
+from s2a.infrastructure.snapshots import xml_asset_snapshot as snapshot
 
 
 def reference(path):

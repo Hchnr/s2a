@@ -2,10 +2,10 @@
 
 import numpy as np
 
-from s2a.fast_long_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.controllers.osc import OSCInterface
 from s2a.geometry import pose_error
-from s2a.osc import OSCInterface
-from s2a.preventive_joint_inverse import margin_cost, refine_long_plan
+from s2a.research.joint_control.limits.preventive_joint_inverse import margin_cost, refine_long_plan
+from s2a.research.joint_control.preview.fast_long_joint_preview import build_joint_preview, rollout_joint_preview
 
 
 def test_margin_hinge_gradient_matches_independent_centered_difference():

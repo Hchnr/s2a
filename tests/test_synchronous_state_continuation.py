@@ -4,8 +4,12 @@ import copy
 
 import pytest
 
-from s2a.artifacts import REPO
-from s2a.synchronous_state_continuation import dispatch_matrix, prefix_raw_records, validate_parameter_scope
+from s2a.infrastructure.artifacts import REPO
+from s2a.research.wam.readout.synchronous_state_continuation import (
+    dispatch_matrix,
+    prefix_raw_records,
+    validate_parameter_scope,
+)
 
 
 def entries():
@@ -16,7 +20,7 @@ def entries():
 
 
 def test_actual_worker_expression_handles_full_matrix_and_suffix():
-    from verify_wam_synchronous_state_continuation_metadata import exercise_worker_dispatch
+    from scripts.verify_wam_synchronous_state_continuation_metadata import exercise_worker_dispatch
 
     worker = REPO / "scripts/sample_wam_synchronous_state_continuation.py"
     assert exercise_worker_dispatch(worker, entries()) == {"requests": 99, "probe": 48, "raw": 48, "zero": 3}
@@ -24,7 +28,7 @@ def test_actual_worker_expression_handles_full_matrix_and_suffix():
 
 
 def test_frozen_failed_worker_expression_reproduces_original_boundary():
-    from verify_wam_synchronous_state_continuation_metadata import exercise_worker_dispatch
+    from scripts.verify_wam_synchronous_state_continuation_metadata import exercise_worker_dispatch
 
     with pytest.raises(KeyError, match="probe052"):
         exercise_worker_dispatch(REPO / "scripts/sample_wam_synchronous_state.py", entries())
@@ -39,13 +43,13 @@ def test_completed_prefix_is_not_dispatched_again():
 
 
 def test_both_complete_body_proofs():
-    from verify_wam_synchronous_state_continuation_metadata import body_proofs
+    from scripts.verify_wam_synchronous_state_continuation_metadata import body_proofs
 
     assert all(v["passed"] for v in body_proofs().values())
 
 
 def test_prefix_raw_pair_keeps_original_actual_index_and_reference(monkeypatch):
-    import s2a.synchronous_state_continuation as module
+    import s2a.research.wam.readout.synchronous_state_continuation as module
 
     raw = {"index": 3, "variant": "raw", "complete": True, "pair_id": "anchor_s42", "initial_ref": "original-initial"}
     failed = {"generations": [{}, {}, {}, raw]}
@@ -71,9 +75,9 @@ def test_first_cross_process_pair_checks_every_fp32_initial_array(tmp_path):
     import json
 
     import numpy as np
-    from collect_wam_clean_training import same_initial
 
-    from s2a.clean_training_runtime import reference
+    from s2a.research.wam.training.clean.clean_training_runtime import reference
+    from scripts.collect_wam_clean_training import same_initial
 
     refs = []
     for name in ["raw", "probe"]:

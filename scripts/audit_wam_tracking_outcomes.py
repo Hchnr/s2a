@@ -5,11 +5,10 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from audit_wam_position import Evidence
-from audit_wam_short_replan_outcomes import describe
-from run_wam_short_replan import cpu_environment, write_new
-
-from s2a.artifacts import REPO, sha256
+from s2a.infrastructure.artifacts import REPO, sha256
+from scripts.audit_wam_position import Evidence
+from scripts.audit_wam_short_replan_outcomes import describe
+from scripts.run_wam_short_replan import cpu_environment, write_new
 
 HELPER = "scripts/audit_wam_short_replan_outcomes.py"
 HELPER_SHA = "8a2e4c68442c6dce2b2c8c77ec56bc943c353c0038560e0900fbe5b756d90cfa"

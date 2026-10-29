@@ -1,8 +1,9 @@
 """109 current-wrench producer merge of old9 and additional63 physically paired equations."""
 
 import numpy as np
-from arm_joint_wrench_additional_training import contrast_rows as additional_rows
-from arm_joint_wrench_original_training import contrast_rows as original_rows
+
+from scripts.arm_joint_wrench_additional_training import contrast_rows as additional_rows
+from scripts.arm_joint_wrench_original_training import contrast_rows as original_rows
 
 
 def contrast_rows(config, e, parameters):

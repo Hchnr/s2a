@@ -14,11 +14,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.artifacts import code_fingerprint, load_config, sha256, write_json
-from s2a.geometry import pose_error
-from s2a.gripper import OpeningIntent, opening_position_target
-from s2a.libero_audit import contact_counts
-from s2a.libero_simulation import (
+from s2a.backends.libero.simulation import (
     aperture,
     controller_contract,
     current_observation,
@@ -26,7 +22,11 @@ from s2a.libero_simulation import (
     measured_twist,
     source_pose,
 )
-from s2a.osc import OSCInterface, OSCStateToAction
+from s2a.controllers.gripper import OpeningIntent, opening_position_target
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
+from s2a.evaluation.libero.audit import contact_counts
+from s2a.geometry import pose_error
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 
 
 def run(c, out, source, trial, component_out):

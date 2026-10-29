@@ -3,11 +3,11 @@
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
 from scipy.optimize import nnls
 
-from s2a.durable_stage_supervisor import publish
-from s2a.strict_convex_qp import solve_qp
+from s2a.adapters.solvers.strict_convex_qp import solve_qp
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
+from scripts.audit_wam_position import Evidence
 
 
 def preview_rollout(record, horizon):

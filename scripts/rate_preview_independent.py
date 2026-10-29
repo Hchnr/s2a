@@ -1,10 +1,10 @@
 """218 scalar response rollout and independent convex KKT certificate."""
 
 import numpy as np
-from pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 from scipy.optimize import nnls
 
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from scripts.pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 
 
 def verify_plan(plan, position, velocity, references, reference_velocities, previous, contract, innovation):

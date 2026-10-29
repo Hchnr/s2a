@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.synchronous_validation import checked, publish, reference
+from s2a.research.wam.readout.synchronous_validation import checked, publish, reference
 
 
 def main():

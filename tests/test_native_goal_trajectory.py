@@ -3,9 +3,12 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.native_goal_joint_response import native_goal_rotation, rollout_native_goal_joint_response
-from s2a.native_goal_trajectory import rollout_native_goal_trajectory
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.research.response_models.forward.native_goal_joint_response import (
+    native_goal_rotation,
+    rollout_native_goal_joint_response,
+)
+from s2a.research.trajectory_search.native_goal_trajectory import rollout_native_goal_trajectory
 
 
 def _dynamics(q, velocity):

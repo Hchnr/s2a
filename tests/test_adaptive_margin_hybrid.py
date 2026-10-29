@@ -3,10 +3,10 @@
 import numpy as np
 import pytest
 
-from s2a.adaptive_margin_hybrid import refine_long_plan
-from s2a.adaptive_plan_history import AdaptivePlanHistory
-from s2a.fast_long_joint_preview import build_joint_preview, rollout_joint_preview
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.research.joint_control.preview.fast_long_joint_preview import build_joint_preview, rollout_joint_preview
+from s2a.research.joint_control.tracking.adaptive_margin_hybrid import refine_long_plan
+from s2a.research.trajectory_search.adaptive_plan_history import AdaptivePlanHistory
 
 
 @pytest.mark.parametrize(

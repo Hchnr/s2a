@@ -4,7 +4,8 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import Evidence
+
+from scripts.audit_wam_position import Evidence
 
 ROOT = Path("outputs/contact_probe_trace_20261025")
 

@@ -3,11 +3,10 @@
 import os
 from pathlib import Path
 
-from verify_wam_clean_training_capture import Evidence, require
-from verify_wam_terminal_points import compact_points
-
-from s2a.clean_training_runtime import publish, reference
-from s2a.terminal_candidate import candidate_head
+from s2a.research.trajectory_search.terminal_candidate import candidate_head
+from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
+from scripts.verify_wam_clean_training_capture import Evidence, require
+from scripts.verify_wam_terminal_points import compact_points
 
 
 def main():

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.generated_reference_twist import reference_world_twist
+from s2a.references.generated_twist import reference_world_twist
 
 
 def test_generated_world_screw_velocity_uses_anchor_center_and_tail():

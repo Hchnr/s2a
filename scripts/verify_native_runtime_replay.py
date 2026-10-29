@@ -13,7 +13,15 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.native_runtime_replay import ATOL, LIMITS, REPO, ReplayFailure, run_native_replay, validate_saved_branch
+from s2a.infrastructure.current_layout import current_source_path
+from s2a.research.native_runtime.replay import (
+    ATOL,
+    LIMITS,
+    REPO,
+    ReplayFailure,
+    run_native_replay,
+    validate_saved_branch,
+)
 
 CONFIG = REPO / "configs/native_runtime_replay_20261029.json"
 PLAN = REPO / "plans/v0.0.1/native_runtime_replay_20261029.md"
@@ -95,7 +103,7 @@ def inspect_inputs(config):
     """No simulator or model import, construction, stepping, or output writes."""
     refs = {}
     for relative in SOURCE_PATHS:
-        checked(reference(REPO / relative), refs)
+        checked(reference(current_source_path(relative)), refs)
     require(
         config["schema"] == "s2a.native-runtime-replay-inputs.v1"
         and config["historical_branch"] == "fk_first_long_h8"
@@ -307,7 +315,7 @@ def main(*, execute=False, qa_ref=None):
         actual_wait_claimed=False,
     )
     try:
-        from s2a.native_environment import restore_cv2_environment
+        from s2a.infrastructure.native_environment import restore_cv2_environment
 
         guard = inputs["bootstrap_config"]["cv2_guard"]
         result["cv2_admission"] = restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])

@@ -8,8 +8,8 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.artifacts import REPO, load_config, sha256, write_json
 from s2a.geometry import inverse, pose_error, rot6d_to_matrix, transform, validate_transform
+from s2a.infrastructure.artifacts import REPO, load_config, sha256, write_json
 
 
 def main():

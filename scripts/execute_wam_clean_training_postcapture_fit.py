@@ -14,7 +14,10 @@ import json
 import os
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+from s2a.infrastructure.current_layout import CurrentLayout
+from s2a.infrastructure.repository_paths import repository_root
+
+REPO = repository_root(anchor=__file__)
 REGISTRATION_SCHEMA = "s2a.clean-training-postcapture-registration.v1"
 PROPOSAL_SCHEMA = "s2a.clean-training-postcapture-proposal.v1"
 VERIFICATION_SCHEMA = "s2a.clean-training-postcapture-verification.v1"
@@ -267,28 +270,55 @@ def admit(repair_registration_ref):
 
 def _load_modules(role, registration):
     name, function_name = MODULES[role]
-    delegate = importlib.import_module(name)
+    layout = CurrentLayout(root=REPO)
+    sources = []
+    for old_path in (
+        f"scripts/{name}.py",
+        "src/s2a/clean_training_source_proof.py",
+        "src/s2a/clean_training_fit_contract.py",
+    ):
+        entry = layout.entry(old_path)
+        expected = layout.source_path(old_path)
+        relative = expected.relative_to(REPO)
+        parts = relative.with_suffix("").parts
+        require(
+            relative.suffix == ".py"
+            and parts[0] in {"src", "scripts"}
+            and parts[-1] != "__init__"
+            and all(part.isidentifier() for part in parts),
+            "registered current Python module path required",
+        )
+        module_name = ".".join(parts[1:] if parts[0] == "src" else parts)
+        require(
+            registration["source_sha256"].get(str(expected)) == entry["current_ref"]["sha256"] == sha(expected),
+            "loaded delegate/helper source drift",
+        )
+        sources.append((expected, module_name))
+    layout.finish()
+    (expected, delegate_name), (helper_path, helper_name), (contract_path, contract_name) = sources
+    delegate = importlib.import_module(delegate_name)
     function = getattr(delegate, function_name)
-    expected = REPO / "scripts" / (name + ".py")
     require(
-        Path(delegate.__file__).resolve() == expected
+        delegate.__name__ == delegate_name
+        and Path(delegate.__file__).resolve() == expected
         and Path(inspect.getsourcefile(function)).resolve() == expected
         and function.__module__ == delegate.__name__,
         "delegate must be the original main-repository function",
     )
-    helper = importlib.import_module("s2a.clean_training_source_proof")
-    helper_path = REPO / "src/s2a/clean_training_source_proof.py"
+    helper = importlib.import_module(helper_name)
     require(
-        Path(helper.__file__).resolve() == helper_path
+        helper.__name__ == helper_name
+        and Path(helper.__file__).resolve() == helper_path
         and Path(inspect.getsourcefile(inspect.unwrap(helper.execution_source_proof))).resolve() == helper_path,
         "source correction helper is not the actual main-repository helper",
     )
-    contract = importlib.import_module("s2a.clean_training_fit_contract")
+    contract = importlib.import_module(contract_name)
     require(
-        Path(contract.__file__).resolve() == REPO / "src/s2a/clean_training_fit_contract.py",
+        contract.__name__ == contract_name and Path(contract.__file__).resolve() == contract_path,
         "shared fit metadata source differs",
     )
-    for actual in (expected, helper_path, Path(contract.__file__).resolve()):
+    layout.finish()
+    for actual, _ in sources:
         require(registration["source_sha256"].get(str(actual)) == sha(actual), "loaded delegate/helper source drift")
     return function, helper, contract, reference(expected), reference(helper_path)
 

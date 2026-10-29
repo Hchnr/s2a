@@ -1,12 +1,13 @@
 """Preserve the complete qualified074 physical loop outside the080 gripper intervention."""
 
 import ast
-from pathlib import Path
+
+from tests.support.source_layout import current_source_path
 
 
 def test_only_planner_current_velocity_and_receipts_change():
-    old = Path("src/s2a/residual_motor_simulation.py").read_text()
-    new = Path("src/s2a/velocity_model_simulation.py").read_text()
+    old = current_source_path("src/s2a/residual_motor_simulation.py").read_text()
+    new = current_source_path("src/s2a/velocity_model_simulation.py").read_text()
     new = new.replace("def run_velocity_model_case(", "def run_residual_motor_case(").replace(
         "    response_parameters,", "    inverse_parameters,"
     )

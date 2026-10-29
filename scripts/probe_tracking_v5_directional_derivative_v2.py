@@ -7,8 +7,12 @@ import time
 
 import numpy as np
 
-from s2a.directional_derivative_probe import STEP_SIZES, _repeat_comparison
-from s2a.directional_derivative_v2_evidence import (
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.research.trajectory_search.directional_derivative_probe import STEP_SIZES, _repeat_comparison
+from s2a.research.trajectory_search.directional_derivative_v2_evidence import (
     CPU_ENVIRONMENT,
     PLAN,
     REPO,
@@ -26,12 +30,8 @@ from s2a.directional_derivative_v2_evidence import (
     require,
     saved_stencil,
 )
-from s2a.mujoco_robot_dynamics import MujocoRobotDynamics
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.native_goal_trajectory import rollout_native_goal_trajectory
-from s2a.osc import OSCInterface
-from s2a.preview_result_publication import publish_result
-from s2a.terminal_development_execution import CONTROL_REF
+from s2a.research.trajectory_search.native_goal_trajectory import rollout_native_goal_trajectory
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
 
 
 def run_probe(
@@ -47,7 +47,7 @@ def run_probe(
 ):
     """Reset actual368 for every call; permit exactly one final anchor repeat."""
     if probe_fn is None:
-        from s2a.directional_derivative_probe import probe_directional_derivatives
+        from s2a.research.trajectory_search.directional_derivative_probe import probe_directional_derivatives
 
         probe_fn = probe_directional_derivatives
     anchor = admit_anchor(source, anchor, interface)

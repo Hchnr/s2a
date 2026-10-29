@@ -7,10 +7,13 @@ import platform
 import sys
 from pathlib import Path
 
-from prepare_native_runtime_path_snapshot import checked, read, reference
-
-from s2a.native_environment import EnvironmentAdmissionError, restore_cv2_environment, strict_native_environment
-from s2a.native_runtime_path_snapshot import REPO, verify_runtime_snapshot
+from s2a.infrastructure.native_environment import (
+    EnvironmentAdmissionError,
+    restore_cv2_environment,
+    strict_native_environment,
+)
+from s2a.infrastructure.snapshots.native_runtime_path_snapshot import REPO, verify_runtime_snapshot
+from scripts.prepare_native_runtime_path_snapshot import checked, read, reference
 
 CONFIG = REPO / "configs/native_runtime_bootstrap_20261029.json"
 PLAN = REPO / "plans/v0.0.1/native_runtime_bootstrap_20261029.md"
@@ -147,9 +150,8 @@ def collect_refs(value, refs):
 
 def inspect_inputs(config):
     """File and provenance admission only: no cv2, simulator, dataset or model."""
-    from prepare_native_runtime_path_snapshot import inspect_inputs as inspect_snapshot_inputs
-
-    from s2a.native_runtime_bootstrap import LIMITS
+    from s2a.research.native_runtime.bootstrap import LIMITS
+    from scripts.prepare_native_runtime_path_snapshot import inspect_inputs as inspect_snapshot_inputs
 
     require(config["schema"] == "s2a.native-runtime-bootstrap-inputs.v1", "Bootstrap input schema")
     require(
@@ -266,7 +268,7 @@ def inspect_inputs(config):
 
 def validate_bootstrap(receipt, controller):
     """Execution completion is separate from control or historical equivalence."""
-    from s2a.native_runtime_bootstrap import LIMITS
+    from s2a.research.native_runtime.bootstrap import LIMITS
 
     require(
         receipt["complete"]
@@ -398,7 +400,7 @@ def main(qa_ref, dry=False):
             "CPU environment unchanged after cv2",
         )
         stage = "native_bootstrap"
-        from s2a.native_runtime_bootstrap import run_native_bootstrap
+        from s2a.research.native_runtime.bootstrap import run_native_bootstrap
 
         result["bootstrap"] = run_native_bootstrap(
             inputs["manifest"]["runtime_config"],
@@ -426,7 +428,7 @@ def main(qa_ref, dry=False):
         )
     except Exception as error:
         primary_error = error
-        from s2a.native_runtime_bootstrap import BootstrapFailure
+        from s2a.research.native_runtime.bootstrap import BootstrapFailure
 
         if isinstance(error, EnvironmentAdmissionError):
             result["cv2_admission"] = error.receipt

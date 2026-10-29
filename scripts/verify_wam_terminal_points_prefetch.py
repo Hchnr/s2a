@@ -2,8 +2,8 @@
 
 from concurrent.futures import ThreadPoolExecutor
 
-from verify_wam_clean_training_capture import Evidence, require
-from verify_wam_terminal_development_points import audit_points as ordered_audit
+from scripts.verify_wam_clean_training_capture import Evidence, require
+from scripts.verify_wam_terminal_development_points import audit_points as ordered_audit
 
 
 class RequestSnapshot:

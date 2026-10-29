@@ -6,10 +6,10 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from s2a.sampler_trace import file_sha, rng_identity
-from s2a.wam_clean_capture import CleanCaptureBridge, NoiseRoster, point_features
-from s2a.wam_clean_readout import CleanResidualReadout
-from s2a.wam_readout import ACTIVE_MASK, HIDDEN_SIZE, LIBERO_DOMAIN, DomainContext
+from s2a.research.wam.readout.sampler_trace import file_sha, rng_identity
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, HIDDEN_SIZE, LIBERO_DOMAIN, DomainContext
+from s2a.research.wam.training.clean.wam_clean_capture import CleanCaptureBridge, NoiseRoster, point_features
+from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
 
 torch = pytest.importorskip("torch")
 

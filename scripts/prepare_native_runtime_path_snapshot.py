@@ -10,7 +10,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from s2a.native_runtime_path_snapshot import (
+from s2a.infrastructure.snapshots.native_runtime_path_snapshot import (
     OLD_SOURCE_ROOT,
     REPO,
     SAFE_SOURCE_ROOT,

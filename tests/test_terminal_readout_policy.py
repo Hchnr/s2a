@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from s2a.terminal_readout_policy import TerminalReadoutPolicy, TerminalStepMixin
-from s2a.wam_clean_readout import CleanResidualReadout
+from s2a.research.wam.readout.terminal_readout_policy import TerminalReadoutPolicy, TerminalStepMixin
+from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
 
 
 def heads():

@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 from scipy.linalg import expm
 
+from s2a.controllers.osc import OSCInterface, OSCStateToAction
 from s2a.geometry import advance
-from s2a.osc import OSCInterface, OSCStateToAction
 
 
 def interface():

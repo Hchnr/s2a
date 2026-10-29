@@ -6,7 +6,7 @@ import importlib
 import numpy as np
 import pytest
 
-from s2a.directional_derivative_probe import _canonical
+from s2a.research.trajectory_search.directional_derivative_probe import _canonical
 from s2a.research.trajectory_search.interior_trajectory_search import DEFAULT_CONFIG, SearchEvaluationError
 from tests.support.trajectory_rollout import CountingDynamics, complete_case, complete_rollout
 

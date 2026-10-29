@@ -3,11 +3,10 @@
 import os
 from pathlib import Path
 
-from sample_wam_terminal_identity_state import ConversionWitness
-
-from s2a.clean_training_runtime import publish, read, reference, require
-from s2a.terminal_candidate import candidate_head
-from s2a.wam_clean_capture import CleanCaptureBridge, json_sha
+from s2a.research.trajectory_search.terminal_candidate import candidate_head
+from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
+from s2a.research.wam.training.clean.wam_clean_capture import CleanCaptureBridge, json_sha
+from scripts.sample_wam_terminal_identity_state import ConversionWitness
 
 
 def main():

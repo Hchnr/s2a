@@ -3,8 +3,12 @@
 import numpy as np
 import pytest
 
-from s2a.current_coupled_response import build_response
-from s2a.joint_limit_response import build_joint_response, predict_joint_response, project_box
+from s2a.research.response_models.forward.current_coupled_response import build_response
+from s2a.research.response_models.forward.joint_limit_response import (
+    build_joint_response,
+    predict_joint_response,
+    project_box,
+)
 
 
 def test_free_joint_model_matches_independent_task_osc_transition():

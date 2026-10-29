@@ -4,8 +4,8 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from s2a.gripper import OpeningIntent
-from s2a.gripper_intent_hold import GripperIntentHold, GripperIntentHoldConfig
+from s2a.controllers.gripper import OpeningIntent
+from s2a.research.gripper.gripper_intent_hold import GripperIntentHold, GripperIntentHoldConfig
 
 
 def update(adapter, reference, measured=0.6, motor=0.0, previous=0, dt=0.05):

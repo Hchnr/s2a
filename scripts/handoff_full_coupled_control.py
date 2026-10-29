@@ -5,10 +5,8 @@ import json
 import time
 from pathlib import Path
 
-from audit_wam_position import Evidence
-
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import (
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     accept_detached_launch,
     check_sources,
     cpu_environment,
@@ -17,7 +15,8 @@ from s2a.durable_stage_supervisor import (
     publish,
     sha,
 )
-from s2a.owned_receipt_contract import normal_receipts
+from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
+from scripts.audit_wam_position import Evidence
 
 ROOT = REPO / "outputs/full_coupled_control_handoff_20261026"
 CONTROL = REPO / "outputs/full_coupled_control_20261026"

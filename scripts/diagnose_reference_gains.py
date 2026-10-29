@@ -12,13 +12,13 @@ from pathlib import Path
 
 import numpy as np
 from scipy.spatial.transform import Rotation
-from summarize_wam_earlier_screen import verify_earlier
-from summarize_wam_stability_screen import Evidence, equal_metrics, verify_cell
 
-from s2a.artifacts import REPO, write_json
-from s2a.checkpoint_audit import extrapolate_history, state_metrics
+from s2a.evaluation.wam.checkpoint_audit import extrapolate_history, state_metrics
 from s2a.geometry import integrate_local, pose9_to_transform
-from s2a.reference_gains import ReferenceGains, relative_features
+from s2a.infrastructure.artifacts import REPO, write_json
+from s2a.references.gains import ReferenceGains, relative_features
+from scripts.summarize_wam_earlier_screen import verify_earlier
+from scripts.summarize_wam_stability_screen import Evidence, equal_metrics, verify_cell
 
 
 def load_cases(label, root, evidence):

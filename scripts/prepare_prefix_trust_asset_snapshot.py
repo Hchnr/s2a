@@ -6,20 +6,27 @@ import os
 import platform
 from pathlib import Path
 
-from execute_tracking_v5_prefix_trust_check_v2 import verify_native_qa
-
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.prefix_trust_asset_repair import (
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
+from s2a.infrastructure.snapshots.xml_asset_snapshot import prepare_asset_snapshot, verify_asset_snapshot
+from s2a.research.trajectory_search.prefix_trust_asset_repair import (
     HISTORICAL_MANIFEST_REF,
     ORIGINAL_XML_REF,
     REPAIR_SOURCES,
     SNAPSHOT_ROOT,
     repair_prerequisites,
 )
-from s2a.prefix_trust_control_evidence import CPU_ENVIRONMENT, REPO, finish, read, reference, remember, require
-from s2a.preview_result_publication import publish_result
-from s2a.terminal_development_execution import CONTROL_REF
-from s2a.xml_asset_snapshot import prepare_asset_snapshot, verify_asset_snapshot
+from s2a.research.trajectory_search.prefix_trust_control_evidence import (
+    CPU_ENVIRONMENT,
+    REPO,
+    finish,
+    read,
+    reference,
+    remember,
+    require,
+)
+from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
+from scripts.execute_tracking_v5_prefix_trust_check_v2 import verify_native_qa
 
 
 def main(qa_ref, dry=False):

@@ -10,8 +10,9 @@ are installed in its module namespace. No response is reused from the failure.
 
 import argparse
 
-import check_tracking_v5_saved_direction_backtracking as frozen
 import numpy as np
+
+import scripts.check_tracking_v5_saved_direction_backtracking as frozen
 
 ORIGINAL_COMPARE_CONTRACT = frozen.compare_contract
 ORIGINAL_LOAD_PREREQUISITES = frozen.load_prerequisites
@@ -56,7 +57,7 @@ def compare_contract(actual, saved, *, compare=None, name="contract"):
 
 def load_prerequisites():
     """Extend unchanged source admission with the closed failed-check evidence."""
-    from s2a.saved_direction_backtracking_check_repair import repair_prerequisites
+    from s2a.research.trajectory_search.saved_direction_backtracking_check_repair import repair_prerequisites
 
     diagnostic, producers, registrations, refs = ORIGINAL_LOAD_PREREQUISITES()
     repair_refs = repair_prerequisites()

@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.causal_local_response import CausalLocalResponse
+from s2a.research.response_models.causal.causal_local_response import CausalLocalResponse
 
 
 def test_reading_prediction_does_not_update_and_episodes_are_isolated():

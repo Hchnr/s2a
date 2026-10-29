@@ -12,7 +12,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from s2a.native_training_sources import (
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.training.native.native_training_sources import (
     initial_state_hash,
     numeric_demo_order,
     select_training_sources,
@@ -36,8 +37,8 @@ def candidate(index, task=0, steps=50):
 
 @pytest.fixture
 def preparer(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("prepare_wam_native_training")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.prepare_wam_native_training")
 
 
 def test_global_rng_numeric_order_then_identity_aliases():

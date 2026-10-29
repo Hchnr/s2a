@@ -3,15 +3,15 @@
 from pathlib import Path
 
 import numpy as np
-from arm_joint_wrench_independent import INPUTS, feature_matrix
-from arm_wrench_data import attach_current_wrench
-from audit_wam_position import Evidence
 from scipy.spatial.transform import Rotation
-from verify_arm_finger_response_labels import aperture
 
-from s2a.artifacts import REPO
-from s2a.durable_stage_supervisor import publish, sha
-from s2a.joint_wrench_condition_forward import design, with_history
+from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish, sha
+from s2a.research.response_models.wrench.joint_wrench_condition_forward import design, with_history
+from scripts.arm_joint_wrench_independent import INPUTS, feature_matrix
+from scripts.arm_wrench_data import attach_current_wrench
+from scripts.audit_wam_position import Evidence
+from scripts.verify_arm_finger_response_labels import aperture
 
 
 def main():

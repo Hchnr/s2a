@@ -9,15 +9,16 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import s2a.prefix_callback_backtracking_plan as frozen_planning
+import s2a.research.trajectory_search.prefix_callback_backtracking_plan as frozen_planning
+from s2a.infrastructure.repository_paths import repository_root
 from tests.test_prefix_callback_backtracking_audit import capture_trial, classifications
 from tests.test_prefix_preserving_trajectory_plan import inputs
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    return importlib.import_module("prefix_optimization_reserve_audit")
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
+    return importlib.import_module("scripts.prefix_optimization_reserve_audit")
 
 
 def test_real_source_proof_binds_only_source_bytes_and_explicit_scope(audit):

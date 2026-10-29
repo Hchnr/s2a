@@ -12,7 +12,7 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-from audit_wam_long_qualification import (
+from scripts.audit_wam_long_qualification import (
     CONFIG,
     OLD_ORACLE_CONFIG,
     PLAN,

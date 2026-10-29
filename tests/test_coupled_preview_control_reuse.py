@@ -1,16 +1,17 @@
 import ast
-from pathlib import Path
+
+from tests.support.source_layout import current_source_path
 
 
 def test_coupling_changes_only_explicit_preview_selection():
     old = next(
         n
-        for n in ast.parse(Path("src/s2a/gripper_preview_simulation.py").read_text()).body
+        for n in ast.parse(current_source_path("src/s2a/gripper_preview_simulation.py").read_text()).body
         if isinstance(n, ast.FunctionDef) and n.name == "run_gripper_preview_case"
     )
     new = next(
         n
-        for n in ast.parse(Path("src/s2a/coupled_gripper_preview_simulation.py").read_text()).body
+        for n in ast.parse(current_source_path("src/s2a/coupled_gripper_preview_simulation.py").read_text()).body
         if isinstance(n, ast.FunctionDef) and n.name == "run_coupled_gripper_preview_case"
     )
     new.name = old.name

@@ -4,7 +4,7 @@ import copy
 
 import pytest
 
-from s2a.synchronous_state_metrics import diagnosis
+from s2a.research.wam.readout.synchronous_state_metrics import diagnosis
 
 
 def metric_rows():
@@ -56,7 +56,7 @@ def test_pooled_gain_cannot_hide_component_seed_or_demo_failure(fault):
 
 @pytest.mark.parametrize("field", ["passed", "complete", "numerical_contract_passed", "lifecycle_passed"])
 def test_future_scorer_stops_before_prepared_or_archive_read(monkeypatch, tmp_path, field):
-    import score_wam_synchronous_state as scorer
+    import scripts.score_wam_synchronous_state as scorer
 
     value = {
         "passed": True,
@@ -80,9 +80,8 @@ def test_future_scorer_stops_before_prepared_or_archive_read(monkeypatch, tmp_pa
 
 
 def test_owner_binds_new_cli_candidate_and_uuid():
-    from run_wam_synchronous_state import worker_command
-
-    from s2a.synchronous_state_sampling import GPU
+    from s2a.research.wam.readout.synchronous_state_sampling import GPU
+    from scripts.run_wam_synchronous_state import worker_command
 
     ref = {"path": "/repo/f.json", "sha256": "a" * 64}
     prepared = {
@@ -97,7 +96,7 @@ def test_owner_binds_new_cli_candidate_and_uuid():
 
 
 def test_scores_inherit_unchanged_numeric_thresholds():
-    import verify_wam_clean_training_state as previous
+    import scripts.verify_wam_clean_training_state as previous
 
     rows = metric_rows()
     oldrows = copy.deepcopy(rows)

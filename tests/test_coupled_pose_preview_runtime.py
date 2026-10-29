@@ -1,8 +1,8 @@
 import numpy as np
-from coupled_pose_preview_independent import verify_preview
-from full_coupled_pose_independent import objective
 
-from s2a.coupled_pose_preview_runtime import solve_preview
+from s2a.research.joint_control.preview.coupled_pose_preview_runtime import solve_preview
+from scripts.coupled_pose_preview_independent import verify_preview
+from scripts.full_coupled_pose_independent import objective
 from tests.test_coupled_pose_preview import problem
 
 

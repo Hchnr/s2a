@@ -6,8 +6,12 @@ import weakref
 import numpy as np
 import pytest
 
-from s2a.wam_clean_readout import CleanResidualReadout
-from s2a.wam_clean_streaming import CleanFitBlock, CleanFitLayout, fit_clean_residual_streaming
+from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
+from s2a.research.wam.training.clean.wam_clean_streaming import (
+    CleanFitBlock,
+    CleanFitLayout,
+    fit_clean_residual_streaming,
+)
 
 
 def layout(columns):

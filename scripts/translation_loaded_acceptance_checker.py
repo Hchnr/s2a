@@ -5,7 +5,9 @@ import json
 from pathlib import Path
 
 import numpy as np
-from audit_wam_position import (
+from PIL import Image
+
+from scripts.audit_wam_position import (
     REPO,
     TARGETS,
     GripperIntentHold,
@@ -25,7 +27,6 @@ from audit_wam_position import (
     sample,
     task_outcome,
 )
-from PIL import Image
 
 
 def verify_query(config, case, index, chunk, evidence, checkpoint, *, sampling_seed):
@@ -187,7 +188,7 @@ def verify_case(
     assert substeps == 25
     close(substeps * contract["model_timestep"], dt)
     interface = OSCInterface(*(contract[k] for k in ("input_min", "input_max", "output_min", "output_max")))
-    from translation_arm_independent_replay import TranslationArmReplay
+    from scripts.translation_arm_independent_replay import TranslationArmReplay
 
     assert controller["arm_inverse_algorithm"] == "082 translation1 rotation0.5"
     arm = TranslationArmReplay(
@@ -208,7 +209,7 @@ def verify_case(
     gripper = gripper_type(initial, config=config_type(**config[config_name]))
     assert controller["gripper_config"] == asdict(gripper.config)
     assert asdict(gripper.config) == asdict(config_type())
-    from loaded_velocity_independent_replay import LoadedVelocityReplay
+    from scripts.loaded_velocity_independent_replay import LoadedVelocityReplay
 
     parameter_ref = config["response_parameters_ref"]
     evidence.check(parameter_ref["path"], parameter_ref["sha256"])

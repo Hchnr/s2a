@@ -4,7 +4,7 @@ import json
 import math
 from pathlib import Path
 
-from analyze_wam_release_horizon import reference
+from scripts.analyze_wam_release_horizon import reference
 
 ROOT = Path("outputs/terminal_development_20261025")
 TARGETS = ("akita_black_bowl_1", "wine_bottle_1", "cream_cheese_1")

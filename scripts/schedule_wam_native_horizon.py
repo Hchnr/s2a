@@ -6,9 +6,8 @@ import os
 import subprocess
 from pathlib import Path
 
-from schedule_wam_replica import stop_owned, wait_file
-
-from s2a.artifacts import code_fingerprint, load_config, write_json
+from s2a.infrastructure.artifacts import code_fingerprint, load_config, write_json
+from scripts.schedule_wam_replica import stop_owned, wait_file
 
 
 def main():

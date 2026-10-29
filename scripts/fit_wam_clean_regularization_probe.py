@@ -7,11 +7,16 @@ import os
 from pathlib import Path
 
 import numpy as np
-from analyze_wam_clean_capacity import checked
-from analyze_wam_release_horizon import reference
 
-from s2a.clean_training_data import normalize_active10
-from s2a.wam_clean_streaming import CleanFitBlock, CleanFitLayout, fit_clean_residual_streaming
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.training.clean.clean_training_data import normalize_active10
+from s2a.research.wam.training.clean.wam_clean_streaming import (
+    CleanFitBlock,
+    CleanFitLayout,
+    fit_clean_residual_streaming,
+)
+from scripts.analyze_wam_clean_capacity import checked
+from scripts.analyze_wam_release_horizon import reference
 
 
 def execute(spec, output):
@@ -124,7 +129,7 @@ def main():
         raise ValueError("Explicit empty CUDA/LD required")
     if any(os.environ.get(k) != "8" for k in ["OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"]):
         raise ValueError("Explicit CPU thread limits8 required")
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     if Path.cwd().resolve() != root or not args.registration.resolve().is_relative_to(root / "outputs"):
         raise ValueError("Requires repository cwd and outputs registration")
     spec = json.loads(args.registration.read_text())

@@ -7,13 +7,13 @@ import traceback
 from pathlib import Path
 from unittest.mock import patch
 
-import collect_wam_native_training as native_collector
 import numpy as np
-from collect_native_pose_hold_diagnostic import GoalRecordingEnvironment
-from run_native_motor_hold_diagnostic import read_prepared, require
 
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.native_training import native_command_schedule
+import scripts.collect_wam_native_training as native_collector
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.research.wam.training.native.native_training import native_command_schedule
+from scripts.collect_native_pose_hold_diagnostic import GoalRecordingEnvironment
+from scripts.run_native_motor_hold_diagnostic import read_prepared, require
 
 
 def motor_hold_schedule(native):
@@ -102,7 +102,7 @@ def run(args):
                 ld=os.environ.get("LD_LIBRARY_PATH"),
             ),
         )
-        from s2a import libero_simulation
+        from s2a.backends.libero import simulation as libero_simulation
 
         original_make = libero_simulation.make_environment
         for method in prepared["config"]["methods"]:

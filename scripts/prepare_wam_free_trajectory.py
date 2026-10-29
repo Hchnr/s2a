@@ -7,11 +7,10 @@ import os
 import shutil
 from pathlib import Path
 
-from prepare_wam_flow_readout import Evidence, external_identity, reference, require, weight_stats
-from prepare_wam_scaled_readout import forbidden_observation_paths
-
-from s2a.artifacts import REPO, sha256
-from s2a.worker_handshake import write_once
+from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.lifecycle.worker_handshake import write_once
+from scripts.prepare_wam_flow_readout import Evidence, external_identity, reference, require, weight_stats
+from scripts.prepare_wam_scaled_readout import forbidden_observation_paths
 
 CONFIG = REPO / "configs/wam_free_trajectory_diagnostic_20261021.json"
 CONFIG_SHA = "a271cacaf0e011f0dd497173437f09cf3f256cb384e66bdf9d8a71928dd2cb73"

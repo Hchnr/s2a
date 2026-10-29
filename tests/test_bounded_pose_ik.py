@@ -3,9 +3,9 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from s2a.bounded_pose_ik import solve_pose_ik
-from s2a.full_coupled_pose_inverse import left_jacobian
 from s2a.geometry import pose_error, transform
+from s2a.research.joint_control.inverse.full_coupled_pose_inverse import left_jacobian
+from s2a.research.joint_control.preview.bounded_pose_ik import solve_pose_ik
 
 
 def fk(q):

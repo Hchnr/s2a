@@ -6,16 +6,15 @@ import os
 import time
 
 import numpy as np
-from probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 
-from s2a.mujoco_robot_dynamics import MujocoRobotDynamics
-from s2a.native_environment import restore_cv2_environment, strict_native_environment
-from s2a.native_goal_trajectory import rollout_native_goal_trajectory
-from s2a.osc import OSCInterface
-from s2a.preview_result_publication import publish_result
+from s2a.controllers.osc import OSCInterface
+from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
+from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
+from s2a.infrastructure.publication import publish_result
 from s2a.research.trajectory_search.constraint_residual_repair import evaluate_repair_entry
 from s2a.research.trajectory_search.interior_trajectory_search import SearchEvaluationError, search
-from s2a.restored_anchor_sqp_evidence import (
+from s2a.research.trajectory_search.native_goal_trajectory import rollout_native_goal_trajectory
+from s2a.research.trajectory_search.restored_anchor_sqp_evidence import (
     CPU_ENVIRONMENT,
     REPO,
     checked,
@@ -26,7 +25,8 @@ from s2a.restored_anchor_sqp_evidence import (
     remember,
     require,
 )
-from s2a.tail_translation_reserve_evidence import admit_anchor
+from s2a.research.trajectory_search.tail_translation_reserve_evidence import admit_anchor
+from scripts.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 from scripts.tracking.trajectory_search.probe_tracking_v5_constraint_residual_repair import (
     load_inputs as load_prior_inputs,
 )

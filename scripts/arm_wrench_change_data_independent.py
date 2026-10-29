@@ -1,7 +1,8 @@
 """112 independent per-episode differences after sensor-frame reconstruction."""
 
 import numpy as np
-from arm_wrench_data_independent import attach_current_wrench as previous_attach
+
+from scripts.arm_wrench_data_independent import attach_current_wrench as previous_attach
 
 
 def attach_current_wrench(data, entry, config, e):

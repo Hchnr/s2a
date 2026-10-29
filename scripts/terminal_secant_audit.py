@@ -6,7 +6,8 @@ this module checks their algebra, routing, original labels, and qualifications.
 """
 
 import numpy as np
-from directional_derivative_audit import (
+
+from scripts.directional_derivative_audit import (
     COMMAND_GROUPS,
     SAFETY_GROUPS,
     _audit_repeat,

@@ -11,8 +11,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from audit_wam_backend_state import PREFIXES, ROOT, STUDY, Evidence, eligibility, process_record
 from matplotlib.backends.backend_pdf import PdfPages
+
+from scripts.audit_wam_backend_state import PREFIXES, ROOT, STUDY, Evidence, eligibility, process_record
 
 KEYS = ("position_rmse_mm", "rotation_rmse_rad", "opening_mae")
 LABELS = ("Source EEF position RMSE (mm)", "SO(3) RMSE (rad)", "Opening MAE (normalized)")

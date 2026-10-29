@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
-from causal_arm_independent_replay import CausalArmReplay
 from scipy.spatial.transform import Rotation
 
-from s2a.causal_arm_residual import CausalArmResidualOSC
-from s2a.osc import OSCInterface
+from s2a.controllers.osc import OSCInterface
+from s2a.research.response_models.causal.causal_arm_residual import CausalArmResidualOSC
+from scripts.causal_arm_independent_replay import CausalArmReplay
 
 
 @pytest.mark.parametrize("damping", [0.5, 1.0, 2.0])

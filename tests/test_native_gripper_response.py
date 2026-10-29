@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from s2a.native_gripper_response import intervention_commands
+from s2a.research.gripper.native_gripper_response import intervention_commands
 
 
 def test_only_eight_gripper_commands_change_and_source_is_not_mutated():

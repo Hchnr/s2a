@@ -4,7 +4,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from s2a.geometry import pose_error
-from s2a.joint_limit_pose_guard import guard_command, predicted_tcp
+from s2a.research.joint_control.limits.joint_limit_pose_guard import guard_command, predicted_tcp
 
 
 def test_tcp_offset_is_rotated_after_noncommuting_world_innovations():

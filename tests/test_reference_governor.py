@@ -5,7 +5,7 @@ import pytest
 from scipy.spatial.transform import Rotation
 
 from s2a.geometry import pose_error, transform
-from s2a.reference_governor import ReferenceGovernor, ReferenceGovernorConfig
+from s2a.research.joint_control.tracking.reference_governor import ReferenceGovernor, ReferenceGovernorConfig
 
 
 def test_known_motion_shares_clock_and_respects_three_physical_bounds():

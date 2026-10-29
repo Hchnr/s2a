@@ -7,8 +7,10 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from current_coupled_precision_independent import response as inverse_response
-from current_coupled_stable_independent import response
+
+from s2a.infrastructure.repository_paths import repository_root
+from scripts.current_coupled_precision_independent import response as inverse_response
+from scripts.current_coupled_stable_independent import response
 
 
 def test_uncoupled_critically_damped_response_matches_closed_form():
@@ -37,7 +39,7 @@ def test_actual_near_singular_response_passes_original_tolerance_without_explici
     if sys.version_info[:2] == (3, 11) and np.__version__ == "1.26.4":
         verify_historical_fixture()
         return
-    repo = Path(__file__).resolve().parents[1]
+    repo = repository_root(anchor=__file__)
     native = repo / "outputs/libero_env311/bin/python"
     assert native.exists(), "Historical evidence regression requires the documented native interpreter"
     environment = dict(

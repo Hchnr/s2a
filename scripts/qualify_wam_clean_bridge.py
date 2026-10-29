@@ -39,11 +39,12 @@ from pathlib import Path
 
 import numpy as np
 
-from s2a.sampler_trace import check_sources, file_sha, observation_guard, parameters_identity
-from s2a.wam_clean_capture import CleanCaptureBridge, NoiseRoster
-from s2a.wam_clean_readout import CleanResidualReadout
-from s2a.wam_readout import ACTIVE_MASK, HIDDEN_SIZE, LIBERO_DOMAIN
-from s2a.wam_trajectory_capture import same_sample_view, tensor_array
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.wam.readout.sampler_trace import check_sources, file_sha, observation_guard, parameters_identity
+from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, HIDDEN_SIZE, LIBERO_DOMAIN
+from s2a.research.wam.tracking.runtime.wam_trajectory_capture import same_sample_view, tensor_array
+from s2a.research.wam.training.clean.wam_clean_capture import CleanCaptureBridge, NoiseRoster
+from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
 
 ALLOWED_GPU_UUIDS = (
     "GPU-ad74a609-3a39-43cb-1392-24cbd279ce7f",
@@ -76,11 +77,11 @@ def write_new(path, value):
 
 def checked_json(ref):
     require(set(ref) == {"path", "sha256"}, "input reference must contain exactly path and sha256")
-    return importlib.import_module("run_wam_clean_bridge").read(ref)
+    return importlib.import_module("scripts.run_wam_clean_bridge").read(ref)
 
 
 def resolve(path):
-    return importlib.import_module("run_wam_clean_bridge").resolve(path)
+    return importlib.import_module("scripts.run_wam_clean_bridge").resolve(path)
 
 
 def response_arrays(response):
@@ -202,7 +203,7 @@ def validate_prepared(prepared):
     cosmos = Path(config["cosmos_source_root"]).resolve()
     sources = prepared["source_sha256"]
     required = [cosmos / name for name in (*NATIVE_MASK_SOURCES, SAMPLER_SOURCE, CONVERSION_SOURCE)]
-    local = Path(__file__).resolve().parents[1]
+    local = repository_root(anchor=__file__)
     required.extend(
         local / name
         for name in (
@@ -458,11 +459,10 @@ def imported_cosmos_sources(prepared):
 
 def run(prepared, prepared_ref, gpu_uuid):
     """Run once in the owner's already-authorized isolated model process."""
-    from audit_wam_current_numerics import bundle, require_eval
-    from run_wam_readout_features import BoundaryCounter, actual_context
-    from run_wam_readout_sampling import InitialCapture
-
-    from s2a.wam_runtime import install_active_slot_mask, load_service
+    from s2a.backends.wam.runtime import install_active_slot_mask, load_service
+    from scripts.audit_wam_current_numerics import bundle, require_eval
+    from scripts.run_wam_readout_features import BoundaryCounter, actual_context
+    from scripts.run_wam_readout_sampling import InitialCapture
 
     validate_prepared(prepared)
     runtime_environment(prepared, gpu_uuid)
@@ -715,7 +715,7 @@ def main():
     parser.add_argument("--gpu-uuid", choices=ALLOWED_GPU_UUIDS)
     parser.add_argument("--check-only", action="store_true")
     args = parser.parse_args()
-    owner = importlib.import_module("run_wam_clean_bridge")
+    owner = importlib.import_module("scripts.run_wam_clean_bridge")
     prepared = owner.read_prepared(args.prepared, args.prepared_sha256)
     validate_prepared(prepared)
     if args.check_only:

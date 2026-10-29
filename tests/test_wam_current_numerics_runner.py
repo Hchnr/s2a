@@ -3,17 +3,18 @@
 import importlib.util
 import random
 from dataclasses import dataclass
-from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 import torch
 
+from s2a.infrastructure.repository_paths import repository_root
+
 
 @pytest.fixture
 def runner():
-    path = Path(__file__).resolve().parents[1] / "scripts/audit_wam_current_numerics.py"
+    path = repository_root(anchor=__file__) / "scripts/audit_wam_current_numerics.py"
     spec = importlib.util.spec_from_file_location("current_numerics_runner_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

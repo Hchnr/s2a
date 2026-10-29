@@ -3,14 +3,15 @@
 import copy
 import importlib.util
 import json
-from pathlib import Path
 
 import pytest
+
+from s2a.infrastructure.repository_paths import repository_root
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = repository_root(anchor=__file__)
     monkeypatch.syspath_prepend(str(root / "scripts"))
     spec = importlib.util.spec_from_file_location(
         "temporal_continuation_audit_test", root / "scripts/audit_wam_temporal_continuation.py"
@@ -234,8 +235,8 @@ def test_unknown_is_allowed_only_before_a_complete_unchanged_environment_observa
 
 
 def test_case_mechanics_and_whole_ready_contract_remain_the_frozen_independent_code(audit):
-    import audit_wam_temporal_wam as original
-    import wam_temporal_position_checker as checker
+    import scripts.audit_wam_temporal_wam as original
+    import scripts.wam_temporal_position_checker as checker
 
     assert audit.original is original
     assert audit.original.verify_case is checker.verify_case

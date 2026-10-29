@@ -10,7 +10,8 @@ import numpy as np
 import pytest
 
 import tests.test_prefix_callback_backtracking_execution as prior
-from s2a.accepted_point_sqp_plan import solve_accepted_point_sqp_response
+from s2a.infrastructure.repository_paths import repository_root
+from s2a.research.trajectory_search.accepted_point_sqp_plan import solve_accepted_point_sqp_response
 from tests.test_prefix_callback_backtracking_execution import write_json
 from tests.test_prefix_optimization_reserve_plan import inputs, response
 from tests.test_prefix_trust_control_execution import (
@@ -23,12 +24,12 @@ from tests.test_prefix_trust_control_execution import (
 
 @pytest.fixture
 def modules(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
+    monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
-        producer=importlib.import_module("probe_tracking_v5_restored_anchor_sqp"),
-        owner=importlib.import_module("execute_tracking_v5_restored_anchor_sqp"),
-        evidence=importlib.import_module("s2a.restored_anchor_sqp_evidence"),
-        core=importlib.import_module("s2a.restored_anchor_sqp_plan"),
+        producer=importlib.import_module("scripts.probe_tracking_v5_restored_anchor_sqp"),
+        owner=importlib.import_module("scripts.execute_tracking_v5_restored_anchor_sqp"),
+        evidence=importlib.import_module("s2a.research.trajectory_search.restored_anchor_sqp_evidence"),
+        core=importlib.import_module("s2a.research.trajectory_search.restored_anchor_sqp_plan"),
     )
 
 

@@ -14,12 +14,12 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import nullcontext
 from pathlib import Path
 
-from s2a.artifacts import REPO, sha256, write_json
+from s2a.infrastructure.artifacts import REPO, sha256, write_json
 
 
 def protocol(config_path, *, source, variant_name, checkpoint):
     """Validate without creating any output directory, including --dry-run."""
-    from s2a.stability_position_simulation import position_variant
+    from s2a.research.wam.tracking.control.stability_position_simulation import position_variant
 
     path = Path(config_path).resolve()
     if not path.is_relative_to(REPO):
@@ -98,7 +98,11 @@ def main():
         raise ValueError("seed mismatch or invalid CPU worker count")
     if args.source == "wam" and args.workers != 1:
         raise ValueError("one physical worker per WAM service is mandatory")
-    from s2a.stability_position_simulation import execution_inputs, run_position_case, verify_inputs
+    from s2a.research.wam.tracking.control.stability_position_simulation import (
+        execution_inputs,
+        run_position_case,
+        verify_inputs,
+    )
 
     if args.record is not None:
         if (
