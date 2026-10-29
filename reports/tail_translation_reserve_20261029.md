@@ -88,4 +88,4 @@ v1 checker 句柄58216实际 exit1：它完成14条/4200内步/4369查询及原�
 
 ## 下一阶段
 
-[从恢复候选重新开始完整 H12 SQP](../plans/v0.0.1/restored_anchor_sqp_20261029.md)已登记，尚未执行。从 selected5 的完整命令重新开放72变量，保留原初态、控制器、caps、buffer、FD/QP及4000响应预算；首次完整响应必须与已闭合所选记录 canonical exact，否则在任何 FD/QP 前停止。tail 的前11周期冻结不继承到新搜索。只有新的完整 H12 witness 通过全量独立复算和来源闭合，才能另行登记原生物理验证；当前恢复结果不直接授权 pilot。
+[从恢复候选重新开始完整 H12 SQP](../plans/v0.0.1/restored_anchor_sqp_20261029.md)已完成一次生产搜索，首次完整记录exact门通过；3657响应后正常停止，生产仍prefix9、完整witness0，全量独立复算进行中，见[后续报告](restored_anchor_sqp_20261029.md)。该搜索从 selected5 的完整命令重新开放72变量，保留原初态、控制器、caps、buffer、FD/QP及4000响应上限；tail 的前11周期冻结不继承到搜索。只有新的完整 H12 witness 通过全量独立复算和来源闭合，才能另行登记原生物理验证；当前恢复结果不直接授权 pilot。
