@@ -1,5 +1,7 @@
 # S2A — State to Action
 
+最新CPU搜索：[反复内点恢复与完整轨迹信赖域](reports/interior_trajectory_search_20261029.md)通过138项专项QA、21个QP及44响应生产/44响应完整独立复算。8次恢复和7次pose接纳使最坏平方超限下降2.3901%、安全余量增加，但数值前缀9→4、双caps达标点9→5，完整witness0；没有可执行新轨迹。最终因最小半径停止，后期拒绝集中于固定pose上限预测失准。实际仍cursor8/task0/grasp0，原验收门槛及GPU禁用保持，不追加本轮预算。
+
 最新CPU机制结果：[完整约束残差修正](reports/constraint_residual_repair_20261029.md)通过131项专项QA、唯一QP及11响应生产/11响应独立复算。全步恢复全部安全与前缀优化余量，但仅保留49.488%原下降，未通过预登记50%条件，故不选中；其余缩短步仍安全失败。cursor9仍11.46492mm/.05732601rad、完整witness0，实际仍cursor8/task0/grasp0。2540来源核验关闭，不放宽原门槛或自动追加微步搜索；GPU继续禁用。
 
 最新CPU结果：[保存3543的末周期修复](reports/terminal_only_tail_repair_20261029.md)完成155项专项QA、14响应生产和14响应完整独立复算。12候选中2个合格，选中末周期x减.001，terminal恢复至2.762279319e-5；保留cursor9微小改善，但其误差仍11.46520mm/.05732641rad超原caps，其他安全最小slack仍仅6.13467e-8。首次环境引用错误的零响应失败保留。完整witness0、实际cursor8、task/grasp0，不自动重开同一SQP；GPU禁用及原18/12/24门槛保持。
