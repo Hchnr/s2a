@@ -22,6 +22,8 @@ QP内部迭代上限2400→6000，不称总预算相同；在新namespace从原3
   witness0、无执行选点；实际仍cursor8/task0/grasp0。
 - 两路线合计180响应/54000数值内步/56162查询。60阶段上限关闭，32响应余量未
   追加；新增物理/world-model/fresh/参考消费0，GPU继续禁用。
+- 额外零新调用的后验诊断保留首次compact读取失败，隔离v2核验2663来源；88条
+  已算候选的q-MAE预测均由状态向量法改善，总loss预测仍10条更差，未验证新控制收益。
 
 增加阶段只带来部分数值进展，尚未解决完整跟踪资格；下一步先检验全state预测与
 误差目标分配。原18/12/24门槛保持。实现提交`628b2ba`，详见[报告](stage_budget_search_20261029.md)。
@@ -56,6 +58,10 @@ or appending the old budget. Reuse the frozen independent audit with strict budg
 - Both routes total 180 responses, 54,000 numerical inner steps, and 56,162 queries. The stage
   limit terminates the run; 32 unused responses are not appended. New physical integrations,
   world-model calls, fresh cases, and reference consumption remain zero. GPU use stays disabled.
+- A saved-data diagnostic preserves its initial compact-schema failure and closes an isolated
+  v2 over 2,663 sources, with no new model calls. Vector-based q-MAE predictions improve for
+  all 88 saved candidates, while total-loss prediction worsens for ten. New control gains remain
+  untested.
 
 Additional stages yield partial numerical progress without complete tracking qualification.
 Next inspect full-state prediction and error allocation while preserving the original 18/12/24

@@ -123,6 +123,62 @@ QA为6模块、142 passed in28.47s，146旧来源加9新来源共155，不表示
 | `outputs/stage_budget_search_checker_20261029/result.json` | `dfca59bd4b7da65faaf8253c71eb4bbb3a7229835885747320dd03711bedae07` |
 | `outputs/stage_budget_search_analysis_20261029/result.json` | `5e6ceea748c2d346d76d2265ddfe0c19f99ef65056be1d21e2abe16ab13a0767` |
 
+## 保存状态残差向量的预测诊断
+
+为给下一机制选依据，另外执行纯保存数据诊断。令每点TCP误差按位置/.01m、
+SO(3)旋转/.05rad归一化，展平成72维E；从同3557及原72条signed差分重建Je。
+在每stage的同一实际数值anchor，比较两种q预测：先以E+Je*d预测向量再平方
+聚合成24项q，与原q+Jq*d的线性预测。它们的表示和曲率不同，不能仅将本结果
+解释为新物理动力学更准。
+
+两个模型只在原55次实际数值接纳之后，用同一步与各自观测输出差作原有界因果
+Broyden更新。每stage全部候选均先预测再更新，不导入未来数据；初始0、末repeat89
+排除更新与统计，拒绝响应不作训练。全部55组原Jq割线metadata及88条保存预测
+maxq/excess逐值exact，未来命令导数初始及更新后始终exact0。原QP没有保存A矩阵，
+本诊断只绑定已保存预测和更新metadata，不声称核验不存在的saved A。
+
+以下先对每候选计算24项q的预测误差，再对88候选取均值；RMSE列是逐候选RMSE的
+均值，不是所有元素拼接后的pooled RMSE。单位均为归一化平方误差相关量。
+
+| 预测误差指标 | 先预测E再聚合 | 原Jq线性预测 | E法更好/更差 |
+| --- | ---: | ---: | ---: |
+| q的MAE | .0001399561572 | .0026807545484 | 88/0 |
+| q的RMSE | .0002656754030 | .0041550557353 | 88/0 |
+| q的Linf | .0008702377863 | .0114187891346 | 85/3 |
+| 总loss绝对误差 | .0022281048193 | .0505231129865 | 78/10 |
+| 最坏q绝对误差 | .0006596571768 | .0085718439565 | 86/2 |
+
+安全62条中，五项更好/更差分别62/0、62/0、59/3、53/9、60/2；unsafe26条分别
+26/0、26/0、26/0、25/1、26/0。没有隐藏不利样本或对负的原线性q预测裁剪。
+root另从88条保存预测重算这些均值与胜负数，均一致。
+
+首次脚本错误要求compact probe具有仅完整entry才有的q/loss冗余标签，session65996/
+子进程2238169实际wait/reap1，未得到比较结果；原script/result/owner均保留。
+隔离v2只区分compact读取：仅72个probe允许冗余标签缺省，完整90entry仍强制
+原q/loss exact，q始终从TCP独立计算，数学、计费与更新顺序不改。最小实际schema
+读取及Ruff通过后，v2 session22987/子进程2251563实际wait/reap0，2663来源关闭。
+两次均无新QP/模型/响应/查询/测试/物理/world-model/fresh，未重跑90响应搜索。
+
+v2脚本`outputs/state_vector_prediction_diagnostic_v2_20261029/diagnostic.py`的SHA256
+为`a08e90cc2316985b3f1298b81ab6c4a64ea373e8a86829ccaddf5cdab1995434`，
+v1脚本仍为`1d95de5d4859008c60503c1480cd9e64d59f91d2111c2a2f353f90c377d88c3a`。
+
+| 诊断证据 | SHA256 |
+| --- | --- |
+| `outputs/state_vector_prediction_diagnostic_20261029/result.json` | `36efe88e4c0137e1c1bb97b39e7a38bda588e9472171ed151b11342ee22a25d1` |
+| `outputs/state_vector_prediction_diagnostic_20261029/owner.json` | `474a46eaffce19969a928774c9cad3cc16aa1d715028842e5edf87a8b0f68db9` |
+| `outputs/state_vector_prediction_diagnostic_v2_20261029/result.json` | `65250c91d0046e0a127e108220c29e6552fe0390473fbcdcd3f20d435c43f3a5` |
+| `outputs/state_vector_prediction_diagnostic_v2_20261029/owner.json` | `f8f43d19e950a2eba0b0405d28cc62fc5fd8b66dad8fb28e3bdb5a8d2c6dc693` |
+
+这是看到原失败后的因果顺序回放，仅支持这些历史动作方向上的q预测改善，不是
+预登记未见泛化、全物理模型误差界、GN新动作收益或新独立动力学证据。没有改变
+原动作、模型选点、caps、完整witness0及任务失败结论。下一项可独立登记同源H12
+的全向量GN曲率与状态误差目标对照，必须新算方向和全部真实响应，而非采用本
+诊断的最终Je作为免费预训练。LS/GN本身已有实现（如
+`src/s2a/coupled_pose_preview.py:55`与`src/s2a/joint_limit_preview_objective.py:21`），
+不能称首次全状态最小二乘；本次的新证据范围仅为同actual368状态更新rollout的
+保存3557差分与后续实际数值接纳方向。仍须比较原完整caps、实际控制及任务结果。
+
 ## 实际前向验证仍关闭
 
 本轮无数值witness，不派发新动作。未来若完整witness通过独立复算，须用新的隔离
