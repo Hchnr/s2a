@@ -10,7 +10,7 @@
 
 资产专用检查允许已登记根内的绝对路径包含正常 `..`：逐组件检查原声明路径，每次退回仍须在同一批准asset根内；若逃出后再进入也拒绝。拒绝symlink、相对路径和未知根。原完整XML字节不改，声明路径、规范路径和实际文件SHA均记录；输出目录、源码、其他输入路径的旧守卫保持严格。此项只适配实际冻结包生成的资产路径，不修改机器人、几何、相机、控制参数或允许根。
 
-仅在构造失败且部分环境尚无sim/viewer时明确记录 `no_resources_created`、`close_called=False`、`cleanup_complete=False`，不调用不存在资源的close，也不将其标记为成功关闭。若资源存在，沿用一次close及独立清理错误记录。原bootstrap异常继续保留。
+仅在构造失败且部分环境尚无sim/viewer时明确记录 `no_resources_created`、`cleanup_close_called=False`、`cleanup_complete=False`，不调用该对象的close，也不将其标记为成功关闭。该标签只表示对象未持有sim/viewer，不证明native内部从未短暂分配资源。若对象持有资源，沿用一次close及独立清理错误记录。原bootstrap异常继续保留。
 
 ## 原预算与验证边界
 

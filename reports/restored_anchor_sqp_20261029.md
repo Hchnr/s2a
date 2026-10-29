@@ -44,4 +44,22 @@ QA产物为 `outputs/restored_anchor_sqp_native_qa_20261029_hjcgopjj/result.json
 
 selected仍超原10mm/.05rad caps，terminal虽过原审计容差却低于优化buffer `1e-8`；不能等同最后接纳anchor或鲁棒可行点。55阶段没有cursor增加，3384/3657响应为FD；已恢复的终端余量没有带来新的完整轨迹解。全部12端点、阶段及失败ray见[完整分析](../outputs/restored_anchor_sqp_analysis_20261029/analysis.md)。
 
+## 已关闭的因果失败分析
+
+[全272条ray分析](../outputs/restored_anchor_sqp_causal_failure_analysis_20261029/result.json) SHA `c9dd1bf9fce6a92b32936c0a68c066b64f5b426ad33fa35aeff8fe0db9cf1a6b`，原句柄74298实际exit0，2528引用结束重核；driver SHA `88f6720e75d29dca967060b984acb480c180636f27dee8dbbe3e8f77014fb620`。使用原FD名义有符号步长、实际ray位移、完整原精度约束重算分类，不执行新模型响应或QP。全部周期索引为0-based。
+
+| 互斥子集 | 条数 | 保持前10周期时的因果限制 |
+| --- | --- | --- |
+| prefix9保持、q9下降且全部安全 | 46 | 已是可接纳方向 |
+| prefix9保持、q9下降，仅terminal失败 | 40 | 末周期修复尚未被因果性排除，但未证明存在可行修复 |
+| prefix9保持、q9下降，period10制动仍失败 | 12 | 至少需开放period10，单改末周期不能消除 |
+| prefix9保持、q9下降，period0..9已有制动失败 | 106 | 固定这些周期时，改末两周期不能消除 |
+| 丢失prefix9或q9不下降 | 68 | 末两周期无法改变此前误差 |
+
+非终端buffer失败161条均涉及braking_upper，143条已在period0..9发生；原审计容差下的硬失败为129条，其中113条在period0..9。终端buffer失败95条；87条线性预测本身≥buffer，另8条在`1e-12`报告容差内才算预测通过，两种计数不混用。终端预测绝对残差最大`2.740676197627862e-4`，95条超过旧经验E17、20条超过10E17，因此旧阈值不能当作当前误差上界。
+
+只读预选按cursor9归一化最大平方误差、响应索引排序：全部3657条中满足prefix≥9、原joint审计及`1e-8`buffer的278条记录，最好为3557（`1.3145505007230824`）；上述40条terminal-only中最好为3543（stage50、alpha1/8，`1.314526976519977`，terminal `-1.20453558423459e-6`）。后者的前段误差确实更低，但仍远未达到≤1的原caps，也没有安全修复证明。
+
+后续候选是对该已保存前段做有界末周期修复，验证能否保留改善；本报告只给出必要因果条件，尚未登记或执行新控制搜索。预选及分析均未调用新模型；不以本次有限搜索失败推断物理不可达。
+
 GPU继续禁用；新增物理/world-model/fresh/参考消费0，实际仍cursor8、task/grasp0，原18正确参考/12WAM开发/24最终留出门槛及总目标不变。
