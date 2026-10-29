@@ -111,7 +111,7 @@ def scene(tmp_path, monkeypatch):
     for name in durable.ENV_KEYS:
         monkeypatch.setenv(name, durable.cpu_environment()[name])
     monkeypatch.syspath_prepend(str(durable.REPO / "scripts"))
-    owner = importlib.import_module("scripts.run_wam_clean_training_postcapture")
+    owner = importlib.import_module("scripts.wam.training.clean.run_wam_clean_training_postcapture")
     root = tmp_path / "repair"
     root.mkdir()
     prepared_ref = durable.publish(

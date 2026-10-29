@@ -56,7 +56,7 @@ def test_pooled_gain_cannot_hide_component_seed_or_demo_failure(fault):
 
 @pytest.mark.parametrize("field", ["passed", "complete", "numerical_contract_passed", "lifecycle_passed"])
 def test_future_scorer_stops_before_prepared_or_archive_read(monkeypatch, tmp_path, field):
-    import scripts.score_wam_synchronous_state as scorer
+    import scripts.wam.readout.score_wam_synchronous_state as scorer
 
     value = {
         "passed": True,

@@ -34,7 +34,7 @@ from s2a.research.wam.training.clean.clean_training_development_handoff import (
 )
 from scripts.wam.training.clean.run_wam_clean_training_continuation import observe_descendant_cleanup
 
-ENTRY = "scripts/run_wam_clean_training_development_handoff.py"
+ENTRY = Path(__file__).resolve().relative_to(REPO).as_posix()
 
 
 def argv(ref, mode):

@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
 
 REPO = repository_root(anchor=__file__)
 
@@ -15,7 +16,7 @@ def module():
 
     sys.path.insert(0, str(REPO / "scripts"))
     spec = importlib.util.spec_from_file_location(
-        "scaled_precision_test", REPO / "scripts/probe_wam_scaled_readout_quantization.py"
+        "scaled_precision_test", current_source_path("scripts/probe_wam_scaled_readout_quantization.py")
     )
     result = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(result)

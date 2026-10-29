@@ -11,7 +11,7 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def diagnostic(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.diagnose_tracking_v5_saved_trajectory_phase")
+    return importlib.import_module("scripts.tracking.trajectory_search.diagnose_tracking_v5_saved_trajectory_phase")
 
 
 def z_pose(position=(0.0, 0.0, 0.0), angle=0.0):

@@ -6,13 +6,15 @@ import json
 import pytest
 import requests
 
+from tests.support.source_layout import current_source_path
+
 
 @pytest.fixture
 def worker(monkeypatch):
     from s2a.infrastructure.artifacts import REPO
 
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.run_wam_terminal_development_case")
+    return importlib.import_module("scripts.wam.tracking.runtime.run_wam_terminal_development_case")
 
 
 def request(directory):
@@ -115,13 +117,11 @@ def test_dry_client_never_creates_physics_root_or_preloads_environment(tmp_path,
 def test_complete_client_body_and_transport_preserve_original_executor():
     import ast
 
-    from s2a.infrastructure.artifacts import REPO
-
     def functions(path):
         return {n.name: n for n in ast.parse(path.read_text()).body if isinstance(n, ast.FunctionDef)}
 
-    old = functions(REPO / "scripts/execute_wam_clean_training_case.py")
-    current = functions(REPO / "scripts/run_wam_terminal_development_case.py")
+    old = functions(current_source_path("scripts/execute_wam_clean_training_case.py"))
+    current = functions(current_source_path("scripts/run_wam_terminal_development_case.py"))
     assert ast.dump(old["bounded_http"]) == ast.dump(current["bounded_http"])
     expected = old["execute"]
     expected.args.kwonlyargs.append(ast.arg(arg="dry"))

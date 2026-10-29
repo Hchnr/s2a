@@ -36,7 +36,7 @@ def test_sampler_body_changes_only_variant_name_and_dispatch():
                 return ast.copy_location(new_dispatch, node)
             return self.generic_visit(node)
 
-    original = tail(REPO / "scripts/sample_wam_synchronous_state.py")
+    original = tail(current_source_path("scripts/sample_wam_synchronous_state.py"))
     actual = tail(current_source_path("scripts/sample_wam_terminal_identity_state.py"))
     assert ast.dump(Expected().visit(original)) == ast.dump(actual)
 
@@ -91,7 +91,7 @@ def test_actual_dry_cli_requires_new_owner_identity_and_never_imports_model(monk
 
 def test_scorer_rejects_old_qualified_receipt_before_any_future_access(monkeypatch, tmp_path):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    import scripts.score_wam_terminal_identity_state as scorer
+    import scripts.wam.readout.score_wam_terminal_identity_state as scorer
 
     pref = {"path": "prepared", "sha256": "1" * 64}
     receipt = dict(

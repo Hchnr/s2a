@@ -21,7 +21,7 @@ from tests.support.source_layout import current_source_path
 @pytest.fixture
 def server(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.serve_wam_terminal_development")
+    return importlib.import_module("scripts.wam.tracking.runtime.serve_wam_terminal_development")
 
 
 def prepared(root):
@@ -459,5 +459,5 @@ if dry:
         if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "qualified" for t in n.targets)
     )
     expected.body[index:index] = seam
-    actual = run(REPO / "scripts/serve_wam_terminal_development.py")
+    actual = run(current_source_path("scripts/serve_wam_terminal_development.py"))
     assert ast.dump(expected) == ast.dump(actual)

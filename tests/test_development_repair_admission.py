@@ -8,6 +8,8 @@ import pytest
 
 from s2a.infrastructure.lifecycle.durable_stage_supervisor import read, reference
 from s2a.research.wam.tracking.runtime import development_repair_admission as repair
+from tests.support.source_layout import current_source_path
+from tests.test_clean_training_state_handoff import archival_metadata_environment, verify_archival_metadata
 
 
 @pytest.fixture
@@ -110,14 +112,14 @@ def test_repair_supervisor_actual_cpu_child_wait_and_false_guard(tmp_path, monke
 
     from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
 
-    owner = importlib.import_module("scripts.run_wam_clean_development_repair")
+    owner = importlib.import_module("scripts.wam.training.clean.run_wam_clean_development_repair")
     root = tmp_path / "repair_owner"
     root.mkdir()
     monkeypatch.setattr(owner, "ROOT", root)
     script = root / "tiny.py"
     script.write_text("""import sys,time
 from pathlib import Path
-from s2a.durable_stage_supervisor import publish,identity
+from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish,identity
 time.sleep(.08)
 root=Path(sys.argv[1])
 if sys.argv[2]=='exit7':raise SystemExit(7)
@@ -182,8 +184,9 @@ def test_actual_generated_entrypoint_help_uses_repair_runtime_without_inference(
         if runtime == "model"
         else str(REPO / ("outputs/libero_env311/bin/python" if runtime == "sim" else ".venv/bin/python"))
     )
+    archival, historical = archival_metadata_environment(tmp_path)
     env = dict(
-        os.environ,
+        archival,
         CUDA_VISIBLE_DEVICES="",
         LD_LIBRARY_PATH="",
         PYTHONDONTWRITEBYTECODE="1",
@@ -191,24 +194,29 @@ def test_actual_generated_entrypoint_help_uses_repair_runtime_without_inference(
         OMP_NUM_THREADS="8",
         OPENBLAS_NUM_THREADS="8",
         MKL_NUM_THREADS="8",
-        PYTHONPATH=os.pathsep.join(map(str, (repair.BUNDLE, original_bundle, REPO / "src", REPO / "scripts"))),
+        PYTHONPATH=os.pathsep.join(map(str, (repair.BUNDLE, original_bundle))) + os.pathsep + archival["PYTHONPATH"],
     )
     out = subprocess.run(
         [python, str(repair.BUNDLE / name), "--help"], cwd=REPO, env=env, capture_output=True, text=True, timeout=60
     )
     assert out.returncode == 0, out.stderr[-2000:]
     expected_import = (
-        Path(repair.__file__)
+        historical / "src/s2a/development_repair_admission.py"
         if name == "verify_wam_clean_training_development.py"
         else repair.BUNDLE / "continuation_runtime.py"
     )
     assert "usage:" in out.stdout and str(expected_import) in out.stderr
     assert "import 'torch'" not in out.stderr and "import 'mujoco'" not in out.stderr
+    import json
+
+    assert json.loads((tmp_path / "archival_guard.json").read_text()) == dict(arrays=0, models=0, current_sources=0)
+    verify_archival_metadata(tmp_path)
     (tmp_path / (name + ".imports.log")).write_text(out.stderr)
 
 
 def test_actual_preflight_external_readonly_inputs_are_hash_checked():
-    preflight = read(reference(repair.ROOT / "preflight_runtime_py311/all_case_inputs.json"))
+    preflight_ref = reference(repair.ROOT / "preflight_runtime_py311/all_case_inputs.json")
+    preflight = read(preflight_ref)
     external = {
         p: d
         for row in preflight["records"]
@@ -216,10 +224,19 @@ def test_actual_preflight_external_readonly_inputs_are_hash_checked():
         if not Path(p).is_relative_to(repair.REPO)
     }
     assert external
+    declared_path = "/share/project/eai_pwm/datasets/cosmos3_action_tower_training/libero_sim/config/config.yaml"
+    assert set(external) == {declared_path}
+    # The existing migration registration preserves the original config bytes;
+    # consuming this storage does not qualify the old runtime registration.
+    snapshot = read(reference(current_source_path("configs/native_runtime_path_snapshot_20261029.json")))
+    storage = snapshot["original_config_ref"]
+    assert storage["sha256"] == external[declared_path]
+    current_external = {storage["path"]: external[declared_path]}
     e = repair.Evidence()
-    e.mapping(external)
+    e.mapping(current_external)
     e.finish()
-    changed = dict(external)
+    assert reference(preflight_ref["path"]) == preflight_ref
+    changed = dict(current_external)
     changed[next(iter(changed))] = "0" * 64
     with pytest.raises(ValueError):
         repair.Evidence().mapping(changed)

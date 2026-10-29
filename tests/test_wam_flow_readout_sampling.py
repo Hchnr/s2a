@@ -13,7 +13,7 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def sampling(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.run_wam_flow_readout_sampling")
+    return importlib.import_module("scripts.wam.readout.run_wam_flow_readout_sampling")
 
 
 def test_generation_request_delegates_domain_name_and_actual_seed_once(sampling):

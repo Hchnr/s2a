@@ -3,20 +3,112 @@
 import ast
 import copy
 import importlib
+import json
+import os
+import subprocess
 import sys
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 
 from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO, reference
 from s2a.research.wam.training.clean import clean_training_state_handoff as state
-from s2a.research.wam.training.clean.clean_training_import_bridge import (
-    ENV_PATH,
-    ENV_SHA,
-    load_frozen_delegate,
-    metadata_import_scope,
-)
+from tests.support.source_layout import historical_import_closure, historical_source_bytes, historical_source_ref
+
+
+def archival_metadata_environment(tmp_path):
+    """Isolate original imports for metadata regression; grant no runtime qualification."""
+    historical = tmp_path / "historical_sources"
+    closure = historical_import_closure(
+        [
+            "scripts/prepare_wam_clean_training_state_handoff.py",
+            "scripts/run_wam_clean_development_repair.py",
+            "scripts/run_wam_clean_training.py",
+            "scripts/sample_wam_clean_training_state.py",
+            "scripts/run_wam_clean_training_development.py",
+            "scripts/serve_wam_clean_training.py",
+            "scripts/execute_wam_clean_training_case.py",
+            "scripts/verify_wam_clean_training_development.py",
+        ],
+        historical,
+    )
+    guard = tmp_path / "archival_guard"
+    guard.mkdir()
+    (guard / "sitecustomize.py").write_text(
+        "import atexit,builtins,json,sys\nfrom pathlib import Path\nimport numpy as np\n"
+        "attempts=dict(arrays=0,models=0,current_sources=0)\n"
+        "def deny(*a,**kw):\n attempts['arrays']+=1\n raise AssertionError('archival metadata decoded arrays')\n"
+        "np.load=deny\noriginal=builtins.__import__\n"
+        "def guarded(name,*a,**kw):\n"
+        " if name.split('.')[0] in {'torch','cosmos_framework','mujoco','robosuite','libero'}:\n"
+        "  attempts['models']+=1\n  raise AssertionError('archival metadata imported model or environment')\n"
+        " result=original(name,*a,**kw)\n"
+        " for module in tuple(sys.modules.values()):\n"
+        "  source=getattr(module,'__file__','') or ''\n"
+        f"  if source.startswith({tuple(str(REPO / area) + os.sep for area in ('src', 'scripts'))!r}):\n"
+        "   attempts['current_sources']+=1\n   raise AssertionError('current source entered archival imports')\n"
+        " return result\nbuiltins.__import__=guarded\n"
+        "from s2a import artifacts\n"
+        f"artifacts.REPO=Path({str(REPO)!r})\n"
+        "from s2a import durable_stage_supervisor as archival_supervisor\n"
+        f"archival_supervisor.REPO=Path({str(REPO)!r})\n"
+        f"atexit.register(lambda:Path({str(tmp_path / 'archival_guard.json')!r}).write_text(json.dumps(attempts)))\n"
+    )
+    environment = dict(
+        os.environ,
+        CUDA_VISIBLE_DEVICES="",
+        LD_LIBRARY_PATH="",
+        PYTHONDONTWRITEBYTECODE="1",
+        PYTEST_DISABLE_PLUGIN_AUTOLOAD="1",
+        PYTHONPATH=os.pathsep.join(map(str, (guard, historical / "src", historical / "scripts"))),
+    )
+    (tmp_path / "archival_scope.json").write_text(
+        json.dumps(dict(scope="archival_metadata_regression_not_current_runtime_qualification", closure=closure))
+    )
+    return environment, historical
+
+
+def archival_bridge_case(bridge_scene, node):
+    directory = Path(bridge_scene[1]["path"]).parent
+    environment, historical = archival_metadata_environment(directory)
+    original_ref = historical_source_ref("tests/test_clean_training_state_handoff.py")
+    source = directory / "test_original_state_bridge.py"
+    source.write_bytes(historical_source_bytes(original_ref))
+    before = role_receipt_fingerprints()
+    result = subprocess.run(
+        [
+            str(REPO / ".venv/bin/python"),
+            "-m",
+            "pytest",
+            "-q",
+            str(source) + "::" + node,
+            "-o",
+            "pythonpath=",
+            "-o",
+            "addopts=",
+            "-p",
+            "no:cacheprovider",
+            "--basetemp=" + str(directory / "archival_pytest_tmp"),
+        ],
+        cwd=REPO,
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    (directory / "archival_pytest.log").write_text(result.stdout + result.stderr)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert source.read_bytes() == historical_source_bytes(original_ref)
+    assert json.loads((directory / "archival_guard.json").read_text()) == dict(arrays=0, models=0, current_sources=0)
+    verify_archival_metadata(directory)
+    assert role_receipt_fingerprints() == before
+
+
+def verify_archival_metadata(directory):
+    scope = json.loads((directory / "archival_scope.json").read_text())
+    assert scope["scope"] == "archival_metadata_regression_not_current_runtime_qualification"
+    for row in scope["closure"]["sources"].values():
+        assert reference(row["staged_path"])["sha256"] == row["original_ref"]["sha256"]
 
 
 def role_receipt_fingerprints():
@@ -35,7 +127,7 @@ def script_path(monkeypatch):
 
 
 def test_production_bridge_matches_fixed_source_template():
-    prepare = importlib.import_module("scripts.prepare_wam_clean_training_state_handoff")
+    prepare = importlib.import_module("scripts.wam.training.clean.prepare_wam_clean_training_state_handoff")
     assert ast.dump(ast.parse(prepare.bridge_source())) == ast.dump(ast.parse(state.BRIDGE_PATH.read_text()))
 
 
@@ -122,97 +214,15 @@ def bridge_scene(tmp_path, monkeypatch):
 
 
 def test_actual_owner_and_sampler_call_sites_use_production_bridge(bridge_scene, monkeypatch):
-    a, registered, prepared, modules, parent = bridge_scene
-    receipts_before = role_receipt_fingerprints()
-    with metadata_import_scope(
-        bridge_directory=state.BRIDGE_DIRECTORY,
-        bundle_directory=state.BUNDLE,
-        module_refs=modules,
-        registration_ref=registered,
-    ) as (bridge, scope):
-        old_prior = bridge._original.prior
-        owner = load_frozen_delegate(
-            reference(state.BUNDLE / "run_wam_clean_training_state.py"), name="_s2a048_test_actual_state_owner"
-        )
-        command, w2 = owner.planned_worker(prepared, a["prepared_ref"], a["execution_registration_ref"])
-        assert w2 == parent and Path(command[1]).resolve() == state.BUNDLE / "sample_wam_clean_training_state.py"
-        assert command[command.index("--w2-fit") + 1] == a["w2_fit_ref"]["path"]
-        sampler = load_frozen_delegate(
-            reference(state.BUNDLE / "sample_wam_clean_training_state.py"), name="_s2a048_test_actual_sampler"
-        )
-        objects = {
-            a["w2_fit_ref"]["path"]: dict(
-                rounds=["D0", "D1"],
-                actual_rows=840000,
-                collection_refs=[{}, {}],
-                capture_audit_refs=[{}, {}],
-                fit_metadata=dict(replay_sha256=dict(features="f", weights="w", target_clean_residual="t")),
-            ),
-            a["w2_verification_ref"]["path"]: dict(
-                actual_rows=840000,
-                independent_reconstructions=1,
-                full_training_row_reconstruction=True,
-                qr_metadata=dict(replay_sha256=dict(features="f", weights="w", targets="t")),
-            ),
-            "bridge_qualification": dict(complete=True, passed=True, bridge_qualified=True),
-        }
-        monkeypatch.setattr(sampler, "read", lambda r: objects[r["path"]])
-        monkeypatch.setattr(
-            sampler, "trained_head", lambda *args, **kwargs: (SimpleNamespace(center=[0] * 1290), a["w2_params_ref"])
-        )
-        monkeypatch.setattr(sampler, "sampling_entries", lambda *args: [{}] * 99)
-        _, params, _, _, entries = sampler.admit_sampling(
-            prepared, a["prepared_ref"], a["execution_registration_ref"], a["w2_fit_ref"], a["w2_verification_ref"]
-        )
-        assert params == a["w2_params_ref"] and len(entries) == 99
-        assert bridge._original.prior is old_prior
-        assert bridge.prior.__code__.co_filename == str(state.BRIDGE_PATH)
-    assert scope["restored"] is scope["source_guard_completed"] is True
-    receipts = state.dry_receipts()
-    assert len(receipts) == 2
-    assert {r["caller_function"] for r in receipts} == {"planned_worker", "admit_sampling"}
-    assert all(r["dry_run"] is True and r["bridge_ref"] == a["bridge_ref"] for r in receipts)
-    assert role_receipt_fingerprints() == receipts_before
+    archival_bridge_case(bridge_scene, "test_actual_owner_and_sampler_call_sites_use_production_bridge")
 
 
 def test_gpu_environment_safe_path_and_independent_audit_unbridged(bridge_scene, monkeypatch):
-    _, registered, _, modules, _ = bridge_scene
-    with metadata_import_scope(
-        bridge_directory=state.BRIDGE_DIRECTORY,
-        bundle_directory=state.BUNDLE,
-        module_refs=modules,
-        registration_ref=registered,
-    ):
-        monkeypatch.delenv(state.DRY_ENV)
-        base = dict(CUDA_VISIBLE_DEVICES=state.GPU, LD_LIBRARY_PATH="", PYTHONPATH=str(REPO / "src"))
-        model = state.model_environment(base)
-        assert model["PYTHONSAFEPATH"] == "1" and model["PYTHONPATH"].split(":")[:2] == [
-            str(state.BRIDGE_DIRECTORY),
-            str(state.BUNDLE),
-        ]
-        cpu = dict(
-            base,
-            CUDA_VISIBLE_DEVICES="",
-            PYTHONSAFEPATH="1",
-            **{ENV_PATH: registered["path"], ENV_SHA: registered["sha256"], state.DRY_ENV: "1"},
-        )
-        audit = state.audit_environment(cpu)
-        assert audit["CUDA_VISIBLE_DEVICES"] == "" and audit["PYTHONPATH"] == base["PYTHONPATH"]
-        assert all(k not in audit for k in (ENV_PATH, ENV_SHA, state.DRY_ENV, "PYTHONSAFEPATH"))
-        with pytest.raises(ValueError, match="inherited bridge"):
-            state.audit_environment(dict(model, CUDA_VISIBLE_DEVICES=""))
+    archival_bridge_case(bridge_scene, "test_gpu_environment_safe_path_and_independent_audit_unbridged")
 
 
 def test_dry_model_environment_is_refused(bridge_scene):
-    _, registered, _, modules, _ = bridge_scene
-    with metadata_import_scope(
-        bridge_directory=state.BRIDGE_DIRECTORY,
-        bundle_directory=state.BUNDLE,
-        module_refs=modules,
-        registration_ref=registered,
-    ):
-        with pytest.raises(ValueError, match="model environment"):
-            state.model_environment(dict(CUDA_VISIBLE_DEVICES=state.GPU, LD_LIBRARY_PATH=""))
+    archival_bridge_case(bridge_scene, "test_dry_model_environment_is_refused")
 
 
 def test_lookup_receipt_uses_actual_old_four_field_child_identity(monkeypatch, tmp_path):
@@ -279,14 +289,14 @@ def test_lookup_receipt_uses_actual_old_four_field_child_identity(monkeypatch, t
 @pytest.mark.parametrize("runtime", ["main", "model"])
 def test_actual_original_sampler_help_imports_production_bridge_without_model(tmp_path, runtime):
     import json
-    import os
     import subprocess
 
     receipts_before = role_receipt_fingerprints()
     prepared = json.loads((state.PREPARED_ROOT / "preparation/prepared.json").read_text())
     python = str(REPO / ".venv/bin/python") if runtime == "main" else prepared["model_config"]["model_python"]
+    archival, _ = archival_metadata_environment(tmp_path)
     env = dict(
-        os.environ,
+        archival,
         CUDA_VISIBLE_DEVICES="",
         LD_LIBRARY_PATH="",
         OMP_NUM_THREADS="8",
@@ -295,7 +305,7 @@ def test_actual_original_sampler_help_imports_production_bridge_without_model(tm
         PYTHONDONTWRITEBYTECODE="1",
         PYTHONSAFEPATH="1",
         PYTHONVERBOSE="1",
-        PYTHONPATH=":".join(map(str, (state.BRIDGE_DIRECTORY, state.BUNDLE, REPO / "src", REPO / "scripts"))),
+        PYTHONPATH=":".join(map(str, (state.BRIDGE_DIRECTORY, state.BUNDLE))) + ":" + archival["PYTHONPATH"],
     )
     out = subprocess.run(
         [python, str(state.BUNDLE / "sample_wam_clean_training_state.py"), "--help"],
@@ -308,6 +318,8 @@ def test_actual_original_sampler_help_imports_production_bridge_without_model(tm
     assert out.returncode == 0, out.stderr[-1000:]
     assert "usage:" in out.stdout and str(state.BRIDGE_PATH) in out.stderr
     assert "import 'torch'" not in out.stderr and "import 'mujoco'" not in out.stderr
+    assert json.loads((tmp_path / "archival_guard.json").read_text()) == dict(arrays=0, models=0, current_sources=0)
+    verify_archival_metadata(tmp_path)
     (tmp_path / f"{runtime}_help_stdout.log").write_text(out.stdout)
     (tmp_path / f"{runtime}_help_imports.log").write_text(out.stderr)
     assert role_receipt_fingerprints() == receipts_before
@@ -319,7 +331,7 @@ def test_state_supervisor_real_cpu_child_and_false_final_guard(tmp_path, monkeyp
 
     from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
 
-    owner = importlib.import_module("scripts.run_wam_clean_training_state_handoff")
+    owner = importlib.import_module("scripts.wam.training.clean.run_wam_clean_training_state_handoff")
     root = tmp_path / "synthetic048"
     root.mkdir()
     monkeypatch.setattr(owner, "ROOT", root)

@@ -12,7 +12,7 @@ def worker(monkeypatch):
     from s2a.infrastructure.artifacts import REPO
 
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.collect_coupled_preview_wam_development")
+    return importlib.import_module("scripts.wam.tracking.preview.collect_coupled_preview_wam_development")
 
 
 def request(directory):

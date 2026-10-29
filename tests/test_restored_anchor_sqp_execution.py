@@ -26,8 +26,8 @@ from tests.test_prefix_trust_control_execution import (
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
-        producer=importlib.import_module("scripts.probe_tracking_v5_restored_anchor_sqp"),
-        owner=importlib.import_module("scripts.execute_tracking_v5_restored_anchor_sqp"),
+        producer=importlib.import_module("scripts.tracking.trajectory_search.probe_tracking_v5_restored_anchor_sqp"),
+        owner=importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_restored_anchor_sqp"),
         evidence=importlib.import_module("s2a.research.trajectory_search.restored_anchor_sqp_evidence"),
         core=importlib.import_module("s2a.research.trajectory_search.restored_anchor_sqp_plan"),
     )

@@ -16,7 +16,7 @@ from s2a.infrastructure.artifacts import REPO
 @pytest.fixture
 def preparation(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.prepare_wam_clean_training")
+    return importlib.import_module("scripts.wam.training.clean.prepare_wam_clean_training")
 
 
 def digest(value):

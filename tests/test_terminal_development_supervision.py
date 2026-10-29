@@ -14,7 +14,7 @@ def modules(monkeypatch):
     return tuple(
         importlib.import_module(n)
         for n in (
-            "scripts.run_wam_terminal_development",
+            "scripts.wam.tracking.runtime.run_wam_terminal_development",
             "scripts.verification.wam.terminal.verify_wam_terminal_development",
             "scripts.verification.wam.terminal.verify_wam_terminal_development_points",
         )

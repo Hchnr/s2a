@@ -25,8 +25,8 @@ from s2a.research.wam.training.clean.clean_training_w1_handoff import PREPARED_R
 from s2a.research.wam.training.state_worker_checks import check_worker, worker_argv
 from scripts.wam.training.clean.run_wam_clean_training_continuation import observe_descendant_cleanup
 
-ENTRY = "scripts/run_wam_clean_training_state_handoff.py"
-WORKER = "scripts/execute_wam_clean_training_state_handoff.py"
+ENTRY = Path(__file__).resolve().relative_to(REPO).as_posix()
+WORKER = "scripts/wam/training/clean/execute_wam_clean_training_state_handoff.py"
 
 
 def argv(ref, *mode):

@@ -318,7 +318,7 @@ def test_request_conditioning_must_match_frozen_protocol_and_current_image(saved
 
 def test_summary_uses_the_eight_executed_endpoints_of_the_last_h16_chunk(saved_wam_case, monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    from scripts import summarize_wam_independent as summary
+    from scripts.wam.verification import summarize_wam_independent as summary
 
     path, c, fixtures, variants = saved_wam_case
     root = path.parents[3]

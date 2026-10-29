@@ -18,7 +18,9 @@ from tests.test_prefix_trust_control_execution import CountingDynamics, captured
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
-        producer=importlib.import_module("scripts.probe_tracking_v5_directional_derivative_v2"),
+        producer=importlib.import_module(
+            "scripts.tracking.trajectory_search.probe_tracking_v5_directional_derivative_v2"
+        ),
         owner=importlib.import_module(
             "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_v2"
         ),

@@ -5,6 +5,7 @@ import os
 import pytest
 
 from s2a.research.wam.training.clean import clean_training_development_handoff as dev
+from tests.test_clean_training_state_handoff import archival_metadata_environment, verify_archival_metadata
 
 
 def test_development_environment_drops_state_bridge_and_keeps_cpu_limits(monkeypatch):
@@ -55,7 +56,7 @@ def test_development_supervisor_actual_child_exit_and_guard(tmp_path, monkeypatc
 
     from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
 
-    owner = importlib.import_module("scripts.run_wam_clean_training_development_handoff")
+    owner = importlib.import_module("scripts.wam.training.clean.run_wam_clean_training_development_handoff")
     root = tmp_path / "synthetic049"
     root.mkdir()
     monkeypatch.setattr(owner, "ROOT", root)
@@ -105,6 +106,8 @@ def test_original_development_help_imports_without_state_bridge_or_model(tmp_pat
     import subprocess
 
     env = dev.environment()
+    archival, _ = archival_metadata_environment(tmp_path)
+    env["PYTHONPATH"] = str(dev.BUNDLE) + os.pathsep + archival["PYTHONPATH"]
     env["PYTHONVERBOSE"] = "1"
     result = subprocess.run(
         [
@@ -132,6 +135,10 @@ def test_original_development_help_imports_without_state_bridge_or_model(tmp_pat
     assert "import 'torch'" not in result.stderr and "import 'mujoco'" not in result.stderr
     assert str(dev.BUNDLE / "run_wam_clean_training.py") in result.stderr
     assert str(dev.STATE_ROOT / "import_bridge") not in result.stderr
+    import json
+
+    assert json.loads((tmp_path / "archival_guard.json").read_text()) == dict(arrays=0, models=0, current_sources=0)
+    verify_archival_metadata(tmp_path)
     (tmp_path / "original_help_imports.log").write_text(result.stderr)
 
 
@@ -140,7 +147,7 @@ def test_dry_requires_actual_original_entry_result(monkeypatch, fault):
     import importlib
     from types import SimpleNamespace
 
-    owner = importlib.import_module("scripts.run_wam_clean_training_development_handoff")
+    owner = importlib.import_module("scripts.wam.training.clean.run_wam_clean_training_development_handoff")
     from s2a.infrastructure.lifecycle.durable_stage_supervisor import sha
 
     sources = {str(dev.REPO / owner.ENTRY): sha(dev.REPO / owner.ENTRY)}

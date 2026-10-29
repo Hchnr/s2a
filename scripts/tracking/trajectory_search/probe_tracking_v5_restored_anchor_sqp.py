@@ -9,6 +9,7 @@ import numpy as np
 
 from s2a.controllers.osc import OSCInterface
 from s2a.dynamics.mujoco_robot import MujocoRobotDynamics
+from s2a.infrastructure.current_layout import current_source_path
 from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
 from s2a.infrastructure.publication import publish_result
 from s2a.research.trajectory_search.native_goal_trajectory import rollout_native_goal_trajectory
@@ -219,8 +220,8 @@ def main(dry=False):
     expected_initial = tail["answer"]["selected"]
     warm = admit_warm(source, expected_initial["commands"], interface)
     algorithm_proof = verify_restored_algorithm_ast(
-        (REPO / "src/s2a/accepted_point_sqp_plan.py").read_text(),
-        (REPO / "src/s2a/restored_anchor_sqp_plan.py").read_text(),
+        current_source_path("src/s2a/accepted_point_sqp_plan.py").read_text(),
+        current_source_path("src/s2a/restored_anchor_sqp_plan.py").read_text(),
     )
     require(algorithm_proof["passed"] is True, "Only the registered algorithm changes are present")
     finish(refs)

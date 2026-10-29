@@ -6,13 +6,14 @@ import importlib
 import pytest
 
 from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
 
 ROOT = repository_root(anchor=__file__)
 
 
 @pytest.fixture
 def owner():
-    return importlib.import_module("scripts.run_serialized_preview_wam_development")
+    return importlib.import_module("scripts.wam.tracking.preview.run_serialized_preview_wam_development")
 
 
 def test_dry_owner_uses_new_service_and_fixed_uuid_without_creating_output(tmp_path, monkeypatch, owner):
@@ -45,7 +46,7 @@ def test_model_and_cpu_environment_use_only_registered_resources(tmp_path, owner
 def test_rpc_readiness_and_environment_logic_match_proven_owner():
     functions = []
     for name in ("run_wam_terminal_development.py", "run_serialized_preview_wam_development.py"):
-        tree = ast.parse((ROOT / "scripts" / name).read_text())
+        tree = ast.parse(current_source_path("scripts/" + name).read_text())
         functions.append(
             {n.name: ast.dump(n, include_attributes=False) for n in tree.body if isinstance(n, ast.FunctionDef)}
         )
@@ -54,7 +55,7 @@ def test_rpc_readiness_and_environment_logic_match_proven_owner():
 
 
 def test_native_interpreter_is_used_for_independent_physical_replay():
-    tree = ast.parse((ROOT / "scripts/run_serialized_preview_wam_development.py").read_text())
+    tree = ast.parse((current_source_path("scripts/run_serialized_preview_wam_development.py")).read_text())
     commands = [
         n
         for n in ast.walk(tree)

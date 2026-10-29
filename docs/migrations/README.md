@@ -178,3 +178,46 @@ script、439test、898raw证据与README整理未执行，不能称为全仓整�
 无未解析的明确本地导入或裸脚本导入；基础层不导入research，库不导入scripts/tests。
 该静态结果不包含动态导入/运行资格，收据位于 `outputs/repository_d3b1_module_graph_20261029/result.json`。
 双语PR原文见[本阶段PR说明](../pull_requests/repository_layout_20261029.md)。
+
+## D3b收尾：其余实验入口
+
+按既定逐文件设计移动其余690个脚本，57个测试调用方更新明确包路径，新增17个
+包标记；scripts根目录只保留README和包入口。685个rename相对上次提交原字节
+保持，其余5个只更新当前ENTRY/WORKER或当前AST源码定位。历史注册、原始产物、
+算法、容差、预算和控制门槛保持；未留下旧路径wrapper或符号链接。
+
+完整累计清单登记3280个历史身份、1927个实际移动，当前批准SHA256为
+`d8d808a6cc641fae55940f03e92c97827bf0d2dc29a57271d9ff3fdd22bc055b`。
+当前身份与原声明/SHA分开核验。全量发现仍5172节点，旧节点/参数/顺序保持，
+数值环境仍有原5项PyArrow/NumPy collection错误，实际退出1。
+
+32进程816项初测781通过、34失败、1项按原条件跳过。修复后11个完整模块148项
+复核139通过、9失败；9项再次复核8通过、1失败；最后1项修复后独立通过。
+这些是分轮结果，不是最终版本重跑全部816项；所有owner/child实际wait/reap，
+源码/文档各轮前后相同，原失败记录保持。收据如下：
+
+| 范围 | 收据 | SHA256 |
+| --- | --- | --- |
+| 816项初测 | `outputs/qa/repository_d3b_complete_20261029/result.json` | `674996b54b07ce2eb89c9fb958e9c49d197a8df69fe187636d95608717856838` |
+| 5172节点发现 | `outputs/qa/repository_d3b_complete_collection_20261029/result.json` | `afce065e56579b092ea2b22936212e92c9aee7876f7113a0d1f17736a29875e3` |
+| 148项相关模块 | `outputs/qa/repository_d3b_complete_repair_20261029/result.json` | `071f95d99115b3a6f3d34e91e58d40d89e6dded1ea1df0691b146293d9858d18` |
+| 9项复核 | `outputs/qa/repository_d3b_complete_final_nine_20261029/result.json` | `1a562594afcaeebf543788333c6361ae810e27ec99e8d0466a8b4bab2c4e29c1` |
+| 最后1项复核 | `outputs/qa/repository_d3b_complete_final_one_20261029/result.json` | `44e6cf009a8a5740bb2f6c9e7c2295850a1534ba652b556e7cae1097af4575ba` |
+| 兼容Arrow环境14项 | `outputs/qa/repository_d3b_arrow_environment_20261029/result.json` | `9b8f8fb4596608842a107ae169d8ef4a8411d28e010ea79e6f8c77b36aa09c84` |
+
+历史CLI帮助和发布桥接使用catalog/Git原字节的隔离子进程，保留原断言、原__file__
+和导入身份；显式禁止数组解码、模型及当前源码混入，只回归历史metadata合同。
+外部只读config缺失的测试使用已登记迁移位置的相同SHA字节，并继续拒绝错误SHA
+与旧仓库路径；原preflight字节保持，不追认旧运行资格。
+
+PyArrow五模块在仓库现有Python3.12/NumPy2/PyArrow23解释器下实际14项全部通过；
+该记录与3.11数值环境collection错误分开，不修改共享环境，不称完整pytest通过。
+全仓2487个Python文件Ruff/format通过；静态包依赖检查10918条本地导入边通过。
+结构/身份检查通过，根平铺为src1/scripts2/tests442/configs192/plans341/reports365，
+`full_restructure_complete=False`。静态与结构收据分别为
+`outputs/repository_d3b_complete_module_graph_20261029/result.json` 和
+`outputs/repository_d3b_complete_structure_20261029/result.json`。
+
+439个测试文件、898份配置/计划/报告、README导航及最终全量CPU验收仍待执行。
+本阶段未运行GPU、新生产搜索或完整研究checker；实际控制资格和总目标保持未达成。
+双语PR原文见[脚本迁移收尾PR](../pull_requests/scripts_layout_20261029.md)。

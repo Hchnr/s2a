@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import pytest
 
 from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
 
 REPO = repository_root(anchor=__file__)
 
@@ -17,7 +18,7 @@ REPO = repository_root(anchor=__file__)
 def admitted(tmp_path, monkeypatch):
     sys.path.insert(0, str(REPO / "scripts"))
     spec = importlib.util.spec_from_file_location(
-        "native_continuation_owner_test", REPO / "scripts/run_wam_native_training_continuation.py"
+        "native_continuation_owner_test", current_source_path("scripts/run_wam_native_training_continuation.py")
     )
     owner = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(owner)

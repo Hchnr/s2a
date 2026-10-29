@@ -21,8 +21,8 @@ from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     require,
 )
 
-ENTRY = "scripts/run_wam_clean_training_w2_fit.py"
-WORKER = "scripts/execute_wam_clean_training_w2_fit.py"
+ENTRY = Path(__file__).resolve().relative_to(REPO).as_posix()
+WORKER = "scripts/wam/training/clean/execute_wam_clean_training_w2_fit.py"
 ROLES = ("producer", "independent")
 
 

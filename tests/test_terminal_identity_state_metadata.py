@@ -52,7 +52,7 @@ def test_actual_preparer_cannot_create_validation_before_aggregate_head(tmp_path
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
     import numpy as np
 
-    import scripts.prepare_wam_terminal_identity_state as prepare
+    import scripts.wam.readout.prepare_wam_terminal_identity_state as prepare
 
     root = tmp_path / "aggregate_validation"
     monkeypatch.setattr(prepare, "ROOT", root)

@@ -12,11 +12,12 @@ import pytest
 
 from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.training.native.native_training import state_sha256
+from tests.support.source_layout import current_source_path
 
 
 def collector():
     spec = importlib.util.spec_from_file_location(
-        "terminal_collector_fixture", REPO / "scripts/collect_native_terminal_predicate_diagnostic.py"
+        "terminal_collector_fixture", current_source_path("scripts/collect_native_terminal_predicate_diagnostic.py")
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -259,7 +260,7 @@ def test_actual_cli_help_and_refuse_existing_output_artifact(tmp_path):
     with pytest.raises(FileExistsError):
         module.write_once(path, dict(original=False))
     result = subprocess.run(
-        [sys.executable, "scripts/collect_native_terminal_predicate_diagnostic.py", "--help"],
+        [sys.executable, str(current_source_path("scripts/collect_native_terminal_predicate_diagnostic.py")), "--help"],
         cwd=REPO,
         env=dict(os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONDONTWRITEBYTECODE="1"),
         capture_output=True,

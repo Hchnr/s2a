@@ -7,13 +7,13 @@ import json
 import pytest
 
 import tests.test_terminal_development_service as prior
-from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.training.clean.clean_training_runtime import reference
+from tests.support.source_layout import current_source_path
 
 
 @pytest.fixture
 def server():
-    return importlib.import_module("scripts.serve_serialized_preview_wam_development")
+    return importlib.import_module("scripts.wam.tracking.preview.serve_serialized_preview_wam_development")
 
 
 def test_fixed900_policy_on_new_service(tmp_path, server):
@@ -65,7 +65,7 @@ def test_service_model_and_http_functions_preserve_frozen_behavior():
 
     bodies = []
     for name in ("serve_wam_terminal_development.py", "serve_serialized_preview_wam_development.py"):
-        tree = ast.parse((REPO / "scripts" / name).read_text())
+        tree = ast.parse(current_source_path("scripts/" + name).read_text())
         nodes = [n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef))]
         bodies.append(ast.dump(Normalize().visit(ast.Module(body=nodes, type_ignores=[])), include_attributes=False))
     assert bodies[0] == bodies[1]

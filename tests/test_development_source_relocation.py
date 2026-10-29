@@ -7,6 +7,7 @@ import pytest
 from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO
 from s2a.research.wam.tracking.runtime.development_source_relocation import FILES, PATH_PARTS, transform
 from s2a.research.wam.training.clean.clean_training_state_handoff import BUNDLE
+from tests.support.source_layout import current_source_path
 
 NEW = "outputs/clean_training_development_dependency_repair_20261024/source"
 OLD = str(BUNDLE.relative_to(REPO))
@@ -88,7 +89,7 @@ def test_generator_refuses_main_runtime_before_touching_outputs():
         pytest.skip("this regression checks the incompatible main interpreter")
     env = dict(os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="")
     out = subprocess.run(
-        [sys.executable, str(REPO / "scripts/prepare_wam_clean_development_sources.py")],
+        [sys.executable, str(current_source_path("scripts/prepare_wam_clean_development_sources.py"))],
         cwd=REPO,
         env=env,
         capture_output=True,

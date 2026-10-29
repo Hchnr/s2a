@@ -3,7 +3,7 @@
 from s2a.infrastructure.lifecycle.durable_stage_supervisor import REPO, read, reference, require
 from s2a.research.wam.training.clean.clean_training_state_handoff import PREFIX, ROOT
 
-WORKER = "scripts/execute_wam_clean_training_state_handoff.py"
+WORKER = "scripts/wam/training/clean/execute_wam_clean_training_state_handoff.py"
 
 
 def worker_argv(ref):

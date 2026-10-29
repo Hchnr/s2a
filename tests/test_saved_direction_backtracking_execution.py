@@ -14,7 +14,7 @@ from s2a.research.trajectory_search import saved_direction_backtracking_evidence
 @pytest.fixture
 def producer(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.probe_tracking_v5_saved_direction_backtracking")
+    return importlib.import_module("scripts.tracking.trajectory_search.probe_tracking_v5_saved_direction_backtracking")
 
 
 @pytest.fixture

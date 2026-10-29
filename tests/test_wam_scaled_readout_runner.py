@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import pytest
 
 from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
 
 REPO = repository_root(anchor=__file__)
 
@@ -16,7 +17,9 @@ def module():
     import sys
 
     sys.path.insert(0, str(REPO / "scripts"))
-    spec = importlib.util.spec_from_file_location("scaled_owner_test", REPO / "scripts/run_wam_scaled_readout.py")
+    spec = importlib.util.spec_from_file_location(
+        "scaled_owner_test", current_source_path("scripts/run_wam_scaled_readout.py")
+    )
     result = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(result)
     return result

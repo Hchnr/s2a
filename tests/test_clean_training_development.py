@@ -14,8 +14,8 @@ import requests
 from s2a.infrastructure.repository_paths import repository_root
 
 sys.path.insert(0, str(repository_root(anchor=__file__) / "scripts"))
-import scripts.execute_wam_clean_training_case as worker  # noqa: E402
 import scripts.verification.wam.training.verify_wam_clean_training_development as verifier  # noqa: E402
+import scripts.wam.training.clean.execute_wam_clean_training_case as worker  # noqa: E402
 import scripts.wam.training.clean.run_wam_clean_training_development as owner  # noqa: E402
 from s2a.research.wam.training.clean.clean_training_runtime import reference  # noqa: E402
 from scripts.wam.readout.run_wam_readout import owned_command  # noqa: E402

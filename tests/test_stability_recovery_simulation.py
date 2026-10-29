@@ -22,6 +22,7 @@ from s2a.research.wam.tracking.control.stability_recovery_simulation import (
     sample_model_reference,
     validate_wam_response,
 )
+from tests.support.source_layout import current_source_path
 
 
 def response():
@@ -167,7 +168,7 @@ def test_protocol_dry_run_has_no_physics_model_or_output_side_effects(tmp_path):
     )
     path = tmp_path / "protocol.json"
     path.write_text(json.dumps(c) + "\n")
-    script = REPO / "scripts/run_wam_recovery_matrix.py"
+    script = current_source_path("scripts/run_wam_recovery_matrix.py")
     env = dict(os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONPATH=str(REPO / "src"))
     result = subprocess.run(
         [

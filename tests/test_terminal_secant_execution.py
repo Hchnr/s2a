@@ -22,7 +22,7 @@ def modules(monkeypatch):
     return SimpleNamespace(
         owner=importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_terminal_secant_probe"),
         evidence=importlib.import_module("s2a.research.trajectory_search.terminal_secant_evidence"),
-        producer=importlib.import_module("scripts.probe_tracking_v5_terminal_secant_probe"),
+        producer=importlib.import_module("scripts.tracking.trajectory_search.probe_tracking_v5_terminal_secant_probe"),
         checker=importlib.import_module(
             "scripts.verification.trajectory_search.check_tracking_v5_terminal_secant_probe"
         ),

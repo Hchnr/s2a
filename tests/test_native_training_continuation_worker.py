@@ -12,10 +12,11 @@ import pytest
 
 from s2a.infrastructure.artifacts import REPO
 from s2a.infrastructure.native_environment import EnvironmentAdmissionError, environment_snapshot
+from tests.support.source_layout import current_source_path
 
 
 def worker():
-    path = REPO / "scripts/collect_wam_native_training_continuation.py"
+    path = current_source_path("scripts/collect_wam_native_training_continuation.py")
     spec = importlib.util.spec_from_file_location("native_continuation_worker_fixture", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -191,7 +192,7 @@ def test_import_rejection_saves_failure_and_never_publishes_startup_or_collects(
 def test_real_cli_excludes_cached_task0_and_does_not_import_simulator():
     environment = dict(os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONDONTWRITEBYTECODE="1")
     help_result = subprocess.run(
-        [sys.executable, "scripts/collect_wam_native_training_continuation.py", "--help"],
+        [sys.executable, str(current_source_path("scripts/collect_wam_native_training_continuation.py")), "--help"],
         cwd=REPO,
         env=environment,
         capture_output=True,
@@ -202,7 +203,7 @@ def test_real_cli_excludes_cached_task0_and_does_not_import_simulator():
     rejected = subprocess.run(
         [
             sys.executable,
-            "scripts/collect_wam_native_training_continuation.py",
+            str(current_source_path("scripts/collect_wam_native_training_continuation.py")),
             "--prepared",
             "does-not-exist",
             "--prepared-sha256",

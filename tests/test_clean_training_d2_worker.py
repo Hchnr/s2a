@@ -41,12 +41,12 @@ class ExpectedD2Changes(ast.NodeTransformer):
 
 def test_actual_capture_body_changes_only_experiment_variant_and_admission():
     original = capture_body(current_source_path("scripts/collect_wam_clean_training.py"))
-    actual = capture_body(REPO / "scripts/collect_wam_clean_d2.py")
+    actual = capture_body(current_source_path("scripts/collect_wam_clean_d2.py"))
     assert ast.dump(ExpectedD2Changes().visit(original)) == ast.dump(actual)
 
 
 def test_actual_worker_dry_does_not_import_torch_or_initialize_model(monkeypatch):
-    import scripts.collect_wam_clean_d2 as worker
+    import scripts.wam.training.clean.collect_wam_clean_d2 as worker
 
     calls = []
 
@@ -66,12 +66,12 @@ def test_actual_worker_dry_does_not_import_torch_or_initialize_model(monkeypatch
     monkeypatch.setattr(worker.np, "load", lambda *a, **k: pytest.fail("dry decoded an archive"))
     result = worker.run("prepared-ref", "registration-ref", gpu_uuid=GPU, dry=True)
     assert len(calls) == 1
-    assert REPO / "scripts/collect_wam_clean_d2.py" in calls[0][1]["required_sources"]
+    assert current_source_path("scripts/collect_wam_clean_d2.py") in calls[0][1]["required_sources"]
     assert result["requests"] == 300 and result["model_initializations"] == result["future_label_reads"] == 0
 
 
 def test_missing_execution_admission_stops_before_model_path(monkeypatch):
-    import scripts.collect_wam_clean_d2 as worker
+    import scripts.wam.training.clean.collect_wam_clean_d2 as worker
 
     def reject(*a, **k):
         raise ValueError("independent execution metadata missing")
@@ -83,7 +83,7 @@ def test_missing_execution_admission_stops_before_model_path(monkeypatch):
 
 
 def test_dry_cannot_bypass_allowed_gpu_identity(monkeypatch):
-    import scripts.collect_wam_clean_d2 as worker
+    import scripts.wam.training.clean.collect_wam_clean_d2 as worker
 
     monkeypatch.setattr(worker, "admit", lambda *a, **k: ({}, {}, {}, None, {}, {}))
     with pytest.raises(ValueError, match="allowed UUID"):
@@ -145,7 +145,7 @@ def test_lifecycle_proof_preserves_all_receipt_checks_for_new_worker():
 def test_owner_command_parses_through_actual_worker_cli(monkeypatch, capsys):
     import sys
 
-    import scripts.collect_wam_clean_d2 as worker
+    import scripts.wam.training.clean.collect_wam_clean_d2 as worker
     from scripts.wam.training.clean.run_wam_clean_d2 import worker_command
 
     pref = {"path": str(REPO / "outputs/test/prepared.json"), "sha256": "1" * 64}

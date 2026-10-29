@@ -143,7 +143,7 @@ def test_partial_capture_wrong_w1_and_incomplete_audit_rejected(artifacts, which
 
 
 def test_supervisor_routes_only_one_cpu_wrapper_and_no_extra_stage():
-    owner = importlib.import_module("scripts.run_wam_clean_training_d1_handoff")
+    owner = importlib.import_module("scripts.wam.training.clean.run_wam_clean_training_d1_handoff")
     command = owner.worker_argv(ref("046_admitted"))
     assert Path(command[0]).name == "python"
     assert command[1] == "scripts/wam/training/clean/execute_wam_clean_training_d1_handoff.py"
@@ -161,7 +161,7 @@ def test_single_stage_supervisor_real_wait_and_failure_receipts(tmp_path, monkey
     from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
 
     assert tmp_path.is_relative_to(durable.REPO / "outputs")
-    owner = importlib.import_module("scripts.run_wam_clean_training_d1_handoff")
+    owner = importlib.import_module("scripts.wam.training.clean.run_wam_clean_training_d1_handoff")
     root = tmp_path / "synthetic046"
     root.mkdir()
     worker = root / "tiny_cpu.py"

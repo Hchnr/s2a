@@ -13,7 +13,7 @@ from s2a.research.wam.training.clean.clean_training_runtime import reference
 @pytest.fixture
 def owner(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.run_wam_clean_training_state")
+    return importlib.import_module("scripts.wam.training.clean.run_wam_clean_training_state")
 
 
 def save(path, value):

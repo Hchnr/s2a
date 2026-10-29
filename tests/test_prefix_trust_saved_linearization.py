@@ -13,7 +13,7 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def diagnostic(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.diagnose_prefix_trust_saved_linearization")
+    return importlib.import_module("scripts.tracking.trajectory_search.diagnose_prefix_trust_saved_linearization")
 
 
 class Archive:
