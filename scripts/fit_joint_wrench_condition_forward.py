@@ -14,9 +14,9 @@ from s2a.research.response_models.wrench.joint_wrench_condition_forward import (
     targets,
     with_history,
 )
-from scripts.arm_joint_wrench_expanded_training import contrast_rows
-from scripts.arm_wrench_data import attach_current_wrench
-from scripts.audit_wam_position import Evidence
+from scripts.data.arm_response.arm_wrench_data import attach_current_wrench
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
+from scripts.wam.training.native.arm_joint_wrench_expanded_training import contrast_rows
 
 CONFIG = Path("configs/joint_wrench_condition_forward_20261025.json")
 ROOT = Path("outputs/joint_wrench_condition_forward_20261025")

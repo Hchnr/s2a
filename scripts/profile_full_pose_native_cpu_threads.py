@@ -12,7 +12,7 @@ import scipy
 from s2a.infrastructure.artifacts import REPO, sha256
 from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
 from s2a.research.joint_control.inverse.full_coupled_pose_inverse import FullCoupledPoseModel, solve_pose
-from scripts.full_coupled_pose_independent import verify_pose_solution
+from scripts.verification.coupled_control.full_coupled_pose_independent import verify_pose_solution
 
 
 def main():

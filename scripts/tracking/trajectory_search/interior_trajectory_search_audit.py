@@ -7,8 +7,8 @@ the caller's separate responsibility.
 
 import numpy as np
 
-from scripts.accepted_point_sqp_math_audit import audit_qp_certificate
-from scripts.directional_derivative_audit import (
+from scripts.verification.trajectory_search.accepted_point_sqp_math_audit import audit_qp_certificate
+from scripts.verification.trajectory_search.directional_derivative_audit import (
     _response,
     array,
     boolean,
@@ -17,8 +17,8 @@ from scripts.directional_derivative_audit import (
     numerical_compare,
     require,
 )
-from scripts.restored_anchor_sqp_ledger_audit import compare_initial_records
-from scripts.terminal_secant_audit import _tree
+from scripts.verification.trajectory_search.restored_anchor_sqp_ledger_audit import compare_initial_records
+from scripts.verification.trajectory_search.terminal_secant_audit import _tree
 
 
 def _periods():

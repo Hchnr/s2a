@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from s2a.research.joint_control.preview.coupled_pose_preview import plan_pose
-from scripts.coupled_pose_preview_independent import verify_preview
+from scripts.verification.joint_control.preview.coupled_pose_preview_independent import verify_preview
 from tests.test_coupled_pose_preview import problem
 
 

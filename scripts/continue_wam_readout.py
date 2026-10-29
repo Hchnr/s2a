@@ -14,7 +14,7 @@ import subprocess
 import time
 from pathlib import Path
 
-import scripts.run_wam_readout as frozen
+import scripts.wam.readout.run_wam_readout as frozen
 from s2a.infrastructure.artifacts import REPO, sha256
 from s2a.infrastructure.lifecycle.worker_handshake import birth, write_once
 

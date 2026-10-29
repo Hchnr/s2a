@@ -15,9 +15,8 @@ import requests
 
 from s2a.infrastructure.artifacts import REPO, sha256
 from s2a.infrastructure.lifecycle.worker_handshake import owned_child
-from scripts.prepare_wam_temporal_continuation import BUDGET, validate_gate
-from scripts.run_wam_long_service import weight_stats
-from scripts.run_wam_short_replan import (
+from scripts.wam.tracking.references.prepare_wam_temporal_continuation import BUDGET, validate_gate
+from scripts.wam.tracking.references.run_wam_short_replan import (
     cpu_environment,
     interrupted,
     process_record,
@@ -25,7 +24,8 @@ from scripts.run_wam_short_replan import (
     verify_hashes,
     write_new,
 )
-from scripts.run_wam_temporal_continuation_matrix import CONFIG, protocol
+from scripts.wam.tracking.references.run_wam_temporal_continuation_matrix import CONFIG, protocol
+from scripts.wam.tracking.runtime.run_wam_long_service import weight_stats
 
 
 def preflight(gate_path, gate_sha):

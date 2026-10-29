@@ -22,7 +22,7 @@ from tests.test_tail_translation_execution import complete_case, complete_rollou
 @pytest.fixture
 def producer(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.probe_tracking_v5_terminal_only_tail_repair")
+    return importlib.import_module("scripts.tracking.trajectory_search.probe_tracking_v5_terminal_only_tail_repair")
 
 
 @pytest.mark.parametrize("repairs", [False, True])

@@ -7,7 +7,7 @@ import mujoco
 import numpy as np
 
 from s2a.dynamics.frozen_osc_response import goal_response
-from scripts.audit_wam_position import Evidence
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 ROOT = Path("outputs/frozen_inertial_coupling_diagnosis_20261025")
 

@@ -15,7 +15,9 @@ analytic_stencil_archive = original_tests.analytic_stencil_archive
 @pytest.fixture
 def stencil_audit(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.directional_derivative_stencil_audit_v2").audit_saved_stencil_comparison
+    return importlib.import_module(
+        "scripts.tracking.trajectory_search.directional_derivative_stencil_audit_v2"
+    ).audit_saved_stencil_comparison
 
 
 def roundoff_bounds(old, bound):
@@ -66,7 +68,9 @@ def test_roundoff_bounds_preserve_full_analytic_stencil_and_exact_bytes(stencil_
     old, answer, saved = deepcopy(analytic_stencil_archive)
     snapshot = binding_snapshot(old, answer)
     roundoff_bounds(old, bound)
-    original = importlib.import_module("scripts.directional_derivative_audit").audit_saved_stencil_comparison
+    original = importlib.import_module(
+        "scripts.verification.trajectory_search.directional_derivative_audit"
+    ).audit_saved_stencil_comparison
     with pytest.raises(ValueError, match="Anchor inside old stage bounds"):
         original(old, answer, saved)
     # Reuse independent closed-form secants, JSON roundtrip and all original

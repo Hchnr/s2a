@@ -394,7 +394,7 @@ def test_failed_replay_cleanup_cannot_dispatch_and_preserves_primary_error(tmp_p
 
 
 def test_cli_dry_default_and_qa_gate(monkeypatch, capsys):
-    import scripts.verify_native_runtime_replay as cli
+    import scripts.verification.native_runtime.verify_native_runtime_replay as cli
 
     monkeypatch.setattr(cli, "NATIVE_PYTHON", Path(sys.executable))
     for key, value in cli.CPU_ENVIRONMENT.items():
@@ -410,7 +410,7 @@ def test_cli_dry_default_and_qa_gate(monkeypatch, capsys):
 
 
 def test_cli_forbids_retired_and_user_file_without_reading():
-    import scripts.verify_native_runtime_replay as cli
+    import scripts.verification.native_runtime.verify_native_runtime_replay as cli
 
     for path in ("/share/project/never/read", str(cli.REPO / "long_joint_inverse.py")):
         with pytest.raises(ValueError, match="Forbidden source"):
@@ -419,7 +419,7 @@ def test_cli_forbids_retired_and_user_file_without_reading():
 
 @pytest.mark.parametrize("mutation", ["environment", "command", "source"])
 def test_qa_binding_rejects_changed_execution_contract(monkeypatch, mutation):
-    import scripts.verify_native_runtime_replay as cli
+    import scripts.verification.native_runtime.verify_native_runtime_replay as cli
 
     qa = dict(
         complete=True,
@@ -455,7 +455,7 @@ def test_qa_binding_rejects_changed_execution_contract(monkeypatch, mutation):
 
 
 def test_saved_input_admission_uses_current_files_only():
-    import scripts.verify_native_runtime_replay as cli
+    import scripts.verification.native_runtime.verify_native_runtime_replay as cli
 
     original = cli.CONFIG.read_bytes()
     config = json.loads(original)
@@ -480,7 +480,7 @@ def test_saved_input_admission_uses_current_files_only():
 
 @pytest.mark.parametrize("key,value", [("physics_budget", 378), ("absolute_tolerance", 1e-8), ("world_model_calls", 1)])
 def test_metadata_rejects_changed_protocol(key, value):
-    import scripts.verify_native_runtime_replay as cli
+    import scripts.verification.native_runtime.verify_native_runtime_replay as cli
 
     config = copy.deepcopy(json.loads(cli.CONFIG.read_text()))
     config[key] = value

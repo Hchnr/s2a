@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-import scripts.qualified_inverse_independent as audit
+import scripts.verification.response_models.inverse.qualified_inverse_independent as audit
 from s2a.research.response_models.inverse.bounded_response_inverse import translation_command
 
 

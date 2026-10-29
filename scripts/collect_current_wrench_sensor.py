@@ -6,8 +6,8 @@ from pathlib import Path
 import numpy as np
 
 from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
-from scripts.audit_wam_position import Evidence
-from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.simulation.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 ROOT = Path("outputs/current_wrench_sensor_20261025")
 
@@ -30,7 +30,7 @@ def main():
     from s2a.research.gripper.current_wrench import read_current_wrench
     from s2a.research.joint_control.native.settled_native import SettledGoalEnvironment
     from s2a.research.wam.tracking.control.stability_recovery_simulation import simulator_inputs
-    from scripts.collect_wam_native_training import endpoint, save_arrays, write_once
+    from scripts.wam.training.native.collect_wam_native_training import endpoint, save_arrays, write_once
 
     strict_native_environment()
     closed = e.json("outputs/paired_arm_response_20261025/closure_verified.json")

@@ -7,7 +7,7 @@ import numpy as np
 
 from s2a.infrastructure.artifacts import sha256
 from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
-from scripts.audit_wam_position import Evidence
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 ROOT = Path("outputs/preview_control_20261026")
 

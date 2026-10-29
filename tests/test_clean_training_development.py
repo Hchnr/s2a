@@ -15,10 +15,11 @@ from s2a.infrastructure.repository_paths import repository_root
 
 sys.path.insert(0, str(repository_root(anchor=__file__) / "scripts"))
 import scripts.execute_wam_clean_training_case as worker  # noqa: E402
-import scripts.run_wam_clean_training_development as owner  # noqa: E402
-import scripts.verify_wam_clean_training_development as verifier  # noqa: E402
+import scripts.verification.wam.training.verify_wam_clean_training_development as verifier  # noqa: E402
+import scripts.wam.training.clean.run_wam_clean_training_development as owner  # noqa: E402
 from s2a.research.wam.training.clean.clean_training_runtime import reference  # noqa: E402
-from scripts.run_wam_readout import owned_command  # noqa: E402
+from scripts.wam.readout.run_wam_readout import owned_command  # noqa: E402
+from tests.support.source_layout import current_module_name  # noqa: E402
 
 
 def save(path, value):
@@ -302,12 +303,12 @@ def test_verifier_does_not_import_development_producers():
     source = Path(verifier.__file__).read_text()
     imports = {node.module for node in ast.walk(ast.parse(source)) if isinstance(node, ast.ImportFrom)}
     assert not imports & {
-        "run_wam_clean_training_development",
-        "execute_wam_clean_training_case",
-        "serve_wam_clean_training",
-        "s2a.wam_clean_readout",
+        current_module_name("scripts/run_wam_clean_training_development.py"),
+        current_module_name("scripts/execute_wam_clean_training_case.py"),
+        current_module_name("scripts/serve_wam_clean_training.py"),
+        current_module_name("src/s2a/wam_clean_readout.py"),
     }
-    assert "wam_position_acceptance_checker" in imports
+    assert current_module_name("scripts/wam_position_acceptance_checker.py") in imports
 
 
 def test_new_service_evidence_cannot_be_reported_as_historical003_regression():

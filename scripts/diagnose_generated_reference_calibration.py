@@ -21,9 +21,9 @@ from s2a.research.wam.calibration.generated_reference_calibration import (
     GeneratedReferenceCalibration,
     reference_features,
 )
-from scripts.diagnose_reference_gains import load_cases, metrics, pooled, view
-from scripts.diagnose_rotation_drift import endpoint_times, fold_plans, pairs_record
-from scripts.summarize_wam_stability_screen import Evidence
+from scripts.wam.calibration.diagnose_reference_gains import load_cases, metrics, pooled, view
+from scripts.wam.calibration.diagnose_rotation_drift import endpoint_times, fold_plans, pairs_record
+from scripts.wam.tracking.control.summarize_wam_stability_screen import Evidence
 
 CONFIG = "configs/generated_reference_calibration_20261021.json"
 PLAN = "plans/v0.0.1/023_generated_reference_calibration_20261021.md"

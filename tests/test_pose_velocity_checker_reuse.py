@@ -1,10 +1,10 @@
 import ast
-from pathlib import Path
 
 import numpy as np
 
 from s2a.references.linear_velocity import reference_linear_velocity
-from scripts.pose_velocity_loaded_acceptance_checker import independent_reference_velocity
+from scripts.verification.velocity_control.pose_velocity_loaded_acceptance_checker import independent_reference_velocity
+from tests.support.source_layout import current_module_name, current_source_path
 
 
 def test_reference_modes_match_independent_replay():
@@ -23,14 +23,17 @@ def test_existing_mechanical_checks_preserved():
     def function(path):
         return next(
             n
-            for n in ast.parse(Path(path).read_text()).body
+            for n in ast.parse(current_source_path(path).read_text()).body
             if isinstance(n, ast.FunctionDef) and n.name == "verify_case"
         )
 
     old = function("scripts/translation_loaded_acceptance_checker.py")
     new = function("scripts/pose_velocity_loaded_acceptance_checker.py")
     text = ast.unparse(new)
-    text = text.replace("pose_velocity_arm_independent_replay", "translation_arm_independent_replay")
+    pose_module = current_module_name("scripts/pose_velocity_arm_independent_replay.py")
+    translation_module = current_module_name("scripts/translation_arm_independent_replay.py")
+    assert text.count(pose_module) == 1
+    text = text.replace(pose_module, translation_module)
     text = text.replace("PoseVelocityArmReplay", "TranslationArmReplay")
     text = text.replace("083 position-velocity dt-scaled translation rotation0.5", "082 translation1 rotation0.5")
     new = ast.parse(text).body[0]

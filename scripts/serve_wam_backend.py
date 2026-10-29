@@ -11,7 +11,7 @@ from s2a.backends.wam.backend_runtime import load_service as load_backend_servic
 from s2a.backends.wam.runtime import install_active_slot_mask
 from s2a.infrastructure.artifacts import code_fingerprint
 from s2a.research.wam.readout.sampler_trace import SamplerTrace, check_sources, file_sha, json_sha, write_new_json
-from scripts.serve_wam_sampler_trace import full128, save_acceptance_input
+from scripts.wam.readout.serve_wam_sampler_trace import full128, save_acceptance_input
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     p = json.loads(args.prepared.read_text())
     check_sources(p["source_sha256"])
     check_sources(p["input_sha256"])
-    from scripts.run_wam_sampler_steps import check_weights
+    from scripts.wam.readout.run_wam_sampler_steps import check_weights
 
     check_weights(p["weight_files"])
     root = Path(p["root"])

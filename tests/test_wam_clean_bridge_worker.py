@@ -18,7 +18,7 @@ from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, Dom
 from s2a.research.wam.training.clean.wam_clean_capture import CleanCaptureBridge, NoiseRoster
 
 sys.path.insert(0, str(repository_root(anchor=__file__) / "scripts"))
-worker = importlib.import_module("scripts.qualify_wam_clean_bridge")
+worker = importlib.import_module("scripts.wam.training.clean.qualify_wam_clean_bridge")
 torch = pytest.importorskip("torch")
 protocol = importlib.import_module("tests.test_wam_clean_capture")
 

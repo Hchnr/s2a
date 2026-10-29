@@ -12,7 +12,7 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def module(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.run_wam_free_trajectory")
+    return importlib.import_module("scripts.wam.tracking.runtime.run_wam_free_trajectory")
 
 
 def args(tmp_path):

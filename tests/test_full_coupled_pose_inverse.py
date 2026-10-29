@@ -13,8 +13,8 @@ from s2a.research.joint_control.inverse.full_coupled_pose_inverse import (
     task_objective,
 )
 from s2a.research.joint_control.tracking.current_coupled_state import rotation_goal_from_command
-from scripts.current_coupled_independent import response as independent_response
-from scripts.full_coupled_pose_independent import verify_pose_solution
+from scripts.verification.coupled_control.current_coupled_independent import response as independent_response
+from scripts.verification.coupled_control.full_coupled_pose_independent import verify_pose_solution
 from tests.test_current_coupled_response import plant
 from tests.test_rate_preview_active_set import contract
 

@@ -21,7 +21,7 @@ from s2a.evaluation.task_acceptance import task_outcome
 from s2a.geometry import pose_error
 from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256
 from s2a.infrastructure.repository_paths import repository_root
-from scripts.verify_wam_acceptance import verify_case
+from scripts.verification.wam.physical_logs.verify_wam_acceptance import verify_case
 
 REPO = repository_root(anchor=__file__)
 MODES = {"baseline": 0, "hold20": 20, "hold40": 40}

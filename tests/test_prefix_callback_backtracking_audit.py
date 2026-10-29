@@ -20,7 +20,9 @@ from tests.test_prefix_trajectory_audit_ledger import classify as independent_cl
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.prefix_callback_backtracking_audit").audit_callback_backtracking_ledger
+    return importlib.import_module(
+        "scripts.verification.trajectory_search.prefix_callback_backtracking_audit"
+    ).audit_callback_backtracking_ledger
 
 
 def classifications(answer, arguments):

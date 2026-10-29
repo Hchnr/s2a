@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
-from scripts.report_wam_state_acceptance import table
+from scripts.wam.readout.report_wam_state_acceptance import table
 
 
 def load_completed(root):

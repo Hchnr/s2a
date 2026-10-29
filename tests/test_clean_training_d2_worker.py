@@ -7,6 +7,7 @@ import pytest
 
 from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.training.clean.clean_training_runtime import GPU
+from tests.support.source_layout import current_source_path
 
 
 def capture_body(path):
@@ -39,7 +40,7 @@ class ExpectedD2Changes(ast.NodeTransformer):
 
 
 def test_actual_capture_body_changes_only_experiment_variant_and_admission():
-    original = capture_body(REPO / "scripts/collect_wam_clean_training.py")
+    original = capture_body(current_source_path("scripts/collect_wam_clean_training.py"))
     actual = capture_body(REPO / "scripts/collect_wam_clean_d2.py")
     assert ast.dump(ExpectedD2Changes().visit(original)) == ast.dump(actual)
 
@@ -92,7 +93,7 @@ def test_dry_cannot_bypass_allowed_gpu_identity(monkeypatch):
 def test_d2_audit_requires_registered052_ridge_and_finite_parameters():
     import numpy as np
 
-    from scripts.verify_wam_clean_d2 import head_parameters
+    from scripts.verification.wam.training.verify_wam_clean_d2 import head_parameters
 
     params = dict(
         schema_version="s2a.clean-residual-readout.v1",
@@ -136,8 +137,8 @@ def test_lifecycle_proof_preserves_all_receipt_checks_for_new_worker():
             ]
             return self.generic_visit(node)
 
-    original = function(REPO / "scripts/verify_wam_clean_training_capture.py")
-    actual = function(REPO / "scripts/verify_wam_clean_d2.py")
+    original = function(current_source_path("scripts/verify_wam_clean_training_capture.py"))
+    actual = function(current_source_path("scripts/verify_wam_clean_d2.py"))
     assert ast.dump(ExpectedLifecycleChanges().visit(original)) == ast.dump(actual)
 
 
@@ -145,7 +146,7 @@ def test_owner_command_parses_through_actual_worker_cli(monkeypatch, capsys):
     import sys
 
     import scripts.collect_wam_clean_d2 as worker
-    from scripts.run_wam_clean_d2 import worker_command
+    from scripts.wam.training.clean.run_wam_clean_d2 import worker_command
 
     pref = {"path": str(REPO / "outputs/test/prepared.json"), "sha256": "1" * 64}
     regref = {"path": str(REPO / "outputs/test/registration.json"), "sha256": "2" * 64}
@@ -164,16 +165,16 @@ def test_owner_command_parses_through_actual_worker_cli(monkeypatch, capsys):
 
 
 def test_independent_metadata_body_proof_rejects_sampler_budget_change(tmp_path, monkeypatch):
-    import scripts.verify_wam_clean_d2_metadata as metadata
+    import scripts.verification.wam.training.verify_wam_clean_d2_metadata as metadata
 
     assert metadata.body_proof()["passed"] is True
     scripts = tmp_path / "scripts"
     scripts.mkdir()
     for name in ("collect_wam_clean_training.py", "collect_wam_clean_d2.py"):
-        source = (REPO / "scripts" / name).read_text()
+        source = current_source_path("scripts/" + name).read_text()
         if name == "collect_wam_clean_d2.py":
             source = source.replace('counter.scope(entry["name"], 35)', 'counter.scope(entry["name"], 34)')
         (scripts / name).write_text(source)
-    monkeypatch.setattr(metadata, "REPO", tmp_path)
+    monkeypatch.setattr(metadata, "current_source_path", lambda relative: tmp_path / relative)
     with pytest.raises(ValueError, match="capture body differs"):
         metadata.body_proof()

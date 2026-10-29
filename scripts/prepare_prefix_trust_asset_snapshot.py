@@ -26,7 +26,7 @@ from s2a.research.trajectory_search.prefix_trust_control_evidence import (
     require,
 )
 from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
-from scripts.execute_tracking_v5_prefix_trust_check_v2 import verify_native_qa
+from scripts.tracking.trajectory_search.execute_tracking_v5_prefix_trust_check_v2 import verify_native_qa
 
 
 def main(qa_ref, dry=False):

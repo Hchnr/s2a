@@ -4,7 +4,7 @@ from scipy.spatial.transform import Rotation
 
 from s2a.controllers.osc import OSCInterface
 from s2a.research.response_models.causal.causal_arm_residual import CausalArmResidualOSC
-from scripts.causal_arm_independent_replay import CausalArmReplay
+from scripts.verification.response_models.inverse.causal_arm_independent_replay import CausalArmReplay
 
 
 @pytest.mark.parametrize("damping", [0.5, 1.0, 2.0])

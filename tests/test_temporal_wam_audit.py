@@ -2,23 +2,18 @@
 
 import copy
 import hashlib
-import importlib.util
+import importlib
 import subprocess
 
 import numpy as np
 import pytest
 
-from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_module_name, current_source_path, historical_source_bytes
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = repository_root(anchor=__file__)
-    monkeypatch.syspath_prepend(str(root / "scripts"))
-    spec = importlib.util.spec_from_file_location("temporal_wam_audit_test", root / "scripts/audit_wam_temporal_wam.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return importlib.import_module(current_module_name("scripts/audit_wam_temporal_wam.py"))
 
 
 def pair(audit):
@@ -125,20 +120,24 @@ def test_new_coordinator_release_uses_real_ticks_and_wait_statuses(audit):
 
 
 def test_the_independent_ensemble_checker_is_frozen_and_reused(audit):
-    import scripts.wam_temporal_position_checker as checker
+    import scripts.verification.wam.references.wam_temporal_position_checker as checker
 
     assert audit.verify_case is checker.verify_case and audit.verify_query is checker.verify_query
     original = subprocess.check_output(
         ["git", "show", "af147e1:scripts/wam_temporal_position_checker.py"], cwd=audit.REPO
     )
+    original_digest = hashlib.sha256(original).hexdigest()
+    registered = historical_source_bytes(dict(path="scripts/wam_temporal_position_checker.py", sha256=original_digest))
+    assert registered == original
     proof = audit.source_proof(audit.Evidence())
-    assert hashlib.sha256(original).hexdigest() == proof["new_checker_sha256"]
+    current = current_source_path("scripts/wam_temporal_position_checker.py").read_bytes()
+    assert hashlib.sha256(current).hexdigest() == proof["new_checker_sha256"]
     assert proof["all_other_case_ast_nodes_exact"] and proof["literal_query_ast_exact"]
     assert not proof["production_temporal_module_imported"] and not proof["dynamic_patch_or_generated_function_used"]
 
 
 def test_only_scope_independent_helpers_are_reused_from019(audit):
-    import scripts.audit_wam_raw8_seed43 as previous
+    import scripts.verification.wam.physical_logs.audit_wam_raw8_seed43 as previous
 
     for name in (
         "checkpoint_stats",

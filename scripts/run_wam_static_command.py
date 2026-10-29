@@ -17,8 +17,14 @@ import requests
 
 from s2a.infrastructure.artifacts import REPO, sha256
 from s2a.infrastructure.lifecycle.worker_handshake import owned_child
-from scripts.run_wam_long_service import FINGERPRINT, weight_stats
-from scripts.run_wam_short_replan import cpu_environment, interrupted, process_record, verify_hashes, write_new
+from scripts.wam.tracking.references.run_wam_short_replan import (
+    cpu_environment,
+    interrupted,
+    process_record,
+    verify_hashes,
+    write_new,
+)
+from scripts.wam.tracking.runtime.run_wam_long_service import FINGERPRINT, weight_stats
 
 REGISTRATION = "e117243"
 PLAN = "plans/v0.0.1/022_static_command_state_20261021.md"

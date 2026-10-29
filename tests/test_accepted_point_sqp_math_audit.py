@@ -15,7 +15,7 @@ from s2a.research.trajectory_search.accepted_point_sqp_core import damped_bfgs, 
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.accepted_point_sqp_math_audit")
+    return importlib.import_module("scripts.verification.trajectory_search.accepted_point_sqp_math_audit")
 
 
 def analytic_archive():

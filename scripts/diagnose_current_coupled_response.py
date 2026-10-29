@@ -8,7 +8,7 @@ from scipy.spatial.transform import Rotation
 
 from s2a.infrastructure.artifacts import REPO
 from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish
-from scripts.audit_wam_position import Evidence
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 
 def rms(values):

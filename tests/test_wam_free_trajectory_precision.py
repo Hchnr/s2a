@@ -54,7 +54,7 @@ def test_observer_rejects_a_repeated_product_in_real_method(module):
 def test_cpu_scalar_promotion_quantizes_sigma_before_bfloat16_product(module):
     import torch
 
-    from scripts.verify_wam_readout import quantize_bfloat16
+    from scripts.verification.wam.readout.verify_wam_readout import quantize_bfloat16
 
     _, value = module.precision_payload("signed_normal")
     velocity = torch.tensor(value).to(torch.bfloat16)

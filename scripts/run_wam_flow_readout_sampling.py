@@ -10,9 +10,16 @@ import numpy as np
 from s2a.infrastructure.artifacts import sha256
 from s2a.infrastructure.lifecycle.worker_handshake import write_once
 from s2a.research.wam.readout.wam_flow_readout import FlowReadoutHook, FlowResidualReadout, SolverSigmaBridge
-from scripts.run_wam_flow_readout import check_hashes, read, read_prepared, reference, require, sampling_admission
-from scripts.run_wam_readout_features import BoundaryCounter, generate, parameter_versions, setup_service
-from scripts.run_wam_readout_sampling import InitialCapture
+from scripts.wam.readout.run_wam_flow_readout import (
+    check_hashes,
+    read,
+    read_prepared,
+    reference,
+    require,
+    sampling_admission,
+)
+from scripts.wam.readout.run_wam_readout_features import BoundaryCounter, generate, parameter_versions, setup_service
+from scripts.wam.readout.run_wam_readout_sampling import InitialCapture
 
 
 class RequestBridge:

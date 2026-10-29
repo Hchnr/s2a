@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from scripts.analyze_wam_release_horizon import reference
+from scripts.wam.tracking.runtime.analyze_wam_release_horizon import reference
 
 ROOT = Path("outputs/terminal_development_20261025")
 PREPARED = Path(

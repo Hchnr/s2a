@@ -16,7 +16,7 @@ from tests.test_prefix_preserving_trajectory_plan import inputs, optimizer_resul
 @pytest.fixture
 def checker(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.check_tracking_v5_paired_reference_phase")
+    return importlib.import_module("scripts.verification.trajectory_search.check_tracking_v5_paired_reference_phase")
 
 
 def geometry():

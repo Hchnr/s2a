@@ -9,8 +9,8 @@ from pathlib import Path
 import numpy as np
 
 from s2a.infrastructure.repository_paths import repository_root
-from scripts.current_coupled_precision_independent import response as inverse_response
-from scripts.current_coupled_stable_independent import response
+from scripts.verification.coupled_control.current_coupled_precision_independent import response as inverse_response
+from scripts.verification.coupled_control.current_coupled_stable_independent import response
 
 
 def test_uncoupled_critically_damped_response_matches_closed_form():

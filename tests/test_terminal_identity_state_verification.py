@@ -7,13 +7,14 @@ import pytest
 
 from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.training.clean.clean_training_runtime import GPU
+from tests.support.source_layout import current_source_path
 
 
 def test_complete_generation_audit_preserves_all_existing_numeric_checks():
     def function(filename):
         return next(
             n
-            for n in ast.parse((REPO / "scripts" / filename).read_text()).body
+            for n in ast.parse(current_source_path("scripts/" + filename).read_text()).body
             if isinstance(n, ast.FunctionDef) and n.name == "verify_generations"
         )
 
@@ -64,7 +65,7 @@ def fixture(tmp_path):
 
 
 def verify_fixture(values):
-    import scripts.verify_wam_terminal_identity_state as verifier
+    import scripts.verification.wam.readout.verify_wam_terminal_identity_state as verifier
 
     pref, regref, prepared, actual, refs, docs = values
 

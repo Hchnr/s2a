@@ -6,7 +6,7 @@ import pytest
 
 import tests.test_full_coupled_pose_inverse as original
 from s2a.research.joint_control.inverse.full_coupled_pose_inverse_sqp import FullCoupledPoseModel, solve_pose
-from scripts.full_coupled_pose_independent import verify_pose_solution
+from scripts.verification.coupled_control.full_coupled_pose_independent import verify_pose_solution
 
 
 @pytest.mark.parametrize(

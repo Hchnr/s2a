@@ -5,7 +5,7 @@ import json
 import shutil
 
 from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
-from scripts.analyze_wam_acceptance import physics_diagnostics
+from scripts.wam.tracking.runtime.analyze_wam_acceptance import physics_diagnostics
 
 
 def main():

@@ -14,8 +14,8 @@ from s2a.research.response_models.nonlinear.nonlinear_conditioned_arm_forward im
     targets,
     with_history,
 )
-from scripts.arm_nonlinear_training import contrast_rows
-from scripts.audit_wam_position import Evidence
+from scripts.verification.response_models.nonlinear.arm_nonlinear_training import contrast_rows
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 CONFIG = Path("configs/nonlinear_conditioned_arm_forward_20261025.json")
 ROOT = Path("outputs/nonlinear_conditioned_arm_forward_20261025")

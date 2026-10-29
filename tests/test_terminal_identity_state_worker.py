@@ -8,6 +8,7 @@ import pytest
 
 from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.readout.terminal_identity_state_execution import GPU, select_readout
+from tests.support.source_layout import current_source_path
 
 
 def tail(path):
@@ -36,12 +37,12 @@ def test_sampler_body_changes_only_variant_name_and_dispatch():
             return self.generic_visit(node)
 
     original = tail(REPO / "scripts/sample_wam_synchronous_state.py")
-    actual = tail(REPO / "scripts/sample_wam_terminal_identity_state.py")
+    actual = tail(current_source_path("scripts/sample_wam_terminal_identity_state.py"))
     assert ast.dump(Expected().visit(original)) == ast.dump(actual)
 
 
 def test_actual_dispatch_expression_covers_all99_rows_without_old_key_error():
-    tree = ast.parse((REPO / "scripts/sample_wam_terminal_identity_state.py").read_text())
+    tree = ast.parse((current_source_path("scripts/sample_wam_terminal_identity_state.py")).read_text())
     assignment = next(
         n
         for n in ast.walk(tree)
@@ -62,7 +63,7 @@ def test_actual_dispatch_expression_covers_all99_rows_without_old_key_error():
 
 def test_actual_dry_cli_requires_new_owner_identity_and_never_imports_model(monkeypatch, capsys):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    import scripts.sample_wam_terminal_identity_state as worker
+    import scripts.wam.readout.sample_wam_terminal_identity_state as worker
 
     calls = []
     monkeypatch.setattr(worker, "admit", lambda *a, **k: ({}, {}, {}))
@@ -116,8 +117,8 @@ def test_scorer_rejects_old_qualified_receipt_before_any_future_access(monkeypat
 
 def test_new_owner_command_parses_with_actual_worker_cli(monkeypatch, capsys):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    import scripts.sample_wam_terminal_identity_state as worker
-    from scripts.run_wam_terminal_identity_state import worker_command
+    import scripts.wam.readout.sample_wam_terminal_identity_state as worker
+    from scripts.wam.readout.run_wam_terminal_identity_state import worker_command
 
     def ref(name):
         return dict(path=str(REPO / "outputs/test" / (name + ".json")), sha256="1" * 64)

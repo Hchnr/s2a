@@ -10,7 +10,7 @@ import h5py
 import numpy as np
 
 from s2a.infrastructure.repository_paths import repository_root
-from scripts.analyze_wam_release_horizon import reference
+from scripts.wam.tracking.runtime.analyze_wam_release_horizon import reference
 
 
 def main():

@@ -43,8 +43,8 @@ def test_independent_checker_rejects_wrong_support_weight_and_wrong_mixture(monk
 
     import pytest
 
-    import scripts.qualified_inverse_independent as kkt
-    import scripts.support_inverse_independent as independent
+    import scripts.verification.response_models.inverse.qualified_inverse_independent as kkt
+    import scripts.verification.response_models.inverse.support_inverse_independent as independent
 
     condition = np.zeros((1, 89))
     condition[0, 0] = 1.5

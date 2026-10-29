@@ -81,7 +81,7 @@ def test_future_scorer_stops_before_prepared_or_archive_read(monkeypatch, tmp_pa
 
 def test_owner_binds_new_cli_candidate_and_uuid():
     from s2a.research.wam.readout.synchronous_state_sampling import GPU
-    from scripts.run_wam_synchronous_state import worker_command
+    from scripts.wam.readout.run_wam_synchronous_state import worker_command
 
     ref = {"path": "/repo/f.json", "sha256": "a" * 64}
     prepared = {
@@ -96,7 +96,7 @@ def test_owner_binds_new_cli_candidate_and_uuid():
 
 
 def test_scores_inherit_unchanged_numeric_thresholds():
-    import scripts.verify_wam_clean_training_state as previous
+    import scripts.verification.wam.training.verify_wam_clean_training_state as previous
 
     rows = metric_rows()
     oldrows = copy.deepcopy(rows)

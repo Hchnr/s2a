@@ -10,8 +10,8 @@ import numpy as np
 
 from s2a.infrastructure.artifacts import sha256
 from s2a.infrastructure.lifecycle.worker_handshake import write_once
-from scripts.prepare_wam_flow_readout import GPU_UUID, reference, require
-from scripts.prepare_wam_free_trajectory import BACKEND_CONTRACT, read_prepared
+from scripts.wam.readout.prepare_wam_flow_readout import GPU_UUID, reference, require
+from scripts.wam.tracking.runtime.prepare_wam_free_trajectory import BACKEND_CONTRACT, read_prepared
 
 
 def precision_payload(name):

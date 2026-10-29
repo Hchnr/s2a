@@ -1,23 +1,16 @@
 """An omitted duplicate does not permit missing or inconsistent plan identity."""
 
 import hashlib
-import importlib.util
+import importlib
 
 import pytest
 
-from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_module_name, historical_source_bytes
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = repository_root(anchor=__file__)
-    monkeypatch.syspath_prepend(str(root / "scripts"))
-    spec = importlib.util.spec_from_file_location(
-        "long_plan_audit_test", root / "scripts/audit_wam_long_qualification_plan.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return importlib.import_module(current_module_name("scripts/audit_wam_long_qualification_plan.py"))
 
 
 def test_review_binds_the_exact_oracle_plan_when_duplicate_is_absent(audit):
@@ -53,12 +46,13 @@ def test_absent_or_conflicting_identity_cannot_be_replaced_with_a_claim(audit):
 
 
 def test_original_physics_helpers_and_both_prior_checker_bytes_stay_frozen(audit):
-    import scripts.audit_wam_long_qualification as original
+    import scripts.verification.wam.physical_logs.audit_wam_long_qualification as original
 
     for path, digest in (
         (audit.ORIGINAL_CHECKER, audit.ORIGINAL_CHECKER_SHA),
         (audit.PREVIOUS_CHECKER, audit.PREVIOUS_CHECKER_SHA),
     ):
-        assert hashlib.sha256(path.read_bytes()).hexdigest() == digest
+        original_bytes = historical_source_bytes(dict(path=str(path.relative_to(audit.REPO)), sha256=digest))
+        assert hashlib.sha256(original_bytes).hexdigest() == digest
     for name in ("native_check", "oracle_prefix", "factory_proof", "runtime_proof", "verify_case", "episode_check"):
         assert getattr(audit, name) is getattr(original, name)

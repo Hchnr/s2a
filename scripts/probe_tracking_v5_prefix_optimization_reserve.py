@@ -29,7 +29,7 @@ from s2a.research.trajectory_search.prefix_optimization_reserve_evidence import 
     require,
 )
 from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
-from scripts.probe_tracking_v5_prefix_trust_control import admit_warm, run_case
+from scripts.tracking.trajectory_search.probe_tracking_v5_prefix_trust_control import admit_warm, run_case
 
 
 def run_search(

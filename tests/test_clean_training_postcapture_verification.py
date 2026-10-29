@@ -13,9 +13,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
 
-SCRIPT = repository_root(anchor=__file__) / "scripts/verify_wam_clean_training_postcapture.py"
+SCRIPT = current_source_path("scripts/verify_wam_clean_training_postcapture.py")
 SPEC = importlib.util.spec_from_file_location("independent_postcapture", SCRIPT)
 audit = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(audit)

@@ -75,7 +75,7 @@ def continuation(tmp_path, monkeypatch):
 
     monkeypatch.setitem(
         sys.modules,
-        "scripts.prepare_wam_native_training_continuation",
+        "scripts.wam.training.clean.prepare_wam_native_training_continuation",
         SimpleNamespace(read_prepared=read_prepared),
     )
     monkeypatch.setattr(module, "restore_cv2_environment", environment_admission)

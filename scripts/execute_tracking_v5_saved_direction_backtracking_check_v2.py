@@ -31,8 +31,10 @@ from s2a.research.trajectory_search.saved_direction_backtracking_evidence import
     remember,
     require,
 )
-from scripts.execute_tracking_v5_saved_direction_backtracking import verify_native_qa as original_verify_native_qa
-from scripts.run_wam_readout import owned_command
+from scripts.tracking.trajectory_search.execute_tracking_v5_saved_direction_backtracking import (
+    verify_native_qa as original_verify_native_qa,
+)
+from scripts.wam.readout.run_wam_readout import owned_command
 
 
 def verify_native_qa(ref):

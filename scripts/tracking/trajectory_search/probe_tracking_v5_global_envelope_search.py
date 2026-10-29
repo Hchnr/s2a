@@ -23,12 +23,12 @@ from s2a.research.trajectory_search.restored_anchor_sqp_evidence import (
     remember,
     require,
 )
-from scripts.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 from scripts.tracking.trajectory_search.probe_tracking_v5_interior_trajectory_search import CONFIG as BASELINE_CONFIG
 from scripts.tracking.trajectory_search.probe_tracking_v5_interior_trajectory_search import initial_model, run_search
 from scripts.tracking.trajectory_search.probe_tracking_v5_rejected_response_search import (
     load_inputs as load_prior_inputs,
 )
+from scripts.tracking.trajectory_search.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 
 ROOT = REPO / "outputs/tracking_v5_global_envelope_search_20261029"
 PLAN = REPO / "plans/v0.0.1/tracking/trajectory_search/global_envelope_search_20261029.md"

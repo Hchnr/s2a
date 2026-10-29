@@ -68,7 +68,7 @@ def execute(index, horizon):
         from s2a.research.response_models.forward.current_coupled_response import build_response
         from s2a.research.response_models.forward.current_model_state_native_precision import current_model_state
         from s2a.research.wam.tracking.runtime.checkpoint_simulation import object_progress
-        from scripts.collect_wam_native_training import endpoint, render_anchor
+        from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor
 
         refs = {Path(r["path"]).name: r for r in case["original_refs"]}
         worker, chunks = read(refs["worker_result.json"]), read(refs["chunks.json"])

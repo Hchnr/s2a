@@ -12,7 +12,9 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def repair(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    module = importlib.import_module("scripts.check_tracking_v5_saved_direction_backtracking_v2")
+    module = importlib.import_module(
+        "scripts.verification.trajectory_search.check_tracking_v5_saved_direction_backtracking_v2"
+    )
     # Restore the frozen module after each synthetic test, including nested calls.
     monkeypatch.setattr(module.frozen, "compare_contract", module.compare_contract)
     return module

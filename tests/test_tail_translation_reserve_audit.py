@@ -20,13 +20,14 @@ from s2a.research.trajectory_search.terminal_secant_probe import (
     fit_terminal_secant_row,
     probe_terminal_secant,
 )
+from tests.support.source_layout import current_module_name
 from tests.test_prefix_optimization_reserve_plan import inputs
 
 
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.tail_translation_reserve_audit")
+    return importlib.import_module("scripts.verification.trajectory_search.tail_translation_reserve_audit")
 
 
 def response(commands, *, terminal=None):
@@ -289,4 +290,8 @@ def test_audit_imports_only_numpy_and_frozen_independent_primitives(audit):
     tree = ast.parse(Path(audit.__file__).read_text())
     names = [node.module for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)]
     names += [alias.name for node in ast.walk(tree) if isinstance(node, ast.Import) for alias in node.names]
-    assert set(names) <= {"numpy", "directional_derivative_audit", "terminal_secant_audit"}
+    assert set(names) <= {
+        "numpy",
+        current_module_name("scripts/directional_derivative_audit.py"),
+        current_module_name("scripts/terminal_secant_audit.py"),
+    }

@@ -8,8 +8,14 @@ from pathlib import Path
 
 from s2a.infrastructure.artifacts import REPO
 from s2a.infrastructure.lifecycle.worker_handshake import write_once
-from scripts.prepare_wam_native_training_continuation import read_prepared
-from scripts.run_wam_native_training import attempt, preserve_attempt_evidence, read, reference, require
+from scripts.wam.training.clean.prepare_wam_native_training_continuation import read_prepared
+from scripts.wam.training.native.run_wam_native_training import (
+    attempt,
+    preserve_attempt_evidence,
+    read,
+    reference,
+    require,
+)
 
 AUDIT_SCHEMA = "s2a.native-training-continuation-independent-verification.v1"
 

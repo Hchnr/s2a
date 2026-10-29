@@ -22,10 +22,10 @@ from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
 )
 from s2a.research.wam.training.clean.clean_training_d1_admission import PREFIX, absent_outputs, admit
 from s2a.research.wam.training.clean.clean_training_w1_handoff import PREPARED_ROOT
-from scripts.run_wam_clean_training_continuation import observe_descendant_cleanup
+from scripts.wam.training.clean.run_wam_clean_training_continuation import observe_descendant_cleanup
 
-ENTRY = "scripts/run_wam_clean_training_d1_handoff.py"
-WORKER = "scripts/execute_wam_clean_training_d1_handoff.py"
+ENTRY = Path(__file__).resolve().relative_to(REPO).as_posix()
+WORKER = "scripts/wam/training/clean/execute_wam_clean_training_d1_handoff.py"
 
 
 def argv(registration_ref, *mode):
@@ -56,7 +56,7 @@ def worker_argv(registration_ref):
 
 
 def check_worker(registration, registration_ref):
-    from scripts.execute_wam_clean_training_d1_handoff import check_stage
+    from scripts.wam.training.clean.execute_wam_clean_training_d1_handoff import check_stage
 
     ref = reference(Path(registration["root"]) / "worker/result.json")
     value = read(ref)

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from scripts.residual_motor_scalar_replay import replay
+from scripts.tracking.response_models.causal.residual_motor_scalar_replay import replay
 
 
 def digest(path):

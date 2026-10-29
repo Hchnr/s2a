@@ -60,7 +60,7 @@ def main():
     from s2a.backends.libero.simulation import current_observation, make_environment, source_pose
     from s2a.geometry import pose_error
     from s2a.research.gripper.gripper_motor_state import preserve_motor_target
-    from scripts.collect_wam_native_training import endpoint, render_anchor
+    from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor
 
     env = None
     result = dict(

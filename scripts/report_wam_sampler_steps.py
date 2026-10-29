@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
 
-from scripts.audit_wam_sampler_steps import (
+from scripts.verification.wam.readout.audit_wam_sampler_steps import (
     METRIC_KEYS,
     PREFIXES,
     ROOT,

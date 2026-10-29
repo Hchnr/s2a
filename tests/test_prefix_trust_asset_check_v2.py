@@ -17,7 +17,7 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def repair(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.check_tracking_v5_prefix_trust_control_v2")
+    return importlib.import_module("scripts.verification.trajectory_search.check_tracking_v5_prefix_trust_control_v2")
 
 
 def test_only_the_two_registered_main_ast_changes_are_applied(repair):

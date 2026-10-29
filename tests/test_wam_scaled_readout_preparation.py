@@ -13,7 +13,7 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def preparer(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.prepare_wam_scaled_readout")
+    return importlib.import_module("scripts.wam.readout.prepare_wam_scaled_readout")
 
 
 def test_cpu_environment_guard_runs_before_reading_any_ancestor(preparer, monkeypatch):

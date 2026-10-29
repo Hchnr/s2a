@@ -15,7 +15,7 @@ from tests.test_prefix_trajectory_audit_ledger import classify as independently_
 @pytest.fixture
 def checker(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.check_tracking_v5_prefix_trust_control")
+    return importlib.import_module("scripts.verification.trajectory_search.check_tracking_v5_prefix_trust_control")
 
 
 def classifications(answer, arguments):
@@ -175,7 +175,7 @@ def test_tiny_cap_boundary_difference_is_not_relaxed(checker, recentered_archive
 
 
 def test_nested_strings_recurse_locally_without_patching_frozen_modules(checker):
-    import scripts.check_tracking_v5_saved_direction_backtracking as frozen
+    import scripts.verification.trajectory_search.check_tracking_v5_saved_direction_backtracking as frozen
 
     original = frozen.compare_contract
     actual = {"decisions": [{"rejection_reasons": ["joint_or_command", "safety_buffer"]}]}

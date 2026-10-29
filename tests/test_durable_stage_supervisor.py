@@ -11,9 +11,10 @@ from pathlib import Path
 import pytest
 
 from s2a.infrastructure.lifecycle import durable_stage_supervisor as durable
+from tests.support.source_layout import historical_import_closure
 
 sys.path.insert(0, str(durable.REPO / "scripts"))
-import scripts.run_wam_clean_training_continuation as continuation  # noqa: E402
+import scripts.wam.training.clean.run_wam_clean_training_continuation as continuation  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -210,7 +211,7 @@ def make_detached_helper(tmp_path):
     helper = tmp_path / "detached_cpu_helper.py"
     helper.write_text(
         "import json,os,sys,time\nfrom pathlib import Path\n"
-        "from s2a import durable_stage_supervisor as d\n"
+        "from s2a.infrastructure.lifecycle import durable_stage_supervisor as d\n"
         "root=Path(sys.argv[1]);mode=sys.argv[2]\n"
         "mapping={str(Path(d.__file__).resolve()):d.sha(d.__file__)}\n"
         "command=[sys.executable,str(Path(__file__).resolve()),str(root),mode,'--run']\n"
@@ -312,6 +313,7 @@ def test_cpu_environment_sets_its_own_import_paths_instead_of_inheriting_caller(
 
 def guarded_bundle_environment(tmp_path):
     guard = tmp_path / "import_guard"
+    historical = tmp_path / "historical_sources"
     guard.mkdir()
     (guard / "sitecustomize.py").write_text(
         "import atexit,builtins,json,os\nfrom pathlib import Path\nimport numpy as np\n"
@@ -324,12 +326,30 @@ def guarded_bundle_environment(tmp_path):
         "  observed['forbidden_imports']+=1\n  raise AssertionError('bundle metadata CLI imported model or physics')\n"
         " return original(name,*args,**kwargs)\n"
         "builtins.__import__=guarded\n"
+        "from s2a import artifacts as archival_artifacts\n"
+        f"assert Path(archival_artifacts.__file__).resolve().is_relative_to(Path({str(historical)!r})/'src')\n"
+        f"archival_artifacts.REPO=Path({str(durable.REPO)!r})\n"
         "atexit.register(lambda:Path(os.environ['S2A_CLI_GUARD_RECEIPT']).write_text(json.dumps(observed)))\n"
     )
+    historical_import_closure(
+        [
+            "scripts/run_wam_clean_training.py",
+            "scripts/run_wam_clean_training_state.py",
+            "scripts/run_wam_clean_training_development.py",
+            "scripts/collect_wam_clean_training.py",
+            "scripts/sample_wam_clean_training_state.py",
+            "scripts/serve_wam_clean_training.py",
+            "scripts/verify_wam_clean_training_capture.py",
+            "scripts/verify_wam_clean_training_state.py",
+            "scripts/verify_wam_clean_training_development.py",
+            "scripts/execute_wam_clean_training_case.py",
+        ],
+        historical,
+    )
     environment = durable.cpu_environment()
-    # Only the test guard precedes the exact production import paths. Python
-    # still puts the actually executed bundle directory at sys.path[0].
-    environment["PYTHONPATH"] = str(guard) + os.pathsep + environment["PYTHONPATH"]
+    # These frozen published entrypoints use their exact archival import
+    # closure. This metadata-only CLI check grants no runtime qualification.
+    environment["PYTHONPATH"] = os.pathsep.join(map(str, (guard, historical / "src", historical / "scripts")))
     return environment
 
 
@@ -461,7 +481,7 @@ def synthetic_admission(monkeypatch):
     prep = dict(schema_version="s2a.clean-training-preparation.v1", root=str(durable.REPO / continuation.NEW_ROOT_REL))
     spec = continuation.expected_supervisor()
     files = [
-        durable.REPO / "scripts/run_wam_clean_training_continuation.py",
+        Path(continuation.__file__),
         Path(durable.__file__),
         Path(verifier["path"]),
         *(durable.REPO / value["entrypoint"] for value in spec["stage_commands"].values()),

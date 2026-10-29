@@ -27,7 +27,7 @@ def modules(monkeypatch):
     return SimpleNamespace(
         producer=importlib.import_module("scripts.probe_tracking_v5_accepted_point_sqp"),
         evidence=importlib.import_module("s2a.research.trajectory_search.accepted_point_sqp_evidence"),
-        owner=importlib.import_module("scripts.execute_tracking_v5_accepted_point_sqp"),
+        owner=importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_accepted_point_sqp"),
     )
 
 
@@ -160,10 +160,10 @@ def test_owner_cannot_accept_wrong_algorithm_or_qp_budget(modules, key, value):
 def native_qa(modules, monkeypatch, tmp_path):
     native = tmp_path / "native_python"
     names = (
-        "scripts.execute_tracking_v5_prefix_optimization_reserve",
-        "scripts.execute_tracking_v5_prefix_callback_backtracking",
-        "scripts.execute_tracking_v5_prefix_trust_check_v2",
-        "scripts.execute_tracking_v5_prefix_trust_control",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_prefix_optimization_reserve",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_prefix_callback_backtracking",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_prefix_trust_check_v2",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_prefix_trust_control",
     )
     for module in [modules.owner, *(importlib.import_module(name) for name in names)]:
         monkeypatch.setattr(module, "REPO", tmp_path)
@@ -365,8 +365,10 @@ def test_incomplete_or_changed_reserve_replay_cannot_admit_search(modules, monke
 
 
 def checker_run(modules, monkeypatch, tmp_path):
-    checker = importlib.import_module("scripts.check_tracking_v5_accepted_point_sqp")
-    monkeypatch.setitem(sys.modules, "scripts.check_tracking_v5_prefix_callback_backtracking", checker)
+    checker = importlib.import_module("scripts.verification.trajectory_search.check_tracking_v5_accepted_point_sqp")
+    monkeypatch.setitem(
+        sys.modules, "scripts.verification.trajectory_search.check_tracking_v5_prefix_callback_backtracking", checker
+    )
     run = prior.new_checker_run(modules, monkeypatch, tmp_path)
     metadata = sys.modules["s2a.research.trajectory_search.prefix_callback_backtracking_evidence"]
     metadata.PREFIX_OPTIMIZATION_MARGIN = 1e-4

@@ -15,7 +15,9 @@ from s2a.research.trajectory_search.saved_direction_backtracking import build_ba
 @pytest.fixture
 def checker(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.check_tracking_v5_saved_direction_backtracking")
+    return importlib.import_module(
+        "scripts.verification.trajectory_search.check_tracking_v5_saved_direction_backtracking"
+    )
 
 
 def fixed_sources():

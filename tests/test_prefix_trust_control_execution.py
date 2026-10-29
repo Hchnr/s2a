@@ -15,13 +15,13 @@ from tests.support.trajectory_rollout import CountingDynamics, captured_rollout,
 @pytest.fixture
 def producer(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.probe_tracking_v5_prefix_trust_control")
+    return importlib.import_module("scripts.tracking.trajectory_search.probe_tracking_v5_prefix_trust_control")
 
 
 @pytest.fixture
 def execution(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.execute_tracking_v5_prefix_trust_control")
+    return importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_prefix_trust_control")
 
 
 def three_response_solver(source, dynamics, calls):

@@ -11,7 +11,9 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def comparisons(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.check_tracking_v5_state_updated_trajectory_control_v2")
+    return importlib.import_module(
+        "scripts.verification.trajectory_search.check_tracking_v5_state_updated_trajectory_control_v2"
+    )
 
 
 def accepted(check, *args, **kwargs):

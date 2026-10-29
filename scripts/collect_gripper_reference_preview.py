@@ -8,7 +8,7 @@ import numpy as np
 
 from s2a.infrastructure.artifacts import sha256
 from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
-from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.simulation.run_matched_oracle_case import CONTROL, CONTROL_SHA
 
 CONFIG = Path("configs/training_state_recovery_qualification_20261025.json")
 
@@ -25,7 +25,7 @@ def main():
     readiness = restore_cv2_environment(guard["exact_probe_ref"], guard["runtime_source_refs"])
     from s2a.research.gripper.gripper_preview_simulation import run_gripper_preview_case
     from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
-    from scripts.collect_wam_native_training import endpoint, render_anchor, save_arrays
+    from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor, save_arrays
 
     strict_native_environment()
     registration = json.loads(CONFIG.read_text())

@@ -18,7 +18,7 @@ from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     publish,
     sha,
 )
-from scripts.coupled_preview_execution_sources import prepare_sources
+from scripts.tracking.joint_control.preview.coupled_preview_execution_sources import prepare_sources
 
 ROOT = REPO / "outputs/coupled_preview_control_20261026"
 CONFIG = REPO / "configs/coupled_preview_control_registered_20261026.json"

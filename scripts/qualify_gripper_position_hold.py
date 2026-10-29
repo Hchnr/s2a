@@ -207,7 +207,7 @@ def main():
             )
             raise SystemExit(code)
         if variant == "baseline_v2":
-            from scripts.verify_gripper_position_hold import verify_baseline
+            from scripts.verification.gripper.verify_gripper_position_hold import verify_baseline
 
             check = verify_baseline(c, root)
             write_new(root / "baseline_exact_repetition.json", check)

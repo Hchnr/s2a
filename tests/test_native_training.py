@@ -24,13 +24,14 @@ from s2a.research.wam.training.native.native_training import (
     synchronous_labels,
     validate_physical_source,
 )
+from tests.support.source_layout import current_source_path
 
 ROOT = repository_root(anchor=__file__)
 
 
 def collector():
     spec = importlib.util.spec_from_file_location(
-        "native_collector_tests", ROOT / "scripts/collect_wam_native_training.py"
+        "native_collector_tests", current_source_path("scripts/collect_wam_native_training.py")
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -183,7 +184,7 @@ def test_worker_cpu_guard_refuses_overwrite_and_has_real_cli(tmp_path, monkeypat
     assert json.loads(path.read_text()) == {"value": 3}
     environment = dict(os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONDONTWRITEBYTECODE="1")
     completed = subprocess.run(
-        [sys.executable, "scripts/collect_wam_native_training.py", "--help"],
+        [sys.executable, str(current_source_path("scripts/collect_wam_native_training.py")), "--help"],
         cwd=ROOT,
         env=environment,
         capture_output=True,
@@ -324,7 +325,9 @@ def test_run_startup_receipt_matches_owned_child_contract_before_collection(tmp_
         raise RuntimeError("intentional fixture stop before collection; zero physics")
 
     monkeypatch.setitem(
-        sys.modules, "scripts.prepare_wam_native_training", SimpleNamespace(read_prepared=read_prepared)
+        sys.modules,
+        "scripts.wam.training.native.prepare_wam_native_training",
+        SimpleNamespace(read_prepared=read_prepared),
     )
     monkeypatch.setattr(module, "collect_case", stop_before_collection)
     code = module.run(SimpleNamespace(prepared=str(prepared_path), prepared_sha256=prepared_sha, task_index=0, seed=42))

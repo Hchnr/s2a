@@ -3,7 +3,7 @@ import numpy as np
 from s2a.controllers.osc import OSCInterface
 from s2a.research.joint_control.preview.coupled_pose_preview_executable import plan_pose
 from s2a.research.joint_control.tracking.current_coupled_state import rotation_goal_from_command
-from scripts.coupled_pose_preview_independent import verify_preview
+from scripts.verification.joint_control.preview.coupled_pose_preview_independent import verify_preview
 from tests.test_coupled_pose_preview import problem
 
 

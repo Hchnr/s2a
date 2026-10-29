@@ -8,7 +8,7 @@ from pathlib import Path
 from s2a.infrastructure.artifacts import REPO, sha256
 from s2a.research.wam.readout.synchronous_state_sampling import BUDGET, candidate_head, paired_entries
 from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference
-from scripts.prepare_wam_synchronous_validation import source_closure
+from scripts.wam.tracking.runtime.prepare_wam_synchronous_validation import source_closure
 
 
 def main():

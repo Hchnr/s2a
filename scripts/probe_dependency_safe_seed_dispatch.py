@@ -52,7 +52,7 @@ def main():
         from s2a.geometry import inverse
         from s2a.research.gripper.gripper_motor_state import preserve_motor_target
         from s2a.research.joint_control.preview.dependency_safe_preview_runtime import solve_preview
-        from scripts.collect_wam_native_training import endpoint, render_anchor
+        from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor
 
         env, _ = make_environment(manifest["runtime_config"], root / "native", manifest["record"], 0)
         import mujoco
@@ -102,7 +102,7 @@ def main():
         )
         with (root / "failing_inputs.npz").open("xb") as stream:
             np.savez_compressed(stream, **inputs)
-        from scripts.coupled_pose_preview_independent import verify_preview
+        from scripts.verification.joint_control.preview.coupled_pose_preview_independent import verify_preview
 
         solved = solve_preview(
             inputs["mass"],

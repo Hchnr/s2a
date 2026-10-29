@@ -117,7 +117,7 @@ def test_scorer_rejects_old_qualified_receipt_before_any_future_access(monkeypat
 def test_new_owner_command_parses_with_actual_worker_cli(monkeypatch, capsys):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
     import scripts.sample_wam_terminal_state as worker
-    from scripts.run_wam_terminal_state import worker_command
+    from scripts.wam.readout.run_wam_terminal_state import worker_command
 
     def ref(name):
         return dict(path=str(REPO / "outputs/test" / (name + ".json")), sha256="1" * 64)

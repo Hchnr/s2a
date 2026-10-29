@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 from scipy.optimize import lsq_linear
 
-from scripts.analyze_wam_release_horizon import reference
+from scripts.wam.tracking.runtime.analyze_wam_release_horizon import reference
 
 PREPARED = Path(
     "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json"

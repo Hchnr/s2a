@@ -20,7 +20,12 @@ from s2a.infrastructure.native_environment import (  # noqa: E402
     restore_cv2_environment,
     strict_native_environment,
 )
-from scripts.collect_wam_native_training import collect_case, reference, require, write_once  # noqa: E402
+from scripts.wam.training.native.collect_wam_native_training import (  # noqa: E402
+    collect_case,
+    reference,
+    require,
+    write_once,
+)
 
 
 def task_records(prepared, original, task_index):
@@ -74,7 +79,7 @@ def guard_receipt(path, name, phase, continuation_ref):
 def run(args):
     strict_native_environment()
     require(args.seed == 42 and args.task_index in (1, 2), "fixed continuation seed/task required")
-    from scripts.prepare_wam_native_training_continuation import read_prepared as read_prepared_new
+    from scripts.wam.training.clean.prepare_wam_native_training_continuation import read_prepared as read_prepared_new
 
     prepared_path = Path(args.prepared).resolve()
     prepared = read_prepared_new(prepared_path, args.prepared_sha256)

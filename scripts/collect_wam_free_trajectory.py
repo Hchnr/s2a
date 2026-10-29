@@ -23,7 +23,7 @@ from s2a.research.wam.tracking.runtime.wam_trajectory_capture import (
     require,
     tensor_array,
 )
-from scripts.audit_wam_current_numerics import (
+from scripts.verification.wam.model_contracts.audit_wam_current_numerics import (
     bundle,
     check_flow,
     normalize_labels,
@@ -34,11 +34,16 @@ from scripts.audit_wam_current_numerics import (
     training_payload,
     write_new,
 )
-from scripts.prepare_wam_free_trajectory import read_prepared
-from scripts.run_wam_free_trajectory import precision_admission
-from scripts.run_wam_readout_features import BoundaryCounter, actual_context, parameter_versions, setup_service
-from scripts.run_wam_readout_sampling import InitialCapture
-from scripts.sample_wam_scaled_readout import RequestBridge, check_zero
+from scripts.wam.readout.run_wam_readout_features import (
+    BoundaryCounter,
+    actual_context,
+    parameter_versions,
+    setup_service,
+)
+from scripts.wam.readout.run_wam_readout_sampling import InitialCapture
+from scripts.wam.readout.sample_wam_scaled_readout import RequestBridge, check_zero
+from scripts.wam.tracking.runtime.prepare_wam_free_trajectory import read_prepared
+from scripts.wam.tracking.runtime.run_wam_free_trajectory import precision_admission
 
 
 def read_ref(reference):

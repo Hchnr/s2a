@@ -18,7 +18,7 @@ def repair():
 @pytest.fixture
 def execution(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.execute_tracking_v5_prefix_trust_check_v2")
+    return importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_prefix_trust_check_v2")
 
 
 def write_json(path, value):

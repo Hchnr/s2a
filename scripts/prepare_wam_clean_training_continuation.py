@@ -14,7 +14,7 @@ from s2a.research.wam.training.clean.clean_execution_proof import check_executio
 from s2a.research.wam.training.clean.clean_training_continuation_bundle import BUNDLE_REL, NEW_ROOT_REL, publish_bundle
 from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, publish, read, reference, require, sha
 from s2a.research.wam.training.clean.clean_training_seed_plan import build_seed_plan
-from scripts.prepare_wam_clean_training_execution import (
+from scripts.wam.training.clean.prepare_wam_clean_training_execution import (
     DISK_REQUIRED,
     RAM_REQUIRED,
     Evidence,

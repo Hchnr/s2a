@@ -71,7 +71,7 @@ def main():
     from s2a.research.trajectory_search.adaptive_plan_history import AdaptivePlanHistory
     from s2a.research.wam.tracking.runtime.checkpoint_simulation import object_progress
     from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
-    from scripts.collect_wam_native_training import endpoint, render_anchor, save_arrays
+    from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor, save_arrays
 
     result = dict(
         complete=False,

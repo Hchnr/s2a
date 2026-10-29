@@ -33,7 +33,7 @@ from s2a.research.wam.tracking.runtime.development_repair_admission import (
 from s2a.research.wam.training.clean.clean_training_d1_admission import Evidence
 from s2a.research.wam.training.clean.clean_training_development_handoff import environment as original_environment
 from s2a.research.wam.training.clean.clean_training_w1_handoff import PREPARED_ROOT
-from scripts.run_wam_clean_training_continuation import observe_descendant_cleanup
+from scripts.wam.training.clean.run_wam_clean_training_continuation import observe_descendant_cleanup
 
 NAMESPACE = "development_dependency_repair_20261024"
 ENTRY = "scripts/run_wam_clean_development_repair.py"

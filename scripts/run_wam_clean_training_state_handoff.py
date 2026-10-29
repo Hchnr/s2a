@@ -23,7 +23,7 @@ from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
 from s2a.research.wam.training.clean.clean_training_state_handoff import PREFIX, ROOT, absent_outputs, admit
 from s2a.research.wam.training.clean.clean_training_w1_handoff import PREPARED_ROOT
 from s2a.research.wam.training.state_worker_checks import check_worker, worker_argv
-from scripts.run_wam_clean_training_continuation import observe_descendant_cleanup
+from scripts.wam.training.clean.run_wam_clean_training_continuation import observe_descendant_cleanup
 
 ENTRY = "scripts/run_wam_clean_training_state_handoff.py"
 WORKER = "scripts/execute_wam_clean_training_state_handoff.py"

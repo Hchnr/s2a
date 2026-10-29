@@ -18,7 +18,7 @@ from tests.test_prefix_preserving_trajectory_plan import inputs
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.prefix_optimization_reserve_audit")
+    return importlib.import_module("scripts.verification.trajectory_search.prefix_optimization_reserve_audit")
 
 
 def test_real_source_proof_binds_only_source_bytes_and_explicit_scope(audit):

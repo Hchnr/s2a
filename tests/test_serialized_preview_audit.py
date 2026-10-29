@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from s2a.research.joint_control.preview.rate_constrained_preview_active_set import plan_translation
-from scripts.serialized_rate_preview_independent import verify_plan
+from scripts.verification.joint_control.preview.serialized_rate_preview_independent import verify_plan
 from tests.test_rate_preview_active_set import contract
 
 

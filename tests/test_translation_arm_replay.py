@@ -4,7 +4,7 @@ from scipy.spatial.transform import Rotation
 
 from s2a.controllers.osc import OSCInterface
 from s2a.research.response_models.inverse.translation_inverse_osc import TranslationInverseOSC
-from scripts.translation_arm_independent_replay import TranslationArmReplay
+from scripts.verification.response_models.inverse.translation_arm_independent_replay import TranslationArmReplay
 
 
 @pytest.mark.parametrize("damping", [0.5, 1.0, 2.0])

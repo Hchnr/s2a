@@ -19,7 +19,7 @@ from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     sha,
 )
 from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
-from scripts.audit_wam_position import Evidence
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 ROOT = REPO / "outputs/preview_control_serialized_20261026"
 DATA = REPO / "outputs/preview_control_20261026"

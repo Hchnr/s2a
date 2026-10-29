@@ -7,9 +7,14 @@ import subprocess
 from pathlib import Path
 
 from s2a.infrastructure.artifacts import REPO, sha256
-from scripts.prepare_wam_raw8_seed43 import merge, unused_root
-from scripts.run_wam_long_service import weight_stats
-from scripts.run_wam_short_replan import cpu_environment, process_record, verify_hashes, write_new
+from scripts.wam.tracking.references.run_wam_short_replan import (
+    cpu_environment,
+    process_record,
+    verify_hashes,
+    write_new,
+)
+from scripts.wam.tracking.runtime.prepare_wam_raw8_seed43 import merge, unused_root
+from scripts.wam.tracking.runtime.run_wam_long_service import weight_stats
 
 
 def registered(relative):
@@ -21,7 +26,7 @@ def registered(relative):
 
 def prepare(qualification_path, qualification_sha, prior_path, prior_sha):
     from s2a.research.wam.simulation.temporal_ensemble_simulation import execution_inputs
-    from scripts.run_wam_temporal_matrix import protocol
+    from scripts.wam.tracking.references.run_wam_temporal_matrix import protocol
 
     cpu_environment()
     assert Path.cwd().resolve() == REPO

@@ -9,7 +9,7 @@ from tests.support.source_layout import current_source_path
 @pytest.mark.parametrize("fault", ["sampler", "numeric", "threshold"])
 def test_complete_body_proof_rejects_unregistered_changes(tmp_path, monkeypatch, fault):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    import scripts.verify_wam_terminal_state_metadata as metadata
+    import scripts.verification.wam.readout.verify_wam_terminal_state_metadata as metadata
 
     assert metadata.body_proofs()["passed"] is True
     paths = [
@@ -29,10 +29,7 @@ def test_complete_body_proof_rejects_unregistered_changes(tmp_path, monkeypatch,
         "numeric": ("scripts/verify_wam_terminal_state.py", "len(pairs) == 48", "len(pairs) == 47"),
         "threshold": ("src/s2a/terminal_state_metrics.py", "0.90 *", "0.95 *"),
     }[fault]
-    locations = {
-        relative: current_source_path(relative) if relative.startswith("src/") else REPO / relative
-        for relative in paths
-    }
+    locations = {relative: current_source_path(relative) for relative in paths}
     for relative in paths:
         source = locations[relative].read_text()
         if relative == target:

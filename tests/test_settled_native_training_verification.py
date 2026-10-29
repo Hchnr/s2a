@@ -17,7 +17,7 @@ from s2a.research.wam.training.native.native_training import synchronous_labels
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.verify_settled_native_training")
+    return importlib.import_module("scripts.verification.wam.training.verify_settled_native_training")
 
 
 @pytest.fixture

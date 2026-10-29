@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from s2a.infrastructure.artifacts import REPO
+from tests.support.source_layout import current_source_path
 
 
 @pytest.fixture
@@ -14,8 +15,8 @@ def modules(monkeypatch):
         importlib.import_module(n)
         for n in (
             "scripts.run_wam_terminal_development",
-            "scripts.verify_wam_terminal_development",
-            "scripts.verify_wam_terminal_development_points",
+            "scripts.verification.wam.terminal.verify_wam_terminal_development",
+            "scripts.verification.wam.terminal.verify_wam_terminal_development_points",
         )
     )
 
@@ -78,10 +79,10 @@ def test_numerical_head_accepts_only_fixed058_ridge(modules):
 
 def test_complete_point_checker_changes_only_head_selection(modules):
     _, _, _ = modules
-    original = (REPO / "scripts/verify_wam_clean_training_capture.py").read_text()
+    original = (current_source_path("scripts/verify_wam_clean_training_capture.py")).read_text()
     expected = original[original.index("def audit_points(") : original.index("\ndef paired_initial(")]
     expected = expected.replace("head=head,", "head=step_head(head, index),")
-    actual = ast.parse((REPO / "scripts/verify_wam_terminal_development_points.py").read_text())
+    actual = ast.parse((current_source_path("scripts/verify_wam_terminal_development_points.py")).read_text())
     actual = next(n for n in actual.body if isinstance(n, ast.FunctionDef) and n.name == "audit_points")
     assert ast.dump(ast.parse(expected).body[0]) == ast.dump(actual)
 
@@ -90,8 +91,8 @@ def test_physical_outcome_score_and_receipt_rules_preserve_original():
     def functions(path):
         return {n.name: n for n in ast.parse(path.read_text()).body if isinstance(n, ast.FunctionDef)}
 
-    old = functions(REPO / "scripts/verify_wam_clean_training_development.py")
-    new = functions(REPO / "scripts/verify_wam_terminal_development.py")
+    old = functions(current_source_path("scripts/verify_wam_clean_training_development.py"))
+    new = functions(current_source_path("scripts/verify_wam_terminal_development.py"))
 
     class Rename(ast.NodeTransformer):
         def visit_Constant(self, node):

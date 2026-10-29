@@ -19,7 +19,7 @@ def prepared():
 def test_old_prediction_embeds_exactly_and_new_features_match_scalar_phases():
     data, p, old = prepared()
     np.testing.assert_allclose(predict(data, p), previous_predict(data, old), rtol=0, atol=1e-13)
-    from scripts.arm_joint_wrench_independent import feature_matrix
+    from scripts.verification.response_models.wrench.arm_joint_wrench_independent import feature_matrix
 
     np.testing.assert_allclose(design(data, p), feature_matrix(data, p), rtol=0, atol=1e-12)
 

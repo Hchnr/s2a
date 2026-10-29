@@ -13,7 +13,7 @@ from s2a.evaluation.task_acceptance import task_outcome
 from s2a.infrastructure.artifacts import code_fingerprint, load_config, sha256, write_json
 from s2a.infrastructure.repository_paths import repository_root
 from s2a.research.wam.tracking.references.wam_reference_replay import run_replay
-from scripts.verify_wam_acceptance import verify_case
+from scripts.verification.wam.physical_logs.verify_wam_acceptance import verify_case
 
 
 def report_destination(c):

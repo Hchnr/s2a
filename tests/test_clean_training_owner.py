@@ -9,7 +9,7 @@ import pytest
 from s2a.infrastructure.repository_paths import repository_root
 
 sys.path.insert(0, str(repository_root(anchor=__file__) / "scripts"))
-import scripts.run_wam_clean_training as owner  # noqa: E402
+import scripts.wam.training.clean.run_wam_clean_training as owner  # noqa: E402
 from s2a.research.wam.training.clean.clean_training_runtime import GPU, read, reference  # noqa: E402
 
 

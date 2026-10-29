@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-import scripts.verify_coupled_preview_wam_metadata as audit
+import scripts.verification.wam.preview.verify_coupled_preview_wam_metadata as audit
 from s2a.research.wam.tracking.preview import coupled_preview_wam_control as control
 
 

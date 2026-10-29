@@ -8,7 +8,7 @@ import numpy as np
 from scipy.linalg import expm
 
 from s2a.research.response_models.forward.paired_response_analysis import axis_response
-from scripts.audit_wam_position import Evidence
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 ROOT = Path("outputs/paired_arm_response_20261025")
 

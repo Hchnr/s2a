@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from s2a.infrastructure.lifecycle.owned_receipt_contract import normal_receipts
-from scripts.audit_wam_position import Evidence
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 ROOT = Path("outputs/native_gripper_response_interventions_20261025_v3")
 

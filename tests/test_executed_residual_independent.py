@@ -2,7 +2,7 @@ import numpy as np
 
 from s2a.controllers.osc import OSCInterface
 from s2a.research.response_models.causal.executed_command_residual import ExecutedCommandResidualOSC
-from scripts.executed_residual_independent import ExecutedResidualReplay
+from scripts.verification.response_models.causal.executed_residual_independent import ExecutedResidualReplay
 
 
 def test_independent_scalar_history_matches_matrix_response_after_actual_blending():

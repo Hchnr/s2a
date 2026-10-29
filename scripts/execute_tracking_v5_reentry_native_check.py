@@ -5,8 +5,8 @@ from pathlib import Path
 
 from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
-from scripts.run_tracking_preview_wam_development_v5 import cpu_environment
-from scripts.run_wam_readout import owned_command
+from scripts.wam.readout.run_wam_readout import owned_command
+from scripts.wam.tracking.preview.run_tracking_preview_wam_development_v5 import cpu_environment
 
 
 def main():

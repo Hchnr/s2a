@@ -18,7 +18,9 @@ from tests.test_prefix_callback_backtracking_execution import write_json
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
-        owner=importlib.import_module("scripts.execute_tracking_v5_directional_derivative_check_v3"),
+        owner=importlib.import_module(
+            "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_check_v3"
+        ),
         evidence=importlib.import_module("s2a.research.trajectory_search.directional_derivative_check_v3_evidence"),
     )
 
@@ -201,9 +203,9 @@ def test_v3_output_is_exclusive(modules, monkeypatch, tmp_path, directory):
 def native_qa_pair(modules, monkeypatch, tmp_path):
     qa = native_qa(modules, monkeypatch, tmp_path)
     for name in (
-        "scripts.execute_tracking_v5_directional_derivative_v2",
-        "scripts.execute_tracking_v5_directional_derivative",
-        "scripts.execute_tracking_v5_accepted_point_sqp",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_v2",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_accepted_point_sqp",
     ):
         module = importlib.import_module(name)
         monkeypatch.setattr(module, "REPO", tmp_path)
@@ -214,7 +216,9 @@ def native_qa_pair(modules, monkeypatch, tmp_path):
         str(tmp_path / "native_python"),
         "-m",
         "pytest",
-        *importlib.import_module("scripts.execute_tracking_v5_directional_derivative_v2").QA_TESTS,
+        *importlib.import_module(
+            "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_v2"
+        ).QA_TESTS,
     ]
     old_log = write_json(tmp_path / "old_qa/pytest.log", {})
     old["log_sha256"] = old_log["sha256"]
@@ -228,7 +232,9 @@ def test_native_qa_requires75_sources23_modules_and_original68_digest_subset(mod
     owner = modules.owner
     assert len(owner.QA_SOURCES) == 75 and len(owner.QA_TESTS) == 23
     new_sources = set(owner.QA_SOURCES) - set(owner.PRODUCER_QA_SOURCES)
-    old_tests = importlib.import_module("scripts.execute_tracking_v5_directional_derivative_v2").QA_TESTS
+    old_tests = importlib.import_module(
+        "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_v2"
+    ).QA_TESTS
     new_tests = set(owner.QA_TESTS) - set(old_tests)
     assert len(new_sources) == 7 and len(new_tests) == 2
     target = tmp_path / "qa/result.json"
@@ -252,7 +258,14 @@ def test_native_qa_requires75_sources23_modules_and_original68_digest_subset(mod
     (tmp_path / sorted(new_sources)[0]).write_text("new checker source changed after QA")
     with pytest.raises(ValueError):
         owner.verify_native_qa(qa_ref)
-    assert len(importlib.import_module("scripts.execute_tracking_v5_directional_derivative_v2").QA_SOURCES) == 68
+    assert (
+        len(
+            importlib.import_module(
+                "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_v2"
+            ).QA_SOURCES
+        )
+        == 68
+    )
 
 
 @pytest.mark.parametrize(

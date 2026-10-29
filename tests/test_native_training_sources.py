@@ -38,7 +38,7 @@ def candidate(index, task=0, steps=50):
 @pytest.fixture
 def preparer(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.prepare_wam_native_training")
+    return importlib.import_module("scripts.wam.training.native.prepare_wam_native_training")
 
 
 def test_global_rng_numeric_order_then_identity_aliases():

@@ -20,7 +20,7 @@ from s2a.research.wam.readout.wam_readout import LIBERO_DOMAIN
 @pytest.fixture
 def server(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.serve_wam_clean_training")
+    return importlib.import_module("scripts.wam.training.clean.serve_wam_clean_training")
 
 
 def prepared(root):
@@ -247,9 +247,9 @@ def test_actual_run_preserves_cleanup_false_and_exits_nonzero_in_owned_cpu_child
     No CUDA API, model forward, environment, HTTP generation or label reader runs.
     The child must actually exit nonzero after publishing the retained False.
     """
-    numerics = importlib.import_module("scripts.audit_wam_current_numerics")
-    features = importlib.import_module("scripts.run_wam_readout_features")
-    sampling = importlib.import_module("scripts.run_wam_readout_sampling")
+    numerics = importlib.import_module("scripts.verification.wam.model_contracts.audit_wam_current_numerics")
+    features = importlib.import_module("scripts.wam.readout.run_wam_readout_features")
+    sampling = importlib.import_module("scripts.wam.readout.run_wam_readout_sampling")
     runtime = importlib.import_module("s2a.backends.wam.runtime")
 
     class Model:

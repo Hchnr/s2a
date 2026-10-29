@@ -15,7 +15,9 @@ from tests.test_paired_reference_phase import admission_inputs, synthetic_respon
 @pytest.fixture
 def cache_type(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.probe_tracking_v5_paired_reference_phase").CachedTrajectoryResponses
+    return importlib.import_module(
+        "scripts.tracking.trajectory_search.probe_tracking_v5_paired_reference_phase"
+    ).CachedTrajectoryResponses
 
 
 def test_exact_command_bytes_share_only_identical_responses(cache_type):

@@ -18,10 +18,10 @@ from s2a.research.response_models.causal.runtime_response_history import Runtime
 from s2a.research.response_models.forward.archived_forward_state import verify_forward_state
 from s2a.research.response_models.forward.current_coupled_response import build_response, solve_translation
 from s2a.research.response_models.wrench.joint_wrench_condition_forward import nominal
-from scripts.audit_wam_position import Evidence
-from scripts.current_coupled_arm_log_replay import CurrentCoupledArmLogReplay
-from scripts.executed_residual_independent import ExecutedResidualReplay
-from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.simulation.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.tracking.coupled_control.admission.current_coupled_arm_log_replay import CurrentCoupledArmLogReplay
+from scripts.verification.response_models.causal.executed_residual_independent import ExecutedResidualReplay
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 
 def serialized(value):

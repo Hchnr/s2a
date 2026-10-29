@@ -7,8 +7,8 @@ from s2a.infrastructure.lifecycle.durable_stage_supervisor import publish, sha
 from s2a.research.response_models.inverse.direct_arm_inverse import nominal_translation, physical_parameters
 from s2a.research.response_models.inverse.direct_arm_inverse_inputs import inverse_condition
 from s2a.research.response_models.wrench.joint_wrench_condition_forward import with_history
-from scripts.arm_wrench_data import attach_current_wrench
-from scripts.audit_wam_position import Evidence
+from scripts.data.arm_response.arm_wrench_data import attach_current_wrench
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 
 def main():

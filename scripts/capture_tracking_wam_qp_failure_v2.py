@@ -53,7 +53,7 @@ def main():
         from s2a.research.gripper.gripper_motor_state import preserve_motor_target
         from s2a.research.joint_control.preview import coupled_pose_preview
         from s2a.research.joint_control.preview.coupled_pose_preview_runtime import solve_preview
-        from scripts.collect_wam_native_training import endpoint, render_anchor
+        from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor
 
         env, _ = make_environment(manifest["runtime_config"], root / "native", manifest["record"], 0)
         import mujoco

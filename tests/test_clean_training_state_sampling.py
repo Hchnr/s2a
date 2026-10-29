@@ -13,12 +13,13 @@ import pytest
 from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.readout.wam_readout import LIBERO_DOMAIN
 from s2a.research.wam.training.clean.clean_training_runtime import GPU, reference
+from tests.support.source_layout import current_source_path
 
 
 @pytest.fixture
 def sampler(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.sample_wam_clean_training_state")
+    return importlib.import_module("scripts.wam.training.clean.sample_wam_clean_training_state")
 
 
 def dump(path, value):
@@ -244,7 +245,7 @@ def test_real_entrypoint_rejects_metadata_only_registration_before_model_or_outp
         ),
     )
     unused = dump(tmp_path / "unused.json", dict(synthetic=True))
-    command = [str(REPO / ".venv/bin/python"), "scripts/sample_wam_clean_training_state.py"]
+    command = [str(REPO / ".venv/bin/python"), str(current_source_path("scripts/sample_wam_clean_training_state.py"))]
     for flag, ref in (
         ("prepared", prepared_ref),
         ("execution-registration", reg_ref),
@@ -256,7 +257,12 @@ def test_real_entrypoint_rejects_metadata_only_registration_before_model_or_outp
     result = subprocess.run(
         command,
         cwd=REPO,
-        env=dict(os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH=""),
+        env=dict(
+            os.environ,
+            CUDA_VISIBLE_DEVICES="",
+            LD_LIBRARY_PATH="",
+            PYTHONPATH=str(REPO / "src") + ":" + str(REPO),
+        ),
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,

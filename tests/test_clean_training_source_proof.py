@@ -12,6 +12,7 @@ from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.training.clean import clean_execution_proof as generic
 from s2a.research.wam.training.clean import clean_training_fit_contract as contract
 from s2a.research.wam.training.clean import clean_training_source_proof as repair
+from tests.support.source_layout import current_source_path
 
 
 def dump(path, value):
@@ -96,7 +97,7 @@ def invoke(fixture, evidence=None, **kwargs):
 
 
 def test_real_scripts_verifier_reproduces_bug_then_corrects_only_source(admission):
-    source = REPO / "scripts/verify_wam_clean_training_continuation.py"
+    source = current_source_path("scripts/verify_wam_clean_training_continuation.py")
     seal(admission, source=source)
     original = contract.check_execution_proof
     evidence = contract.Evidence()

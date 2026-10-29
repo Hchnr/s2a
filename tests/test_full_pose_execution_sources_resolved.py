@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from s2a.infrastructure.artifacts import REPO
-from scripts.full_pose_execution_sources_resolved import merge
+from scripts.tracking.coupled_control.admission.full_pose_execution_sources_resolved import merge
 
 
 def test_historical_relative_and_absolute_sources_merge_with_declarations_retained():

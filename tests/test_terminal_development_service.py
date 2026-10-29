@@ -15,6 +15,7 @@ import requests
 
 from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.readout.wam_readout import LIBERO_DOMAIN
+from tests.support.source_layout import current_source_path
 
 
 @pytest.fixture
@@ -247,9 +248,9 @@ def test_actual_run_preserves_cleanup_false_and_exits_nonzero_in_owned_cpu_child
     No CUDA API, model forward, environment, HTTP generation or label reader runs.
     The child must actually exit nonzero after publishing the retained False.
     """
-    numerics = importlib.import_module("scripts.audit_wam_current_numerics")
-    features = importlib.import_module("scripts.run_wam_readout_features")
-    sampling = importlib.import_module("scripts.run_wam_readout_sampling")
+    numerics = importlib.import_module("scripts.verification.wam.model_contracts.audit_wam_current_numerics")
+    features = importlib.import_module("scripts.wam.readout.run_wam_readout_features")
+    sampling = importlib.import_module("scripts.wam.readout.run_wam_readout_sampling")
     runtime = importlib.import_module("s2a.backends.wam.runtime")
 
     class Model:
@@ -421,7 +422,7 @@ def test_complete_runtime_body_preserves_original_except_declared_seams():
     def run(path):
         return next(n for n in ast.parse(path.read_text()).body if isinstance(n, ast.FunctionDef) and n.name == "run")
 
-    expected = run(REPO / "scripts/serve_wam_clean_training.py")
+    expected = run(current_source_path("scripts/serve_wam_clean_training.py"))
     expected.args.kwonlyargs.append(ast.arg(arg="dry"))
     expected.args.kw_defaults.append(ast.Constant(False))
 

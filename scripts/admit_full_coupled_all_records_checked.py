@@ -18,10 +18,10 @@ from s2a.research.joint_control.tracking.current_coupled_state import rotation_g
 from s2a.research.response_models.causal.coupled_response_history import CoupledResponseHistory
 from s2a.research.response_models.forward.archived_forward_state import verify_forward_state
 from s2a.research.response_models.forward.current_coupled_response import build_response
-from scripts.audit_wam_position import Evidence
-from scripts.current_coupled_independent import response as independent_response
-from scripts.full_coupled_pose_independent import generated_twist, verify_pose_solution
-from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.simulation.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.verification.coupled_control.current_coupled_independent import response as independent_response
+from scripts.verification.coupled_control.full_coupled_pose_independent import generated_twist, verify_pose_solution
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 
 def serialized(value):

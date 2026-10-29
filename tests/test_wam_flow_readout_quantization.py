@@ -11,7 +11,7 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def probe(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.probe_wam_flow_readout_quantization")
+    return importlib.import_module("scripts.wam.readout.probe_wam_flow_readout_quantization")
 
 
 def test_independent_rounding_retains_midpoint_direction_subnormals_and_signed_zero(probe):

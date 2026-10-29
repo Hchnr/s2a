@@ -16,6 +16,7 @@ from s2a.research.trajectory_search.restored_anchor_sqp_plan import (
     make_initial_record_hook,
     solve_restored_anchor_sqp_response,
 )
+from tests.support.source_layout import current_source_path
 from tests.test_accepted_point_sqp_ledger_audit import saved_classifications
 from tests.test_prefix_optimization_reserve_plan import inputs, response
 
@@ -26,7 +27,7 @@ EXPECTED_REF = dict(path="synthetic/tail.json", sha256="a" * 64, locator="answer
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.restored_anchor_sqp_ledger_audit")
+    return importlib.import_module("scripts.verification.trajectory_search.restored_anchor_sqp_ledger_audit")
 
 
 def canonical(value):
@@ -207,8 +208,8 @@ def test_old_math_or_cache_corruption_still_fails_after_initial_gate(audit, arch
 
 
 def test_ledger_inverse_ast_preserves_all_original_math_and_routing():
-    original = ast.parse((REPO / "scripts/accepted_point_sqp_ledger_audit.py").read_text())
-    restored = ast.parse((REPO / "scripts/restored_anchor_sqp_ledger_audit.py").read_text())
+    original = ast.parse((current_source_path("scripts/accepted_point_sqp_ledger_audit.py")).read_text())
+    restored = ast.parse((current_source_path("scripts/restored_anchor_sqp_ledger_audit.py")).read_text())
     helper_names = {"_canonical_value", "compare_initial_records", "audit_initial_record_guard"}
     restored.body = [
         node
@@ -263,8 +264,8 @@ def test_ledger_inverse_ast_preserves_all_original_math_and_routing():
 
 
 def test_native_engine_full_ray_and_entire_trace_replay_loop_are_unchanged():
-    original = ast.parse((REPO / "scripts/check_tracking_v5_accepted_point_sqp.py").read_text())
-    restored = ast.parse((REPO / "scripts/check_tracking_v5_restored_anchor_sqp.py").read_text())
+    original = ast.parse((current_source_path("scripts/check_tracking_v5_accepted_point_sqp.py")).read_text())
+    restored = ast.parse((current_source_path("scripts/check_tracking_v5_restored_anchor_sqp.py")).read_text())
     for name in ("case_engine", "full_ray_records"):
         old = next(node for node in original.body if isinstance(node, ast.FunctionDef) and node.name == name)
         new = next(node for node in restored.body if isinstance(node, ast.FunctionDef) and node.name == name)

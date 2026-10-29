@@ -14,7 +14,8 @@ from pathlib import Path
 import requests
 
 from s2a.infrastructure.artifacts import REPO, sha256
-from scripts.run_wam_short_replan import (
+from scripts.wam.tracking.preview.run_wam_tracking_matrix import protocol
+from scripts.wam.tracking.references.run_wam_short_replan import (
     cpu_environment,
     interrupted,
     process_record,
@@ -22,7 +23,6 @@ from scripts.run_wam_short_replan import (
     verify_hashes,
     write_new,
 )
-from scripts.run_wam_tracking_matrix import protocol
 
 CONFIG = "configs/tracking_replan_wam_20261021.json"
 MATRIX = "scripts/run_wam_tracking_matrix.py"

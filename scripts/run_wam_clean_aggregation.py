@@ -13,8 +13,8 @@ from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
 )
 from s2a.research.wam.training.clean.clean_training_aggregation import ROWS, admit_aggregation
 from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
-from scripts.run_wam_clean_bridge import check_owned_command
-from scripts.run_wam_readout import owned_command
+from scripts.wam.readout.run_wam_readout import owned_command
+from scripts.wam.training.clean.run_wam_clean_bridge import check_owned_command
 
 ROOT = REPO / "outputs/clean_on_policy_aggregation_20261024/aggregate_fit"
 

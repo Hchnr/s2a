@@ -11,7 +11,13 @@ import requests
 from s2a.infrastructure.artifacts import REPO
 from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
 from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
-from scripts.run_wam_clean_training_development import CHECKPOINT, PORT, admit_development, case_order, make_case_config
+from scripts.wam.training.clean.run_wam_clean_training_development import (
+    CHECKPOINT,
+    PORT,
+    admit_development,
+    case_order,
+    make_case_config,
+)
 
 REQUEST_KEYS = {
     "name",

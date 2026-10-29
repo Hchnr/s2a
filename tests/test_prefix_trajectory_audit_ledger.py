@@ -20,7 +20,9 @@ from tests.test_prefix_preserving_trajectory_plan import inputs, optimizer_resul
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    module = importlib.import_module("scripts.check_tracking_v5_prefix_preserving_trajectory_control")
+    module = importlib.import_module(
+        "scripts.verification.trajectory_search.check_tracking_v5_prefix_preserving_trajectory_control"
+    )
     return module.audit_prefix_search_ledger
 
 

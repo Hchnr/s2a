@@ -20,10 +20,16 @@ from tests.test_prefix_trust_control_execution import CountingDynamics, captured
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
-        owner=importlib.import_module("scripts.execute_tracking_v5_tail_translation_reserve"),
+        owner=importlib.import_module(
+            "scripts.tracking.trajectory_search.execute_tracking_v5_tail_translation_reserve"
+        ),
         evidence=importlib.import_module("s2a.research.trajectory_search.tail_translation_reserve_evidence"),
-        producer=importlib.import_module("scripts.probe_tracking_v5_tail_translation_reserve"),
-        checker=importlib.import_module("scripts.check_tracking_v5_tail_translation_reserve"),
+        producer=importlib.import_module(
+            "scripts.tracking.trajectory_search.probe_tracking_v5_tail_translation_reserve"
+        ),
+        checker=importlib.import_module(
+            "scripts.verification.trajectory_search.check_tracking_v5_tail_translation_reserve"
+        ),
     )
 
 
@@ -73,7 +79,9 @@ def complete_receipt(stage, answer=None):
         )
         return report
     if answer is None:
-        owner = importlib.import_module("scripts.execute_tracking_v5_tail_translation_reserve")
+        owner = importlib.import_module(
+            "scripts.tracking.trajectory_search.execute_tracking_v5_tail_translation_reserve"
+        )
         anchor = np.zeros((12, 6))
         anchor[0, 3] = -0.0
         entries, ledger = [], []
@@ -280,16 +288,18 @@ def test_native_qa95_sources29_modules_preserves_original85_digest_subset(module
     owner = modules.owner
     qa = native_qa(modules, monkeypatch, tmp_path)
     for name in (
-        "scripts.execute_tracking_v5_terminal_secant_probe",
-        "scripts.execute_tracking_v5_directional_derivative_check_v3",
-        "scripts.execute_tracking_v5_directional_derivative_v2",
-        "scripts.execute_tracking_v5_directional_derivative",
-        "scripts.execute_tracking_v5_accepted_point_sqp",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_terminal_secant_probe",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_check_v3",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_v2",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_accepted_point_sqp",
     ):
         module = importlib.import_module(name)
         monkeypatch.setattr(module, "REPO", tmp_path)
         monkeypatch.setattr(module, "NATIVE_PYTHON", tmp_path / "native_python")
-    previous_owner = importlib.import_module("scripts.execute_tracking_v5_terminal_secant_probe")
+    previous_owner = importlib.import_module(
+        "scripts.tracking.trajectory_search.execute_tracking_v5_terminal_secant_probe"
+    )
     assert len(owner.QA_SOURCES) == 95 and len(owner.QA_TESTS) == 29
     new_sources = set(owner.QA_SOURCES) - set(owner.PRIOR_QA_SOURCES)
     new_tests = set(owner.QA_TESTS) - set(previous_owner.QA_TESTS)
@@ -606,7 +616,7 @@ def test_checker_replays_all14_including_repeat_and_checks_entire_saved_response
     source, case = complete_case()
     answer = prior.canonical(run_complete(modules, source, case, CountingDynamics(), [])["answer"])
     reference_entries = copy.deepcopy(answer["evaluated_candidates"])
-    frozen = importlib.import_module("scripts.check_tracking_v5_prefix_trust_control")
+    frozen = importlib.import_module("scripts.verification.trajectory_search.check_tracking_v5_prefix_trust_control")
     by_command = {frozen.command_key(row["commands"], 12): row for row in reference_entries}
     result = dict(
         response_evaluations=0,
@@ -705,7 +715,7 @@ def test_fresh_replay_strict_flags_are_not_replaced_by_cross_run_float_tolerance
     source, case = complete_case(base=1e-8 if defect == "buffer_one_ulp" else 2e-8)
     answer = prior.canonical(run_complete(modules, source, case, CountingDynamics(), [])["answer"])
     rollouts, metrics = fresh_inputs(answer)
-    frozen = importlib.import_module("scripts.check_tracking_v5_prefix_trust_control")
+    frozen = importlib.import_module("scripts.verification.trajectory_search.check_tracking_v5_prefix_trust_control")
     if defect == "prefix_torque":
         rollouts[1]["periods"][0]["requested_torque"][0][0] += 1e-13
         frozen.compare_contract(rollouts[1], answer["evaluated_candidates"][1]["rollout"])

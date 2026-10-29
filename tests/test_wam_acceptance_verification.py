@@ -9,7 +9,7 @@ from PIL import Image
 from s2a.backends.libero.simulation import sha256_bytes
 from s2a.infrastructure.artifacts import sha256, write_json
 from s2a.infrastructure.repository_paths import repository_root
-from scripts.verify_wam_acceptance import verify_case
+from scripts.verification.wam.physical_logs.verify_wam_acceptance import verify_case
 
 
 @pytest.fixture

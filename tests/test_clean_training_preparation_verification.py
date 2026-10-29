@@ -11,9 +11,9 @@ from pathlib import Path
 
 import pytest
 
-from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
 
-SCRIPT = repository_root(anchor=__file__) / "scripts/verify_wam_clean_training_preparation.py"
+SCRIPT = current_source_path("scripts/verify_wam_clean_training_preparation.py")
 SPEC = importlib.util.spec_from_file_location("independent_clean_preparation", SCRIPT)
 audit = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(audit)

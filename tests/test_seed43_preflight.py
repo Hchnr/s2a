@@ -12,7 +12,7 @@ def test_qualification_hash_cannot_be_replaced_by_current_execution_source():
     scripts = str(repository_root(anchor=__file__) / "scripts")
     sys.path.insert(0, scripts)
     try:
-        merge = importlib.import_module("scripts.prepare_wam_raw8_seed43").merge
+        merge = importlib.import_module("scripts.wam.tracking.runtime.prepare_wam_raw8_seed43").merge
         inputs = {"qualified_runtime.py": "prior"}
         with pytest.raises(ValueError, match="immutable input conflict"):
             merge(inputs, {"new.py": "new", "qualified_runtime.py": "changed"})
@@ -27,7 +27,7 @@ def test_dry_run_empty_root_is_distinct_from_any_existing_experiment(tmp_path):
     scripts = str(repository_root(anchor=__file__) / "scripts")
     sys.path.insert(0, scripts)
     try:
-        unused_root = importlib.import_module("scripts.prepare_wam_raw8_seed43").unused_root
+        unused_root = importlib.import_module("scripts.wam.tracking.runtime.prepare_wam_raw8_seed43").unused_root
         root = tmp_path / "experiment"
         assert unused_root(root)
         root.mkdir()

@@ -113,7 +113,7 @@ def main():
     from s2a.research.response_models.causal.coupled_response_history import CoupledResponseHistory
     from s2a.research.response_models.forward.current_coupled_response import build_response
     from s2a.research.wam.tracking.runtime.checkpoint_simulation import object_progress
-    from scripts.collect_wam_native_training import endpoint, render_anchor
+    from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor
 
     tool = np.asarray(read(reference(Path(manifest["runtime_config"]["tool_contract"])))["source_from_tcp"])
     mapping = np.asarray(control["source_from_site"])

@@ -1,26 +1,19 @@
 """Independent020 causal endpoint, geometry and retained-source contracts."""
 
 import copy
-import importlib.util
+import importlib
 import json
 
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_module_name
 
 
 @pytest.fixture
 def checker(monkeypatch):
-    root = repository_root(anchor=__file__)
-    monkeypatch.syspath_prepend(str(root / "scripts"))
-    spec = importlib.util.spec_from_file_location(
-        "temporal_checker_test", root / "scripts/wam_temporal_position_checker.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return importlib.import_module(current_module_name("scripts/wam_temporal_position_checker.py"))
 
 
 def chunk(q, poses, openings, anchor=None):
@@ -109,7 +102,7 @@ def test_missing_query_and_ambiguous_rotation_are_rejected(checker):
 
 
 def test_all_unrelated014_case_ast_and_entire_query_ast_remain_exact(checker):
-    from scripts.audit_wam_position import Evidence
+    from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
     proof = checker.source_proof(Evidence())
     assert proof["all_other_case_ast_nodes_exact"] and proof["literal_query_ast_exact"]

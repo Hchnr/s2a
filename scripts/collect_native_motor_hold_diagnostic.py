@@ -9,11 +9,11 @@ from unittest.mock import patch
 
 import numpy as np
 
-import scripts.collect_wam_native_training as native_collector
+import scripts.wam.training.native.collect_wam_native_training as native_collector
 from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
 from s2a.research.wam.training.native.native_training import native_command_schedule
-from scripts.collect_native_pose_hold_diagnostic import GoalRecordingEnvironment
-from scripts.run_native_motor_hold_diagnostic import read_prepared, require
+from scripts.simulation.gripper.run_native_motor_hold_diagnostic import read_prepared, require
+from scripts.tracking.joint_control.native.collect_native_pose_hold_diagnostic import GoalRecordingEnvironment
 
 
 def motor_hold_schedule(native):

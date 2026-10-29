@@ -4,7 +4,7 @@ from scipy.spatial.transform import Rotation
 
 from s2a.controllers.osc import OSCInterface
 from s2a.research.joint_control.inverse.pose_velocity_inverse_osc import PoseVelocityInverseOSC
-from scripts.pose_velocity_arm_independent_replay import PoseVelocityArmReplay
+from scripts.verification.velocity_control.pose_velocity_arm_independent_replay import PoseVelocityArmReplay
 
 
 @pytest.mark.parametrize("damping", [0.5, 1.0, 2.0])

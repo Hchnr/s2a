@@ -9,7 +9,7 @@ import numpy as np
 
 from s2a.infrastructure.artifacts import sha256
 from s2a.infrastructure.native_environment import restore_cv2_environment, strict_native_environment
-from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.simulation.run_matched_oracle_case import CONTROL, CONTROL_SHA
 
 CONFIG = Path("configs/native_gripper_response_interventions_20261025_v2.json")
 ROOT = Path("outputs/native_gripper_response_interventions_20261025_v2")
@@ -29,7 +29,7 @@ def main():
     from s2a.research.joint_control.native.settled_native import SettledGoalEnvironment
     from s2a.research.wam.tracking.control.stability_recovery_simulation import simulator_inputs
     from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
-    from scripts.collect_wam_native_training import endpoint, save_arrays
+    from scripts.wam.training.native.collect_wam_native_training import endpoint, save_arrays
 
     strict_native_environment()
     registration = json.loads(CONFIG.read_text())

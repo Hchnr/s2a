@@ -16,7 +16,7 @@ from tests.test_terminal_only_tail_repair import case
 @pytest.fixture
 def checker(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.check_tracking_v5_terminal_only_tail_repair")
+    return importlib.import_module("scripts.verification.trajectory_search.check_tracking_v5_terminal_only_tail_repair")
 
 
 @pytest.fixture

@@ -15,8 +15,8 @@ from s2a.research.wam.training.clean.wam_clean_streaming import (
     CleanFitLayout,
     fit_clean_residual_streaming,
 )
-from scripts.analyze_wam_clean_capacity import checked
-from scripts.analyze_wam_release_horizon import reference
+from scripts.wam.tracking.runtime.analyze_wam_release_horizon import reference
+from scripts.wam.training.clean.analyze_wam_clean_capacity import checked
 
 
 def execute(spec, output):

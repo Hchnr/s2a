@@ -65,7 +65,7 @@ def main():
     from s2a.research.gripper.gripper_motor_state import preserve_motor_target
     from s2a.research.joint_control.tracking.loaded_velocity_control import LoadedVelocityControl
     from s2a.research.wam.tracking.runtime.checkpoint_simulation import object_progress
-    from scripts.collect_wam_native_training import endpoint, render_anchor
+    from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor
 
     tool = np.asarray(read(reference(Path(manifest["runtime_config"]["tool_contract"])))["source_from_tcp"])
     env = None

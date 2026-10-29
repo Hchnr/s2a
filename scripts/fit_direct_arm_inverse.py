@@ -16,7 +16,7 @@ from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     sha,
 )
 from s2a.research.response_models.inverse.direct_arm_inverse import feature_matrix
-from scripts.direct_arm_inverse_independent import features
+from scripts.verification.response_models.inverse.direct_arm_inverse_independent import features
 
 ROOT = REPO / "outputs/direct_arm_inverse_fit_20261026"
 DATA = REPO / "outputs/direct_arm_inverse_data_checked_20261026"

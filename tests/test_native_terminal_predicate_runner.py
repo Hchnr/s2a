@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import pytest
 
 from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
 
 REPO = repository_root(anchor=__file__)
 
@@ -17,7 +18,7 @@ REPO = repository_root(anchor=__file__)
 def load_owner(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
     spec = importlib.util.spec_from_file_location(
-        "terminal_predicate_owner_test", REPO / "scripts/run_native_terminal_predicate_diagnostic.py"
+        "terminal_predicate_owner_test", current_source_path("scripts/run_native_terminal_predicate_diagnostic.py")
     )
     owner = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(owner)
@@ -26,7 +27,7 @@ def load_owner(monkeypatch):
 
 def admitted(tmp_path, monkeypatch):
     owner = load_owner(monkeypatch)
-    import scripts.run_wam_readout as run_wam_readout
+    import scripts.wam.readout.run_wam_readout as run_wam_readout
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(owner, "REPO", tmp_path)

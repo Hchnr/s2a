@@ -12,7 +12,7 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def owner(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.run_wam_flow_readout")
+    return importlib.import_module("scripts.wam.readout.run_wam_flow_readout")
 
 
 def test_gpu_release_observations_survive_delay_and_terminal_timeout(owner, monkeypatch, tmp_path):

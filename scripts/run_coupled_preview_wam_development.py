@@ -18,10 +18,10 @@ from s2a.research.wam.tracking.preview.coupled_preview_wam_control import make_c
 from s2a.research.wam.tracking.preview.coupled_preview_wam_execution import MASTER_PORT, PORT, admit_development
 from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
 from s2a.research.wam.training.clean.clean_training_runtime import GPU, publish, read, reference, require
-from scripts.run_wam_clean_bridge import check_owned_command, resource_observation
-from scripts.run_wam_clean_training import environment as training_environment
-from scripts.run_wam_clean_training import observe_release
-from scripts.run_wam_readout import owned_command
+from scripts.wam.readout.run_wam_readout import owned_command
+from scripts.wam.training.clean.run_wam_clean_bridge import check_owned_command, resource_observation
+from scripts.wam.training.clean.run_wam_clean_training import environment as training_environment
+from scripts.wam.training.clean.run_wam_clean_training import observe_release
 
 _original_training_environment = training_environment
 

@@ -9,9 +9,9 @@ from pathlib import Path
 import numpy as np
 
 from s2a.research.wam.training.clean.clean_training_data import normalize_active10
-from scripts.analyze_wam_clean_capacity import checked
-from scripts.analyze_wam_clean_residual_error import add, bucket, finish
-from scripts.analyze_wam_release_horizon import reference
+from scripts.wam.tracking.runtime.analyze_wam_release_horizon import reference
+from scripts.wam.training.clean.analyze_wam_clean_capacity import checked
+from scripts.wam.training.clean.analyze_wam_clean_residual_error import add, bucket, finish
 
 
 def main():

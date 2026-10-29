@@ -4,9 +4,10 @@ import ast
 
 import pytest
 
-import scripts.verify_coupled_preview_wam_development as verifier
+import scripts.verification.wam.preview.verify_coupled_preview_wam_development as verifier
 from s2a.infrastructure.repository_paths import repository_root
-from scripts.coupled_preview_wam_audit_admission import admission
+from scripts.wam.tracking.preview.coupled_preview_wam_audit_admission import admission
+from tests.support.source_layout import current_source_path
 
 ROOT = repository_root(anchor=__file__)
 
@@ -53,7 +54,7 @@ def test_independent_admission_rejects_old_schema_before_reading_prerequisites()
 def test_all_per_request_numerical_and_pairing_checks_preserved():
     bodies = []
     for name in ("verify_wam_terminal_development.py", "verify_coupled_preview_wam_development.py"):
-        tree = ast.parse((ROOT / "scripts" / name).read_text())
+        tree = ast.parse(current_source_path("scripts/" + name).read_text())
         loops = [
             node
             for node in ast.walk(tree)

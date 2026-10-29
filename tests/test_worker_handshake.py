@@ -3,6 +3,7 @@
 import copy
 import json
 import os
+import signal
 import subprocess
 import sys
 import threading
@@ -32,7 +33,7 @@ PHYSICS_PYTHON = REPO / "outputs/libero_env311/bin/python"
 CHILD = """
 import json,sys
 from pathlib import Path
-from s2a.worker_handshake import self_ready,write_once,wait_for_go
+from s2a.infrastructure.lifecycle.worker_handshake import self_ready,write_once,wait_for_go
 folder=Path(sys.argv[1])
 ready=self_ready(token='only-launch',config_path=folder/'config.json',snapshot_path=folder/'snapshot.json')
 write_once(folder/'ready.json',ready)
@@ -221,13 +222,16 @@ def test_short_lived_cpu_child_is_reaped():
         [str(PHYSICS_PYTHON), "-c", "raise SystemExit(7)"], env=dict(os.environ, **EXPECTED_ENVIRONMENT)
     )
     owned = birth(process.pid, allow_exited=True)
-    time.sleep(0.1)
-    assert stop_and_reap(process, owned)["returncode"] == 7
+    try:
+        assert process.wait(timeout=5) == 7
+    finally:
+        cleanup = stop_and_reap(process, owned)
+    assert cleanup["returncode"] == 7
 
 
 def test_production_registry_and_trial_builders_accept_real_command(child):
     sys.path.insert(0, str(REPO / "scripts"))
-    from scripts.run_wam_temporal_continuation_matrix import matrix_trial, process_registry
+    from scripts.wam.tracking.references.run_wam_temporal_continuation_matrix import matrix_trial, process_registry
 
     _, observed, _ = admitted_ready(child)
     folder = child[2]
@@ -258,7 +262,7 @@ def test_production_scope_reaps_child_when_parent_handles_sigterm(tmp_path):
     parent_code = """
 import os,signal,sys
 from pathlib import Path
-from s2a.worker_handshake import owned_child
+from s2a.infrastructure.lifecycle.worker_handshake import owned_child
 def interrupted(signum,frame):raise InterruptedError('test SIGTERM')
 signal.signal(signal.SIGTERM,interrupted)
 with owned_child([sys.executable,'-c','import time;time.sleep(10)'],environment=dict(os.environ),cwd=Path.cwd(),folder=Path(sys.argv[1])) as (process,owned):
@@ -291,18 +295,48 @@ with owned_child([sys.executable,'-c','import time;time.sleep(10)'],environment=
 def test_birth_observation_failure_uses_kernel_pidfd_and_reaps_real_child(tmp_path, monkeypatch):
     import s2a.infrastructure.lifecycle.worker_handshake as handshake
 
-    def broken_birth(*args, **kwargs):
-        raise OSError("injected birth observation failure")
-
-    monkeypatch.setattr(handshake, "birth", broken_birth)
-    with pytest.raises(OSError, match="injected birth"):
-        with handshake.owned_child(
-            [str(PHYSICS_PYTHON), "-c", "import time;time.sleep(10)"],
-            environment=dict(os.environ, **EXPECTED_ENVIRONMENT),
+    if not hasattr(os, "pidfd_open") or not hasattr(signal, "pidfd_send_signal"):
+        # The registered standalone CPU3.11 build omits these OS bindings.
+        # Exercise the actual pidfd path in the repository interpreter, keeping
+        # the owned tiny child on the same registered CPU3.11 executable.
+        code = """
+import os,signal,sys
+from pathlib import Path
+import s2a.infrastructure.lifecycle.worker_handshake as handshake
+assert hasattr(os,'pidfd_open') and hasattr(signal,'pidfd_send_signal')
+def broken_birth(*args,**kwargs):raise OSError('injected birth observation failure')
+handshake.birth=broken_birth
+try:
+ with handshake.owned_child([sys.argv[2],'-c','import time;time.sleep(10)'],environment=dict(os.environ),cwd=Path.cwd(),folder=Path(sys.argv[1])):
+  raise AssertionError('failed birth observation must never admit a child')
+except OSError as exc:
+ assert 'injected birth' in str(exc)
+else:
+ raise AssertionError('birth observation failure was not propagated')
+"""
+        result = subprocess.run(
+            [str(REPO / ".venv/bin/python"), "-c", code, str(tmp_path), str(PHYSICS_PYTHON)],
             cwd=REPO,
-            folder=tmp_path,
-        ):
-            pytest.fail("failed birth observation must never admit a child")
+            env=dict(os.environ, **EXPECTED_ENVIRONMENT, PYTHONPATH=str(REPO / "src")),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        assert result.returncode == 0, result.stderr
+    else:
+
+        def broken_birth(*args, **kwargs):
+            raise OSError("injected birth observation failure")
+
+        monkeypatch.setattr(handshake, "birth", broken_birth)
+        with pytest.raises(OSError, match="injected birth"):
+            with handshake.owned_child(
+                [str(PHYSICS_PYTHON), "-c", "import time;time.sleep(10)"],
+                environment=dict(os.environ, **EXPECTED_ENVIRONMENT),
+                cwd=REPO,
+                folder=tmp_path,
+            ):
+                pytest.fail("failed birth observation must never admit a child")
     release = json.loads((tmp_path / "release.json").read_text())
     assert release["ownership_basis"] == "pidfd" and release["start_ticks"] is None
     assert release["reaped"] and not Path(f"/proc/{release['pid']}").exists()
@@ -347,7 +381,7 @@ def test_cpu311_missing_birth_is_reaped_using_unreaped_kernel_child_relationship
     code = """
 import os,sys
 from pathlib import Path
-import s2a.worker_handshake as h
+import s2a.infrastructure.lifecycle.worker_handshake as h
 def unavailable(*args,**kwargs):raise OSError('test unavailable proc birth')
 h.birth=unavailable
 try:

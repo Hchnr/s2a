@@ -9,6 +9,7 @@ import pytest
 from s2a.infrastructure.repository_paths import repository_root
 from s2a.research.wam.training.clean import clean_training_d1_admission as admission
 from s2a.research.wam.training.clean.clean_training_w1_handoff import PREPARED_ROOT
+from tests.support.source_layout import current_source_path
 
 
 @pytest.fixture(autouse=True)
@@ -56,7 +57,7 @@ def test_changed_proposal_rejected_before_any_handoff_or_model(monkeypatch, key,
 
 @pytest.fixture
 def artifacts(monkeypatch):
-    worker = importlib.import_module("scripts.execute_wam_clean_training_d1_handoff")
+    worker = importlib.import_module("scripts.wam.training.clean.execute_wam_clean_training_d1_handoff")
     registration = {
         key: ref(key)
         for key in (
@@ -145,10 +146,11 @@ def test_supervisor_routes_only_one_cpu_wrapper_and_no_extra_stage():
     owner = importlib.import_module("scripts.run_wam_clean_training_d1_handoff")
     command = owner.worker_argv(ref("046_admitted"))
     assert Path(command[0]).name == "python"
-    assert command[1] == "scripts/execute_wam_clean_training_d1_handoff.py"
+    assert command[1] == "scripts/wam/training/clean/execute_wam_clean_training_d1_handoff.py"
     assert command.count("--registration") == command.count("--registration-sha256") == 1
     assert "--stage" not in command and "--gpu-uuid" not in command
-    assert owner.argv(ref("046_admitted"), "--run")[1] == "scripts/run_wam_clean_training_d1_handoff.py"
+    expected_owner = current_source_path("scripts/run_wam_clean_training_d1_handoff.py")
+    assert owner.argv(ref("046_admitted"), "--run")[1] == expected_owner.relative_to(owner.REPO).as_posix()
 
 
 @pytest.mark.parametrize("fault", ["none", "exit7", "failed_result"])

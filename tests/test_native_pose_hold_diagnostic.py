@@ -12,8 +12,8 @@ from s2a.infrastructure.artifacts import REPO
 @pytest.mark.parametrize("method", ["baseline", "latched_pose"])
 def test_goal_override_starts_only_after_native_and_preserves_gripper(monkeypatch, method):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    producer = importlib.import_module("scripts.collect_native_pose_hold_diagnostic")
-    audit = importlib.import_module("scripts.verify_native_pose_hold_diagnostic")
+    producer = importlib.import_module("scripts.tracking.joint_control.native.collect_native_pose_hold_diagnostic")
+    audit = importlib.import_module("scripts.verification.joint_control.native.verify_native_pose_hold_diagnostic")
     sent = []
     site = np.array([0.3, -0.2, 0.5])
 

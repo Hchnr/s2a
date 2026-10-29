@@ -32,7 +32,7 @@ from s2a.research.wam.training.clean.clean_training_development_handoff import (
     command,
     environment,
 )
-from scripts.run_wam_clean_training_continuation import observe_descendant_cleanup
+from scripts.wam.training.clean.run_wam_clean_training_continuation import observe_descendant_cleanup
 
 ENTRY = "scripts/run_wam_clean_training_development_handoff.py"
 

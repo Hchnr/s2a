@@ -21,7 +21,7 @@ def admitted(tmp_path, monkeypatch):
     )
     owner = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(owner)
-    import scripts.run_wam_readout as run_wam_readout
+    import scripts.wam.readout.run_wam_readout as run_wam_readout
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(owner, "REPO", tmp_path)

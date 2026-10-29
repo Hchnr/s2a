@@ -80,7 +80,7 @@ def execute(index, horizon, strategy):
             AdaptivePlanHistory as JointLimitResponseHistory,
         )
         from s2a.research.wam.tracking.runtime.checkpoint_simulation import object_progress
-        from scripts.collect_wam_native_training import endpoint, render_anchor
+        from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor
 
         refs = {Path(r["path"]).name: r for r in case["original_refs"]}
         worker, chunks = read(refs["worker_result.json"]), read(refs["chunks.json"])

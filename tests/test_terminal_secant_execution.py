@@ -20,10 +20,12 @@ from tests.test_prefix_trust_control_execution import CountingDynamics, captured
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
-        owner=importlib.import_module("scripts.execute_tracking_v5_terminal_secant_probe"),
+        owner=importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_terminal_secant_probe"),
         evidence=importlib.import_module("s2a.research.trajectory_search.terminal_secant_evidence"),
         producer=importlib.import_module("scripts.probe_tracking_v5_terminal_secant_probe"),
-        checker=importlib.import_module("scripts.check_tracking_v5_terminal_secant_probe"),
+        checker=importlib.import_module(
+            "scripts.verification.trajectory_search.check_tracking_v5_terminal_secant_probe"
+        ),
     )
 
 
@@ -84,15 +86,17 @@ def test_native_qa_covers85_sources26_modules_and_preserves_prior75_digests(modu
     owner = modules.owner
     qa = native_qa(modules, monkeypatch, tmp_path)
     for name in (
-        "scripts.execute_tracking_v5_directional_derivative_check_v3",
-        "scripts.execute_tracking_v5_directional_derivative_v2",
-        "scripts.execute_tracking_v5_directional_derivative",
-        "scripts.execute_tracking_v5_accepted_point_sqp",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_check_v3",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_v2",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative",
+        "scripts.tracking.trajectory_search.execute_tracking_v5_accepted_point_sqp",
     ):
         module = importlib.import_module(name)
         monkeypatch.setattr(module, "REPO", tmp_path)
         monkeypatch.setattr(module, "NATIVE_PYTHON", tmp_path / "native_python")
-    previous_owner = importlib.import_module("scripts.execute_tracking_v5_directional_derivative_check_v3")
+    previous_owner = importlib.import_module(
+        "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_check_v3"
+    )
     assert len(owner.QA_SOURCES) == 85 and len(owner.QA_TESTS) == 26
     new_sources = set(owner.QA_SOURCES) - set(owner.V3_QA_SOURCES)
     new_tests = set(owner.QA_TESTS) - set(previous_owner.QA_TESTS)
@@ -195,7 +199,7 @@ def complete_receipt(stage, answer=None):
         )
         return report
     if answer is None:
-        owner = importlib.import_module("scripts.execute_tracking_v5_terminal_secant_probe")
+        owner = importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_terminal_secant_probe")
         anchor = np.zeros((12, 6))
         commands = [anchor.copy() for _ in range(17)]
         for index in range(1, 16):
@@ -516,7 +520,7 @@ def test_checker_replays_all17_including_repeat_and_rejects_full_record_tamperin
     )
     answer = canonical(result["answer"])
     reference_entries = copy.deepcopy(answer["evaluated_candidates"])
-    frozen = importlib.import_module("scripts.check_tracking_v5_prefix_trust_control")
+    frozen = importlib.import_module("scripts.verification.trajectory_search.check_tracking_v5_prefix_trust_control")
     by_command = {frozen.command_key(row["commands"], 12): row for row in reference_entries}
     replay = dict(
         response_evaluations=0,

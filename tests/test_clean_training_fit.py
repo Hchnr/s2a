@@ -21,13 +21,14 @@ from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReado
 from s2a.research.wam.training.clean.wam_clean_streaming import CleanFitBlock, CleanFitLayout
 from s2a.research.wam.training.native.native_training import synchronous_labels
 from tests.execution_proof_fixture import effective_training_metadata, seal_execution, training_seed_metadata
+from tests.support.source_layout import current_source_path
 
 
 @pytest.fixture
 def scripts(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.fit_wam_clean_training"), importlib.import_module(
-        "scripts.verify_wam_clean_training_fit"
+    return importlib.import_module("scripts.wam.training.clean.fit_wam_clean_training"), importlib.import_module(
+        "scripts.verification.wam.training.verify_wam_clean_training_fit"
     )
 
 
@@ -499,7 +500,7 @@ def test_real_cli_refuses_metadata_only_registration_without_creating_fit_output
     output = value.root / "forbidden_fit"
     command = [
         str(REPO / ".venv/bin/python"),
-        "scripts/fit_wam_clean_training.py",
+        str(current_source_path("scripts/fit_wam_clean_training.py")),
         "--prepared",
         value.prepared_ref["path"],
         "--prepared-sha256",
@@ -528,6 +529,7 @@ def test_real_cli_refuses_metadata_only_registration_without_creating_fit_output
         OMP_NUM_THREADS="8",
         OPENBLAS_NUM_THREADS="8",
         MKL_NUM_THREADS="8",
+        PYTHONPATH=str(REPO / "src") + ":" + str(REPO),
     )
     result = subprocess.run(
         command,

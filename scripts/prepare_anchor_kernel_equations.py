@@ -6,8 +6,8 @@ import numpy as np
 
 from s2a.infrastructure.artifacts import sha256
 from s2a.research.response_models.forward.anchor_kernel_forward import condition_features
-from scripts.audit_wam_position import Evidence
-from scripts.collect_wam_native_training import write_once
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
+from scripts.wam.training.native.collect_wam_native_training import write_once
 
 
 def main():

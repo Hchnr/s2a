@@ -7,11 +7,11 @@ from pathlib import Path
 
 import numpy as np
 
-import scripts.fit_wam_readout as original
+import scripts.wam.readout.fit_wam_readout as original
 from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.readout.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
 from s2a.research.wam.readout.wam_scaled_readout import ScaledFlowReadout
-from scripts.fit_wam_flow_readout import actual_sigmas
+from scripts.wam.readout.fit_wam_flow_readout import actual_sigmas
 
 CONFIG = REPO / "configs/wam_train_scale_readout_20261021.json"
 CONFIG_SHA = "dd0e0124d256a953af48ea2e548cca6603cd9f777d6bd5e4f620548591a2c06b"

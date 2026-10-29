@@ -15,7 +15,7 @@ from s2a.infrastructure.repository_paths import repository_root
 @pytest.fixture
 def sampling(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.sample_wam_scaled_readout")
+    return importlib.import_module("scripts.wam.readout.sample_wam_scaled_readout")
 
 
 def model_evidence(sampling, tmp_path, *, weights_dtype=np.float64, scale=4.0):

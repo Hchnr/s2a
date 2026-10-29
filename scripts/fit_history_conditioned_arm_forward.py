@@ -14,8 +14,8 @@ from s2a.research.response_models.causal.history_conditioned_arm_forward import 
     targets,
     with_history,
 )
-from scripts.arm_history_contrast_training import contrast_rows
-from scripts.audit_wam_position import Evidence
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
+from scripts.wam.training.native.arm_history_contrast_training import contrast_rows
 
 CONFIG = Path("configs/history_conditioned_arm_forward_20261025.json")
 ROOT = Path("outputs/history_conditioned_arm_forward_20261025")

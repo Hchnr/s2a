@@ -1,24 +1,17 @@
 """The021 outer contract cannot hide the original zero-step failure or weaken020."""
 
 import copy
-import importlib.util
+import importlib
 import json
 
 import pytest
 
-from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_module_name
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = repository_root(anchor=__file__)
-    monkeypatch.syspath_prepend(str(root / "scripts"))
-    spec = importlib.util.spec_from_file_location(
-        "temporal_continuation_audit_test", root / "scripts/audit_wam_temporal_continuation.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return importlib.import_module(current_module_name("scripts/audit_wam_temporal_continuation.py"))
 
 
 def test_only_registered_output_port_and_appended_note_change(audit):
@@ -235,8 +228,8 @@ def test_unknown_is_allowed_only_before_a_complete_unchanged_environment_observa
 
 
 def test_case_mechanics_and_whole_ready_contract_remain_the_frozen_independent_code(audit):
-    import scripts.audit_wam_temporal_wam as original
-    import scripts.wam_temporal_position_checker as checker
+    import scripts.verification.wam.references.audit_wam_temporal_wam as original
+    import scripts.verification.wam.references.wam_temporal_position_checker as checker
 
     assert audit.original is original
     assert audit.original.verify_case is checker.verify_case

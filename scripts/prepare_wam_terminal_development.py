@@ -21,7 +21,7 @@ from s2a.research.wam.tracking.runtime.terminal_development_gate import ROOT as 
 from s2a.research.wam.tracking.runtime.terminal_development_gate import admit_state
 from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
 from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, publish, read, reference, require
-from scripts.run_wam_clean_training import environment
+from scripts.wam.training.clean.run_wam_clean_training import environment
 
 TESTS = sorted(str(p.relative_to(REPO)) for p in (REPO / "tests").glob("test_terminal_development_*.py"))
 
@@ -100,7 +100,7 @@ def prepare():
     )
     for key in ("model_config", "prerequisite_refs", "weight_files", "noise_roster"):
         value[key] = copy.deepcopy(state[key])
-    from scripts.prepare_wam_synchronous_validation import source_closure
+    from scripts.wam.tracking.runtime.prepare_wam_synchronous_validation import source_closure
 
     entries = (
         TESTS

@@ -11,15 +11,15 @@ from s2a.research.wam.readout.aggregate_state_execution import BUDGET, ROOT, adm
 from s2a.research.wam.readout.aggregate_state_sampling import paired_entries
 from s2a.research.wam.training.clean.clean_aggregation_candidate import candidate_head
 from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, publish, read, reference, require
-from scripts.run_wam_aggregate_state import PORT, worker_command
-from scripts.run_wam_clean_training import environment
+from scripts.wam.readout.run_wam_aggregate_state import PORT, worker_command
+from scripts.wam.training.clean.run_wam_clean_training import environment
 
 
 def prepare():
     require(not ROOT.exists(), "Aggregate056 validation directory exists; no overwrite/retry")
     owner_ref = reference(ROOT.parent / "aggregate_fit/orchestration/result.json")
     _, params_ref = candidate_head(owner_ref)
-    from scripts.prepare_wam_synchronous_validation import source_closure
+    from scripts.wam.tracking.runtime.prepare_wam_synchronous_validation import source_closure
 
     bref = reference(REPO / "outputs/synchronous_state_probe052_continuation_20261024/prepared.json")
     baseline = read(bref)

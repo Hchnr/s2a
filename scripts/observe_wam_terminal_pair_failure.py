@@ -4,7 +4,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from scripts.analyze_wam_release_horizon import analyze, reference
+from scripts.wam.tracking.runtime.analyze_wam_release_horizon import analyze, reference
 
 ROOT = Path("outputs/terminal_development_20261025")
 

@@ -19,7 +19,11 @@ from s2a.research.wam.training.clean.clean_training_runtime import (
     reference,
     validate_current_request,
 )
-from scripts.collect_wam_clean_training import admit_round, normalization_spec, same_initial  # noqa: E402
+from scripts.wam.training.clean.collect_wam_clean_training import (  # noqa: E402
+    admit_round,
+    normalization_spec,
+    same_initial,
+)
 
 
 def save(path, value):

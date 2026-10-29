@@ -21,10 +21,10 @@ from s2a.research.response_models.causal.runtime_response_history import Runtime
 from s2a.research.response_models.forward.archived_forward_state import verify_forward_state
 from s2a.research.response_models.forward.current_coupled_response import build_response
 from s2a.research.response_models.wrench.joint_wrench_condition_forward import nominal
-from scripts.audit_wam_position import Evidence
-from scripts.coupled_preview_arm_log_replay import CoupledPreviewArmLogReplay
-from scripts.executed_residual_independent import ExecutedResidualReplay
-from scripts.full_coupled_pose_independent import generated_twist
+from scripts.tracking.joint_control.preview.coupled_preview_arm_log_replay import CoupledPreviewArmLogReplay
+from scripts.verification.coupled_control.full_coupled_pose_independent import generated_twist
+from scripts.verification.response_models.causal.executed_residual_independent import ExecutedResidualReplay
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 
 def serialized(value):

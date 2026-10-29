@@ -159,7 +159,7 @@ def execute(
         # Imports after the explicit, probe-bound preload cannot re-mutate LD.
         from s2a.research.wam.tracking.preview.tracking_preview_wam_simulation_v2 import run_tracking_wam_case
         from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
-        from scripts.collect_wam_native_training import endpoint, render_anchor, save_arrays
+        from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor, save_arrays
 
         strict_native_environment()
         fixture = json.loads(Path(config["fixture"]).read_text())

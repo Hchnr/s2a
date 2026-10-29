@@ -6,7 +6,8 @@ import json
 import pytest
 
 from s2a.infrastructure.repository_paths import repository_root
-from scripts.serialized_preview_wam_acceptance_checker import verify_development_identity
+from scripts.verification.wam.preview.serialized_preview_wam_acceptance_checker import verify_development_identity
+from tests.support.source_layout import current_source_path
 
 ROOT = repository_root(anchor=__file__)
 
@@ -49,7 +50,7 @@ def test_independent_ledger_rejects_cross_variant_and_stale_response(field, valu
 def test_independent_replay_retains_every_per_step_physical_check():
     bodies = []
     for name in ("coupled_preview_acceptance_checker_registered.py", "serialized_preview_wam_acceptance_checker.py"):
-        tree = ast.parse((ROOT / "scripts" / name).read_text())
+        tree = ast.parse(current_source_path("scripts/" + name).read_text())
         loop = [
             n
             for n in ast.walk(tree)

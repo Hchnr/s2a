@@ -18,7 +18,7 @@ from s2a.research.wam.training.clean import clean_training_seed_plan as SEEDS
 @pytest.fixture
 def prepare(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    module = importlib.import_module("scripts.prepare_wam_clean_training_execution")
+    module = importlib.import_module("scripts.wam.training.clean.prepare_wam_clean_training_execution")
     monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
     monkeypatch.setenv("LD_LIBRARY_PATH", "")
     for name, value in module.THREADS.items():

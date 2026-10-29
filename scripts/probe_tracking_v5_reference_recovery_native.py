@@ -79,7 +79,7 @@ def main():
     from s2a.research.gripper.gripper_motor_state import preserve_motor_target
     from s2a.research.joint_control.tracking.current_coupled_state import read_current_dynamics
     from s2a.research.wam.tracking.runtime.checkpoint_simulation import object_progress
-    from scripts.collect_wam_native_training import endpoint, render_anchor
+    from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor
 
     result = dict(complete=False, passed=False, registration_ref=registration, physics_steps=0)
     env = None

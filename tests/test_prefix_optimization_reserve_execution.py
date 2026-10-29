@@ -27,7 +27,9 @@ def modules(monkeypatch):
     return SimpleNamespace(
         producer=importlib.import_module("scripts.probe_tracking_v5_prefix_optimization_reserve"),
         evidence=importlib.import_module("s2a.research.trajectory_search.prefix_optimization_reserve_evidence"),
-        owner=importlib.import_module("scripts.execute_tracking_v5_prefix_optimization_reserve"),
+        owner=importlib.import_module(
+            "scripts.tracking.trajectory_search.execute_tracking_v5_prefix_optimization_reserve"
+        ),
     )
 
 
@@ -282,9 +284,13 @@ def test_owner_rejects_changed_qa_before_starting_the_new_replay(modules, monkey
 
 
 def reserve_checker_run(modules, monkeypatch, tmp_path, *, near_cap_witness=False):
-    checker = importlib.import_module("scripts.check_tracking_v5_prefix_optimization_reserve")
+    checker = importlib.import_module(
+        "scripts.verification.trajectory_search.check_tracking_v5_prefix_optimization_reserve"
+    )
     # Reuse the old pure fake-response fixture while executing this new main.
-    monkeypatch.setitem(sys.modules, "scripts.check_tracking_v5_prefix_callback_backtracking", checker)
+    monkeypatch.setitem(
+        sys.modules, "scripts.verification.trajectory_search.check_tracking_v5_prefix_callback_backtracking", checker
+    )
     run = prior_tests.new_checker_run(modules, monkeypatch, tmp_path)
     metadata = sys.modules["s2a.research.trajectory_search.prefix_callback_backtracking_evidence"]
     metadata.PREFIX_OPTIMIZATION_MARGIN = 1e-4
@@ -424,7 +430,9 @@ def test_new_checker_still_rejects_a_tampered_cached_ray_full_record(modules, mo
 
 @pytest.mark.parametrize("defect", [None, "missing_source", "missing_test"])
 def test_new_owner_requires_the_extended_native_qa_roster(modules, monkeypatch, tmp_path, defect):
-    callback_owner = importlib.import_module("scripts.execute_tracking_v5_prefix_callback_backtracking")
+    callback_owner = importlib.import_module(
+        "scripts.tracking.trajectory_search.execute_tracking_v5_prefix_callback_backtracking"
+    )
     monkeypatch.setattr(callback_owner, "REPO", tmp_path)
     monkeypatch.setattr(callback_owner, "NATIVE_PYTHON", tmp_path / "python")
     prior_tests.test_native_qa_covers_the_complete_new_source_and_test_roster(modules, monkeypatch, tmp_path, defect)

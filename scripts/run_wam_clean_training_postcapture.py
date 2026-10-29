@@ -21,8 +21,8 @@ from s2a.infrastructure.lifecycle.durable_stage_supervisor import (
     require,
 )
 
-ENTRY = "scripts/run_wam_clean_training_postcapture.py"
-WORKER = "scripts/execute_wam_clean_training_postcapture_fit.py"
+ENTRY = Path(__file__).resolve().relative_to(REPO).as_posix()
+WORKER = "scripts/wam/training/clean/execute_wam_clean_training_postcapture_fit.py"
 ROLES = ("producer", "independent")
 
 
@@ -135,7 +135,7 @@ def check_worker(registration, repair_ref, role):
 def execute(repair_ref, *, mode):
     require(Path.cwd().resolve() == REPO, "043 owner must run from the current S2A repository")
     check_cpu_environment(os.environ)
-    from scripts.execute_wam_clean_training_postcapture_fit import admit
+    from scripts.wam.training.clean.execute_wam_clean_training_postcapture_fit import admit
 
     registration = admit(repair_ref)
     sources = registration["source_sha256"]

@@ -7,7 +7,6 @@ separately fingerprinted core QA's responsibility.
 
 import numpy as np
 
-from scripts.directional_derivative_audit import array, exact_array, integer, numerical_compare, require
 from scripts.tracking.trajectory_search.state_vector_gn_search_audit import (
     _causal_update,
     _error,
@@ -20,6 +19,13 @@ from scripts.tracking.trajectory_search.state_vector_gn_search_audit import (
     reconstruct_error_vector_jacobian as reconstruct_error_vector_jacobian,
 )
 from scripts.tracking.trajectory_search.state_vector_objective_scale_audit import _divisor
+from scripts.verification.trajectory_search.directional_derivative_audit import (
+    array,
+    exact_array,
+    integer,
+    numerical_compare,
+    require,
+)
 
 QP_OBJECTIVE_SCALING_POLICY = "pose_whole_objective_divisor"
 RESTORE_DUAL_PROVENANCE = "original_nnls_certificate_divided_by_objective_divisor"

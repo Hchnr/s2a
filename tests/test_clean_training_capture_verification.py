@@ -14,13 +14,14 @@ import pytest
 from s2a.infrastructure.artifacts import REPO
 from s2a.research.wam.training.clean.wam_clean_capture import CleanCapturePoint
 from s2a.research.wam.training.clean.wam_clean_compact import CompactCaptureSink, CompactRequest
+from tests.support.source_layout import current_source_path
 
 
 @pytest.mark.parametrize("seed", [42, 11])
 @pytest.mark.parametrize("fault", [None, "branch", "future_plan", "subtask", "task"])
 def test_caption_matches_actual_seed_renderer_without_adding_missing_plan(checker, monkeypatch, seed, fault):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    producer = importlib.import_module("scripts.collect_wam_clean_training")
+    producer = importlib.import_module("scripts.wam.training.clean.collect_wam_clean_training")
     # Published renderer gold: seed42 draw=.4583 includes[], seed11=.9012 omits.
     caption = dict(
         task_title="current task",
@@ -58,7 +59,7 @@ def test_caption_matches_actual_seed_renderer_without_adding_missing_plan(checke
 @pytest.fixture
 def checker(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.verify_wam_clean_training_capture")
+    return importlib.import_module("scripts.verification.wam.training.verify_wam_clean_training_capture")
 
 
 @pytest.fixture
@@ -429,7 +430,7 @@ def test_cli_refuses_metadata_only_admission_without_creating_a_pass(tmp_path):
         )
     )
     output = tmp_path / "unwritten.json"
-    command = [sys.executable, str(REPO / "scripts/verify_wam_clean_training_capture.py")]
+    command = [sys.executable, str(current_source_path("scripts/verify_wam_clean_training_capture.py"))]
     for name in (
         "prepared",
         "execution-registration",

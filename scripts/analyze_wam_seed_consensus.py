@@ -16,7 +16,7 @@ from scipy.spatial.transform import Rotation
 from s2a.evaluation.wam.checkpoint_audit import state_metrics
 from s2a.geometry import integrate_local, pose9_to_transform
 from s2a.infrastructure.artifacts import write_json
-from scripts.summarize_wam_stability_screen import LABELS, Evidence, aggregate, verify_cell
+from scripts.wam.tracking.control.summarize_wam_stability_screen import LABELS, Evidence, aggregate, verify_cell
 
 
 def main():

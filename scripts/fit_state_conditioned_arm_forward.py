@@ -8,7 +8,7 @@ from scipy.linalg import cho_factor, cho_solve
 
 from s2a.infrastructure.artifacts import sha256
 from s2a.research.response_models.causal.state_conditioned_arm_forward import design, nominal, raw_condition, targets
-from scripts.audit_wam_position import Evidence
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 CONFIG = Path("configs/state_conditioned_arm_forward_20261025.json")
 ROOT = Path("outputs/state_conditioned_arm_forward_20261025")

@@ -1,23 +1,16 @@
 """Git name canonicalization preserves one exact runtime and frozen physics checks."""
 
 import hashlib
-import importlib.util
+import importlib
 
 import pytest
 
-from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_module_name, historical_source_bytes
 
 
 @pytest.fixture
 def audit(monkeypatch):
-    root = repository_root(anchor=__file__)
-    monkeypatch.syspath_prepend(str(root / "scripts"))
-    spec = importlib.util.spec_from_file_location(
-        "long_commit_audit_test", root / "scripts/audit_wam_long_qualification_commit.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return importlib.import_module(current_module_name("scripts/audit_wam_long_qualification_commit.py"))
 
 
 def test_short_and_full_identity_resolve_to_the_same_single_registered_commit(audit):
@@ -30,8 +23,11 @@ def test_short_and_full_identity_resolve_to_the_same_single_registered_commit(au
 
 
 def test_physics_metric_and_prefix_helpers_are_the_unchanged_frozen_objects(audit):
-    import scripts.audit_wam_long_qualification as original
+    import scripts.verification.wam.physical_logs.audit_wam_long_qualification as original
 
-    assert hashlib.sha256(audit.ORIGINAL_CHECKER.read_bytes()).hexdigest() == audit.ORIGINAL_CHECKER_SHA
+    original_bytes = historical_source_bytes(
+        dict(path=str(audit.ORIGINAL_CHECKER.relative_to(audit.REPO)), sha256=audit.ORIGINAL_CHECKER_SHA)
+    )
+    assert hashlib.sha256(original_bytes).hexdigest() == audit.ORIGINAL_CHECKER_SHA
     for name in ("native_check", "oracle_prefix", "factory_proof", "runtime_proof", "verify_case", "lines"):
         assert getattr(audit, name) is getattr(original, name)

@@ -16,7 +16,7 @@ from s2a.infrastructure.relocated_artifacts import RelocatedArtifacts
 @pytest.fixture
 def runner(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.run_wam_clean_bridge")
+    return importlib.import_module("scripts.wam.training.clean.run_wam_clean_bridge")
 
 
 def dump(path, data):

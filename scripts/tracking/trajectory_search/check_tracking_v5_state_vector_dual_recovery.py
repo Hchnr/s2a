@@ -19,27 +19,26 @@ from s2a.research.trajectory_search.restored_anchor_sqp_evidence import (
     remember,
     require,
 )
-from scripts.check_tracking_v5_accepted_point_sqp import case_engine
-from scripts.check_tracking_v5_prefix_trust_control import compare_contract
-from scripts.check_tracking_v5_saved_direction_backtracking import (
-    NUMERIC_TOLERANCE,
-    TORQUE_TOLERANCE,
-    native_math_proof,
-)
-from scripts.check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
-from scripts.check_tracking_v5_terminal_secant_probe import verify_response_trace
 from scripts.tracking.trajectory_search.check_tracking_v5_rejected_response_search import verify_fresh_feedback
 from scripts.tracking.trajectory_search.check_tracking_v5_state_vector_gn_search import verify_fresh_decisions
 from scripts.tracking.trajectory_search.state_vector_dual_recovery_audit import (
     audit_search,
     reconstruct_error_vector_jacobian,
 )
+from scripts.verification.trajectory_search.check_tracking_v5_accepted_point_sqp import case_engine
+from scripts.verification.trajectory_search.check_tracking_v5_prefix_trust_control import compare_contract
+from scripts.verification.trajectory_search.check_tracking_v5_saved_direction_backtracking import (
+    NUMERIC_TOLERANCE,
+    TORQUE_TOLERANCE,
+    native_math_proof,
+)
+from scripts.verification.trajectory_search.check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
+from scripts.verification.trajectory_search.check_tracking_v5_terminal_secant_probe import verify_response_trace
 
 ROOT = REPO / "outputs/tracking_v5_state_vector_dual_recovery_check_20261029"
 
 
 def main(dry=False):
-    from scripts.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
     from scripts.tracking.trajectory_search.probe_tracking_v5_state_vector_dual_recovery import (
         CONFIG,
         initial_error_vector_jacobian,
@@ -47,6 +46,7 @@ def main(dry=False):
         load_inputs,
     )
     from scripts.tracking.trajectory_search.probe_tracking_v5_state_vector_dual_recovery import ROOT as PRODUCER_ROOT
+    from scripts.tracking.trajectory_search.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 
     strict_native_environment()
     require(

@@ -4,7 +4,7 @@ from scipy.spatial.transform import Rotation
 
 from s2a.research.response_models.causal.coupled_response_history import CoupledResponseHistory
 from s2a.research.response_models.forward.current_coupled_response import build_response
-from scripts.current_coupled_independent import response
+from scripts.verification.coupled_control.current_coupled_independent import response
 from tests.test_current_coupled_response import plant
 from tests.test_rate_preview_active_set import contract
 

@@ -15,7 +15,7 @@ from s2a.infrastructure.repository_paths import repository_root
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return importlib.import_module("scripts.run_wam_static_command"), importlib.import_module(
-        "scripts.serve_wam_static_command"
+        "scripts.wam.tracking.runtime.serve_wam_static_command"
     )
 
 

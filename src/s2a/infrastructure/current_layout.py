@@ -26,7 +26,7 @@ CURRENT_MIGRATION_PATH = "docs/migrations/repository_layout_20261029.json"
 # does not introduce a source/manifest fingerprint cycle.
 CURRENT_MIGRATION_REF = dict(
     path=CURRENT_MIGRATION_PATH,
-    sha256="ae9f7ea8d12cdd1ae822f8595b6127cd62844027e5ea699411256709900f1f92",
+    sha256="55ceb8b70b4e1e843a89b32ac1610a75732005ea2e983a0805458332812f9b90",
 )
 _ROOT_METADATA = {"README.md", "AGENTS.md", "pyproject.toml", ".gitignore"}
 

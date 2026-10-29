@@ -7,7 +7,7 @@ from s2a.infrastructure.repository_paths import repository_root
 
 def test_pooled_opening_mae_uses_absolute_errors_and_matching_prefix(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    module = importlib.import_module("scripts.diagnose_reference_gains")
+    module = importlib.import_module("scripts.wam.calibration.diagnose_reference_gains")
     cases = [
         {
             "methods": {

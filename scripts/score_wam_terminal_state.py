@@ -9,7 +9,7 @@ import numpy as np
 
 from s2a.research.wam.readout.terminal_state_metrics import diagnosis
 from s2a.research.wam.training.clean.clean_training_runtime import publish, read, reference, require
-from scripts.verify_wam_clean_training_state import integrate
+from scripts.verification.wam.training.verify_wam_clean_training_state import integrate
 
 
 def score(prepared_ref, numerical_ref, output):

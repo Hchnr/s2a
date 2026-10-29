@@ -9,7 +9,7 @@ from s2a.geometry import rot6d_to_matrix
 from s2a.research.wam.training.clean.clean_training_aggregation import admit_aggregation
 from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
 from s2a.research.wam.training.clean.wam_clean_readout import CleanResidualReadout
-from scripts.verify_wam_clean_training_capture import Evidence, require
+from scripts.verification.wam.training.verify_wam_clean_training_capture import Evidence, require
 
 
 def main():

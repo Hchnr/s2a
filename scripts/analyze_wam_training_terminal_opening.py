@@ -10,7 +10,7 @@ from s2a.research.wam.training.clean.clean_aggregation_candidate import candidat
 from s2a.research.wam.training.clean.clean_training_aggregation import admit_aggregation
 from s2a.research.wam.training.clean.clean_training_data import normalize_active10
 from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
-from scripts.verify_wam_clean_training_capture import Evidence, require
+from scripts.verification.wam.training.verify_wam_clean_training_capture import Evidence, require
 
 
 def main():

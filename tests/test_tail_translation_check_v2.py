@@ -12,6 +12,7 @@ import numpy as np
 import pytest
 
 from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_module_name, current_source_path
 from tests.test_prefix_callback_backtracking_execution import write_json
 
 REPO = repository_root(anchor=__file__)
@@ -21,10 +22,14 @@ REPO = repository_root(anchor=__file__)
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
     return SimpleNamespace(
-        checker=importlib.import_module("scripts.check_tracking_v5_tail_translation_reserve_v2"),
-        owner=importlib.import_module("scripts.execute_tracking_v5_tail_translation_check_v2"),
+        checker=importlib.import_module(
+            "scripts.verification.trajectory_search.check_tracking_v5_tail_translation_reserve_v2"
+        ),
+        owner=importlib.import_module(
+            "scripts.tracking.trajectory_search.execute_tracking_v5_tail_translation_check_v2"
+        ),
         evidence=importlib.import_module("s2a.research.trajectory_search.tail_translation_check_v2_evidence"),
-        audit=importlib.import_module("scripts.tail_translation_reserve_audit"),
+        audit=importlib.import_module("scripts.verification.trajectory_search.tail_translation_reserve_audit"),
     )
 
 
@@ -149,8 +154,8 @@ def test_actual_historical_boolean_bit_change_is_rejected_before_ledger_acceptan
 
 
 def test_checker_inverse_ast_has_only_registered_metadata_changes():
-    old = ast.parse((REPO / "scripts/check_tracking_v5_tail_translation_reserve.py").read_text())
-    new = ast.parse((REPO / "scripts/check_tracking_v5_tail_translation_reserve_v2.py").read_text())
+    old = ast.parse((current_source_path("scripts/check_tracking_v5_tail_translation_reserve.py")).read_text())
+    new = ast.parse((current_source_path("scripts/check_tracking_v5_tail_translation_reserve_v2.py")).read_text())
     new.body = [
         node for node in new.body if not (isinstance(node, ast.FunctionDef) and node.name == "semantic_compare")
     ]
@@ -158,11 +163,11 @@ def test_checker_inverse_ast_has_only_registered_metadata_changes():
     removed_keywords = []
     for node in ast.walk(new):
         if isinstance(node, ast.ImportFrom):
-            if node.module == "s2a.tail_translation_check_v2_evidence":
-                node.module = "s2a.tail_translation_reserve_evidence"
+            if node.module == current_module_name("src/s2a/tail_translation_check_v2_evidence.py"):
+                node.module = current_module_name("src/s2a/tail_translation_reserve_evidence.py")
                 node.names = [name for name in node.names if name.name not in additions]
-            elif node.module == "execute_tracking_v5_tail_translation_check_v2":
-                node.module = "execute_tracking_v5_tail_translation_reserve"
+            elif node.module == current_module_name("scripts/execute_tracking_v5_tail_translation_check_v2.py"):
+                node.module = current_module_name("scripts/execute_tracking_v5_tail_translation_reserve.py")
         if isinstance(node, ast.Call):
             if isinstance(node.func, ast.Name) and node.func.id == "semantic_compare":
                 node.func.id = "numerical_compare"
@@ -223,7 +228,7 @@ def test_new_source_change_after_qa_is_rejected(modules, monkeypatch, tmp_path):
 
 def test_check_only_paths_preserve_original_producer_and_new_checker(modules):
     owner, evidence = modules.owner, modules.evidence
-    old = importlib.import_module("scripts.execute_tracking_v5_tail_translation_reserve")
+    old = importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_tail_translation_reserve")
     assert owner.entry_command("diagnose") == old.entry_command("diagnose")
     assert owner.entry_command("check") == [
         str(owner.NATIVE_PYTHON),

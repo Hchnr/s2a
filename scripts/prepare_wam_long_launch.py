@@ -7,8 +7,8 @@ from pathlib import Path
 
 from s2a.infrastructure.artifacts import REPO, sha256
 from s2a.research.wam.tracking.runtime.long_simulation import execution_inputs
-from scripts.run_wam_long_service import config_path, preflight
-from scripts.run_wam_short_replan import cpu_environment, verify_hashes, write_new
+from scripts.wam.tracking.references.run_wam_short_replan import cpu_environment, verify_hashes, write_new
+from scripts.wam.tracking.runtime.run_wam_long_service import config_path, preflight
 
 BASE = REPO / "outputs/wam_stability_20261021"
 PRIOR = BASE / "long_raw_preflight/prior_services_verified.json"

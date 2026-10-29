@@ -19,7 +19,9 @@ def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
     return SimpleNamespace(
         producer=importlib.import_module("scripts.probe_tracking_v5_directional_derivative_v2"),
-        owner=importlib.import_module("scripts.execute_tracking_v5_directional_derivative_v2"),
+        owner=importlib.import_module(
+            "scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative_v2"
+        ),
         evidence=importlib.import_module("s2a.research.trajectory_search.directional_derivative_v2_evidence"),
     )
 
@@ -141,7 +143,7 @@ def test_v2_failure_does_not_retry_or_certify_partial_replay(modules, monkeypatc
 
 
 def test_v2_qa_covers68_sources_and21_modules_without_mutating_v1_contract(modules, monkeypatch, tmp_path):
-    v1 = importlib.import_module("scripts.execute_tracking_v5_directional_derivative")
+    v1 = importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_directional_derivative")
     old_sources, old_tests = v1.QA_SOURCES, v1.QA_TESTS
     assert len(old_sources) == 62 and len(old_tests) == 20
     assert len(modules.owner.QA_SOURCES) == 68 and len(modules.owner.QA_TESTS) == 21
@@ -149,7 +151,10 @@ def test_v2_qa_covers68_sources_and21_modules_without_mutating_v1_contract(modul
     new_tests = set(modules.owner.QA_TESTS) - set(old_tests)
     assert len(new_sources) == 6 and new_tests == {"tests/test_directional_derivative_v2.py"}
     qa = native_qa(modules, monkeypatch, tmp_path)
-    for module in (v1, importlib.import_module("scripts.execute_tracking_v5_accepted_point_sqp")):
+    for module in (
+        v1,
+        importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_accepted_point_sqp"),
+    ):
         monkeypatch.setattr(module, "REPO", tmp_path)
         monkeypatch.setattr(module, "NATIVE_PYTHON", tmp_path / "native_python")
     target = tmp_path / "qa/result.json"

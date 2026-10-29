@@ -1,18 +1,20 @@
 import ast
 import sys
-from pathlib import Path
 
 import pytest
 
 from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
 
 sys.path.insert(0, str(repository_root(anchor=__file__) / "scripts"))
-from scripts.coupled_gripper_preview_acceptance_checker import preview_mapping
+from scripts.verification.gripper.coupled_gripper_preview_acceptance_checker import preview_mapping
 
 
 def case_function(path):
     return next(
-        n for n in ast.parse(Path(path).read_text()).body if isinstance(n, ast.FunctionDef) and n.name == "verify_case"
+        n
+        for n in ast.parse(current_source_path(path).read_text()).body
+        if isinstance(n, ast.FunctionDef) and n.name == "verify_case"
     )
 
 

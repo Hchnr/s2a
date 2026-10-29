@@ -139,3 +139,42 @@ D2全部5096节点及其顺序/参数，新增73项；原5项环境错误单列�
 `0dcc9125ace894b6b675179b0ba03c9528b2151cfc75e6f136b2a100fe16a043`。
 最终全仓2411个Python文件Ruff/format均通过；结构身份检查通过，脚本/测试/证据
 区域仍有平铺文件，`full_restructure_complete=False`，不得提前称作整理完成。
+
+## D3b首批：共享脚本与独立审核
+
+本阶段775个脚本按已发布的领域设计移动，1141个调用方同步明确namespace、
+当前源码读取与CLI路径；另新增59个真实包标记，不保留旧平铺wrapper。
+最初静态复核1004个非test改动文件：在仅namespace/明确存储定位规范化后，
+数学AST保持；775个rename阶段逐项字节保持。4份独立审核仍只使用标准库定位
+当前仓库，不以引入生产库或放宽禁止导入断言来消除路径问题。
+
+历史proof继续读取catalog登记的原Git字节并核原SHA，当前源码按累计清单独立
+定位和核验。prefix reserve的完整逆AST比较仅多识别一个明确的依赖namespace
+迁移，原差分、caps、预算、容差、函数和ledger断言保持。C++源码与原build、
+flags、binary完全保持；当前存储与原编译声明分别核验。
+
+全量发现5172节点，严格旧文件/函数/参数/顺序保持；原5项环境错误仍实际退出1。
+收据 `outputs/qa/repository_d3b1_collection_v2_20261029/result.json` SHA256
+`baf1dde6b0debfdcfebb24151d42cc7db66e455b9700844fb16a519ece5c4abd`。
+
+2254节点的32进程初测2107通过、147失败，来源前后完全一致；首次collection的
+新增5处定位错误与该回归失败原记录均保留。修复后完整35模块486节点32进程
+复核482通过，4项剩余失败另修后独立复核全部通过，没有声称重新执行全部2254。
+最终4项收据 `outputs/qa/repository_d3b1_final_four_20261029/result.json` SHA256
+`93c2fdb8fb91482e4418cc2d37bdae078485b0d1856b0d2e679b173be8ca33dc`。
+所有owner/child实际wait/reap，未发送信号、未自动重试；未运行GPU或新研究实验。
+
+3.11数值解释器没有pidfd接口，pidfd专测显式使用仓库3.12解释器运行原真实
+父子流程，原3.11 fallback测试保留。短命child测试等待真实退出再核reap，避免
+并发启动延迟使固定sleep误判；完整生命周期门保持。
+
+最终全仓2470个Python文件Ruff/format通过，结构/导入边界另行核验。剩余690
+script、439test、898raw证据与README整理未执行，不能称为全仓整理完工或新控制
+资格通过。本阶段提交后仍按已落盘设计推进。
+
+本次最终结构/身份检查 `outputs/repository_d3b1_structure_20261029/result.json` 通过，
+1237原文件已移动；根平铺为src1/scripts692/tests442/configs192/plans341/reports365，
+完整整理标志仍False。静态包依赖检查2470个Python文件、10903条本地导入边通过，
+无未解析的明确本地导入或裸脚本导入；基础层不导入research，库不导入scripts/tests。
+该静态结果不包含动态导入/运行资格，收据位于 `outputs/repository_d3b1_module_graph_20261029/result.json`。
+双语PR原文见[本阶段PR说明](../pull_requests/repository_layout_20261029.md)。

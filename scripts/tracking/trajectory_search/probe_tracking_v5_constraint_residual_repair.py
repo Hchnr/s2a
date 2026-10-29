@@ -33,7 +33,7 @@ from s2a.research.trajectory_search.restored_anchor_sqp_evidence import (
 )
 from s2a.research.trajectory_search.tail_translation_reserve_evidence import admit_anchor
 from s2a.research.trajectory_search.terminal_only_tail_repair import ENTRY_FIELDS
-from scripts.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
+from scripts.tracking.trajectory_search.probe_tracking_v5_terminal_only_tail_repair import load_environment_guard
 
 ROOT = REPO / "outputs/tracking_v5_constraint_residual_repair_20261029"
 INPUT = REPO / "outputs/constraint_residual_repair_inputs_20261029/bundle.json"

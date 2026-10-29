@@ -10,7 +10,7 @@ import numpy as np
 
 from s2a.evaluation.reference_error_decomposition import decompose, position_summary
 from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
-from scripts.verify_wam_clean_training_capture import Evidence, require
+from scripts.verification.wam.training.verify_wam_clean_training_capture import Evidence, require
 
 
 def opening_summary(error, predicted, truth):

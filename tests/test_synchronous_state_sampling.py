@@ -8,6 +8,7 @@ import pytest
 from s2a.research.wam.readout.synchronous_state_sampling import paired_entries
 from s2a.research.wam.readout.wam_readout import LIBERO_DOMAIN
 from s2a.research.wam.training.clean.clean_training_runtime import reference
+from tests.support.source_layout import current_source_path
 
 
 def fixture(tmp_path):
@@ -195,19 +196,18 @@ def test_candidate_requires_own_full_fit_and_independent_qr(monkeypatch, violati
 
 @pytest.mark.parametrize("change", [False, True])
 def test_sampler_body_proof_rejects_unregistered_numeric_change(tmp_path, monkeypatch, change):
-    import scripts.verify_wam_synchronous_state_metadata as metadata
-    from s2a.infrastructure.artifacts import REPO
+    import scripts.verification.wam.readout.verify_wam_synchronous_state_metadata as metadata
 
     folder = tmp_path / "scripts"
     folder.mkdir()
-    old = (REPO / "scripts/sample_wam_clean_training_state.py").read_text()
-    new = (REPO / "scripts/sample_wam_synchronous_state.py").read_text()
+    old = (current_source_path("scripts/sample_wam_clean_training_state.py")).read_text()
+    new = current_source_path("scripts/sample_wam_synchronous_state.py").read_text()
     if change:
         assert 'counter.scope(entry["name"], 35)' in new
         new = new.replace('counter.scope(entry["name"], 35)', 'counter.scope(entry["name"], 34)')
     (folder / "sample_wam_clean_training_state.py").write_text(old)
     (folder / "sample_wam_synchronous_state.py").write_text(new)
-    monkeypatch.setattr(metadata, "REPO", tmp_path)
+    monkeypatch.setattr(metadata, "current_source_path", lambda relative: tmp_path / relative)
     if change:
         with pytest.raises(ValueError):
             metadata.worker_body_equivalent()

@@ -17,9 +17,9 @@ from s2a.research.wam.training.clean.clean_training_runtime import (
     reference,
     require,
 )
-from scripts.run_wam_clean_bridge import check_owned_command, resource_observation
-from scripts.run_wam_clean_training import MASTER_PORT, _flags, environment, observe_release, prior
-from scripts.run_wam_readout import owned_command
+from scripts.wam.readout.run_wam_readout import owned_command
+from scripts.wam.training.clean.run_wam_clean_bridge import check_owned_command, resource_observation
+from scripts.wam.training.clean.run_wam_clean_training import MASTER_PORT, _flags, environment, observe_release, prior
 
 
 def planned_worker(prepared, prepared_ref, registration_ref):

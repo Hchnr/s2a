@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 
 import s2a.research.response_models.inverse.support_aware_inverse as producer
-import scripts.qualified_inverse_independent as kkt
-import scripts.rate_loading_support_independent as independent
+import scripts.verification.response_models.inverse.qualified_inverse_independent as kkt
+import scripts.verification.response_models.inverse.rate_loading_support_independent as independent
 from s2a.research.response_models.inverse.loading_phase_inverse import LoadingPhaseSupport
 from s2a.research.response_models.inverse.rate_limited_loading_inverse import rate_limited_loading_translation
 from s2a.research.wam.training.native.training_support import TrainingSupport

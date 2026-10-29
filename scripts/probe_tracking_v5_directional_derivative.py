@@ -31,7 +31,7 @@ from s2a.research.trajectory_search.directional_derivative_evidence import (
 from s2a.research.trajectory_search.directional_derivative_probe import STEP_SIZES, _repeat_comparison
 from s2a.research.trajectory_search.native_goal_trajectory import rollout_native_goal_trajectory
 from s2a.research.wam.tracking.runtime.terminal_development_execution import CONTROL_REF
-from scripts.probe_tracking_v5_prefix_trust_control import admit_warm
+from scripts.tracking.trajectory_search.probe_tracking_v5_prefix_trust_control import admit_warm
 
 
 def run_probe(

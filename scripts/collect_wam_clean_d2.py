@@ -29,13 +29,13 @@ from s2a.research.wam.training.clean.clean_training_runtime import (
 )
 from s2a.research.wam.training.clean.wam_clean_capture import NoiseRoster
 from s2a.research.wam.training.clean.wam_clean_compact import CompactCaptureSink, CompactRequest
-from scripts.collect_wam_clean_training import (
+from scripts.wam.training.clean.collect_wam_clean_training import (
     normalization_spec,
     qualified_grid,
     same_initial,
     validate_training_caption,
 )
-from scripts.qualify_wam_clean_bridge import (
+from scripts.wam.training.clean.qualify_wam_clean_bridge import (
     CONVERSION_SOURCE,
     SAMPLER_SOURCE,
     ConversionWitness,
@@ -93,9 +93,9 @@ def run(prepared_ref, registration_ref, *, gpu_uuid, dry=False):
         import torch
 
         from s2a.backends.wam.runtime import install_active_slot_mask, load_service
-        from scripts.audit_wam_current_numerics import require_eval
-        from scripts.run_wam_readout_features import BoundaryCounter, actual_context
-        from scripts.run_wam_readout_sampling import InitialCapture
+        from scripts.verification.wam.model_contracts.audit_wam_current_numerics import require_eval
+        from scripts.wam.readout.run_wam_readout_features import BoundaryCounter, actual_context
+        from scripts.wam.readout.run_wam_readout_sampling import InitialCapture
 
         require(
             gpu_uuid == GPU and torch.cuda.is_available() and torch.cuda.device_count() == 1,

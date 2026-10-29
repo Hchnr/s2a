@@ -15,7 +15,7 @@ from s2a.infrastructure.artifacts import REPO
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return importlib.import_module("scripts.verify_wam_clean_bridge_native_mask")
+    return importlib.import_module("scripts.verification.wam.training.verify_wam_clean_bridge_native_mask")
 
 
 def initial_fixture():

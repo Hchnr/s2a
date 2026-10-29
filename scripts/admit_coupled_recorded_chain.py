@@ -15,9 +15,9 @@ from s2a.infrastructure.native_environment import restore_cv2_environment, stric
 from s2a.research.joint_control.tracking.current_coupled_state import rotation_goal_from_command
 from s2a.research.response_models.causal.coupled_response_history import CoupledResponseHistory
 from s2a.research.response_models.forward.current_coupled_response import build_response, solve_translation
-from scripts.audit_wam_position import Evidence
-from scripts.current_coupled_independent import response, verify_inverse
-from scripts.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.simulation.run_matched_oracle_case import CONTROL, CONTROL_SHA
+from scripts.verification.coupled_control.current_coupled_independent import response, verify_inverse
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 
 
 def main():

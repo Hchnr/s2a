@@ -19,7 +19,9 @@ from tests.test_prefix_optimization_reserve_plan import inputs, response
 @pytest.fixture
 def audit(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.accepted_point_sqp_ledger_audit").audit_accepted_point_sqp_ledger
+    return importlib.import_module(
+        "scripts.verification.trajectory_search.accepted_point_sqp_ledger_audit"
+    ).audit_accepted_point_sqp_ledger
 
 
 def saved_classifications(answer):

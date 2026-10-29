@@ -29,7 +29,7 @@ from s2a.infrastructure.native_environment import (  # noqa: E402
     strict_native_environment,
 )
 from s2a.research.wam.training.native.native_training import state_sha256  # noqa: E402
-from scripts.collect_wam_native_training import reference, require, write_once  # noqa: E402
+from scripts.wam.training.native.collect_wam_native_training import reference, require, write_once  # noqa: E402
 
 
 class StaticCallGuard:
@@ -485,7 +485,7 @@ def finalize_collection(result, guard):
 def run(args):
     strict_native_environment()
     require(args.seed == 42, "fixed seed42 required")
-    from scripts.run_native_terminal_predicate_diagnostic import read_prepared
+    from scripts.tracking.joint_control.terminal.run_native_terminal_predicate_diagnostic import read_prepared
 
     prepared_path = Path(args.prepared).resolve()
     prepared = read_prepared(prepared_path, args.prepared_sha256)

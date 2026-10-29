@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from s2a.research.joint_control.tracking.loaded_velocity_control import LoadedVelocityControl
-from scripts.loaded_velocity_independent_replay import LoadedVelocityReplay
+from scripts.verification.velocity_control.loaded_velocity_independent_replay import LoadedVelocityReplay
 
 
 def setup():

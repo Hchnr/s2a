@@ -15,8 +15,8 @@ import numpy as np
 
 from s2a.infrastructure.artifacts import REPO, sha256
 from s2a.infrastructure.lifecycle.worker_handshake import write_once
-from scripts.prepare_wam_flow_readout import Evidence, external_identity, reference, require, weight_stats
-from scripts.prepare_wam_scaled_readout import (
+from scripts.wam.readout.prepare_wam_flow_readout import Evidence, external_identity, reference, require, weight_stats
+from scripts.wam.readout.prepare_wam_scaled_readout import (
     FLOW_REFS,
     INHERITED,
     cache_only_hashes,

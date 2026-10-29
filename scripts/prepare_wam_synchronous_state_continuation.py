@@ -9,9 +9,9 @@ from pathlib import Path
 from s2a.infrastructure.artifacts import REPO, sha256
 from s2a.research.wam.readout.synchronous_state_continuation import BUDGET, ROOT
 from s2a.research.wam.training.clean.clean_training_runtime import checked, publish, read, reference, require
-from scripts.prepare_wam_synchronous_validation import source_closure
-from scripts.run_wam_clean_training import environment
-from scripts.run_wam_synchronous_state_continuation import PORT, worker_command
+from scripts.wam.readout.run_wam_synchronous_state_continuation import PORT, worker_command
+from scripts.wam.tracking.runtime.prepare_wam_synchronous_validation import source_closure
+from scripts.wam.training.clean.run_wam_clean_training import environment
 
 OLD = REPO / "outputs/synchronous_state_probe052_20261024"
 

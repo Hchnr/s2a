@@ -25,7 +25,7 @@ def main():
     )
     registration_ref = publish(root / "registration.json", registration)
     import s2a.backends.libero.simulation as simulation
-    import scripts.run_preview_chunk_branch as branch
+    import scripts.tracking.joint_control.preview.run_preview_chunk_branch as branch
 
     original_make = simulation.make_environment
     inner_rows = []

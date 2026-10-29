@@ -9,9 +9,9 @@ from pathlib import Path
 import requests
 
 from s2a.infrastructure.artifacts import REPO, sha256
-from scripts.audit_wam_position import Evidence
-from scripts.capture_wam_long_ready import live_identity
-from scripts.run_wam_short_replan import cpu_environment, write_new
+from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
+from scripts.wam.tracking.references.run_wam_short_replan import cpu_environment, write_new
+from scripts.wam.training.native.capture_wam_long_ready import live_identity
 
 
 def capture(part, evidence):

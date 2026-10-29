@@ -19,8 +19,8 @@ from s2a.research.joint_control.native.settled_native import (
     settled_command_schedule,
 )
 from s2a.research.wam.training.native.native_training import pack_gripper_caches, synchronous_labels
-from scripts.collect_wam_native_training import endpoint, render_anchor, save_arrays, write_once
-from scripts.run_settled_native_training import read_prepared, reference, require
+from scripts.wam.training.native.collect_wam_native_training import endpoint, render_anchor, save_arrays, write_once
+from scripts.wam.training.native.run_settled_native_training import read_prepared, reference, require
 
 
 def collect_case(prepared, prepared_ref, record, case_dir, progress):

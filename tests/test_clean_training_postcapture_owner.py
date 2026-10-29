@@ -146,7 +146,11 @@ def scene(tmp_path, monkeypatch):
         admissions.append(ref)
         return registration
 
-    monkeypatch.setitem(sys.modules, "scripts.execute_wam_clean_training_postcapture_fit", SimpleNamespace(admit=admit))
+    monkeypatch.setitem(
+        sys.modules,
+        "scripts.wam.training.clean.execute_wam_clean_training_postcapture_fit",
+        SimpleNamespace(admit=admit),
+    )
 
     def accepted(directory, *, command, source_sha256):
         assert command == owner.argv(repair_ref, "--run")

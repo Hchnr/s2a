@@ -24,7 +24,7 @@ from s2a.research.wam.tracking.runtime.terminal_development_gate import ROOT as 
 from s2a.research.wam.tracking.runtime.terminal_development_gate import admit_state
 from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
 from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, publish, read, reference, require
-from scripts.run_wam_clean_training import environment
+from scripts.wam.training.clean.run_wam_clean_training import environment
 
 TESTS = sorted(
     {
@@ -140,7 +140,7 @@ def prepare():
     require(preflight["physical_control_admission"] == physical, "Actual preflight physical qualification differs")
     tracking = admit_tracking_control(value["tracking_admission"])
     value.update(root=str(ROOT), preview_control_closure_ref=closure_ref, physical_control_admission=physical)
-    from scripts.prepare_wam_synchronous_validation import source_closure
+    from scripts.wam.tracking.runtime.prepare_wam_synchronous_validation import source_closure
 
     entries = (
         TESTS

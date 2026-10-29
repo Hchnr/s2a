@@ -14,10 +14,11 @@ import numpy as np
 import pytest
 
 from s2a.infrastructure.repository_paths import repository_root
+from tests.support.source_layout import current_source_path
 
 MAIN = repository_root(anchor=__file__)
 sys.path.insert(0, str(MAIN / "scripts"))
-worker = importlib.import_module("scripts.execute_wam_clean_training_postcapture_fit")
+worker = importlib.import_module("scripts.wam.training.clean.execute_wam_clean_training_postcapture_fit")
 
 
 def dump(filename, value):
@@ -657,7 +658,7 @@ def test_help_is_fresh_cpu_process_and_cli_has_no_delegate_overrides():
         MKL_NUM_THREADS="8",
         PYTHONDONTWRITEBYTECODE="1",
     )
-    command = [sys.executable, str(MAIN / "scripts/execute_wam_clean_training_postcapture_fit.py")]
+    command = [sys.executable, str(current_source_path("scripts/execute_wam_clean_training_postcapture_fit.py"))]
     result = subprocess.run([*command, "--help"], cwd=MAIN, env=env, text=True, capture_output=True, check=True)
     assert "--repair-registration" in result.stdout and "--dry-run" in result.stdout
     result = subprocess.run(

@@ -10,6 +10,7 @@ from s2a.research.wam.readout.synchronous_state_continuation import (
     prefix_raw_records,
     validate_parameter_scope,
 )
+from tests.support.source_layout import current_source_path
 
 
 def entries():
@@ -20,18 +21,22 @@ def entries():
 
 
 def test_actual_worker_expression_handles_full_matrix_and_suffix():
-    from scripts.verify_wam_synchronous_state_continuation_metadata import exercise_worker_dispatch
+    from scripts.verification.wam.readout.verify_wam_synchronous_state_continuation_metadata import (
+        exercise_worker_dispatch,
+    )
 
-    worker = REPO / "scripts/sample_wam_synchronous_state_continuation.py"
+    worker = current_source_path("scripts/sample_wam_synchronous_state_continuation.py")
     assert exercise_worker_dispatch(worker, entries()) == {"requests": 99, "probe": 48, "raw": 48, "zero": 3}
     assert exercise_worker_dispatch(worker, entries()[4:]) == {"requests": 95, "probe": 48, "raw": 47, "zero": 0}
 
 
 def test_frozen_failed_worker_expression_reproduces_original_boundary():
-    from scripts.verify_wam_synchronous_state_continuation_metadata import exercise_worker_dispatch
+    from scripts.verification.wam.readout.verify_wam_synchronous_state_continuation_metadata import (
+        exercise_worker_dispatch,
+    )
 
     with pytest.raises(KeyError, match="probe052"):
-        exercise_worker_dispatch(REPO / "scripts/sample_wam_synchronous_state.py", entries())
+        exercise_worker_dispatch(current_source_path("scripts/sample_wam_synchronous_state.py"), entries())
 
 
 def test_completed_prefix_is_not_dispatched_again():
@@ -43,7 +48,7 @@ def test_completed_prefix_is_not_dispatched_again():
 
 
 def test_both_complete_body_proofs():
-    from scripts.verify_wam_synchronous_state_continuation_metadata import body_proofs
+    from scripts.verification.wam.readout.verify_wam_synchronous_state_continuation_metadata import body_proofs
 
     assert all(v["passed"] for v in body_proofs().values())
 
@@ -77,7 +82,7 @@ def test_first_cross_process_pair_checks_every_fp32_initial_array(tmp_path):
     import numpy as np
 
     from s2a.research.wam.training.clean.clean_training_runtime import reference
-    from scripts.collect_wam_clean_training import same_initial
+    from scripts.wam.training.clean.collect_wam_clean_training import same_initial
 
     refs = []
     for name in ["raw", "probe"]:
@@ -130,14 +135,14 @@ def test_actual_entry_imports_and_cli_parse_before_any_model(script):
     import sys
 
     result = subprocess.run(
-        [sys.executable, str(REPO / "scripts" / script), "--help"],
+        [sys.executable, str(current_source_path("scripts/" + script)), "--help"],
         cwd=REPO,
         env=dict(
             os.environ,
             CUDA_VISIBLE_DEVICES="",
             LD_LIBRARY_PATH="",
             PYTHONDONTWRITEBYTECODE="1",
-            PYTHONPATH=str(REPO / "src") + ":" + str(REPO / "scripts"),
+            PYTHONPATH=str(REPO / "src") + ":" + str(REPO),
         ),
         capture_output=True,
         text=True,

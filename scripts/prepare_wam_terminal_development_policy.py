@@ -6,7 +6,7 @@ from pathlib import Path
 from s2a.research.wam.tracking.runtime.terminal_development_gate import ROOT, admit_state
 from s2a.research.wam.tracking.runtime.terminal_development_policy import DevelopmentPolicy, case_order
 from s2a.research.wam.training.clean.clean_training_runtime import publish, reference
-from scripts.verify_wam_clean_training_capture import Evidence, require
+from scripts.verification.wam.training.verify_wam_clean_training_capture import Evidence, require
 
 
 def main():

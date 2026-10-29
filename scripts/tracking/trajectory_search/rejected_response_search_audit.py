@@ -7,18 +7,6 @@ solves a QP, or grants control qualification to a rejected numerical response.
 
 import numpy as np
 
-from scripts.accepted_point_sqp_math_audit import audit_qp_certificate
-from scripts.directional_derivative_audit import (
-    _response,
-    array,
-    boolean,
-    exact_array,
-    integer,
-    numerical_compare,
-    require,
-)
-from scripts.restored_anchor_sqp_ledger_audit import compare_initial_records
-from scripts.terminal_secant_audit import _tree
 from scripts.tracking.trajectory_search.interior_trajectory_search_audit import (
     _admission,
     _causal_update,
@@ -29,6 +17,18 @@ from scripts.tracking.trajectory_search.interior_trajectory_search_audit import 
     _request,
     _update_binding,
 )
+from scripts.verification.trajectory_search.accepted_point_sqp_math_audit import audit_qp_certificate
+from scripts.verification.trajectory_search.directional_derivative_audit import (
+    _response,
+    array,
+    boolean,
+    exact_array,
+    integer,
+    numerical_compare,
+    require,
+)
+from scripts.verification.trajectory_search.restored_anchor_sqp_ledger_audit import compare_initial_records
+from scripts.verification.trajectory_search.terminal_secant_audit import _tree
 
 FEEDBACK_POLICY = "safety_qualified_pose_ceiling_rejection_minimum_alpha"
 

@@ -20,7 +20,9 @@ def producer(monkeypatch):
 @pytest.fixture
 def execution(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return importlib.import_module("scripts.execute_tracking_v5_saved_direction_backtracking")
+    return importlib.import_module(
+        "scripts.tracking.trajectory_search.execute_tracking_v5_saved_direction_backtracking"
+    )
 
 
 def write_json(path, value):
