@@ -1,5 +1,7 @@
 # 原 task0 运行时文件快照完成记录（2026-10-29）
 
+后续状态：[隔离v3 CPU bootstrap](native_runtime_bootstrap_v3_20261029.md)已完成实际加载、原初态精确恢复及软件OSMesa单帧验证；v1/v2失败保留。本文件及快照manifest仍记录当时的文件准备阶段，不追改原资格标志，也不据bootstrap宣称历史二进制等价或控制成功。
+
 文件准备已正常关闭：复制1084个源文件、451330154字节，保存原manifest/config并生成仅修改路径的派生配置；45份已登记LIBERO源码及120份已登记robosuite源码均匹配历史SHA。**当前只取得文件快照验证，未加载运行时、构建bootstrap环境或执行物理周期。** 文件准备时仍在运行的[固定前缀优化余量完整独立复算](prefix_optimization_reserve_20261029.md)现已正常关闭，确认完整H12 witness为0；实际仍cursor8、task/grasp0，GPU继续禁用，原总目标及18/12/24门槛保持。
 
 ## 执行范围
