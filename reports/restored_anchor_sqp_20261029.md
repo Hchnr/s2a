@@ -14,6 +14,10 @@ QA产物为 `outputs/restored_anchor_sqp_native_qa_20261029_hjcgopjj/result.json
 
 实际CLI准入已完成：110源中的Python文件Ruff/format、producer dry、独立checker dry和diagnose owner dry共5个子进程均actual wait0/reap、无信号/重试，句柄48369实际exit0。两入口分别核验2499来源，warm SHA `cb86ceaa9a474b6ace07ca3babf9c99fb2102fe1b04ec0e4641037a356c5f00e`；新增响应/查询0。
 
-准入产物 `outputs/restored_anchor_sqp_admission_20261029/result.json` SHA `bd7bf2fbd8e1583094110936e5458f02e05e97519b310f3092a9d5e45e9f58e9`；driver `outputs/restored_anchor_sqp_admission_driver_20261029.py` SHA `d45f7389f567af592d5d9614c798fde00d796e26dcb797de65c4f9690017437f`。正式搜索为下一执行步骤，check owner的实际dry须等该producer正常关闭后单独执行。
+准入产物 `outputs/restored_anchor_sqp_admission_20261029/result.json` SHA `bd7bf2fbd8e1583094110936e5458f02e05e97519b310f3092a9d5e45e9f58e9`；driver `outputs/restored_anchor_sqp_admission_driver_20261029.py` SHA `d45f7389f567af592d5d9614c798fde00d796e26dcb797de65c4f9690017437f`。
+
+正式生产已正常结束，原句柄8505实际exit0；child PID734373/start_ticks617178014实际wait0/reap、无signal、无自动重试，owner完成全部来源复核。首次完整记录guard checked/passed/exact均为true，只调用一次，发生在0阶段/0迭代/0QP时。共 **3657完整响应、1097100数值内步、1140985查询**，55阶段/55外层尝试、1160次QP内部迭代、272条实际ray；因 `trust_region_stalled` 正常停止，未追加预算。生产保存prefix9、完整witness0，最终selected不是最后接纳anchor。这些科学结果仍待全量独立复算，不能称控制资格。
+
+生产结果 `outputs/tracking_v5_restored_anchor_sqp_20261029/verified.json` SHA `b58f5d3d80abb6f4abe9e51cf785681bec1f15d067d0a684b6508142f649f6c1`；owner `outputs/tracking_v5_restored_anchor_sqp_execution_20261029/result.json` SHA `50da6df06d82973b6e3a36e1d363a5210553143cb6b317d654f7be09a63ef247`。下一步为独立checker owner实际dry准入、全部3657响应复算及来源闭合；任何失败保留原记录，不覆盖重跑。
 
 GPU继续禁用；新增物理/world-model/fresh/参考消费0，实际仍cursor8、task/grasp0，原18正确参考/12WAM开发/24最终留出门槛及总目标不变。
