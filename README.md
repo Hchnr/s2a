@@ -1,5 +1,7 @@
 # S2A — State to Action
 
+最新实现准入：[pose紧活动子集的乘子恢复](reports/state_vector_dual_recovery_implementation_20261029.md)已通过182项专项CPU测试、新文件Ruff/格式和两条真实输入dry，182来源指纹保持。仅改变pose的一次NNLS恢复子集，完整原KKT门、restore和60阶段/122响应上限保持；生产搜索和完整独立复算待执行，尚无本项跟踪收益结论。实现提交`d527982`，实际仍cursor8/task0/grasp0，GPU继续禁用；[双语PR原文](reports/pr_state_vector_dual_recovery_20261029.md)。
+
 最新CPU对照：[整个目标统一缩放](reports/state_vector_objective_scale_20261029.md)通过200项专项QA、5响应生产/5响应完整独立复算，2724来源闭合。10QP均status0，但原互补证书仅3个合格（2restore/1pose）；总误差较原GN停止点降.526%，最坏F升.821%，前缀/双caps仍9、完整witness0。半径下限正常停止，未追加50阶段/117响应；实际仍cursor8/task0/grasp0，GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/pr_state_vector_objective_scale_20261029.md)。
 
 最新CPU对照：[TCP误差向量GN](reports/state_vector_gn_search_20261029.md)通过186项专项QA、3响应生产与3响应完整独立复算，2691来源闭合。7次QP仅原restore合格，6个pose QP均status8未获资格，没有GN方向的新响应；半径下限停止，未追加53阶段/119响应余量。最终仍前缀9、完整witness0，不能判断GN跟踪收益；实际仍cursor8/task0/grasp0。GPU禁用和原18/12/24门槛保持；[双语PR原文](reports/pr_state_vector_gn_search_20261029.md)。
