@@ -102,6 +102,32 @@ def test_bound_historical_schema_and_full_anchor_recompute_without_a_model(produ
     assert not result["improvement_found"] and result["selected"] is None
 
 
+def test_real_environment_guard_is_separate_from_the_case_controller_without_model_calls(producer, monkeypatch):
+    if not producer.INPUT.is_file() or not Path(producer.CONTROL_REF["path"]).is_file():
+        pytest.skip("Registered input and environment guard artifacts are unavailable")
+    raw = producer.INPUT.read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == producer.BUNDLE_SHA
+    bundle = json.loads(raw)
+    case_ref = bundle["source_registration"]["control_ref"]
+    assert Path(case_ref["path"]).is_relative_to(producer.REPO)
+    assert case_ref != producer.CONTROL_REF
+    case_controller = producer.read(case_ref)
+    assert "contract" in case_controller and "cv2_guard_registration" not in case_controller
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Environment guard metadata admission must not construct or execute a model")
+
+    monkeypatch.setattr(producer, "MujocoRobotDynamics", forbidden)
+    monkeypatch.setattr(producer, "run_probe", forbidden)
+    monkeypatch.setattr(producer, "restore_cv2_environment", forbidden)
+    refs = {}
+    guard = producer.load_environment_guard(refs)
+    assert guard == producer.read(producer.CONTROL_REF)["cv2_guard_registration"]
+    for ref in (producer.CONTROL_REF, guard["exact_probe_ref"], *guard["runtime_source_refs"]):
+        assert Path(ref["path"]).is_relative_to(producer.REPO)
+        assert refs[ref["path"]] == ref
+
+
 def setup_main(producer, monkeypatch, tmp_path):
     source, case = complete_case(restores=True)
     source["fixed_gripper_state"] = np.zeros(2)
@@ -109,9 +135,14 @@ def setup_main(producer, monkeypatch, tmp_path):
         **{key: getattr(case["interface"], key) for key in ("input_min", "input_max", "output_min", "output_max")},
         controller_site="synthetic_site",
     )
+    guard_probe = write_json(tmp_path / "guard_probe.json", dict(synthetic=True))
+    guard_source = write_json(tmp_path / "guard_source.json", dict(synthetic_source=True))
     control_ref = write_json(
         tmp_path / "control.json",
-        dict(contract=_canonical(control), cv2_guard_registration=dict(exact_probe_ref={}, runtime_source_refs=[])),
+        dict(
+            contract=_canonical(control),
+            cv2_guard_registration=dict(exact_probe_ref=guard_probe, runtime_source_refs=[guard_source]),
+        ),
     )
     states = np.zeros((369, 15))
     states[368, 1:8], states[368, 8:15] = source["current_q"], source["current_velocity"]
@@ -129,6 +160,7 @@ def setup_main(producer, monkeypatch, tmp_path):
     plan.write_text("synthetic test plan\n")
     monkeypatch.setattr(producer, "ROOT", root)
     monkeypatch.setattr(producer, "PLAN", plan)
+    monkeypatch.setattr(producer, "CONTROL_REF", control_ref)
     monkeypatch.setattr(producer, "SOURCES", ())
     monkeypatch.setattr(producer, "load_inputs", lambda: (bundle, {}))
     monkeypatch.setattr(producer, "model_registration", lambda reg, refs: (dict(xml_ref=control_ref), {}))
@@ -148,6 +180,21 @@ def test_producer_dry_does_not_construct_model_or_call_predictor(producer, monke
     monkeypatch.setattr(producer, "MujocoRobotDynamics", forbidden)
     monkeypatch.setattr(producer, "run_probe", forbidden)
     producer.main(dry=True)
+    assert not root.exists()
+
+
+def test_controller_only_record_is_rejected_during_dry_before_model_construction(producer, monkeypatch, tmp_path):
+    _, _, root = setup_main(producer, monkeypatch, tmp_path)
+    wrong_record = write_json(tmp_path / "controller_only.json", dict(contract={}))
+    monkeypatch.setattr(producer, "CONTROL_REF", wrong_record)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Malformed environment guard must fail before model work")
+
+    monkeypatch.setattr(producer, "MujocoRobotDynamics", forbidden)
+    monkeypatch.setattr(producer, "run_probe", forbidden)
+    with pytest.raises((KeyError, ValueError), match="cv2_guard_registration"):
+        producer.main(dry=True)
     assert not root.exists()
 
 

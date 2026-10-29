@@ -35,3 +35,17 @@ repeat。共14完整响应、13唯一命令，每次300数值内步/312查询，
 全部命令从当前仓库执行，空CUDA/LD、单线程、seed42；不访问旧清理根，不改变冻结
 前项源码。新增物理/world-model/fresh/参考消费均0，实际cursor8/task0/grasp0与原
 18正确参考/12WAM开发/24最终留出门槛保持。总目标仍未达成。
+
+## 首次零响应失败与输入引用修复
+
+提交aa74655的首次producer在读取controller.json的`cv2_guard_registration`时KeyError退出，
+owner实际wait/reap1（`outputs/terminal_only_tail_repair_producer_20261029/result.json`），
+没有模型构建、响应或查询。153项组件QA未覆盖实际环境记录结构，该失败不追认为成功。
+正确guard来自`terminal_development_execution.CONTROL_REF`，与控制器contract记录分开；
+修订入口在dry阶段也读取并绑定其probe/runtime refs，再运行真实初始化。
+
+原7来源以aa74655及`outputs/terminal_only_tail_repair_v1_sources_20261029/manifest.json`
+保留原路径、SHA和字节一致的安全副本；不改写旧QA/result/log。当前producer、执行测试及
+本计划的修订SHA在新QA记录，原110数学来源保持。修复执行写入新的
+`outputs/tracking_v5_terminal_only_tail_repair_v2_20261029`，仍是同3543、同14请求、
+同独立checker与全部科学门槛；这是一项明确修订后的执行，不是自动重试或追加搜索。

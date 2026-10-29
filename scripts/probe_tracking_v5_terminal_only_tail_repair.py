@@ -25,9 +25,10 @@ from s2a.restored_anchor_sqp_evidence import (
     require,
 )
 from s2a.tail_translation_reserve import build_tail_translation_grid
+from s2a.terminal_development_execution import CONTROL_REF
 from s2a.terminal_only_tail_repair import probe_terminal_only_tail_repair
 
-ROOT = REPO / "outputs/tracking_v5_terminal_only_tail_repair_20261029"
+ROOT = REPO / "outputs/tracking_v5_terminal_only_tail_repair_v2_20261029"
 INPUT = REPO / "outputs/terminal_only_tail_repair_inputs_20261029/bundle.json"
 PLAN = REPO / "plans/v0.0.1/terminal_only_tail_repair_20261029.md"
 BUNDLE_SHA = "637d172935c3dd852b03347f1d9b97f863089dd85a637ca5f539c6a66b19ee26"
@@ -124,6 +125,15 @@ def load_inputs():
     return bundle, refs
 
 
+def load_environment_guard(refs):
+    """The environment admission is separate from the controller parameter record."""
+    guard = read(remember(CONTROL_REF, refs))["cv2_guard_registration"]
+    require(isinstance(guard["runtime_source_refs"], list) and guard["runtime_source_refs"], "Runtime guard sources")
+    for ref in (guard["exact_probe_ref"], *guard["runtime_source_refs"]):
+        remember(ref, refs)
+    return guard
+
+
 def main(dry=False):
     strict_native_environment()
     require(all(os.environ.get(k) == v for k, v in CPU_ENVIRONMENT.items()), "Fixed single-thread CPU")
@@ -138,6 +148,7 @@ def main(dry=False):
     )
     require(_canonical(grid) == _canonical(bundle["grid"]) and grid["admitted"], "Exact preflight grid")
     model_reg, proof = model_registration(source_reg, refs)
+    guard = load_environment_guard(refs)
     if dry:
         print(json.dumps(dict(passed=True, dry=True, responses=0, queries=0, source_count=len(refs))), flush=True)
         return
@@ -168,21 +179,28 @@ def main(dry=False):
         actual_consumed_reference_count=0,
         control_qualified=False,
         automatic_retry=False,
+        prediction_calls=0,
+        response_evaluations=0,
+        numerical_inner_steps=0,
+        query_count=0,
+        model_construction_attempts=0,
+        model_constructions_completed=0,
     )
     started = time.monotonic()
     try:
-        guard = read(source_reg["control_ref"])["cv2_guard_registration"]
         result["environment_admission"] = restore_cv2_environment(
             guard["exact_probe_ref"], guard["runtime_source_refs"]
         )
         os.environ.pop("MUJOCO_GL", None)
         os.environ.pop("PYOPENGL_PLATFORM", None)
+        result["model_construction_attempts"] += 1
         dynamics = MujocoRobotDynamics(
             checked(model_reg["xml_ref"]),
             control["controller_site"],
             [f"robot0_joint{k}" for k in range(1, 8)],
             source["fixed_gripper_state"],
         )
+        result["model_constructions_completed"] += 1
         require(dynamics.model.opt.timestep == 0.002, "Original 2ms model")
         with np.load(checked(source_reg["states_ref"]), allow_pickle=False) as archive:
             state = archive["sim_states"][368].copy()
