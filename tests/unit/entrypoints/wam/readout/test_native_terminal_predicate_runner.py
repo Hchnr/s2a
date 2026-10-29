@@ -9,6 +9,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.infrastructure.repository_paths import repository_root
 from tests.support.source_layout import current_source_path
 
@@ -54,12 +55,16 @@ def admitted(tmp_path, monkeypatch):
 
 def test_budget_keeps_all_sixteen_and_never_promotes_native_quality(monkeypatch):
     owner = load_owner(monkeypatch)
-    config = json.loads((REPO / "configs/native_terminal_predicate_diagnostic_20261021.json").read_text())
+    config = json.loads(
+        (_d4_current_source_path("configs/native_terminal_predicate_diagnostic_20261021.json")).read_text()
+    )
     owner.budget_guard(config)
     config["cases"][0]["frame_indices"].pop()
     with pytest.raises(ValueError, match="sixteen"):
         owner.budget_guard(config)
-    config = json.loads((REPO / "configs/native_terminal_predicate_diagnostic_20261021.json").read_text())
+    config = json.loads(
+        (_d4_current_source_path("configs/native_terminal_predicate_diagnostic_20261021.json")).read_text()
+    )
     config["model_training_authorized"] = True
     with pytest.raises(ValueError, match="permissions"):
         owner.budget_guard(config)

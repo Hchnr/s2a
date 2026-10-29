@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.infrastructure.repository_paths import repository_root
 from tests.support.source_layout import current_source_path
 
@@ -228,7 +229,7 @@ def test_real_serving_generator_has_required_locals_without_assumed_closure():
     import json
 
     root = repository_root(anchor=__file__)
-    c = json.loads((root / "configs/wam_sampler_steps_35_20261021.json").read_text())
+    c = json.loads((_d4_current_source_path("configs/wam_sampler_steps_35_20261021.json")).read_text())
     prepared_path = root / "outputs/wam_stability_20261021/sampler_steps_state/orchestration/prepared.json"
     prepared_bytes = prepared_path.read_bytes()
     assert hashlib.sha256(prepared_bytes).hexdigest() == (

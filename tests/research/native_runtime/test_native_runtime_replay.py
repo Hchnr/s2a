@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.research.native_runtime import replay as replay
 
 
@@ -457,13 +458,13 @@ def test_qa_binding_rejects_changed_execution_contract(monkeypatch, mutation):
 def test_saved_input_admission_uses_current_files_only():
     import scripts.verification.native_runtime.verify_native_runtime_replay as cli
 
-    original = cli.CONFIG.read_bytes()
+    original = _d4_current_source_path("configs/native_runtime_replay_20261029.json").read_bytes()
     config = json.loads(original)
     # This historical registration binds the old source locations and bytes.
     # A layout migration cannot grant it current execution qualification.
     with pytest.raises((FileNotFoundError, ValueError), match="src/s2a/|Changed source"):
         cli.inspect_inputs(config)
-    assert cli.CONFIG.read_bytes() == original
+    assert _d4_current_source_path("configs/native_runtime_replay_20261029.json").read_bytes() == original
 
     # Inspect only the separately hash-checked saved branch. Its dimensions do
     # not imply that the old registration admits the current runtime.
@@ -482,7 +483,9 @@ def test_saved_input_admission_uses_current_files_only():
 def test_metadata_rejects_changed_protocol(key, value):
     import scripts.verification.native_runtime.verify_native_runtime_replay as cli
 
-    config = copy.deepcopy(json.loads(cli.CONFIG.read_text()))
+    config = copy.deepcopy(
+        json.loads(_d4_current_source_path("configs/native_runtime_replay_20261029.json").read_text())
+    )
     config[key] = value
     with pytest.raises(ValueError):
         cli.inspect_inputs(config)

@@ -14,6 +14,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from tests.support.source_layout import current_source_path
 
 SCRIPT = current_source_path("scripts/verify_wam_clean_training_continuation.py")
@@ -353,7 +354,7 @@ def test_execution_snapshots_cannot_reuse_old_or_wrong_root(source_closure):
 
 @pytest.fixture
 def contract():
-    config = json.loads((audit.REPO / audit.CONFIG_REL).read_text())
+    config = json.loads((_d4_current_source_path("configs/wam_clean_training_continuation_20261023.json")).read_text())
     legacy_spec = importlib.util.spec_from_file_location(
         "original041_test", current_source_path("scripts/verify_wam_clean_training_execution.py")
     )
@@ -442,7 +443,7 @@ def test_recovery_refuses_reusing_partial_dropping_budget_or_changing_runtime(co
 
 
 def test_configuration_checks_real_frozen_aggregate_and_reference_identity():
-    config = json.loads((audit.REPO / audit.CONFIG_REL).read_text())
+    config = json.loads((_d4_current_source_path("configs/wam_clean_training_continuation_20261023.json")).read_text())
     audit.configuration(config)
     config["aggregate_budget"]["original_model_initializations"] = False
     with pytest.raises(ValueError, match="cumulative"):

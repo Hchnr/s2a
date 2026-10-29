@@ -7,13 +7,14 @@ import json
 import pytest
 
 from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 
 
 @pytest.fixture
 def actual(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
     module = importlib.import_module("scripts.verification.response_models.forward.verify_settled_native_cached_prefix")
-    config = json.loads((REPO / "configs/settled_native_training_20261022.json").read_text())
+    config = json.loads((_d4_current_source_path("configs/settled_native_training_20261022.json")).read_text())
     return module, module.read(config["native_collection_ref"])
 
 

@@ -57,13 +57,16 @@ rollout、日志回放、独立物理仿真和真机属于不同证据等级，�
 
 ## 3. 目标结构
 
+后续[执行细化](layout_execution.md)保留真实controller/reference接口中的状态、
+参考、命令与frame/TCP/units/time/mask合同及其测试，不创建空的contracts包。
+下列结构与该细化一致，当前完成情况集中在[状态](../status.md)。
+
 ```text
 s2a/
 ├── README.md                         # 简短：目标、当前状态、安装、导航、常用入口
 ├── AGENTS.md                         # 工作约束与新导航
 ├── pyproject.toml
 ├── src/s2a/
-│   ├── contracts/                    # 状态/参考/命令、frame/TCP/units/time/mask
 │   ├── geometry/                     # SO(3)/SE(3)、几何与运动学原语
 │   ├── references/                   # 解码、锚定、插值、过期/乱序、参考游标
 │   ├── adapters/                     # 解析、反馈、辨识逆、学习逆等可复用策略
@@ -116,7 +119,7 @@ s2a/
 
 | 层 | 职责 | 明确排除 |
 | --- | --- | --- |
-| contracts/geometry | 数据语义与纯数值原语 | 历史outputs、模型服务、实验登记 |
+| geometry / 各领域接口类型 | 几何原语及明确的状态、参考、命令语义 | 历史outputs、模型服务、实验登记 |
 | references | 已生成参考的时序处理 | 读取尚未生成的未来参考 |
 | adapters/controllers | 因果决策与明确命令编码 | 隐式env.step、将规划结果写成已发生历史 |
 | dynamics | 局部前向预测 | 冒称真实接触/固定控制系统的执行证据 |
@@ -128,7 +131,8 @@ s2a/
 基础层不导入research或scripts；脚本可调用公共库，独立审核复用合同和纯几何，
 不调用生产求解器来证明生产求解器正确。DROID与OSC的尺度/旋转合同分别保留。
 
-`runtime.StateToActionAdapter`、`osc.OSCStateToAction`是现有明确入口；
+`s2a.adapters.state_to_action.StateToActionAdapter`、
+`s2a.controllers.osc.OSCStateToAction`是现有明确入口；
 `prepare → commit → observe`提供可参考的事务边界，但当前带研究refiner的实现
 不直接升格为通用API。版本化搜索和固定case/预算/输出路径实现放research；
 跨实验验证过的求解、账本原语未来可单独抽取。本次先保持数学及控制行为。

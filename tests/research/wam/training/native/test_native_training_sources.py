@@ -12,6 +12,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.infrastructure.repository_paths import repository_root
 from s2a.research.wam.training.native.native_training_sources import (
     initial_state_hash,
@@ -226,7 +227,7 @@ def test_source_closure_requires_new_files_and_preserves_inherited_sha(preparer,
 
 
 def test_prepare_refuses_existing_output_before_hdf_access(preparer, tmp_path, monkeypatch):
-    config = json.loads(preparer.CONFIG.read_text())
+    config = json.loads(_d4_current_source_path("configs/wam_synchronous_native_training_20261021.json").read_text())
     config["output_dir"] = "outputs/existing"
     output = tmp_path / config["output_dir"]
     output.mkdir(parents=True)
@@ -268,7 +269,7 @@ def test_cpu_guard_and_real_cli_help_before_any_dataset_read(preparer, monkeypat
 @pytest.fixture
 def synthetic_preparation(preparer, tmp_path, monkeypatch):
     """Exercise the real preparation/public-reader orchestration with fake HDF APIs."""
-    config = json.loads(preparer.CONFIG.read_text())
+    config = json.loads(_d4_current_source_path("configs/wam_synchronous_native_training_20261021.json").read_text())
     config["output_dir"] = "outputs/native"
     config["policy_template"] = "configs/policy.json"
     config_path, plan = tmp_path / "config.json", tmp_path / "plan.md"

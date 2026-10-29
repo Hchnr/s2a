@@ -8,6 +8,7 @@ import json
 
 import pytest
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.infrastructure.repository_paths import repository_root
 from s2a.research.wam.simulation import temporal_ensemble_simulation as simulation
 from s2a.research.wam.simulation.temporal_ensemble_simulation import temporal_variant
@@ -101,8 +102,8 @@ def test_complete_physical_function_has_only_explicit_reference_and_label_change
 
 
 def test_all_registered020_configs_share_the_same_policy():
-    paths = [ROOT / "configs/temporal_equal_qualification_20261021.json"]
-    paths += [ROOT / f"configs/wam_temporal_equal_task{i}_20261021.json" for i in range(3)]
+    paths = [_d4_current_source_path("configs/temporal_equal_qualification_20261021.json")]
+    paths += [_d4_current_source_path(f"configs/wam_temporal_equal_task{i}_20261021.json") for i in range(3)]
     for path in paths:
         config = json.loads(path.read_text())
         source = "oracle" if "qualification" in path.name else "wam"
@@ -110,14 +111,14 @@ def test_all_registered020_configs_share_the_same_policy():
 
 
 def test_frozen_position_sha_still_must_match_its_original_catalog_identity(monkeypatch):
-    config = json.loads((ROOT / "configs/temporal_equal_qualification_20261021.json").read_text())
+    config = json.loads((_d4_current_source_path("configs/temporal_equal_qualification_20261021.json")).read_text())
     monkeypatch.setattr(simulation, "BASE_POSITION_SHA", "0" * 64)
     with pytest.raises(ValueError):
         simulation.temporal_variant(config, "temporal_equal", source="oracle")
 
 
 def test_archival_position_bytes_do_not_waive_current_source_admission(monkeypatch):
-    config = json.loads((ROOT / "configs/temporal_equal_qualification_20261021.json").read_text())
+    config = json.loads((_d4_current_source_path("configs/temporal_equal_qualification_20261021.json")).read_text())
 
     def current_drift(*args, **kwargs):
         raise ValueError("synthetic approved current source drift")
@@ -129,7 +130,9 @@ def test_archival_position_bytes_do_not_waive_current_source_admission(monkeypat
 
 @pytest.mark.parametrize("change", ["governor", "alpha", "interval", "label", "seed", "gain"])
 def test_unregistered_execution_changes_rejected_before_any_environment(change):
-    config = copy.deepcopy(json.loads((ROOT / "configs/temporal_equal_qualification_20261021.json").read_text()))
+    config = copy.deepcopy(
+        json.loads((_d4_current_source_path("configs/temporal_equal_qualification_20261021.json")).read_text())
+    )
     if change == "governor":
         config["variants"][0]["governor"] = "recovering"
     elif change == "alpha":

@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.infrastructure.repository_paths import repository_root
 from tests.support.source_layout import current_source_path
 
@@ -41,7 +42,7 @@ def test_augmented_fit_matches_single_active_feature_ridge_and_episode_balancing
         truth=truth,
         true_opening=0.4 + times * 0.1,
     )
-    config = json.loads((audit.ROOT / audit.CONFIG).read_text())
+    config = json.loads((_d4_current_source_path("configs/generated_reference_calibration_20261021.json")).read_text())
     model, record = audit.augmented_fit([(case, case)], "paired", config)
     tau = times / 2
     denominator = np.mean(tau * tau) + 0.1

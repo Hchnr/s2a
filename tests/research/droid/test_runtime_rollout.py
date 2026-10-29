@@ -9,7 +9,7 @@ from s2a.adapters.identified.linear_response import LinearResponse
 from s2a.adapters.state_to_action import StateToActionAdapter
 from s2a.controllers.droid import DroidReferenceInterface
 from s2a.geometry import advance, pose_error
-from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.references.trajectory import ReferenceTrajectory
 from s2a.research.droid.rollout import simulate
 
@@ -37,7 +37,7 @@ def test_runtime_chunk_is_anchored_once_gripper_separate_and_dt_command_planned(
 
 
 def test_software_closed_loop_advances_states_and_pi_rejects_constant_disturbance():
-    settings = json.loads((REPO / "configs/droid_episode0.json").read_text())["rollout"]
+    settings = json.loads((_d4_current_source_path("configs/droid_episode0.json")).read_text())["rollout"]
     times = np.arange(101) * 0.07
     reference = ReferenceTrajectory(np.array([0.0, times[-1]]), np.array([np.eye(4), np.eye(4)]))
     model = LinearResponse(
@@ -83,7 +83,7 @@ def test_software_closed_loop_advances_states_and_pi_rejects_constant_disturbanc
 
 
 def test_noise_scenario_is_seeded_and_uses_no_future_observation():
-    settings = json.loads((REPO / "configs/droid_episode0.json").read_text())["rollout"]
+    settings = json.loads((_d4_current_source_path("configs/droid_episode0.json")).read_text())["rollout"]
     times = np.arange(13) * 0.07
     ref = ReferenceTrajectory(
         np.array([0.0, times[-1]]), np.array([np.eye(4), advance(np.eye(4), [0.01, 0, 0, 0, 0, 0], 1)])
@@ -105,7 +105,7 @@ def test_noise_scenario_is_seeded_and_uses_no_future_observation():
 
 
 def test_extra_command_delay_preserves_autonomous_response_dynamics():
-    settings = json.loads((REPO / "configs/droid_episode0.json").read_text())["rollout"]
+    settings = json.loads((_d4_current_source_path("configs/droid_episode0.json")).read_text())["rollout"]
     settings["extra_delay_steps"] = 1
     times = np.arange(13) * 0.07
     ref = ReferenceTrajectory(

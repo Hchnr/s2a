@@ -9,15 +9,18 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from tests.support.source_layout import current_source_path
 
 
 @pytest.fixture
-def checker():
+def checker(monkeypatch):
     path = current_source_path("scripts/verify_wam_flow_readout.py")
     spec = importlib.util.spec_from_file_location("independent_flow_checker_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    monkeypatch.setattr(module, "CONFIG", _d4_current_source_path("configs/wam_flow_consistent_readout_20261021.json"))
+    monkeypatch.setattr(module, "PLAN", _d4_current_source_path("plans/v0.0.1/026_flow_consistent_readout_20261021.md"))
     return module
 
 

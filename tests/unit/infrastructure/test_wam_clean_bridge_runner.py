@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.infrastructure.relocated_artifacts import RelocatedArtifacts
 
 
@@ -27,7 +28,7 @@ def dump(path, data):
 
 @pytest.fixture
 def prepared(runner, tmp_path, monkeypatch):
-    config = json.loads((REPO / "configs/wam_clean_bridge_20261022.json").read_text())
+    config = json.loads((_d4_current_source_path("configs/wam_clean_bridge_20261022.json")).read_text())
     root = tmp_path / "outputs/bridge"
     config.update(output_dir="outputs/bridge", cosmos_source_root=str(root / "source/cosmos"))
     monkeypatch.setattr(runner, "REPO", tmp_path)

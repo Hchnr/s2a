@@ -12,6 +12,7 @@ import pytest
 import yaml
 
 from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.research.wam.training.clean import clean_training_seed_plan as SEEDS
 
 
@@ -58,7 +59,7 @@ def repository(tmp_path, monkeypatch, prepare):
         path = root / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("# Synthetic source, never executable model/physics.\n")
-    config = json.loads((REPO / "configs/wam_clean_training_execution_20261023.json").read_text())
+    config = json.loads((_d4_current_source_path("configs/wam_clean_training_execution_20261023.json")).read_text())
     for name in config["required_test_paths"]:
         path = root / name
         path.parent.mkdir(parents=True, exist_ok=True)

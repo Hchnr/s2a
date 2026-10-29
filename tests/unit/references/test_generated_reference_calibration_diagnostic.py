@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.infrastructure.repository_paths import repository_root
 from tests.support.source_layout import current_source_path
 
@@ -26,7 +27,7 @@ def driver(monkeypatch):
 
 
 def protocol(driver):
-    return json.loads((driver.REPO / driver.CONFIG).read_text())
+    return json.loads((_d4_current_source_path("configs/generated_reference_calibration_20261021.json")).read_text())
 
 
 def synthetic_cases():

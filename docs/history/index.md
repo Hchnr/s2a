@@ -1,15 +1,12 @@
-# 历史记录的阅读方式
+# 历史导航原文
 
-[迁移前 README 原文](README_20261029.md)保留基线提交
-`7b2712850dea54090d61e564380f88825ad8b8f6` 的全部 72,334 字节，SHA256：
-`dcee29d8a44718accd85e19e0e82fae0809eb9a6270638bea2655b3f3ee1a2fa`。
-其声明位置仍是仓库根 `README.md`；正文内相对链接、旧命令和设备许可均属于当时
-记录，不能按本页物理位置或当前运行许可解释。
+以下归档从已登记 baseline Git blob 读取，保留原字节；不能把当前编辑版本冒称 baseline。原文中的旧 GPU/路径/运行中描述仅是历史记录。
 
-需要按原目录阅读链接时，使用[基线 Git 视图](https://github.com/Hchnr/s2a/blob/7b2712850dea54090d61e564380f88825ad8b8f6/README.md)。
-Git 视图仅保留当时已跟踪的目标，不保证外部链接、未跟踪产物或历史环境仍可访问。
-原文中的旧清理根只作为声明保留，不能访问或恢复。
+| 原声明 | 原文归档 | baseline SHA256 |
+| --- | --- | --- |
+| `README.md` | [README_20261029.md](README_20261029.md) | `dcee29d8a44718accd85e19e0e82fae0809eb9a6270638bea2655b3f3ee1a2fa` |
+| `scripts/README.md` | [scripts_README_20261029.md](scripts_README_20261029.md) | `5ed576559f4442aa5d10c7cd15c42bda7f2a37c0382d723fa3c85a25e5ca5d6c` |
+| `tests/README.md` | [tests_README_20261029.md](tests_README_20261029.md) | `a87b5e408d6d7988f9843ca2ad869dac47a7468420eab44c9f5def9bfdbe1a19` |
+| `reports/README.md` | [历史报告首页](../../reports/history/README.md) | 见原始文件清单 |
 
-当前研究目标与未完成项见[状态页](../status.md)，当前运行规则见
-[开发说明](../development/README.md)。迁移清单记录旧声明、原 SHA 与当前位置，
-历史字节核验和新代码执行验证分别报告，详见[迁移协议](../migrations/README.md)。
+新报告导航为[reports/index.md](../../reports/index.md)。旧相对链接按原声明目录解释；可查[链接定位表](readme_link_map_20261029.json)及[原路径/SHA→当前位置清单](../migrations/repository_layout_20261029.json)。

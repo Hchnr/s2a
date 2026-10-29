@@ -83,9 +83,12 @@ __init__和原字节conftest。pytest保留原scope，仅移除旧scripts搜索�
 没有未闭合的已知新增迁移失败，但不能称单一环境完整pytest全绿。源码身份与
 结构检查通过，累计2366个原文件已移动；完整raw/nav迁移和最终D5仍待执行。
 
-剩余898份配置/计划/报告及README导航尚未移动，最终全量CPU验收和两入口dry
-仍待执行。对应逐文件设计与执行准备已保留；`full_restructure_complete`仍为False，
-研究目标也尚未达成。
+D4已实际移动其余898份配置/计划/报告，全部928份原始文件的字节、大小和Git
+blob身份保持。README收敛为目标与导航，三份基线README原文另行归档；AGENTS
+只更新001目标导航并追加CPU偏好，原约束保持。25个测试模块只适配当前I/O边界，
+Ruff/format通过，算法和raw JSON值保持。累计3264个原文件已移动，根平铺为
+src1/scripts2/tests3/configs1/plans1/reports1。最终D5全量CPU及两入口dry尚待执行，
+整体验收尚未收尾，研究目标也尚未达成。
 
 ## 整理前的控制与实验状态
 

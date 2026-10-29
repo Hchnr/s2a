@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.infrastructure.repository_paths import repository_root
 
 
@@ -28,7 +29,7 @@ def save(path, value):
 @pytest.fixture
 def synthetic(preparer, tmp_path, monkeypatch):
     """A complete409/49/30 fixture, not a permissive mock of the source guard."""
-    config = json.loads(preparer.CONFIG.read_text())
+    config = json.loads(_d4_current_source_path("configs/wam_native_training_model_contract_20261021.json").read_text())
     actual_repo = preparer.REPO
     historical_repo = Path("/share/project/eai_pwm/home/hcr/repos/s2a")
     for key, _ in preparer.REF_FIELDS:
@@ -512,7 +513,7 @@ def test_read_guard_rejects_tampered_remaining_roster_and_stat(preparer, synthet
 
 
 def test_cpu_budget_guards_and_real_cli_help(preparer, monkeypatch):
-    config = json.loads(preparer.CONFIG.read_text())
+    config = json.loads(_d4_current_source_path("configs/wam_native_training_model_contract_20261021.json").read_text())
     config["remaining_tasks"] = [0, 1, 2]
     with pytest.raises(ValueError, match="budget or task"):
         preparer.assert_config(config)
@@ -576,7 +577,7 @@ def test_failed421_cannot_promote_or_change_unregistered_sources(preparer, synth
 
 
 def test_mounted_panda_is_neither_an_alias_nor_a_panda_subclass(preparer):
-    config = json.loads(preparer.CONFIG.read_text())
+    config = json.loads(_d4_current_source_path("configs/wam_native_training_model_contract_20261021.json").read_text())
     assert config["robot_model_contract"]["actual_parent_class"] == "ManipulatorModel"
     for field, value in (
         ("expected_actual_class", "Panda"),

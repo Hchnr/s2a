@@ -6,6 +6,7 @@ import json
 
 import pytest
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from tests.support.source_layout import current_module_name
 
 
@@ -15,8 +16,10 @@ def audit(monkeypatch):
 
 
 def test_only_registered_output_port_and_appended_note_change(audit):
-    old = json.loads((audit.REPO / "configs/wam_temporal_equal_task2_20261021.json").read_text())
-    current = json.loads((audit.REPO / audit.CONFIG).read_text())
+    old = json.loads((_d4_current_source_path("configs/wam_temporal_equal_task2_20261021.json")).read_text())
+    current = json.loads(
+        (_d4_current_source_path("configs/wam_temporal_equal_task2_continuation_20261021.json")).read_text()
+    )
     assert audit.same_effect(old, current)
     alternatives = []
     for key, value in (("sampling_seeds", [43]), ("online_max_steps", 1200), ("guidance", 3.0)):

@@ -5,6 +5,7 @@ import json
 import pytest
 
 from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 
 
 @pytest.fixture
@@ -14,7 +15,7 @@ def metadata(monkeypatch):
 
 
 def profile(m):
-    base = json.loads((REPO / "configs/wam_short_replan_8_alpha1_20261021.json").read_text())
+    base = json.loads((_d4_current_source_path("configs/wam_short_replan_8_alpha1_20261021.json")).read_text())
     p = dict(
         model_config=dict(
             cosmos_source_root="/active/cosmos", checkpoint=dict(run="/active/run", iteration="iter_000008400")

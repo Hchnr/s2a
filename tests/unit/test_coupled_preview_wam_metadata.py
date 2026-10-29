@@ -7,13 +7,16 @@ from pathlib import Path
 import pytest
 
 import scripts.verification.wam.preview.verify_coupled_preview_wam_metadata as audit
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from s2a.research.wam.tracking.preview import coupled_preview_wam_control as control
 
 
 @pytest.fixture
 def profile(monkeypatch):
     base = json.loads(Path(control.BASE_REF["path"]).read_text())
-    qualified = json.loads((control.REPO / "configs/coupled_preview_control_registered_20261026.json").read_text())
+    qualified = json.loads(
+        (_d4_current_source_path("configs/coupled_preview_control_registered_20261026.json")).read_text()
+    )
     ref = dict(path="/synthetic/control.json", sha256="a" * 64)
     p = dict(
         root=str(control.ROOT),

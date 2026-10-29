@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 
 from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 
 
 @pytest.fixture
@@ -63,7 +64,7 @@ def repository(module, monkeypatch, tmp_path):
         path = root / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("# synthetic fixture\n")
-    config = json.loads((REPO / "configs/wam_clean_training_continuation_20261023.json").read_text())
+    config = json.loads((_d4_current_source_path("configs/wam_clean_training_continuation_20261023.json")).read_text())
     for name in config["required_test_paths"]:
         path = root / name
         path.parent.mkdir(parents=True, exist_ok=True)

@@ -300,3 +300,40 @@ qualification原CPU_REVIEW/Git来源均分开核原字节和当前批准源码�
 `8e2aa0dd30ed4a19d181a3798fdc1153febadcff6d175a3a3f73462b50f6741d`；最后两修复后
 累计清单及51项来源冻结独立绑定当前字节，不冒称该旧收据检查过新版本。
 `full_restructure_complete=False`；898份raw文件、导航及最终D5尚未执行。
+
+## D4：原始研究证据与导航
+
+实际移动其余898份raw文件；全部928份原始配置、计划、报告逐项大小、SHA及
+Git blob保持，含已在D2移动的30份。新文件按同一研究问题归组，raw JSON值、
+历史报告正文、原声明路径与原SHA没有批量改写；历史链接仍按原声明位置解释。
+原reports/README移至reports/history/README，新导航另用reports/index.md。
+
+根、scripts、tests三个README改为简明导航，原基线Git字节归档到docs/history。
+新增研究索引及目录index提供当前入口。AGENTS保留全部原约定，只更新001目标
+导航并追加用户CPU并发偏好，不用历史归档替代生效约束。根设计同步已批准细化：
+真实controller/reference接口维护合同，不创建空contracts包，公开入口使用实际
+canonical module名。
+
+25个测试模块只适配真实当前文件读取及合成fixture的CONFIG/PLAN/SOURCE_ADDENDUM，
+保留原数学、参数和装饰器，不替换历史命令、AST负例及raw注册。全仓2559个
+Python文件Ruff/format通过。本阶段尚未执行D5的全量CPU及真实dry，不借D3c通过
+记录授予D4版本的执行资格。
+
+实际apply收据为`outputs/repository_d4_applied_20261029/result.json`，SHA256
+`2e6f98655e7d5d0b3a0da917503f0894274ffc8f65763f80ee56aab8a3efba53`。
+原始身份及3280项实际位置核验收据为
+`outputs/repository_d4_verification_v2_20261029/result.json`，SHA256
+`db07eb24659f8a373fd580081f514e4be72b3bea90c9a995b5e6420884e56ed4`。
+第一次验证在推导受影响测试节点文件时发现Arrow模块原未收集，保留失败并明确
+376个已知节点不完整；D5使用全量native节点和兼容环境40项覆盖，不漏掉该模块。
+
+累计清单登记3280个历史身份、3264个实际移动，当前SHA256为
+`481d8f51d251afc6b4729d156a2214313598e947f8fc81e5a1102f1cd214bbdf`。
+source/script/test/config/plan/report根平铺现为1/2/3/1/1/1；生成outputs保持原位置。
+完整结构、当前来源、全量CPU、两真实入口dry及最终导航验收由D5独立收尾。
+
+D4另有独立纯文件/Git验收：928raw身份、898旧位置消失、3README归档和AGENTS
+允许差异均通过；126份新Markdown中的1600条相对链接目标实存，未声称旧raw
+链接或标题anchor已重写。1062项输入前后相同，7个Git child实际回收、owner实际
+exit0；收据`outputs/repository_d4_independent_audit_20261029/result.json`，SHA256
+`239369d2b56867e311d8c1545391507a85a56fafd7b70fcb8648dac6393fe56d`。

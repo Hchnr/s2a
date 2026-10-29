@@ -7,6 +7,7 @@ import json
 import numpy as np
 import pytest
 
+from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path
 from tests.support.source_layout import current_module_name
 
 
@@ -127,7 +128,7 @@ def test_incomplete_group_does_not_turn_pending_into_failure(audit):
 
 
 def roster(audit):
-    config = json.loads((audit.REPO / "configs/wam_raw8_seed43_task0_20261021.json").read_text())
+    config = json.loads((_d4_current_source_path("configs/wam_raw8_seed43_task0_20261021.json")).read_text())
     service, matrix = audit.expected_commands(config, 0)
     command = ["registered coordinator"]
     worker = [
