@@ -30,6 +30,10 @@
 新求解策略须另行预登记并保持原KKT及成功门。原18/12/24验收门槛保持，最终留出
 仍未开放。实现提交`6f88ced`；[完整报告](state_vector_gn_search_20261029.md)。
 
+零新调用的保存矩阵诊断保留两次工具守卫失败，隔离v3核验25输入与原六份证书；
+B条件数278.129、原缩放A条件数6.292，未证明严重病态导致status8。已登记仅将
+整个目标/梯度统一缩放的新对照，尚未实现或执行，不改变本轮资格结论。
+
 # English version
 
 ## Title
@@ -73,3 +77,9 @@ rows; repeating that operation is not a new fix. Any new solver strategy require
 preregistration and the original KKT and success gates. Preserve the 18/12/24 acceptance gates
 and keep final held-out evaluation unopened. Implementation commit: `6f88ced`.
 See the [full report](state_vector_gn_search_20261029.md).
+
+A saved-matrix diagnostic adds no solver or model calls. It preserves two diagnostic-tool
+failures and closes an isolated v3 over 25 inputs and the six original certificates. B has
+condition number 278.129 and the existing scaled A 6.292; severe ill-conditioning is not an
+established cause of status8. A separately preregistered whole-objective scaling comparison
+remains unimplemented and unexecuted, without changing this run's qualification result.

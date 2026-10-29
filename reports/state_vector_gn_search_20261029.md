@@ -122,3 +122,51 @@ status8为SLSQP的Positive directional derivative for linesearch；即使部分�
 策略须单独预登记、独立验证等价关系及原KKT，不能追认本轮status8为合格。
 新增物理/world-model/fresh/实际参考消费均0，GPU继续禁用。尚无独立物理新轨迹、
 在线多任务稳定性或留出泛化收益；原18正确参考/12WAM开发/24最终留出验收门槛保持；最终留出仍未开放。
+
+## 保存QP的零新调用尺度诊断
+
+在本轮搜索和全量checker关闭后，独占v3纯矩阵诊断已actual wait/reap0
+（session82646、child2436502）。25份显式输入/源码不变，root另行实核25份SHA。
+它从原stencil重建模型、逐值核对stage0三套割线metadata，并独立重建六份保存
+pose QP的原证书；不重新求解，不接纳status8。QP/模型/响应/测试/物理/GPU新增均0。
+
+首pose的B特征值为[1.000000546,278.129343]，条件数278.129191；g无穷范数
+11.23197515727354。原canonical A的条件数6.291980，raw A为43.579450；
+去掉行除数max1下界的候选正缩放反而为36.699389，未显示条件数收益。因此不能
+把status8归因为已证明的严重病态，或声称再做行缩放就修复了问题。
+
+零初点的safety floor最小slack4.999245944e-6、共同pose ceiling余量.06754847949；
+命令/rate/t边界有13个exact0，另一个rate slack为-5.551115123e-17。它通过原
+primal容差，却不是严格内点；该末位负值也不是实际约束不可达的证明。
+
+旧solver已对每行除S=max(1,||A_i||inf,|b_i|)，目标仍为未缩放
+f=t+g·d+.5*d.T@B@d，解析梯度，SLSQP ftol=1e-14。下一项最小对照可仅把**整个
+目标和梯度**除C=max(1,||g||inf,radius*||B||inf)，保持旧行缩放；首pose C为
+11.23197515727354。统一缩放不改变精确最优解或B条件数，可能改变有限SLSQP
+路径/状态；本诊断没有执行该求解，也未证明能消除status8。
+
+若一般化写成目标f/C、约束(Ay+b)/R>=0，变换后dual为nu，则原raw dual应为
+lambda=C*nu/R、原canonical dual为mu=S*C*nu/R。六份保存dual往返最大差
+3.552713679e-15，原KKT仍按原B/g/A/b、原行S及原阈值复核；所有status8仍拒绝。
+只缩B/g而不处理t系数不属于整个目标的统一缩放。
+
+两次诊断工具失败完整保留：v1未沿用冻结入口的C-contiguous数组副本，stage0 residual末位差异
+触发exact守卫，session73864 actual exit1；隔离v2补同样的数组副本后模型/六证书重建通过，
+但额外的禁止SciPy/s2a import守卫失败，session55588 actual exit1。该import守卫
+不是研究或KKT门；v3仅移除此过严守卫，明确记录冻结audit的传递imports，未调用
+optimizer/dynamics或测试，也未引入AST替换或改变数学。修正诊断不重开旧搜索。
+
+以下文件均在`outputs/state_vector_gn_qp_scale_diagnostic_20261029/`：
+
+| 文件 | SHA256 |
+| --- | --- |
+| `analyze.py` | `8c64dc21c45baa95ec238307b6df47d8e5c6e44c03bf33af8c501601b4c13a72` |
+| `result.json`（失败） | `03b903e552d57bf8c9b4af243702ece61f0af1f4842aa1beb70697370b3c782d` |
+| `v2/analyze.py` | `44347d3664294339b5f406d23e83edff22f7e0d7d214d8807a12b7b3f3203539` |
+| `v2/result.json`（失败） | `17d9c09fd979c2e44c1d352bc1fcefbfc3d6edc5e38000e23b6a33633441f769` |
+| `v3/analyze.py` | `ced6eae62fb02bf9e2bab92ec3e2a318d92e66bfcdc536a11dff4ec0f6b72e5e` |
+| `v3/result.json` | `3d26dc03672f2f32b60e244de155e6927d9cf2f19128094af674fcc397e54074` |
+
+下一项[整个目标统一缩放对照](../plans/v0.0.1/state_vector_objective_scale_20261029.md)
+已登记，尚未实现或执行。此为新的有限数值形式对照，不使用本轮未花预算，不保证
+获胜，不提升控制证据等级。GPU继续禁用，总目标仍未完成。
