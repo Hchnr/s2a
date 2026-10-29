@@ -1,6 +1,8 @@
 # S2A — State to Action
 
-最新CPU结果：[从恢复候选重新开始完整H12 SQP](reports/restored_anchor_sqp_20261029.md)的889项native QA、生产搜索、3657响应完整独立复算及2526来源核验全部关闭。272条ray、47份anchor、55个QP和46次曲率更新核验通过；仍prefix9、完整witness0，55阶段后信赖域停滞。selected的cursor9仍11.46528mm/.05732691rad超原caps，实际仍cursor8、task/grasp0。GPU继续禁用，原18/12/24门槛及总目标保持。
+最新CPU结果：[保存3543的末周期修复](reports/terminal_only_tail_repair_20261029.md)完成155项专项QA、14响应生产和14响应完整独立复算。12候选中2个合格，选中末周期x减.001，terminal恢复至2.762279319e-5；保留cursor9微小改善，但其误差仍11.46520mm/.05732641rad超原caps，其他安全最小slack仍仅6.13467e-8。首次环境引用错误的零响应失败保留。完整witness0、实际cursor8、task/grasp0，不自动重开同一SQP；GPU禁用及原18/12/24门槛保持。
+
+前项CPU结果：[从恢复候选重新开始完整H12 SQP](reports/restored_anchor_sqp_20261029.md)的889项native QA、生产搜索、3657响应完整独立复算及2526来源核验全部关闭。272条ray、47份anchor、55个QP和46次曲率更新核验通过；仍prefix9、完整witness0，55阶段后信赖域停滞。selected的cursor9仍11.46528mm/.05732691rad超原caps，实际仍cursor8、task/grasp0。GPU继续禁用，原18/12/24门槛及总目标保持。
 
 运行时接续：[隔离v3 CPU bootstrap](reports/native_runtime_bootstrap_v3_20261029.md)的220项native QA（另1项旧fixture缺失跳过）、实际准入及唯一初始化均正常关闭。79维原初态字节完全一致，固定控制器通过，llvmpipe软件OSMesa渲染有效256RGB帧；实际3模型/3contexts/16forward/2非积分step1、0控制动作/物理积分，2774来源重核不变。[v1](reports/native_runtime_bootstrap_20261029.md)与[v2](reports/native_runtime_bootstrap_v2_20261029.md)的路径守卫失败完整保留。当前bootstrap已验证，历史二进制等价与控制资格仍未取得；GPU继续禁用。
 
