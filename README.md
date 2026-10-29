@@ -1,5 +1,7 @@
 # S2A — State to Action
 
+仓库整理进行中：[全局结构设计与迁移协议](docs/architecture/repository_design.md) · [当前目标、证据和待解决项](docs/status.md)。先按设计分阶段迁移与验证，原实验记录及验收门槛保持。
+
 最新实现准入：[pose紧活动子集的乘子恢复](reports/state_vector_dual_recovery_implementation_20261029.md)已通过182项专项CPU测试、新文件Ruff/格式和两条真实输入dry，182来源指纹保持。仅改变pose的一次NNLS恢复子集，完整原KKT门、restore和60阶段/122响应上限保持；生产搜索和完整独立复算待执行，尚无本项跟踪收益结论。实现提交`d527982`，实际仍cursor8/task0/grasp0，GPU继续禁用；[双语PR原文](reports/pr_state_vector_dual_recovery_20261029.md)。
 
 最新CPU对照：[整个目标统一缩放](reports/state_vector_objective_scale_20261029.md)通过200项专项QA、5响应生产/5响应完整独立复算，2724来源闭合。10QP均status0，但原互补证书仅3个合格（2restore/1pose）；总误差较原GN停止点降.526%，最坏F升.821%，前缀/双caps仍9、完整witness0。半径下限正常停止，未追加50阶段/117响应；实际仍cursor8/task0/grasp0，GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/pr_state_vector_objective_scale_20261029.md)。
