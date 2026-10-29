@@ -10,6 +10,8 @@
 
 冻结成功路径依据为`src/s2a/libero_simulation.py`（SHA `903a8616e26bc4ee5fb0c9575870ed0600e98f5a74229cbf5be9ff610ffe74c1`）。新增隔离入口复用其configure_simulator，按make_environment顺序进行构建、seed、reset、record XML恢复、initial state恢复和controller refresh，不修改已执行源码。唯一reset语义差异是外层`ControlEnv.reset`改为一次底层`env.env.reset()`：原包装器的while/finally:continue会重试并吞掉异常；本项成功路径仍调用同一个底层reset，首次失败立即归档，不自动重试。
 
+执行前用静态AST抽取原XML后处理函数检查真实record：99个file属性、7个camera，非file属性、tag、text/tail及完整子树保持。部分LIBERO资产仍声明历史`/Users/yifengz/workspace/libero-dev/chiliocosm/assets/`路径。仅对该已绑定record中不在允许根内、带`/assets/`的历史file属性，按原fallback的suffix映射至快照LIBERO assets；不先stat或读取外部旧路径。其他未识别路径拒绝。逐项保存原声明、映射和实际资产SHA，不改变关节、几何、控制参数或camera。
+
 所有Python配置、Numba/Matplotlib缓存、临时文件和新增产物在本仓库新输出目录内；快照、venv、外部只读来源不写入。不安装依赖，不改LD/RPATH或系统库。先按既有cv2合同恢复其已知导入LD变更；随后CUDA_VISIBLE_DEVICES与LD_LIBRARY_PATH保持空，五项线程变量为1，禁bytecode。OSMesa按快照绝对路径加载，MUJOCO_GL/PYOPENGL_PLATFORM显式为osmesa。
 
 ## 唯一执行与实际计数
@@ -20,7 +22,7 @@
 
 恢复后检查79维完整state及其字节SHA和原record一致，核对原控制器输入/输出范围、Kp/Kd、delta/fixed模式、无插值、控制频率、模型dt和TCP site。保存当前controller/state证据，不将恢复初态等同actual368。
 
-仅在原初态显式渲染一帧agentview、256×256 RGB，用于验证OSMesa context和实际软件renderer，保持前后完整state/time相同。绑定实际加载OSMesa路径/SHA、OpenGL vendor/renderer/version、context类型及图像shape/dtype/指纹；不要求图像等于历史视频，也不把可渲染当作控制成功。实际模块文件和进程加载库保留当前指纹及身份边界。
+仅在原初态显式渲染一帧agentview、256×256 RGB，用于验证OSMesa context和实际软件renderer，保持前后完整state/time字节相同。绑定实际加载OSMesa路径/SHA、OpenGL vendor/renderer/version、context类型及图像shape/dtype/指纹，并要求像素非恒定（min<max），拒绝纯色/黑帧。软件renderer须标识llvmpipe、softpipe或swrast；不要求图像等于历史视频，也不把可渲染当作控制成功。实际模块文件和进程加载库保留当前指纹及身份边界。
 
 ## 准入、失败及结论
 
