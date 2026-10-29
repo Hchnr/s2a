@@ -10,6 +10,7 @@ from s2a.research.wam.tracking.runtime.terminal_development_control import (
     CHECKPOINT,
     FIXTURE_SHA,
     RELOCATION_REF,
+    registered_base_storage_ref,
     safe_template,
 )
 from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
@@ -38,7 +39,7 @@ def make_case_profile(prepared, control_ref, *, case):
         and case == case_order()[case["case_index"]],
         "Fixed preview development preparation/case binding required",
     )
-    base = read(BASE_REF)
+    base = read(registered_base_storage_ref(BASE_REF))
     require(base["fixture_sha256"] == FIXTURE_SHA, "Fixed current-initial-state fixture required")
     require(prepared["tool_relocation_ref"] == RELOCATION_REF, "Registered tool contract relocation required")
     template = safe_template(prepared["tool_relocation_ref"])

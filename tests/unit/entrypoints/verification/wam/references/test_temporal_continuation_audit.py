@@ -247,7 +247,7 @@ def gate_metadata(audit):
     refs = {key: dict(path=f"/old/{key}.json", sha256=value) for key, value in audit.ORIGINAL_HASHES.items()}
     launch = dict(
         config_path=str(audit.REPO / audit.CONFIG),
-        config_sha256=audit.sha256(audit.REPO / audit.CONFIG),
+        config_sha256=audit.sha256(_d4_current_source_path(audit.CONFIG)),
         original_evidence=refs,
         source_review=dict(path="/review.json", sha256="r" * 64),
     )

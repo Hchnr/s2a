@@ -337,3 +337,53 @@ D4另有独立纯文件/Git验收：928raw身份、898旧位置消失、3README�
 链接或标题anchor已重写。1062项输入前后相同，7个Git child实际回收、owner实际
 exit0；收据`outputs/repository_d4_independent_audit_20261029/result.json`，SHA256
 `239369d2b56867e311d8c1545391507a85a56fafd7b70fcb8648dac6393fe56d`。
+
+## D5：最终结构与读取边界验收
+
+首次64进程全量5177项为5138通过、37失败、2跳过，另有原5项环境collection
+错误；37项分为33项深层raw读取迁移适配和4项已由原版本复现的数值环境差异。
+修复后全量v2为5170通过、5失败、2跳过，来源冻结且64个worker实际回收；
+5项为原4项数值失败和1项遗漏的合成fixture PLAN读取。所有失败收据保留。
+
+最后一项只在function-scoped fixture绑定已核原SHA的当前PLAN。独立只读审查
+还发现两个preview真实入口读取旧BASE_REF，已通过显式传入各自ref修复；helper
+核原声明、catalog original_ref和current SHA，错误ref在读取前拒绝，不静默加载
+baseline。纯读4正向/5负向检查通过，原注册SHA、数学、控制字段与预算不变。
+其他修复只处理明确的raw I/O与合成fixture；native replay的旧源码ref仍走原
+拒绝边界，完整来源AST只增加一处固定raw表达式及对应导入的精确允许项。
+
+最终累计清单SHA256为
+`f98cdaf856487801e8e19f0b02d302c0464cbd803c2c73638ac4190c8d735a0e`。
+3280历史身份、3264实际移动及根平铺1/2/3/1/1/1通过完整结构验收；928份原始
+配置/计划/报告再次逐项核原SHA，原字节保持。2559个Python文件Ruff/format及
+10999条静态本地依赖边检查通过，未留平铺wrapper或全局文件/导入hook。
+
+最终14个完整相关模块179项全部通过，覆盖原33个新增迁移失败；兼容环境另40项
+全部通过。最终重新发现5177节点，名称/参数/顺序与预登记完整列表相同，仅原
+5项环境collection错误，collect-only退出1不改写成通过。两条最新真实模块入口
+实际执行`--dry`且退出0，报告QP/响应/查询为0；未执行搜索、完整响应复算或GPU。
+这些dry计数字段与固定dry分支共同界定范围，不是独立的全局活动探针。
+
+最终179、兼容40、全量发现和双dry四个owner的3646项来源/输入清单完全相同；
+各自前后无漂移，全部child实际wait/reap，无自动重试。完整结构收据使用full v2
+实际node列表，随后最终collect-only确认该列表逐项相同。最后修复后未再次完整
+执行5177项；不得合并不同版本收据声称单一环境完整pytest全绿。原5项Arrow
+导入错误与4项数值环境失败保持；兼容环境40通过不替代未执行的全仓回归。
+
+| 收据（仓库outputs内） | SHA256 |
+| --- | --- |
+| `qa/repository_layout_final_cpu_20261029/result.json` | `18fb479f794fdc9fd85a991fa7a4ba19c7842f5ad7251a6f9d39fb0d19c70dd8` |
+| `qa/repository_layout_final_cpu_v2_20261029/result.json` | `831dcd407340288cea6020529ab31946f6323ea103777d3f52314e38fa616913` |
+| `qa/repository_layout_final_repaired_modules_20261029/result.json` | `cb34c5b2badc66dbdc4a11f9ab25de17171d2938b3e44486a0d8e9b53e8a189f` |
+| `qa/repository_layout_final_compatible_environment_v3_20261029/result.json` | `94052357657b3dcc330a7cc75bc92e5c6b30b07b23ed3523699e4a5d462fd6e2` |
+| `qa/repository_layout_final_collection_20261029/result.json` | `63af6d5687deefb7d54692e8edae9f6b2d77e698c293e05f1bbe787e86676741` |
+| `repository_layout_final_latest_dry_v3_20261029/result.json` | `60889e573d2b2de765f52a220b47d62637dbd9bd1310bbd3776f58baae607d7a` |
+| `repository_layout_final_structure_v3_20261029/result.json` | `d076d89be68208daf7d6886e0e0b3fa39a118fc887a65106728329502d5c5b22` |
+| `repository_layout_final_module_graph_v3_20261029/result.json` | `f248cf38783c82a8615db5f5660471d5625a95911e711bc89ab710fa29ad16b1` |
+| `short_replan_base_storage_preview_checks_20261029/result.json` | `df2b11a0927bf01c83e0425ffa08ecffd7ee6fe9a7fd16da265b02f11775cc13` |
+| `repository_layout_d5_commit_checkpoint_20261029/result.json` | `627544d7dbf6213ba44ff4f7404041a104ef1215f8bd6a6a005b951bfbff5d5d` |
+
+结构字段`full_restructure_complete=True`只说明存储与布局条件；研究总目标仍未达。
+控制资格仍cursor8/task0/grasp0，完整H12 witness为0，原fresh_ratio失败不追认。
+GPU继续禁用。验收结束后仅更新本说明、当前状态和双语PR文案，代码/测试/raw
+保持验收字节；这三份文档不在原3280身份范围内，故不改变累计清单pin。

@@ -1,6 +1,4 @@
 import copy
-import json
-from pathlib import Path
 
 import pytest
 
@@ -9,7 +7,8 @@ import s2a.research.wam.tracking.runtime.terminal_development_control as control
 
 @pytest.fixture
 def profile(tmp_path, monkeypatch):
-    base = json.loads(Path(control.BASE_REF["path"]).read_text())
+    base_storage_ref = control.registered_base_storage_ref()
+    base = control.read(base_storage_ref)
 
     def ref(name):
         return dict(path=str(tmp_path / name), sha256="a" * 64)
@@ -28,7 +27,7 @@ def profile(tmp_path, monkeypatch):
         historical_sha256="a" * 64,
     )
     docs = {
-        control.BASE_REF["path"]: base,
+        base_storage_ref["path"]: base,
         control.RELOCATION_REF["path"]: relocation,
         old_ref["path"]: old,
         new_ref["path"]: new,

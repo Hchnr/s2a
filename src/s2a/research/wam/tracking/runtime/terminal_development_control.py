@@ -4,6 +4,7 @@ import copy
 from pathlib import Path
 
 from s2a.infrastructure.artifacts import REPO
+from s2a.infrastructure.current_layout import CurrentLayout
 from s2a.research.wam.tracking.runtime.terminal_development_execution import PORT, ROOT
 from s2a.research.wam.tracking.runtime.terminal_development_policy import case_order
 from s2a.research.wam.training.clean.clean_training_runtime import GPU, checked, read, require
@@ -18,6 +19,26 @@ RELOCATION_REF = dict(
     path=str(REPO / "outputs/clean_training_development_dependency_repair_20261024/path_relocation.json"),
     sha256="35f43c12d90c098aa2625bae5c994bf336d7488ce996a829c642f39a80ddf8a7",
 )
+
+
+def registered_base_storage_ref(ref=None):
+    """Locate unchanged registered controller bytes without rewriting BASE_REF."""
+    ref = BASE_REF if ref is None else ref
+    require(
+        isinstance(ref, dict) and set(ref) == {"path", "sha256"}, "Exact registered raw8 controller reference required"
+    )
+    relative = "configs/wam_short_replan_8_alpha1_20261021.json"
+    layout = CurrentLayout(root=REPO)
+    entry = layout.entry(relative)
+    require(
+        ref["path"] == str(REPO / relative)
+        and entry["original_ref"] == dict(path=relative, sha256=ref["sha256"])
+        and entry["current_ref"]["sha256"] == ref["sha256"],
+        "Registered raw8 controller identity differs",
+    )
+    storage = layout.source_path(relative)
+    layout.finish()
+    return dict(path=str(storage), sha256=ref["sha256"])
 
 
 def safe_template(relocation_ref):
@@ -47,7 +68,7 @@ def make_case_config(prepared, case):
         and case == case_order()[case["case_index"]],
         "Fixed061 case/root required",
     )
-    base = read(BASE_REF)
+    base = read(registered_base_storage_ref())
     require(
         base["fixture_sha256"] == FIXTURE_SHA
         and base["variants"]

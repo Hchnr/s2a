@@ -12,6 +12,7 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
+from s2a.infrastructure.current_layout import current_source_path
 from scripts.verification.wam.physical_logs.audit_wam_long_qualification import (
     CONFIG,
     OLD_ORACLE_CONFIG,
@@ -57,7 +58,7 @@ def canonical_runtime_commit(value):
 def check_launch_plan_binding(launch, review, source):
     """Permit only the oracle's omitted duplicate, with an exact reviewed plan."""
     name = str(PLAN)
-    current = sha256(PLAN)
+    current = sha256(current_source_path(str(PLAN.relative_to(REPO))))
     if review["input_sha256"].get(name) != current:
         raise ValueError("the pinned prelaunch review must bind the exact current plan")
     explicit = launch["execution_source_sha256"].get(name)

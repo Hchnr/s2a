@@ -80,7 +80,7 @@ def _historical_source(evidence, declared, digest):
 
 
 def _current_namespace_proof(evidence, relative, historical):
-    """Compare whole modules; only registered import names and root lookup vary."""
+    """Compare whole modules; only namespaces and one explicit raw I/O vary."""
     layout = CurrentLayout(root=REPO)
     path = layout.source_path(relative)
     original, current = ast.parse(historical), ast.parse(evidence.read(path))
@@ -95,6 +95,7 @@ def _current_namespace_proof(evidence, relative, historical):
     class Namespace(ast.NodeTransformer):
         def __init__(self):
             self.root_changes = 0
+            self.raw_io_changes = 0
 
         def visit_ImportFrom(self, node):
             if not node.level and node.module:
@@ -109,10 +110,24 @@ def _current_namespace_proof(evidence, relative, historical):
                 return ast.parse("repository_root(anchor=__file__)", mode="eval").body
             return self.generic_visit(node)
 
+        def visit_BinOp(self, node):
+            if relative == "tests/test_long_environment.py" and ast.dump(node) == ast.dump(
+                ast.parse(
+                    'Path(__file__).resolve().parents[1] / "configs/long_raw_qualification_20261021.json"',
+                    mode="eval",
+                ).body
+            ):
+                self.root_changes += 1
+                self.raw_io_changes += 1
+                return ast.parse(
+                    '_d4_current_source_path("configs/long_raw_qualification_20261021.json")', mode="eval"
+                ).body
+            return self.generic_visit(node)
+
     transform = Namespace()
     expected = transform.visit(copy.deepcopy(original))
     if relative == "tests/test_long_environment.py":
-        assert transform.root_changes == 1
+        assert transform.root_changes == transform.raw_io_changes == 1
         # Path was used only by the replaced repository locator.
         assert not any(isinstance(node, ast.Name) and node.id == "Path" for node in ast.walk(expected))
         expected.body = [
@@ -120,7 +135,10 @@ def _current_namespace_proof(evidence, relative, historical):
         ]
         index = next(i for i, node in enumerate(expected.body) if isinstance(node, (ast.Import, ast.ImportFrom)))
         expected.body.insert(
-            index, ast.parse("from s2a.infrastructure.repository_paths import repository_root").body[0]
+            index,
+            ast.parse(
+                "from s2a.infrastructure.current_layout import current_source_path as _d4_current_source_path"
+            ).body[0],
         )
 
     def ordered_imports(tree):

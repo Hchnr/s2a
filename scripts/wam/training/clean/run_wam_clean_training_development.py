@@ -14,6 +14,7 @@ import requests
 
 from s2a.infrastructure.artifacts import REPO
 from s2a.infrastructure.lifecycle.worker_handshake import identity, owned_child
+from s2a.research.wam.tracking.runtime.terminal_development_control import registered_base_storage_ref
 from s2a.research.wam.training.clean.clean_training_runtime import (
     GPU,
     admit_execution,
@@ -126,7 +127,7 @@ def admit_development(prepared_ref, registration_ref, state_owner_ref, state_ver
 
 
 def make_case_config(prepared, case):
-    base = json.loads((REPO / "configs/wam_short_replan_8_alpha1_20261021.json").read_text())
+    base = read(registered_base_storage_ref())
     require(
         base["fixture_sha256"] == FIXTURE_SHA
         and base["variants"]

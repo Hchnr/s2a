@@ -13,7 +13,7 @@ import pytest
 
 from s2a.infrastructure.repository_paths import repository_root
 from tests.research.trajectory_search.sqp.test_prefix_callback_backtracking_execution import write_json
-from tests.support.source_layout import current_module_name, current_source_path
+from tests.support.source_layout import current_module_name, current_source_path, historical_source_ref
 
 REPO = repository_root(anchor=__file__)
 
@@ -21,7 +21,7 @@ REPO = repository_root(anchor=__file__)
 @pytest.fixture
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "scripts"))
-    return SimpleNamespace(
+    result = SimpleNamespace(
         checker=importlib.import_module(
             "scripts.verification.trajectory_search.check_tracking_v5_tail_translation_reserve_v2"
         ),
@@ -31,6 +31,14 @@ def modules(monkeypatch):
         evidence=importlib.import_module("s2a.research.trajectory_search.tail_translation_check_v2_evidence"),
         audit=importlib.import_module("scripts.verification.trajectory_search.tail_translation_reserve_audit"),
     )
+    for field, identity in (
+        ("PLAN", "plans/v0.0.1/tail_translation_reserve_20261029.md"),
+        ("REPAIR_PLAN", "plans/v0.0.1/tail_translation_check_v2_20261029.md"),
+    ):
+        storage = current_source_path(identity)
+        assert hashlib.sha256(storage.read_bytes()).hexdigest() == historical_source_ref(identity)["sha256"]
+        monkeypatch.setattr(result.owner, field, storage)
+    return result
 
 
 @pytest.mark.parametrize(

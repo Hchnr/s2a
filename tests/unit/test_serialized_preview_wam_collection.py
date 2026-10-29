@@ -92,11 +92,10 @@ def test_transport_rejects_causal_or_resource_escape(tmp_path, monkeypatch, faul
 
 
 def test_fixed12_configs_preserve_preview_parameters_and_no_expert_input(monkeypatch):
-    from pathlib import Path
-
     from s2a.research.wam.tracking.preview import serialized_preview_wam_control as control
 
-    base = json.loads(Path(control.BASE_REF["path"]).read_text())
+    base_storage_ref = control.registered_base_storage_ref(control.BASE_REF)
+    base = control.read(base_storage_ref)
     qualified = json.loads(
         (_d4_current_source_path("configs/coupled_preview_control_registered_20261026.json")).read_text()
     )
@@ -120,7 +119,7 @@ def test_fixed12_configs_preserve_preview_parameters_and_no_expert_input(monkeyp
         physical_control_admission=dict(control_config_ref=ctrl_ref),
         service_source_ref=ctrl_ref,
     )
-    monkeypatch.setattr(control, "read", lambda r: copy.deepcopy(base if r == control.BASE_REF else qualified))
+    monkeypatch.setattr(control, "read", lambda r: copy.deepcopy(base if r == base_storage_ref else qualified))
     monkeypatch.setattr(control, "safe_template", lambda r: dict(path="/synthetic/template.json"))
     original = copy.deepcopy(prepared)
     for case in control.case_order():

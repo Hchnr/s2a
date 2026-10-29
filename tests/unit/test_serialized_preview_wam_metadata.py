@@ -2,7 +2,6 @@
 
 import copy
 import json
-from pathlib import Path
 
 import pytest
 
@@ -13,7 +12,8 @@ from s2a.research.wam.tracking.preview import serialized_preview_wam_control as 
 
 @pytest.fixture
 def profile(monkeypatch):
-    base = json.loads(Path(control.BASE_REF["path"]).read_text())
+    base_storage_ref = control.registered_base_storage_ref(control.BASE_REF)
+    base = control.read(base_storage_ref)
     qualified = json.loads(
         (_d4_current_source_path("configs/coupled_preview_control_registered_20261026.json")).read_text()
     )
@@ -26,7 +26,7 @@ def profile(monkeypatch):
             cosmos_source_root="/readonly/cosmos", checkpoint=dict(run="/readonly/run", iteration="iter_000008400")
         ),
     )
-    monkeypatch.setattr(control, "read", lambda r: copy.deepcopy(base if r == control.BASE_REF else qualified))
+    monkeypatch.setattr(control, "read", lambda r: copy.deepcopy(base if r == base_storage_ref else qualified))
     monkeypatch.setattr(control, "safe_template", lambda r: dict(path="/synthetic/template.json"))
     return base, qualified, ref, p
 

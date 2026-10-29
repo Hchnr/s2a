@@ -16,6 +16,7 @@ from pathlib import Path
 
 import scripts.verification.wam.references.audit_wam_temporal_wam as original
 from s2a.infrastructure.artifacts import REPO, sha256
+from s2a.infrastructure.current_layout import current_source_path
 from scripts.verification.wam.physical_logs.audit_wam_position import Evidence
 from scripts.wam.tracking.references.run_wam_short_replan import cpu_environment, process_record, write_new
 
@@ -340,7 +341,7 @@ def gate_metadata(gate, launch, old_gate, review):
     assert gate["all_prerequisites_passed"] and gate["registered_budget"] == CONTINUATION_BUDGET
     assert (gate["partition"], gate["physical_gpu"], gate["port"]) == (2, 6, 9946)
     assert gate["config_path"] == launch["config_path"] == str(REPO / CONFIG)
-    assert gate["config_sha256"] == launch["config_sha256"] == sha256(REPO / CONFIG)
+    assert gate["config_sha256"] == launch["config_sha256"] == sha256(current_source_path(CONFIG))
     assert gate["original_evidence"] == launch["original_evidence"]
     assert gate["source_review"] == launch["source_review"] and review["review_passed"] is True
     assert gate["original020_gate"] == dict(

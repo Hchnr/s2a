@@ -1,6 +1,7 @@
 """025 resource continuation gates, without real feature/fit/model execution."""
 
 import copy
+import hashlib
 import importlib.util
 import json
 import os
@@ -11,7 +12,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from tests.support.source_layout import current_source_path
+from tests.support.source_layout import current_source_path, historical_source_ref
 
 
 @pytest.fixture
@@ -21,6 +22,13 @@ def driver(monkeypatch):
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    identity = "plans/v0.0.1/025_release_observation_addendum_20261021.md"
+    storage = current_source_path(identity)
+    assert hashlib.sha256(storage.read_bytes()).hexdigest() == historical_source_ref(identity)["sha256"]
+    assert module.REGISTRATION_SHA == historical_source_ref(identity)["sha256"]
+    # Bind only this synthetic fixture to current storage; the production
+    # declaration and the original registration bytes remain unchanged.
+    monkeypatch.setattr(module, "REGISTRATION", storage)
     return module
 
 

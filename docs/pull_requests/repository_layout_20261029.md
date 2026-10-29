@@ -1,49 +1,37 @@
-# 中文版
+# 仓库结构整理 PR 信息
 
-## 标题
+## 中文
 
-refactor: 按领域重组 S2A 库与共享实验入口
+```markdown
+# refactor: 按领域重组 S2A 并保留研究证据身份
 
-## 变更
+按设计文档整理算法、实验入口、测试及研究证据，累计移动 3264 个文件；928 份原始配置、计划和报告保持字节不变。
 
-- 落盘全局结构设计、逐文件迁移计划和来源身份清单。
-- 库按几何、控制器、参考、后端、评价和研究领域分层；src/s2a 根目录仅保留包入口。
-- 迁移首批775个共享/审核脚本，更新调用方的明确包导入和当前文件定位。
-- 分开核验历史字节与当前源码；保留独立审核及原控制算法、容差和实验门槛。
+- 建立领域包、分层导航及旧路径到当前路径的 SHA 绑定清单。
+- 修复迁移后的注册资料读取、preview 入口和合成测试 fixture；保留原算法、容差及验收门槛。
+- 增加 CPU 并行测试入口，全量检查使用 64 并发。
 
-## 验证
+验证：2559 个 Python 文件 Ruff/格式检查通过；最终相关模块 179 项、兼容环境 40 项、两条真实 --dry、结构与导入检查通过。
 
-- 全仓2470个Python文件Ruff和格式检查通过。
-- 测试发现5172项，原节点及参数保持；仍有5项既有PyArrow/NumPy环境导入错误。
-- 修复回归覆盖35个模块486项：482项在模块回归中通过，剩余4项独立复核通过。
-- CPU测试采用32进程；未使用GPU、未启动新研究实验，未执行完整pytest。
+全量 v2 为 5170 通过、5 失败、2 跳过，另有 5 处既有环境收集错误。5 个失败包含 4 项原数值环境差异及 1 项迁移遗漏；遗漏已修复并纳入最终 179 项复核。最终修复后未重跑全部 5177 项，不宣称全仓全绿。
 
-## 待完成
+GPU 保持禁用；目录整理不代表闭环控制总目标达成。完整收据见 docs/migrations/README.md。
+```
 
-- 剩余690个脚本、439个测试文件、898份配置/计划/报告及README导航整理。
-- 本PR是阶段性迁移；完整结构验收与研究总目标尚未达成。
+## English
 
-# English version
+```markdown
+# refactor: organize S2A by domain and preserve research evidence identities
 
-## Title
+Follow the documented design to organize algorithms, experiment entry points, tests and research evidence. Move 3,264 files while preserving the exact bytes of 928 configuration, plan and report files.
 
-refactor: organize S2A libraries and shared experiment entrypoints by domain
+- Add domain packages, layered navigation and SHA-bound mappings from historical to current paths.
+- Repair registered evidence reads, preview entry points and synthetic test fixtures; retain algorithms, tolerances and acceptance gates.
+- Add a CPU test runner and use 64 workers for full regression runs.
 
-## Changes
+Validation: Ruff/format checks pass for 2,559 Python files. The final 179 affected-module tests, 40 compatibility tests, two actual --dry runs, structure checks and import checks pass.
 
-- Document the global architecture, per-file migration plan and source identity inventory.
-- Group libraries into geometry, controllers, references, backends, evaluation and research packages; retain only the package entry at the src/s2a root.
-- Move the first 775 shared/audit scripts and update explicit imports and current file locations.
-- Verify historical bytes separately from current sources while preserving independent audits, control algorithms, tolerances and experiment gates.
+Full run v2 reports 5,170 passed, 5 failed and 2 skipped, plus 5 pre-existing environment collection errors. Four failures reproduce in the original numerical environment; one migration omission was fixed and covered by the final 179-test regression. All 5,177 tests were not rerun after the final fixes; this is not a claim of a fully green suite.
 
-## Validation
-
-- Ruff and formatting checks pass for all 2,470 Python files.
-- Discovery retains the original test nodes and parameters within 5,172 collected items; five existing PyArrow/NumPy environment import errors remain.
-- Repair regression covers 486 cases across 35 modules: 482 passed in the module run and the remaining four passed separately.
-- CPU tests use 32 processes. No GPU or new research experiment was run; the full pytest suite was not executed.
-
-## Remaining work
-
-- Organize the remaining 690 scripts, 439 test files, 898 configuration/plan/report files and README navigation.
-- This PR is a partial migration; full layout acceptance and the overall research goal remain unfinished.
+GPU execution remains disabled. Repository restructuring does not establish the overall closed-loop control goal. Full receipts are recorded in docs/migrations/README.md.
+```

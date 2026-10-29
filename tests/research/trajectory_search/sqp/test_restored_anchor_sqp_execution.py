@@ -1,6 +1,7 @@
 """CPU integration of exact initial admission, actual accounting and ownership."""
 
 import copy
+import hashlib
 import importlib
 import json
 from pathlib import Path
@@ -20,17 +21,24 @@ from tests.research.trajectory_search.sqp.test_prefix_trust_control_execution im
     source_fixture,
     three_response_solver,
 )
+from tests.support.source_layout import current_source_path, historical_source_ref
 
 
 @pytest.fixture
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(repository_root(anchor=__file__) / "scripts"))
-    return SimpleNamespace(
+    result = SimpleNamespace(
         producer=importlib.import_module("scripts.tracking.trajectory_search.probe_tracking_v5_restored_anchor_sqp"),
         owner=importlib.import_module("scripts.tracking.trajectory_search.execute_tracking_v5_restored_anchor_sqp"),
         evidence=importlib.import_module("s2a.research.trajectory_search.restored_anchor_sqp_evidence"),
         core=importlib.import_module("s2a.research.trajectory_search.restored_anchor_sqp_plan"),
     )
+    identity = "plans/v0.0.1/restored_anchor_sqp_20261029.md"
+    storage = current_source_path(identity)
+    assert hashlib.sha256(storage.read_bytes()).hexdigest() == historical_source_ref(identity)["sha256"]
+    monkeypatch.setattr(result.owner, "PLAN", storage)
+    monkeypatch.setattr(result.producer, "PLAN", storage)
+    return result
 
 
 def guard(ref):

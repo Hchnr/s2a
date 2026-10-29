@@ -84,6 +84,16 @@ def read(ref, refs=None):
     return json.loads(checked(ref, refs).read_text())
 
 
+def checked_current_raw(ref, refs):
+    """Locate registered raw bytes without remapping any historical source."""
+    relative = Path(ref["path"]).relative_to(REPO)
+    require(relative.parts[0] in ("configs", "plans", "reports"), "Explicit repository raw identity")
+    path = checked(dict(path=str(current_source_path(str(relative))), sha256=ref["sha256"]), refs)
+    require(ref["path"] not in refs or refs[ref["path"]] == ref["sha256"], "Conflicting raw identity")
+    refs[ref["path"]] = ref["sha256"]
+    return path
+
+
 def closed_owner(owner, expected_ref, refs):
     require(
         owner["complete"] is owner["passed"] is True and owner["result_ref"] == expected_ref,
@@ -126,7 +136,12 @@ def inspect_inputs(config):
     require(config["output_dir"] == str(REPO / "outputs/native_runtime_replay_20261029"), "Exclusive registered output")
     boot = read(config["bootstrap_ref"], refs)
     owner = read(config["bootstrap_owner_ref"], refs)
-    boot_config = read(config["bootstrap_config_ref"], refs)
+    bootstrap_config = "configs/native_runtime_bootstrap_v3_20261029.json"
+    require(
+        config["bootstrap_config_ref"]["path"] == str(REPO / bootstrap_config),
+        "Fixed bootstrap config declared identity",
+    )
+    boot_config = json.loads(checked_current_raw(config["bootstrap_config_ref"], refs).read_text())
     require(
         boot["complete"] is boot["passed"] is boot["bootstrap_verified"] is boot["source_unchanged"] is True
         and boot["config_ref"] == config["bootstrap_config_ref"]
@@ -147,7 +162,11 @@ def inspect_inputs(config):
         "Actual bootstrap wait/reap0",
     )
     for ref in boot["source_refs_after"]:
-        checked(ref, refs)
+        path = Path(ref["path"])
+        if path.is_relative_to(REPO) and path.relative_to(REPO).parts[0] in ("configs", "plans", "reports"):
+            checked_current_raw(ref, refs)
+        else:
+            checked(ref, refs)
     producer, checker = read(config["producer_ref"], refs), read(config["checker_ref"], refs)
     for key in ("producer", "checker"):
         historical_owner = read(config[f"{key}_owner_ref"], refs)

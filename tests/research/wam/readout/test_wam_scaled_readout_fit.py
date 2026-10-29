@@ -1,5 +1,6 @@
 """027 exact control reuse and CPU/source gates with synthetic data only."""
 
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -8,7 +9,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from tests.support.source_layout import current_source_path
+from tests.support.source_layout import current_source_path, historical_source_ref
 
 
 @pytest.fixture
@@ -18,6 +19,15 @@ def stage(monkeypatch):
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    for field, identity in (
+        ("CONFIG", "configs/wam_train_scale_readout_20261021.json"),
+        ("PLAN", "plans/v0.0.1/027_train_scale_readout_20261021.md"),
+    ):
+        storage = current_source_path(identity)
+        original_sha = historical_source_ref(identity)["sha256"]
+        assert hashlib.sha256(storage.read_bytes()).hexdigest() == original_sha
+        assert getattr(module, field + "_SHA") == original_sha
+        monkeypatch.setattr(module, field, storage)
     return module
 
 
