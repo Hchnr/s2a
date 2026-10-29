@@ -9,15 +9,15 @@ from types import FunctionType, SimpleNamespace
 
 import numpy as np
 import pytest
-from test_prefix_trust_asset_check_v2 import synthetic_main
-from test_prefix_trust_control_execution import (
+
+from s2a.prefix_trust_control_evidence import reference
+from tests.test_prefix_trust_asset_check_v2 import synthetic_main
+from tests.test_prefix_trust_control_execution import (
     CountingDynamics,
     captured_rollout,
     source_fixture,
     three_response_solver,
 )
-
-from s2a.prefix_trust_control_evidence import reference
 
 
 @pytest.fixture

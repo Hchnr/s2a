@@ -24,6 +24,12 @@
 专项及真实catalog接线通过。迁移前测试发现4976节点，5项既有PyArrow/NumPy
 导入错误已单列。[迁移记录](migrations/README.md)说明证据和接口边界。
 
+D2首批85项已按主题移动，配置/计划/报告原字节保持，8算法模块的38个顶层
+函数/类AST保持；迁移后182个原QA节点完整保留并通过。根测试辅助导入统一包
+身份。最终302项统一CPU QA、153个Python文件Ruff/格式及两真实输入dry通过；
+旧4976测试节点完整保留、新增120，仅原5项环境collection错误。结构/身份检查
+通过，D3其余领域尚待迁移；未重跑生产或升级原实验资格。
+
 ## 整理前的控制与实验状态
 
 - 已有明确DROID adapter与LIBERO OSC接口、因果参考/历史、前向预测及独立物理
@@ -44,6 +50,6 @@
 
 最近实现阶段182项专项CPU测试、新文件Ruff/format及两真实输入dry通过。
 全仓样式检查有四个未修改历史文件的既有问题，完整记录见
-[实现准入报告](../reports/state_vector_dual_recovery_implementation_20261029.md)。
+[实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 仓库整理须另行验证测试发现、导入来源、字节身份及当前入口，不能继承旧路径的
 通过记录来声称新布局已经验证。

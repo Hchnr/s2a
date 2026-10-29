@@ -10,7 +10,8 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-from test_prefix_callback_backtracking_execution import write_json
+
+from tests.test_prefix_callback_backtracking_execution import write_json
 
 REPO = Path(__file__).resolve().parents[1]
 

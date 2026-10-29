@@ -2,21 +2,21 @@
 
 仓库整理进行中：[全局结构设计与迁移协议](docs/architecture/repository_design.md) · [当前目标、证据和待解决项](docs/status.md)。先按设计分阶段迁移与验证，原实验记录及验收门槛保持。
 
-最新实现准入：[pose紧活动子集的乘子恢复](reports/state_vector_dual_recovery_implementation_20261029.md)已通过182项专项CPU测试、新文件Ruff/格式和两条真实输入dry，182来源指纹保持。仅改变pose的一次NNLS恢复子集，完整原KKT门、restore和60阶段/122响应上限保持；生产搜索和完整独立复算待执行，尚无本项跟踪收益结论。实现提交`d527982`，实际仍cursor8/task0/grasp0，GPU继续禁用；[双语PR原文](reports/pr_state_vector_dual_recovery_20261029.md)。
+最新实现准入：[pose紧活动子集的乘子恢复](reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)已通过182项专项CPU测试、新文件Ruff/格式和两条真实输入dry，182来源指纹保持。仅改变pose的一次NNLS恢复子集，完整原KKT门、restore和60阶段/122响应上限保持；生产搜索和完整独立复算待执行，尚无本项跟踪收益结论。实现提交`d527982`，实际仍cursor8/task0/grasp0，GPU继续禁用；[双语PR原文](reports/tracking/trajectory_search/pr_state_vector_dual_recovery_20261029.md)。
 
-最新CPU对照：[整个目标统一缩放](reports/state_vector_objective_scale_20261029.md)通过200项专项QA、5响应生产/5响应完整独立复算，2724来源闭合。10QP均status0，但原互补证书仅3个合格（2restore/1pose）；总误差较原GN停止点降.526%，最坏F升.821%，前缀/双caps仍9、完整witness0。半径下限正常停止，未追加50阶段/117响应；实际仍cursor8/task0/grasp0，GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/pr_state_vector_objective_scale_20261029.md)。
+最新CPU对照：[整个目标统一缩放](reports/tracking/trajectory_search/state_vector_objective_scale_20261029.md)通过200项专项QA、5响应生产/5响应完整独立复算，2724来源闭合。10QP均status0，但原互补证书仅3个合格（2restore/1pose）；总误差较原GN停止点降.526%，最坏F升.821%，前缀/双caps仍9、完整witness0。半径下限正常停止，未追加50阶段/117响应；实际仍cursor8/task0/grasp0，GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/tracking/trajectory_search/pr_state_vector_objective_scale_20261029.md)。
 
-最新CPU对照：[TCP误差向量GN](reports/state_vector_gn_search_20261029.md)通过186项专项QA、3响应生产与3响应完整独立复算，2691来源闭合。7次QP仅原restore合格，6个pose QP均status8未获资格，没有GN方向的新响应；半径下限停止，未追加53阶段/119响应余量。最终仍前缀9、完整witness0，不能判断GN跟踪收益；实际仍cursor8/task0/grasp0。GPU禁用和原18/12/24门槛保持；[双语PR原文](reports/pr_state_vector_gn_search_20261029.md)。
+最新CPU对照：[TCP误差向量GN](reports/tracking/trajectory_search/state_vector_gn_search_20261029.md)通过186项专项QA、3响应生产与3响应完整独立复算，2691来源闭合。7次QP仅原restore合格，6个pose QP均status8未获资格，没有GN方向的新响应；半径下限停止，未追加53阶段/119响应余量。最终仍前缀9、完整witness0，不能判断GN跟踪收益；实际仍cursor8/task0/grasp0。GPU禁用和原18/12/24门槛保持；[双语PR原文](reports/tracking/trajectory_search/pr_state_vector_gn_search_20261029.md)。
 
-最新CPU预算对照：[60阶段/同122响应上限](reports/stage_budget_search_20261029.md)通过142项专项QA、90响应生产/90响应完整独立复算；新旧前24阶段及34条搜索响应exact。60次QP尝试中57合格、55接纳，最终F较24阶段再降6.51%，但总误差升11.07%、双caps点6→4，前缀仍4、完整witness0。达到60阶段上限后正常关闭，32响应余量未追加；没有新实际控制/物理/world-model/fresh，实际仍cursor8/task0/grasp0。GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/pr_stage_budget_search_20261029.md)。
+最新CPU预算对照：[60阶段/同122响应上限](reports/tracking/trajectory_search/stage_budget_search_20261029.md)通过142项专项QA、90响应生产/90响应完整独立复算；新旧前24阶段及34条搜索响应exact。60次QP尝试中57合格、55接纳，最终F较24阶段再降6.51%，但总误差升11.07%、双caps点6→4，前缀仍4、完整witness0。达到60阶段上限后正常关闭，32响应余量未追加；没有新实际控制/物理/world-model/fresh，实际仍cursor8/task0/grasp0。GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/tracking/trajectory_search/pr_stage_budget_search_20261029.md)。
 
-最新CPU对照：[固定初始全局搜索上限](reports/global_envelope_search_20261029.md)通过116项专项QA，24次QP尝试中21合格，35响应生产/35响应完整独立复算正常关闭。最终最坏平方超限较前项下降15.57%，但总误差增加14.06%、最大位置误差约24mm，前缀仍4、双caps点5→6，完整witness0。只用35/122响应即达到24阶段上限，末段仍下降；没有追加旧预算。实际仍cursor8/task0/grasp0，GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/pr_global_envelope_search_20261029.md)。
+最新CPU对照：[固定初始全局搜索上限](reports/tracking/trajectory_search/global_envelope_search_20261029.md)通过116项专项QA，24次QP尝试中21合格，35响应生产/35响应完整独立复算正常关闭。最终最坏平方超限较前项下降15.57%，但总误差增加14.06%、最大位置误差约24mm，前缀仍4、双caps点5→6，完整witness0。只用35/122响应即达到24阶段上限，末段仍下降；没有追加旧预算。实际仍cursor8/task0/grasp0，GPU禁用及原18/12/24门槛保持；[双语PR原文](reports/tracking/trajectory_search/pr_global_envelope_search_20261029.md)。
 
-最新CPU对照：[安全拒绝响应的割线反馈](reports/rejected_response_search_20261029.md)通过124项专项QA，尝试24个QP（23合格）并完成52响应生产/52响应完整独立复算。3次反馈均保持原anchor，最坏平方超限较前项再降约.1698%，但cursor9和总误差略差，前缀仍4、双caps达标仍5/12，完整witness0。相同预算上限下实际多用8响应和3阶段，达到24阶段上限后关闭；新增物理/world-model/fresh0，实际仍cursor8/task0/grasp0。GPU禁用和原18/12/24门槛保持；[双语PR原文](reports/pr_rejected_response_search_20261029.md)。
+最新CPU对照：[安全拒绝响应的割线反馈](reports/tracking/trajectory_search/rejected_response_search_20261029.md)通过124项专项QA，尝试24个QP（23合格）并完成52响应生产/52响应完整独立复算。3次反馈均保持原anchor，最坏平方超限较前项再降约.1698%，但cursor9和总误差略差，前缀仍4、双caps达标仍5/12，完整witness0。相同预算上限下实际多用8响应和3阶段，达到24阶段上限后关闭；新增物理/world-model/fresh0，实际仍cursor8/task0/grasp0。GPU禁用和原18/12/24门槛保持；[双语PR原文](reports/tracking/trajectory_search/pr_rejected_response_search_20261029.md)。
 
-最新CPU搜索：[反复内点恢复与完整轨迹信赖域](reports/interior_trajectory_search_20261029.md)通过138项专项QA、21个QP及44响应生产/44响应完整独立复算。8次恢复和7次pose接纳使最坏平方超限下降2.3901%、安全余量增加，但数值前缀9→4、双caps达标点9→5，完整witness0；没有可执行新轨迹。最终因最小半径停止，后期拒绝集中于固定pose上限预测失准。实际仍cursor8/task0/grasp0，原验收门槛及GPU禁用保持，不追加本轮预算。
+最新CPU搜索：[反复内点恢复与完整轨迹信赖域](reports/tracking/trajectory_search/interior_trajectory_search_20261029.md)通过138项专项QA、21个QP及44响应生产/44响应完整独立复算。8次恢复和7次pose接纳使最坏平方超限下降2.3901%、安全余量增加，但数值前缀9→4、双caps达标点9→5，完整witness0；没有可执行新轨迹。最终因最小半径停止，后期拒绝集中于固定pose上限预测失准。实际仍cursor8/task0/grasp0，原验收门槛及GPU禁用保持，不追加本轮预算。
 
-最新CPU机制结果：[完整约束残差修正](reports/constraint_residual_repair_20261029.md)通过131项专项QA、唯一QP及11响应生产/11响应独立复算。全步恢复全部安全与前缀优化余量，但仅保留49.488%原下降，未通过预登记50%条件，故不选中；其余缩短步仍安全失败。cursor9仍11.46492mm/.05732601rad、完整witness0，实际仍cursor8/task0/grasp0。2540来源核验关闭，不放宽原门槛或自动追加微步搜索；GPU继续禁用。
+最新CPU机制结果：[完整约束残差修正](reports/tracking/trajectory_search/constraint_residual_repair_20261029.md)通过131项专项QA、唯一QP及11响应生产/11响应独立复算。全步恢复全部安全与前缀优化余量，但仅保留49.488%原下降，未通过预登记50%条件，故不选中；其余缩短步仍安全失败。cursor9仍11.46492mm/.05732601rad、完整witness0，实际仍cursor8/task0/grasp0。2540来源核验关闭，不放宽原门槛或自动追加微步搜索；GPU继续禁用。
 
 最新CPU结果：[保存3543的末周期修复](reports/terminal_only_tail_repair_20261029.md)完成155项专项QA、14响应生产和14响应完整独立复算。12候选中2个合格，选中末周期x减.001，terminal恢复至2.762279319e-5；保留cursor9微小改善，但其误差仍11.46520mm/.05732641rad超原caps，其他安全最小slack仍仅6.13467e-8。首次环境引用错误的零响应失败保留。完整witness0、实际cursor8、task/grasp0，不自动重开同一SQP；GPU禁用及原18/12/24门槛保持。
 

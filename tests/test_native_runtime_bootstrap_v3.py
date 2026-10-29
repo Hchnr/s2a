@@ -10,10 +10,10 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from test_native_runtime_bootstrap import case as shared_case
 
 from s2a import native_runtime_bootstrap_v2 as prior
 from s2a import native_runtime_bootstrap_v3 as repaired
+from tests.test_native_runtime_bootstrap import case as shared_case
 
 REPO = prior.frozen.REPO
 MANIFEST_REF = dict(

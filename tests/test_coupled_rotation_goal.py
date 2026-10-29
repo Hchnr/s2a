@@ -1,9 +1,9 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
-from test_rate_preview_active_set import contract
 
 from s2a.current_coupled_state import rotation_goal_from_command
 from s2a.osc import OSCInterface
+from tests.test_rate_preview_active_set import contract
 
 
 def interface():

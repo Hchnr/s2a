@@ -8,7 +8,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from test_prefix_optimization_reserve_plan import inputs
 
 from s2a.directional_derivative_probe import probe_directional_derivatives
 from s2a.terminal_secant_probe import (
@@ -16,6 +15,7 @@ from s2a.terminal_secant_probe import (
     fit_terminal_secant_row,
     probe_terminal_secant,
 )
+from tests.test_prefix_optimization_reserve_plan import inputs
 
 
 @pytest.fixture

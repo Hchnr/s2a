@@ -8,8 +8,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from test_accepted_point_sqp_ledger_audit import saved_classifications
-from test_prefix_optimization_reserve_plan import inputs, response
 
 from s2a.accepted_point_sqp_plan import solve_accepted_point_sqp_response
 from s2a.restored_anchor_sqp_plan import (
@@ -18,6 +16,8 @@ from s2a.restored_anchor_sqp_plan import (
     make_initial_record_hook,
     solve_restored_anchor_sqp_response,
 )
+from tests.test_accepted_point_sqp_ledger_audit import saved_classifications
+from tests.test_prefix_optimization_reserve_plan import inputs, response
 
 REPO = Path(__file__).resolve().parents[1]
 EXPECTED_REF = dict(path="synthetic/tail.json", sha256="a" * 64, locator="answer.evaluated_candidates[5]")

@@ -1,7 +1,7 @@
 import numpy as np
-from test_direct_arm_inverse_inputs import prepared
 
 from s2a.direct_arm_inverse import command_prediction, nominal_translation, physical_parameters
+from tests.test_direct_arm_inverse_inputs import prepared
 
 
 def parameters():

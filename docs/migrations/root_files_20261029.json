@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "purpose": "Explicit baseline root metadata supplement; excludes all user untracked files",
+  "baseline_commit": "7b2712850dea54090d61e564380f88825ad8b8f6",
+  "file_count": 4,
+  "total_size_bytes": 77631,
+  "entries": [
+    {
+      "old_path": ".gitignore",
+      "sha256": "6bc1261bb4a40a799ba6bb7b185ffd49d773ad8ed05678862166566cfecc817a",
+      "size_bytes": 536,
+      "git_blob_oid": "b49ea78de1cae011460639e5a1b3bfc315640e36",
+      "git_mode": "100644",
+      "baseline_commit": "7b2712850dea54090d61e564380f88825ad8b8f6"
+    },
+    {
+      "old_path": "AGENTS.md",
+      "sha256": "68c51daf2b0c65da315128407427be21ff2269b4010e107101d6e730f429383d",
+      "size_bytes": 3949,
+      "git_blob_oid": "b63565b8f7405ee3e2ee042395231d9d959a8e89",
+      "git_mode": "100644",
+      "baseline_commit": "7b2712850dea54090d61e564380f88825ad8b8f6"
+    },
+    {
+      "old_path": "README.md",
+      "sha256": "dcee29d8a44718accd85e19e0e82fae0809eb9a6270638bea2655b3f3ee1a2fa",
+      "size_bytes": 72334,
+      "git_blob_oid": "399f472dc79f73e7571668a701e368e52db375bc",
+      "git_mode": "100644",
+      "baseline_commit": "7b2712850dea54090d61e564380f88825ad8b8f6"
+    },
+    {
+      "old_path": "pyproject.toml",
+      "sha256": "108d6dcaed18c2931672f1d0a31ed5858fe14012dca29eb9c314e4e3bd2791d6",
+      "size_bytes": 812,
+      "git_blob_oid": "8d6c088d624916de1e0cec363072846b6ed42c7c",
+      "git_mode": "100644",
+      "baseline_commit": "7b2712850dea54090d61e564380f88825ad8b8f6"
+    }
+  ]
+}

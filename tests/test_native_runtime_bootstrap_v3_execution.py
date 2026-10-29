@@ -8,7 +8,8 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-import test_native_runtime_bootstrap_v2_execution as v2_tests
+
+import tests.test_native_runtime_bootstrap_v2_execution as v2_tests
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts/verify_native_runtime_bootstrap_v3.py"
 

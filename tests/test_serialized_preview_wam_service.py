@@ -5,8 +5,8 @@ import importlib
 import json
 
 import pytest
-import test_terminal_development_service as prior
 
+import tests.test_terminal_development_service as prior
 from s2a.artifacts import REPO
 from s2a.clean_training_runtime import reference
 

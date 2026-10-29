@@ -3,9 +3,9 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import test_full_coupled_pose_inverse as original
 from full_coupled_pose_independent import verify_pose_solution
 
+import tests.test_full_coupled_pose_inverse as original
 from s2a.full_coupled_pose_inverse_sqp import FullCoupledPoseModel, solve_pose
 
 

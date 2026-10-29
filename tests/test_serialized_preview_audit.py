@@ -4,9 +4,9 @@ import json
 import numpy as np
 import pytest
 from serialized_rate_preview_independent import verify_plan
-from test_rate_preview_active_set import contract
 
 from s2a.rate_constrained_preview_active_set import plan_translation
+from tests.test_rate_preview_active_set import contract
 
 
 def example():

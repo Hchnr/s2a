@@ -7,10 +7,10 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from test_terminal_only_tail_repair import case
 
 from s2a.directional_derivative_probe import _canonical
 from s2a.terminal_only_tail_repair import probe_terminal_only_tail_repair
+from tests.test_terminal_only_tail_repair import case
 
 
 @pytest.fixture

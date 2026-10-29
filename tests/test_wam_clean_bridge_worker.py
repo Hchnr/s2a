@@ -19,7 +19,7 @@ from s2a.wam_readout import ACTIVE_MASK, LIBERO_DOMAIN, DomainContext
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 worker = importlib.import_module("qualify_wam_clean_bridge")
 torch = pytest.importorskip("torch")
-protocol = importlib.import_module("test_wam_clean_capture")
+protocol = importlib.import_module("tests.test_wam_clean_capture")
 
 
 class WitnessScheduler:

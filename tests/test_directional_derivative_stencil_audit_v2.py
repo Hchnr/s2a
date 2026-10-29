@@ -6,7 +6,8 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import test_directional_derivative_audit as original_tests
+
+import tests.test_directional_derivative_audit as original_tests
 
 analytic_stencil_archive = original_tests.analytic_stencil_archive
 

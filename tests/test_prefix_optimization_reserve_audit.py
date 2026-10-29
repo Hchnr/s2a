@@ -8,10 +8,10 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from test_prefix_callback_backtracking_audit import capture_trial, classifications
-from test_prefix_preserving_trajectory_plan import inputs
 
 import s2a.prefix_callback_backtracking_plan as frozen_planning
+from tests.test_prefix_callback_backtracking_audit import capture_trial, classifications
+from tests.test_prefix_preserving_trajectory_plan import inputs
 
 
 @pytest.fixture

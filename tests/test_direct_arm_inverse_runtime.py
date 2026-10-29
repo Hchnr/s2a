@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
-from test_direct_arm_inverse import parameters
-from test_direct_arm_inverse_inputs import prepared
 
 from s2a.direct_arm_inverse_runtime import translation_command
+from tests.test_direct_arm_inverse import parameters
+from tests.test_direct_arm_inverse_inputs import prepared
 
 
 def test_final_rate_limit_uses_actual_previous_command_and_decodes_final_action():

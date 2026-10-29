@@ -1,10 +1,10 @@
 import copy
 
 import numpy as np
-from test_state_conditioned_arm_forward import sample
 
 from s2a.history_conditioned_arm_forward import design as linear_design
 from s2a.nonlinear_conditioned_arm_forward import design, predict, with_history
+from tests.test_state_conditioned_arm_forward import sample
 
 
 def setup():

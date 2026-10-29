@@ -2,11 +2,11 @@ import copy
 
 import numpy as np
 import pytest
-from test_nonlinear_conditioned_arm_forward import setup as original_setup
 
 from s2a.nonlinear_conditioned_arm_forward import design as original_design
 from s2a.nonlinear_conditioned_arm_forward import predict as original_predict
 from s2a.wrench_conditioned_arm_forward import design, predict
+from tests.test_nonlinear_conditioned_arm_forward import setup as original_setup
 
 
 def setup():

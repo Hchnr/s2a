@@ -7,9 +7,10 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-import test_directional_derivative_execution as prior
-from test_accepted_point_sqp_execution import native_qa
-from test_prefix_callback_backtracking_execution import write_json
+
+import tests.test_directional_derivative_execution as prior
+from tests.test_accepted_point_sqp_execution import native_qa
+from tests.test_prefix_callback_backtracking_execution import write_json
 
 
 @pytest.fixture

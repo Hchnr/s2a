@@ -9,13 +9,13 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-from test_prefix_callback_backtracking_execution import write_json
-from test_prefix_trust_control_execution import CountingDynamics
-from test_tail_translation_execution import complete_case, complete_rollout
 
 from s2a.directional_derivative_probe import _canonical
 from s2a.osc import OSCInterface
 from s2a.terminal_only_tail_repair import ENTRY_FIELDS, probe_terminal_only_tail_repair
+from tests.test_prefix_callback_backtracking_execution import write_json
+from tests.test_prefix_trust_control_execution import CountingDynamics
+from tests.test_tail_translation_execution import complete_case, complete_rollout
 
 
 @pytest.fixture

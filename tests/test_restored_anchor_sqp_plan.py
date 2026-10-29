@@ -7,13 +7,13 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import test_accepted_point_sqp_plan as original_tests
-from test_prefix_optimization_reserve_plan import inputs, response
 
 import s2a.accepted_point_sqp_plan as original
 import s2a.restored_anchor_sqp_plan as planning
+import tests.test_accepted_point_sqp_plan as original_tests
 from s2a.geometry import pose_error
 from s2a.joint_preview_constraint_audit import audit_joint_preview_constraints
+from tests.test_prefix_optimization_reserve_plan import inputs, response
 
 REFERENCE = dict(path="synthetic.json", sha256="0" * 64, locator="answer.evaluated_candidates[5]")
 

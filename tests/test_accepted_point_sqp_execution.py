@@ -9,9 +9,10 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-import test_prefix_callback_backtracking_execution as prior
-from test_prefix_callback_backtracking_execution import write_json
-from test_prefix_trust_control_execution import (
+
+import tests.test_prefix_callback_backtracking_execution as prior
+from tests.test_prefix_callback_backtracking_execution import write_json
+from tests.test_prefix_trust_control_execution import (
     CountingDynamics,
     captured_rollout,
     source_fixture,

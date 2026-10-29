@@ -1,11 +1,11 @@
 """Linear-infeasible warm plans do not bypass a known feasible search start."""
 
 import numpy as np
-from test_configurable_tracking_terminal_plan import inputs
-from test_trajectory_capped_joint_plan import feasible_inputs
 
 from s2a.feasible_start_trajectory_joint_plan_v2 import solve_interior_plan
 from s2a.long_trajectory_capped_joint_plan import solve_interior_plan as prior_solve
+from tests.test_configurable_tracking_terminal_plan import inputs
+from tests.test_trajectory_capped_joint_plan import feasible_inputs
 
 
 def test_verified_warm_plan_is_retained_without_changing_prior_result():

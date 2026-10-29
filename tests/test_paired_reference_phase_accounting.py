@@ -6,10 +6,10 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-from test_paired_reference_phase import admission_inputs, synthetic_response
 
 import s2a.prefix_preserving_trajectory_plan as planning
 from s2a.paired_reference_phase import assess_phase_warm
+from tests.test_paired_reference_phase import admission_inputs, synthetic_response
 
 
 @pytest.fixture

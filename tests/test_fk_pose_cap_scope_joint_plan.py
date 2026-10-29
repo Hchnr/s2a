@@ -1,10 +1,10 @@
 """Future model accuracy is a separate policy from actual first-period accuracy."""
 
 import numpy as np
-from test_fk_consistent_trajectory_joint_plan import setup
 
 from s2a.fk_consistent_trajectory_joint_plan import solve_interior_plan as all_caps
 from s2a.fk_pose_cap_scope_joint_plan import solve_interior_plan
+from tests.test_fk_consistent_trajectory_joint_plan import setup
 
 
 def test_default_full_scope_preserves_prior_result():

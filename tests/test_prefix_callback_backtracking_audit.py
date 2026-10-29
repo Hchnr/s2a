@@ -11,10 +11,10 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from test_prefix_preserving_trajectory_plan import inputs, optimizer_result, response
-from test_prefix_trajectory_audit_ledger import classify as independent_classify
 
 import s2a.prefix_callback_backtracking_plan as planning
+from tests.test_prefix_preserving_trajectory_plan import inputs, optimizer_result, response
+from tests.test_prefix_trajectory_audit_ledger import classify as independent_classify
 
 
 @pytest.fixture

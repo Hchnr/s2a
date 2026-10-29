@@ -1,10 +1,10 @@
 """A joint-feasible plan must also meet the declared first-period TCP accuracy."""
 
 import numpy as np
-from test_configurable_tracking_terminal_plan import inputs
 
 from s2a.past_inner_error_joint_plan import solve_interior_plan as joint_solve
 from s2a.quality_capped_inner_joint_plan import solve_interior_plan
+from tests.test_configurable_tracking_terminal_plan import inputs
 
 
 def test_witness_retains_joint_and_absolute_tracking_constraints():

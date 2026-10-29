@@ -3,9 +3,9 @@ import copy
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
-from test_state_conditioned_arm_forward import sample
 
 from s2a.direct_arm_inverse_inputs import inverse_condition
+from tests.test_state_conditioned_arm_forward import sample
 
 
 def prepared():

@@ -24,7 +24,7 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-m 'not integration' --basetemp=outputs/pytest"
-pythonpath = ["src"]
+pythonpath = ["src", ".", "scripts"]
 markers = [
   "integration: requires explicitly configured external data or simulator",
 ]

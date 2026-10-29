@@ -4,9 +4,9 @@ import numpy as np
 import pytest
 from current_coupled_independent import orientation_error, response, verify_inverse
 from scipy.spatial.transform import Rotation
-from test_rate_preview_active_set import contract
 
 from s2a.current_coupled_response import build_response, nominal_prediction, rotation_spring, solve_translation
+from tests.test_rate_preview_active_set import contract
 
 
 def plant(seed=42):

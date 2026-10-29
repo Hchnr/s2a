@@ -2,9 +2,9 @@
 
 import numpy as np
 import pytest
-from test_configurable_tracking_terminal_plan import inputs
 
 from s2a.causal_inner_tracking_hybrid import NoCausalWitness, refine_long_plan
+from tests.test_configurable_tracking_terminal_plan import inputs
 
 
 def test_tightened_witness_is_preserved_by_execution_adapter():

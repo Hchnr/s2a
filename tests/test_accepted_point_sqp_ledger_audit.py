@@ -10,10 +10,10 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from test_prefix_optimization_reserve_plan import inputs, response
 
 from s2a.accepted_point_sqp_core import damped_bfgs
 from s2a.accepted_point_sqp_plan import solve_accepted_point_sqp_response
+from tests.test_prefix_optimization_reserve_plan import inputs, response
 
 
 @pytest.fixture

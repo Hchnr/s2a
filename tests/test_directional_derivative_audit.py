@@ -8,9 +8,9 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from test_prefix_optimization_reserve_plan import inputs
 
 from s2a.directional_derivative_probe import probe_directional_derivatives
+from tests.test_prefix_optimization_reserve_plan import inputs
 
 
 @pytest.fixture

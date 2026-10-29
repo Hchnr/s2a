@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
 from rate_preview_independent import verify_plan
-from test_direct_arm_inverse import parameters
 
 from s2a.rate_constrained_preview_active_set import plan_translation
+from tests.test_direct_arm_inverse import parameters
 
 
 def contract():

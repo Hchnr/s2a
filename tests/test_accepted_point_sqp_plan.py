@@ -5,9 +5,9 @@ from inspect import signature
 
 import numpy as np
 import pytest
-from test_prefix_optimization_reserve_plan import inputs, response
 
 import s2a.accepted_point_sqp_plan as planning
+from tests.test_prefix_optimization_reserve_plan import inputs, response
 
 solve = planning.solve_accepted_point_sqp_response
 

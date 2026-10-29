@@ -64,7 +64,7 @@ def checker(monkeypatch):
 @pytest.fixture
 def protocol(monkeypatch):
     monkeypatch.syspath_prepend(str(REPO / "tests"))
-    return importlib.import_module("test_wam_clean_compact")
+    return importlib.import_module("tests.test_wam_clean_compact")
 
 
 def ref(path):

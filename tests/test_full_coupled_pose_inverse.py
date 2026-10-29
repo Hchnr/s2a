@@ -6,12 +6,12 @@ import pytest
 from current_coupled_independent import response as independent_response
 from full_coupled_pose_independent import verify_pose_solution
 from scipy.spatial.transform import Rotation
-from test_current_coupled_response import plant
-from test_rate_preview_active_set import contract
 
 from s2a.current_coupled_state import rotation_goal_from_command
 from s2a.full_coupled_pose_inverse import FullCoupledPoseModel, projected_gradient, solve_pose, task_objective
 from s2a.osc import OSCInterface
+from tests.test_current_coupled_response import plant
+from tests.test_rate_preview_active_set import contract
 
 
 def setup():

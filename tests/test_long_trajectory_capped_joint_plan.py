@@ -2,12 +2,12 @@
 
 import numpy as np
 import pytest
-from test_configurable_tracking_terminal_plan import inputs
 
 from s2a.geometry import pose_error
 from s2a.interior_joint_preview import rollout_joint_preview
 from s2a.long_trajectory_capped_joint_plan import solve_interior_plan
 from s2a.trajectory_capped_joint_plan import solve_interior_plan as short_solve
+from tests.test_configurable_tracking_terminal_plan import inputs
 
 
 @pytest.mark.parametrize("horizon", [8, 12, 16])

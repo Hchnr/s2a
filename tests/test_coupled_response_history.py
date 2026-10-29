@@ -2,11 +2,11 @@ import numpy as np
 import pytest
 from current_coupled_independent import response
 from scipy.spatial.transform import Rotation
-from test_current_coupled_response import plant
-from test_rate_preview_active_set import contract
 
 from s2a.coupled_response_history import CoupledResponseHistory
 from s2a.current_coupled_response import build_response
+from tests.test_current_coupled_response import plant
+from tests.test_rate_preview_active_set import contract
 
 
 def fixture():

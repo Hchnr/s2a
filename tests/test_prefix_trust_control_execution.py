@@ -4,12 +4,12 @@ import importlib
 import json
 from copy import deepcopy
 from pathlib import Path
-from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
 from s2a.prefix_trust_control_evidence import reference
+from tests.support.trajectory_rollout import CountingDynamics, captured_rollout, source_fixture
 
 
 @pytest.fixture
@@ -22,64 +22,6 @@ def producer(monkeypatch):
 def execution(monkeypatch):
     monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
     return importlib.import_module("execute_tracking_v5_prefix_trust_control")
-
-
-def source_fixture():
-    source = dict(
-        current_q=np.arange(7, dtype=float) / 100,
-        current_velocity=np.arange(7, dtype=float) / -1000,
-        current_quantities=dict(mass=np.eye(7), jacobian=np.zeros((6, 7)), pose=np.eye(4)),
-        latched_rotation_goal=np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]),
-        previous_command=np.zeros(7),
-        initial_joint=np.zeros(7),
-        kp=np.full(6, 150.0),
-        kd=np.full(6, 24.0),
-        torque_limits=np.tile([-80.0, 80.0], (7, 1)),
-        joint_limits=np.tile([-2.0, 2.0], (7, 1)),
-        past_inner_error_rad=np.full((25, 7), 0.001),
-        terminal_normals=np.eye(7)[6:],
-        desired_tcp=np.repeat(np.eye(4)[None], 12, axis=0),
-        site_from_tcp=np.eye(4),
-    )
-    warm = np.full((12, 6), 0.1)
-    warm[0, 3] = -0.0
-    interface = SimpleNamespace(input_min=np.full(6, -1.0), input_max=np.full(6, 1.0))
-    return source, warm, interface
-
-
-class CountingDynamics:
-    def __init__(self, *, current_query_increment=1):
-        self.queries = 0
-        self.current_query_increment = current_query_increment
-        self.current_inputs = []
-
-    def __call__(self, q, velocity):
-        self.queries += self.current_query_increment
-        self.current_inputs.append((q.copy(), velocity.copy()))
-        q[:] = 100
-        velocity[:] = -100
-        return dict(mass=np.eye(7), jacobian=np.zeros((6, 7)), pose=np.eye(4))
-
-
-def captured_rollout(source, calls, *, query_error=0):
-    def rollout(
-        q, velocity, commands, interface, initial_joint, kp, kd, dynamics, lower, upper, *, latched_rotation_goal
-    ):
-        calls.append(
-            dict(q=q.copy(), velocity=velocity.copy(), commands=commands.copy(), latch=latched_rotation_goal.copy())
-        )
-        for value, expected in ((initial_joint, source["initial_joint"]), (kp, source["kp"]), (kd, source["kd"])):
-            np.testing.assert_array_equal(value, expected)
-        np.testing.assert_array_equal(lower, source["torque_limits"][:, 0])
-        np.testing.assert_array_equal(upper, source["torque_limits"][:, 1])
-        dynamics.queries += 312 + query_error
-        q[:] = 9.0
-        velocity[:] = -9.0
-        latched_rotation_goal[:] = 0.0
-        commands[:] = 0.75
-        return dict(synthetic_response_index=len(calls))
-
-    return rollout
 
 
 def three_response_solver(source, dynamics, calls):

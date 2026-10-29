@@ -6,10 +6,10 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from test_prefix_preserving_trajectory_plan import inputs, optimizer_result, response
-from test_prefix_trajectory_audit_ledger import classify as independently_classify_toy
 
 import s2a.prefix_trust_region_plan as planning
+from tests.test_prefix_preserving_trajectory_plan import inputs, optimizer_result, response
+from tests.test_prefix_trajectory_audit_ledger import classify as independently_classify_toy
 
 
 @pytest.fixture

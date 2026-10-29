@@ -3,9 +3,9 @@ import copy
 import numpy as np
 import pytest
 from coupled_pose_preview_independent import verify_preview
-from test_coupled_pose_preview import problem
 
 from s2a.coupled_pose_preview import plan_pose
+from tests.test_coupled_pose_preview import problem
 
 
 @pytest.mark.parametrize("horizon", [1, 2, 3, 4])

@@ -2,10 +2,10 @@ import copy
 
 import numpy as np
 import pytest
-from test_joint_wrench_condition_forward import prepared
 
 from s2a.causal_wrench_change_forward import attach_wrench_change, predict
 from s2a.joint_wrench_condition_forward import predict as previous_predict
+from tests.test_joint_wrench_condition_forward import prepared
 
 
 def test_difference_requires_whole_episode_and_resets_without_cross_episode_state():

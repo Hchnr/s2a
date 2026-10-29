@@ -7,10 +7,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
-from test_prefix_preserving_trajectory_plan import inputs, optimizer_result, response
 
 import s2a.prefix_preserving_trajectory_plan as planning
 from s2a.paired_reference_phase import prepare_paired_reference_phases, score_phase_response
+from tests.test_prefix_preserving_trajectory_plan import inputs, optimizer_result, response
 
 
 @pytest.fixture

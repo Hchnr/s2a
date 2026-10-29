@@ -1,10 +1,10 @@
 import copy
 
 import numpy as np
-from test_wrench_conditioned_arm_forward import setup
 
 from s2a.joint_wrench_condition_forward import design, predict
 from s2a.wrench_conditioned_arm_forward import predict as previous_predict
+from tests.test_wrench_conditioned_arm_forward import setup
 
 
 def prepared():

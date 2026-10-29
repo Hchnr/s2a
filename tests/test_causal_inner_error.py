@@ -2,11 +2,11 @@
 
 import numpy as np
 import pytest
-from test_configurable_tracking_terminal_plan import inputs
 
 from s2a.causal_inner_error import CausalInnerError
 from s2a.past_error_joint_plan import solve_interior_plan as peak_solve
 from s2a.past_inner_error_joint_plan import solve_interior_plan
+from tests.test_configurable_tracking_terminal_plan import inputs
 
 
 def test_profile_updates_after_completion_and_does_not_move_late_error_earlier():

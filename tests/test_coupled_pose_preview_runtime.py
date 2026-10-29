@@ -1,9 +1,9 @@
 import numpy as np
 from coupled_pose_preview_independent import verify_preview
 from full_coupled_pose_independent import objective
-from test_coupled_pose_preview import problem
 
 from s2a.coupled_pose_preview_runtime import solve_preview
+from tests.test_coupled_pose_preview import problem
 
 
 def test_chunk_tail_and_independent_goal_dependent_first_command_forecast():

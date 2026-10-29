@@ -1,13 +1,13 @@
 """Later predicted tracking failures cannot hide behind an accurate first period."""
 
 import numpy as np
-from test_configurable_tracking_terminal_plan import inputs
 
 from s2a.feasibility_first_joint_plan import solve_interior_plan as first_only
 from s2a.geometry import pose_error
 from s2a.interior_joint_preview import rollout_joint_preview
 from s2a.past_inner_error_joint_plan import solve_interior_plan as joint_solve
 from s2a.trajectory_capped_joint_plan import solve_interior_plan
+from tests.test_configurable_tracking_terminal_plan import inputs
 
 
 def feasible_inputs():

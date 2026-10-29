@@ -8,10 +8,12 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-import test_terminal_secant_execution as prior
-from test_accepted_point_sqp_execution import native_qa
-from test_prefix_callback_backtracking_execution import write_json
-from test_prefix_trust_control_execution import CountingDynamics, captured_rollout, source_fixture
+
+import tests.test_terminal_secant_execution as prior
+from tests.support.trajectory_rollout import complete_case, complete_rollout
+from tests.test_accepted_point_sqp_execution import native_qa
+from tests.test_prefix_callback_backtracking_execution import write_json
+from tests.test_prefix_trust_control_execution import CountingDynamics, captured_rollout, source_fixture
 
 
 @pytest.fixture
@@ -555,33 +557,6 @@ def test_producer_dry_prepares_full_grid_and_prior_error_without_model(modules, 
     monkeypatch.setattr(producer, "run_probe", forbidden)
     producer.main(dry=True)
     assert prepared == [True] and not (tmp_path / "not-created").exists()
-
-
-def complete_case(*, restores=False, base=2e-8):
-    from test_tail_translation_reserve import synthetic_case
-
-    case = synthetic_case(base=base) if restores else synthetic_case(base=base, terminal=lambda commands: base)
-    source, _, _ = source_fixture()
-    source.update(
-        previous_command=np.r_[case["previous"], 0.0],
-        joint_limits=np.column_stack((case["lower"], case["upper"])),
-        desired_tcp=case["desired"].copy(),
-        site_from_tcp=case["site_from_tcp"].copy(),
-        past_inner_error_rad=case["past_inner_error_rad"].copy(),
-        terminal_normals=case["terminal_normals"].copy(),
-    )
-    return source, case
-
-
-def complete_rollout(source, case, calls):
-    capture = captured_rollout(source, calls)
-
-    def rollout(*args, **kwargs):
-        commands = args[2].copy()
-        capture(*args, **kwargs)  # Counts312 and deliberately mutates all passed state copies.
-        return case["predict"](commands)
-
-    return rollout
 
 
 def run_complete(modules, source, case, dynamics, calls):

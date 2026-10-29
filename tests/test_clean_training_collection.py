@@ -7,7 +7,8 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from execution_proof_fixture import effective_training_metadata, seal_execution, training_seed_metadata
+
+from tests.execution_proof_fixture import effective_training_metadata, seal_execution, training_seed_metadata
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from collect_wam_clean_training import admit_round, normalization_spec, same_initial  # noqa: E402

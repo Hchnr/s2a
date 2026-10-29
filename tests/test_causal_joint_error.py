@@ -2,11 +2,11 @@
 
 import numpy as np
 import pytest
-from test_configurable_tracking_terminal_plan import inputs
 
 from s2a.causal_joint_error import CausalJointError
 from s2a.past_error_joint_plan import solve_interior_plan
 from s2a.velocity_braking_joint_plan import solve_interior_plan as original
+from tests.test_configurable_tracking_terminal_plan import inputs
 
 
 def test_history_uses_only_completed_periods_and_copies_predictions():

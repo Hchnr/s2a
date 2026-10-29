@@ -10,7 +10,6 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-from execution_proof_fixture import effective_training_metadata, seal_execution, training_seed_metadata
 from scipy.spatial.transform import Rotation
 
 from s2a import clean_training_fit_contract as contract
@@ -21,6 +20,7 @@ from s2a.native_training import synchronous_labels
 from s2a.streaming_ridge_qr import independent_ridge
 from s2a.wam_clean_readout import CleanResidualReadout
 from s2a.wam_clean_streaming import CleanFitBlock, CleanFitLayout
+from tests.execution_proof_fixture import effective_training_metadata, seal_execution, training_seed_metadata
 
 
 @pytest.fixture

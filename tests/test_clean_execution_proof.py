@@ -5,9 +5,9 @@ import json
 from pathlib import Path
 
 import pytest
-from execution_proof_fixture import reference, seal_execution
 
 from s2a.clean_execution_proof import check_execution_proof
+from tests.execution_proof_fixture import reference, seal_execution
 
 
 def read(ref):

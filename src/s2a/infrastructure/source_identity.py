@@ -29,6 +29,7 @@ IDENTITY_SCOPE = "byte_identity_only"
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 _GIT_OID = re.compile(r"[0-9a-f]{40}|[0-9a-f]{64}")
 _AREAS = {"src", "scripts", "tests", "configs", "plans", "reports", "docs"}
+_ROOT_METADATA = {"README.md", "AGENTS.md", "pyproject.toml", ".gitignore"}
 
 
 def _require(condition, message):
@@ -56,7 +57,10 @@ def _relative(path):
         not result.is_absolute() and bool(result.parts) and ".." not in result.parts and result.as_posix() == path,
         "Canonical repository-relative path required",
     )
-    _require(result.parts[0] in _AREAS, "Source path is outside registered repository areas")
+    _require(
+        result.parts[0] in _AREAS or (len(result.parts) == 1 and result.name in _ROOT_METADATA),
+        "Source path is outside registered repository areas or fixed root metadata",
+    )
     return result
 
 
@@ -113,7 +117,9 @@ class ResolvedSourceIdentity:
 class SourceIdentityLocator:
     """Resolve only catalogued identities against explicit, verified locations."""
 
-    def __init__(self, *, root, baseline_commit, catalog_ref, migration_refs=(), cache_directory):
+    def __init__(
+        self, *, root, baseline_commit, catalog_ref, additional_catalog_refs=(), migration_refs=(), cache_directory
+    ):
         self.root = _absolute_without_links(root)
         _require(repository_root(anchor=self.root) == self.root, "Explicit S2A repository root required")
         _require(
@@ -122,6 +128,7 @@ class SourceIdentityLocator:
         )
         self.baseline_commit = baseline_commit
         self.catalog_ref = _reference(catalog_ref)
+        self.additional_catalog_refs = tuple(_reference(ref) for ref in additional_catalog_refs)
         self.migration_refs = tuple(_reference(ref) for ref in migration_refs)
         self.cache_directory = self._storage_path(cache_directory)
         _require(
@@ -134,6 +141,18 @@ class SourceIdentityLocator:
         self._git_operations = []
         self._verified_git_entries = set()
         self._entries = self._catalog(self._read_metadata(self.catalog_ref))
+        self._entry_catalog_refs = {path: self.catalog_ref for path in self._entries}
+        catalog_paths = {str(self._storage_path(self.catalog_ref["path"]))}
+        for ref in self.additional_catalog_refs:
+            path = str(self._storage_path(ref["path"]))
+            _require(path not in catalog_paths, "Duplicate or ambiguous source catalog reference")
+            catalog_paths.add(path)
+            additional = self._catalog(self._read_metadata(ref), root_metadata_only=True)
+            _require(
+                not self._entries.keys() & additional.keys(), "Duplicate or ambiguous source identity across catalogs"
+            )
+            self._entries.update(additional)
+            self._entry_catalog_refs.update({path: ref for path in additional})
         self._moves = self._migrations()
         top_level = self._git(["rev-parse", "--show-toplevel"]).decode().strip()
         _require(top_level == str(self.root), "Explicit root must be the local Git worktree root")
@@ -173,7 +192,7 @@ class SourceIdentityLocator:
         _require(isinstance(payload, dict), "Metadata object required")
         return payload
 
-    def _catalog(self, catalog):
+    def _catalog(self, catalog, *, root_metadata_only=False):
         _require(
             type(catalog.get("schema_version")) is int
             and catalog["schema_version"] == 1
@@ -190,6 +209,10 @@ class SourceIdentityLocator:
                 "Exact baseline entry schema required",
             )
             relative = _relative(entry["old_path"]).as_posix()
+            _require(
+                not root_metadata_only or relative in _ROOT_METADATA,
+                "Additional catalogs may register only the four fixed root metadata names",
+            )
             _require(
                 isinstance(entry["sha256"], str)
                 and _SHA256.fullmatch(entry["sha256"])
@@ -347,7 +370,7 @@ class SourceIdentityLocator:
             declared_ref=declared_ref,
             storage_ref=storage,
             migration_ref=None if migration is None else copy.deepcopy(migration["manifest_ref"]),
-            catalog_ref=copy.deepcopy(self.catalog_ref),
+            catalog_ref=copy.deepcopy(self._entry_catalog_refs[relative]),
             resolution_kind=kind,
             origin=copy.deepcopy(entry),
         )

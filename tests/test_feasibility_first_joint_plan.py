@@ -1,11 +1,11 @@
 """Absolute tracking and joint constraints remain decisive in both search phases."""
 
 import numpy as np
-from test_configurable_tracking_terminal_plan import inputs
 
 from s2a.feasibility_first_joint_plan import solve_interior_plan
 from s2a.interior_joint_preview import rollout_joint_preview
 from s2a.past_inner_error_joint_plan import solve_interior_plan as joint_solve
+from tests.test_configurable_tracking_terminal_plan import inputs
 
 
 def test_two_phase_witness_survives_and_replays_original_constraints():

@@ -1,10 +1,10 @@
 import numpy as np
 from coupled_pose_preview_independent import verify_preview
-from test_coupled_pose_preview import problem
 
 from s2a.coupled_pose_preview_executable import plan_pose
 from s2a.current_coupled_state import rotation_goal_from_command
 from s2a.osc import OSCInterface
+from tests.test_coupled_pose_preview import problem
 
 
 def test_zero_tracking_error_resets_stale_orientation_goal_instead_of_latching():

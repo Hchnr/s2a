@@ -40,12 +40,14 @@ def baseline(tmp_path):
     root = tmp_path / "repository"
     (root / "src/s2a").mkdir(parents=True)
     (root / "pyproject.toml").write_text('[project]\nname = "s2a"\n')
+    for name in ("README.md", "AGENTS.md", ".gitignore"):
+        (root / name).write_text(f"# Original root metadata: {name}\n")
     (root / "src/s2a/__init__.py").write_text('"""Fixture package."""\n')
     paths = ["src/s2a/subject.py", "src/s2a/other.py"]
     for index, name in enumerate(paths):
         (root / name).write_text(f"raise RuntimeError('source must not be imported {index}')\n")
     git(root, "init", "--quiet")
-    git(root, "add", "pyproject.toml", "src")
+    git(root, "add", "pyproject.toml", "README.md", "AGENTS.md", ".gitignore", "src")
     git(
         root,
         "-c",
@@ -84,11 +86,12 @@ def baseline(tmp_path):
     return dict(root=root, commit=commit, catalog=catalog, catalog_ref=catalog_ref, paths=paths)
 
 
-def locator(baseline, *, migrations=(), catalog_ref=None, cache=None):
+def locator(baseline, *, migrations=(), catalog_ref=None, additional_catalog_refs=(), cache=None):
     return SourceIdentityLocator(
         root=baseline["root"],
         baseline_commit=baseline["commit"],
         catalog_ref=baseline["catalog_ref"] if catalog_ref is None else catalog_ref,
+        additional_catalog_refs=additional_catalog_refs,
         migration_refs=migrations,
         cache_directory=baseline["root"] / "outputs/cache" if cache is None else cache,
     )
@@ -312,3 +315,132 @@ def test_failed_local_git_command_is_actually_reaped(baseline):
     assert receipt["actual_wait"] is receipt["reaped"] is True
     assert receipt["returncode"] != 0
     assert receipt["signal_sent"] is False
+
+
+def root_catalog(
+    baseline, *, filename="root_files.json", names=("README.md", "AGENTS.md", "pyproject.toml", ".gitignore")
+):
+    root, commit = baseline["root"], baseline["commit"]
+    entries = []
+    for name in names:
+        mode, _, oid = git(root, "ls-tree", commit, "--", name).decode().split("\t")[0].split()
+        entries.append(
+            dict(
+                old_path=name,
+                sha256=reference(root / name)["sha256"],
+                size_bytes=(root / name).stat().st_size,
+                git_blob_oid=oid,
+                git_mode=mode,
+                baseline_commit=commit,
+            )
+        )
+    payload = dict(
+        schema_version=1,
+        baseline_commit=commit,
+        file_count=len(entries),
+        total_size_bytes=sum(entry["size_bytes"] for entry in entries),
+        entries=entries,
+    )
+    ref = write_json(root / "docs/migrations" / filename, payload)
+    return ref, payload
+
+
+@pytest.mark.parametrize("name", ["README.md", "AGENTS.md", "pyproject.toml", ".gitignore"])
+def test_supplemental_root_original_bytes_and_catalog_identity_are_preserved(baseline, name):
+    extra_ref, payload = root_catalog(baseline)
+    entry = next(item for item in payload["entries"] if item["old_path"] == name)
+    root = baseline["root"]
+    original = (root / name).read_bytes()
+    if name == "pyproject.toml":
+        (root / name).write_text('[project]\nname = "s2a"\n# changed current Python path policy\n')
+    else:
+        (root / name).write_text("# Current metadata differs from original\n")
+    reader = locator(baseline, additional_catalog_refs=[extra_ref])
+    declared = dict(path=str(FORBIDDEN_HISTORICAL_ROOT / name), sha256=entry["sha256"])
+    resolved = reader.resolve(declared)
+    assert resolved.catalog_ref == extra_ref
+    assert resolved.declared_ref == declared
+    assert resolved.resolution_kind == "git_cache"
+    assert Path(resolved.storage_ref["path"]).read_bytes() == original
+    assert resolved.identity_scope == "byte_identity_only"
+    primary = reader.resolve(original_ref(baseline))
+    assert primary.catalog_ref == baseline["catalog_ref"]
+    reader.finish()
+
+
+def test_known_root_metadata_still_requires_explicit_catalog_registration(baseline):
+    ref = reference(baseline["root"] / "pyproject.toml")
+    with pytest.raises(ValueError, match="Unknown historical"):
+        locator(baseline).resolve(ref)
+
+
+@pytest.mark.parametrize("name", ["user_owned.py", "long_joint_inverse.py", "README.md/private.py"])
+def test_unknown_root_files_and_metadata_children_are_rejected_before_access(baseline, name):
+    extra_ref, _ = root_catalog(baseline)
+    reader = locator(baseline, additional_catalog_refs=[extra_ref])
+    before = len(reader.git_operations)
+    with pytest.raises(ValueError, match="outside registered"):
+        reader.resolve(dict(path=name, sha256="0" * 64))
+    assert len(reader.git_operations) == before
+
+
+def test_duplicate_supplement_catalogs_and_duplicate_root_identities_fail(baseline):
+    extra_ref, payload = root_catalog(baseline)
+    with pytest.raises(ValueError, match="Duplicate or ambiguous source catalog"):
+        locator(baseline, additional_catalog_refs=[extra_ref, extra_ref])
+    second_ref = write_json(baseline["root"] / "docs/migrations/duplicate_roots.json", payload)
+    with pytest.raises(ValueError, match="identity across catalogs"):
+        locator(baseline, additional_catalog_refs=[extra_ref, second_ref])
+    with pytest.raises(ValueError, match="Duplicate or ambiguous source catalog"):
+        locator(baseline, additional_catalog_refs=[baseline["catalog_ref"]])
+
+
+def test_supplement_requires_same_baseline_and_fixed_root_metadata(baseline):
+    extra_ref, payload = root_catalog(baseline)
+    payload["baseline_commit"] = "0" * 40
+    bad_ref = write_json(Path(extra_ref["path"]), payload)
+    with pytest.raises(ValueError, match="baseline catalog schema"):
+        locator(baseline, additional_catalog_refs=[bad_ref])
+    payload["baseline_commit"] = baseline["commit"]
+    payload["entries"][0]["old_path"] = "user_owned.py"
+    bad_ref = write_json(Path(extra_ref["path"]), payload)
+    with pytest.raises(ValueError, match="outside registered"):
+        locator(baseline, additional_catalog_refs=[bad_ref])
+    payload["entries"][0]["old_path"] = "src/s2a/subject.py"
+    bad_ref = write_json(Path(extra_ref["path"]), payload)
+    with pytest.raises(ValueError, match="four fixed root metadata"):
+        locator(baseline, additional_catalog_refs=[bad_ref])
+
+
+def test_finish_rechecks_supplement_even_when_only_primary_source_was_used(baseline):
+    extra_ref, payload = root_catalog(baseline)
+    reader = locator(baseline, additional_catalog_refs=[extra_ref])
+    reader.resolve(original_ref(baseline))
+    payload["entries"][0]["sha256"] = "0" * 64
+    write_json(Path(extra_ref["path"]), payload)
+    with pytest.raises(ValueError, match="Consumed source or manifest changed"):
+        reader.finish()
+
+
+def test_root_migration_keeps_primary_binding_and_supplemental_identity(baseline):
+    extra_ref, payload = root_catalog(baseline)
+    entry = next(item for item in payload["entries"] if item["old_path"] == "pyproject.toml")
+    path = baseline["root"] / "pyproject.toml"
+    path.write_text('[project]\nname = "s2a"\n# current config\n')
+    move = dict(
+        old_path="pyproject.toml",
+        original_sha256=entry["sha256"],
+        new_path="pyproject.toml",
+        current_sha256=reference(path)["sha256"],
+    )
+    manifest_ref = write_json(
+        baseline["root"] / "docs/migrations/root_moves.json",
+        dict(catalog_ref=baseline["catalog_ref"], moves=[move]),
+    )
+    resolved = locator(baseline, additional_catalog_refs=[extra_ref], migrations=[manifest_ref]).resolve(
+        dict(path="pyproject.toml", sha256=entry["sha256"])
+    )
+    assert resolved.catalog_ref == extra_ref
+    assert resolved.migration_ref == manifest_ref
+    assert resolved.storage_ref["sha256"] == entry["sha256"]
+    assert resolved.storage_ref["sha256"] != move["current_sha256"]

@@ -7,8 +7,9 @@ import json
 
 import pytest
 import requests
-import test_terminal_development_service as service_checks
-from test_serialized_preview_wam_collection import request
+
+import tests.test_terminal_development_service as service_checks
+from tests.test_serialized_preview_wam_collection import request
 
 
 @pytest.fixture

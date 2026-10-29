@@ -3,10 +3,10 @@
 from pathlib import Path
 
 import pytest
-from test_native_runtime_bootstrap import case as shared_case
 
 from s2a import native_runtime_bootstrap as frozen
 from s2a import native_runtime_bootstrap_v2 as repaired
+from tests.test_native_runtime_bootstrap import case as shared_case
 
 
 @pytest.fixture

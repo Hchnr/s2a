@@ -2,10 +2,10 @@
 
 import numpy as np
 import pytest
-from test_coupled_pose_preview import problem
 
 from s2a.coupled_pose_preview_runtime import solve_preview as original_solve
 from s2a.dependency_safe_preview_runtime import solve_preview
+from tests.test_coupled_pose_preview import problem
 
 
 def same(actual, expected):
