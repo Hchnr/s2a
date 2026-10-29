@@ -304,7 +304,7 @@ def compare_contract(actual, saved, *, compare=None, name="contract"):
             compare(name, actual, saved)
 
 
-def case_engine(name, original, source_reg, prefix_check_reg, result, refs, compare):
+def case_engine(name, original, source_reg, prefix_check_reg, result, refs, compare, *, input_context=None):
     """Create one independent native-query closure and reset every candidate to actual368."""
     HORIZON = CASE_COUNTS[name][0]
 
@@ -348,6 +348,12 @@ def case_engine(name, original, source_reg, prefix_check_reg, result, refs, comp
     require(desired.shape == (HORIZON, 4, 4), "Original complete case reference")
     _, stop_check = closed_owner(source_reg["prior_stop_check_owner_ref"], refs)
     stop_check_reg = load(stop_check["registration_ref"])
+    helper_identity = None
+    if input_context is not None:
+        from scripts.verification.trajectory_search.native_replay_inputs import bind_native_ast_helper
+
+        helper_identity = bind_native_ast_helper(input_context, prefix_check_reg["ast_helper_ref"], native_functions)
+        result["native_ast_helper_identity"] = helper_identity
     control_refs = [ref for ref in source_reg["native_source_refs"] if ref["path"].endswith("/utils/control_utils.py")]
     require(len(control_refs) == 1, "Single pinned native OSC source")
     functions, control_locations = native_functions(
@@ -364,8 +370,11 @@ def case_engine(name, original, source_reg, prefix_check_reg, result, refs, comp
         require(
             manifest["execution_sha256"][ref["path"]] == ref["sha256"], "Original native execution source unchanged"
         )
-    helper_ref = remember(reference(REPO / "scripts/check_tracking_v5_state_updated_response.py"))
-    require(helper_ref == prefix_check_reg["ast_helper_ref"], "Same independently audited AST extraction source")
+    if input_context is None:
+        helper_ref = remember(reference(REPO / "scripts/check_tracking_v5_state_updated_response.py"))
+        require(helper_ref == prefix_check_reg["ast_helper_ref"], "Same independently audited AST extraction source")
+    else:
+        helper_ref = remember(helper_identity["current_ref"])
     result["native_function_sources"] = dict(
         control_ref=control_refs[0],
         transform_ref=transform_ref,

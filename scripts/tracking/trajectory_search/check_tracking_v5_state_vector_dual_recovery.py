@@ -25,20 +25,22 @@ from scripts.tracking.trajectory_search.state_vector_dual_recovery_audit import 
     audit_search,
     reconstruct_error_vector_jacobian,
 )
-from scripts.verification.trajectory_search.check_tracking_v5_accepted_point_sqp import case_engine
 from scripts.verification.trajectory_search.check_tracking_v5_prefix_trust_control import compare_contract
 from scripts.verification.trajectory_search.check_tracking_v5_saved_direction_backtracking import (
     NUMERIC_TOLERANCE,
     TORQUE_TOLERANCE,
+    case_engine,
+    native_functions,
     native_math_proof,
 )
 from scripts.verification.trajectory_search.check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
 from scripts.verification.trajectory_search.check_tracking_v5_terminal_secant_probe import verify_response_trace
+from scripts.verification.trajectory_search.native_replay_inputs import bind_native_ast_helper
 
 ROOT = REPO / "outputs/tracking_v5_state_vector_dual_recovery_check_20261029"
 
 
-def main(dry=False):
+def main(dry=False, *, diagnostic_config=None):
     from scripts.tracking.trajectory_search.probe_tracking_v5_state_vector_dual_recovery import (
         CONFIG,
         initial_error_vector_jacobian,
@@ -56,16 +58,24 @@ def main(dry=False):
     current_imports.verify_present()
     bundle, config, context = load_inputs()
     refs = context.runtime_refs
+    diagnostic = None
+    output = ROOT
+    if diagnostic_config is not None:
+        from scripts.tracking.trajectory_search.state_vector_fresh_diagnostic_admission import OUTPUT, admit_replay
+
+        diagnostic = admit_replay(context, diagnostic_config)
+        output = OUTPUT
     Js, Jq = initial_model(bundle)
     Je = reconstruct_error_vector_jacobian(bundle)
     np.testing.assert_array_equal(Je, initial_error_vector_jacobian(bundle))
     source, source_reg = bundle["source"], bundle["source_registration"]
     guard = load_environment_guard(refs)
-    _, proof = model_registration(source_reg, context, bundle)
+    migrated_registration, proof = model_registration(source_reg, context, bundle)
     math_proof = native_math_proof()
     remember(math_proof["source_ref"], refs)
     prefix_check = read(remember(PREFIX_CHECK_REF, refs))
     prefix_check_reg = read(remember(prefix_check["registration_ref"], refs))
+    helper_identity = bind_native_ast_helper(context, prefix_check_reg["ast_helper_ref"], native_functions)
     context.finish()
     current_imports.finish()
     current_identity = current_imports.verify_present()
@@ -75,8 +85,10 @@ def main(dry=False):
             flush=True,
         )
         return
-    require(not ROOT.exists(), "Exclusive checker output; no overwrite or automatic retry")
+    require(not output.exists(), "Exclusive checker output; no overwrite or automatic retry")
     producer_ref = remember(reference(PRODUCER_ROOT / "verified.json"), refs)
+    if diagnostic is not None:
+        require(producer_ref == diagnostic["config"]["producer_ref"], "Exact original producer for diagnostic replay")
     producer = read(producer_ref)
     require(producer["complete"] is producer["passed"] is True, "Normally completed producer")
     registration = read(remember(producer["registration_ref"], refs))
@@ -158,7 +170,7 @@ def main(dry=False):
     compare_contract(proof, producer["asset_loading_proof"], name="producer assets")
     context.finish()
     registered = publish_result(
-        ROOT / "registration.json",
+        output / "registration.json",
         dict(
             experiment="state_vector_dual_recovery",
             producer_ref=producer_ref,
@@ -168,10 +180,12 @@ def main(dry=False):
             migration_input_identity=context.registration(),
             current_import_identity=current_identity,
             math_proof=math_proof,
+            native_ast_helper_identity=helper_identity,
             numeric_tolerance=NUMERIC_TOLERANCE,
             torque_tolerance=TORQUE_TOLERANCE,
             expected_responses=count,
             automatic_retry=False,
+            diagnostic_registration=diagnostic,
         ),
     )
     result = dict(
@@ -198,23 +212,26 @@ def main(dry=False):
         actual_consumed_reference_count=0,
         control_qualified=False,
     )
+    if diagnostic is not None:
+        result["fresh_decision_diagnostics"] = []
 
     def compare(label, actual, saved, tolerance=NUMERIC_TOLERANCE):
         difference = semantic_compare(label, actual, saved, tolerance)
         result["max_abs_difference"][label] = max(result["max_abs_difference"].get(label, 0.0), difference)
         return difference
 
+    rollouts, metrics = [], []
     try:
         result["environment_admission"] = restore_cv2_environment(
             guard["exact_probe_ref"], guard["runtime_source_refs"]
         )
         os.environ.pop("MUJOCO_GL", None)
         os.environ.pop("PYOPENGL_PLATFORM", None)
+        result["asset_loading_proof"] = proof
         reconstruct, compare_rollout, classify, check_audit, current, compiled_goal = case_engine(
-            "prefix", source, source_reg, prefix_check_reg, result, refs, compare
+            "prefix", source, migrated_registration, prefix_check_reg, result, refs, compare, input_context=context
         )
         compare_contract(current, producer["current_quantities"], compare=compare, name="new_current")
-        rollouts, metrics = [], []
 
         def retain_replay(commands):
             rollout, differences = reconstruct(commands)
@@ -230,7 +247,9 @@ def main(dry=False):
             answer, retain_replay, compare_rollout, retain_classification, check_audit, result, compare=compare
         )
         try:
-            result["independent_search_check"] = verify_fresh_decisions(answer, rollouts, metrics, config)
+            result["independent_search_check"] = verify_fresh_decisions(
+                answer, rollouts, metrics, config, diagnostics=result.get("fresh_decision_diagnostics")
+            )
             result["independent_feedback_check"] = verify_fresh_feedback(answer, metrics, config)
         except ValueError as error:
             result["boundary_classification_disagreements"].append(
@@ -256,7 +275,30 @@ def main(dry=False):
         raise
     finally:
         result["query_count"] = result["mj_forward_queries"]
-        publish_result(ROOT / "verified.json", result)
+        source_error = None
+        try:
+            context.finish()
+            current_imports.finish()
+            strict_native_environment()
+            result["source_validation_after"] = True
+            result["source_refs_unchanged"] = list(refs.values())
+            result["migration_input_identity"] = context.registration()
+        except BaseException as error:
+            source_error = error
+            result.update(complete=False, passed=False, source_validation_after=False, source_after_error=repr(error))
+        if diagnostic is not None:
+            result["fresh_metrics_ref"] = publish_result(
+                output / "fresh_metrics.json",
+                dict(
+                    scope="Existing independent classifications; no additional model queries",
+                    producer_ref=producer_ref,
+                    response_count=len(metrics),
+                    metrics=[{key: value for key, value in metric.items() if key != "groups"} for metric in metrics],
+                ),
+            )
+        publish_result(output / "verified.json", result)
+        if source_error is not None:
+            raise source_error
     print(json.dumps(dict(passed=True, verified_responses=count, witness_found=result["witness_found"])), flush=True)
 
 
