@@ -1,7 +1,7 @@
 """Separate causal response variant with independent-replay arithmetic.
 
 Derived from native_goal_joint_response.py; the original default is unchanged.
-Only torque operation order, damping grouping and clipping expression change.
+Torque order, damping grouping, clipping and sampled matrix layout are explicit.
 Not qualified for physical control or an entire search by algebra tests.
 """
 
@@ -71,7 +71,9 @@ def rollout_replay_order_joint_response(
     def sample():
         raw = dynamics(q.copy(), velocity.copy())
         m = finite(raw["mass"], (n, n)).copy()
-        j = finite(raw["jacobian"], (6, n)).copy()
+        # Advanced indexing in the robot query yields an F-contiguous J.
+        # A default C copy changes BLAS paths despite identical entries.
+        j = finite(raw["jacobian"], (6, n)).copy(order="K")
         pose = validate_transform(raw["pose"]).copy()
         bias, damping = finite(raw["bias"], (n,)).copy(), finite(raw["damping"], (n,)).copy()
         passive = finite(raw.get("passive_extra", np.zeros(n)), (n,)).copy()

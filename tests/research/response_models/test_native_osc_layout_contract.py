@@ -9,6 +9,7 @@ import pytest
 from scipy.spatial.transform import Rotation
 
 from s2a.research.response_models.forward.native_osc_torque import replay_order_uncoupled_torque
+from s2a.research.response_models.forward.native_replay_joint_response import rollout_replay_order_joint_response
 
 
 @pytest.fixture(scope="module")
@@ -59,3 +60,40 @@ def test_layout_matches_external_replay_operation_tree(external_functions, layou
         expected += external_functions["nullspace_torques"](mass, null, initial, q, v, joint_kp=10)
         actual = replay_order_uncoupled_torque(mass, j, pose, goal, q, v, initial, kp, kd)
         assert actual.tobytes() == expected.tobytes()
+
+
+@pytest.mark.parametrize("layout", ["C", "F"])
+def test_response_sampling_preserves_external_first_torque(external_functions, layout):
+    rng = np.random.default_rng(42)
+    a = rng.normal(size=(7, 7))
+    mass = a.T @ a + np.eye(7)
+    j = np.array(rng.normal(size=(6, 7)), order=layout)
+    q, v, initial = rng.normal(size=(3, 7))
+    kp, kd = rng.uniform(1, 100, size=(2, 6))
+    goal = np.eye(4)
+    goal[:3, 3] = [0.125, -0.25, 0.5]
+    _, lp, lr, null = external_functions["opspace_matrices"](mass, j, j[:3], j[3:])
+    force = kp[:3] * goal[:3, 3] - kd[:3] * (j[:3] @ v)
+    moment = -kd[3:] * (j[3:] @ v)
+    expected = j.T @ np.r_[lp @ force, lr @ moment]
+    expected += external_functions["nullspace_torques"](mass, null, initial, q, v, joint_kp=10)
+
+    def query(q, velocity):
+        return dict(mass=mass, jacobian=j, pose=np.eye(4), bias=np.zeros(7), damping=np.ones(7))
+
+    result = rollout_replay_order_joint_response(
+        q,
+        v,
+        np.r_[goal[:3, 3], np.zeros(3)],
+        initial,
+        kp,
+        kd,
+        query,
+        -np.ones(7) * 1000,
+        np.ones(7) * 1000,
+        dt=0.002,
+        substeps=1,
+        update_matrices=True,
+        latched_rotation_goal=np.eye(3),
+    )
+    assert result["requested_torque"][0].tobytes() == expected.tobytes()
