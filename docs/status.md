@@ -180,6 +180,12 @@ sum-q路径与闭合原基线完整软件回放同值，没有新增研究运行
 未下发候选。秩一修正不保证其他方向安全，下一步需判别新方向局部失配与大步
 误差；见[修正探针报告](../reports/tracking/trajectory_search/corrected_rotation_probe_20261102.md)。
 
+修正后方向固定8样本的独立复算已完成，共16响应/4800内步/4994查询，0QP/拟合。
+两小尺度斜率约-7.9e-6/-7.7e-6，模型-7.2e-6，未重现旧方向12倍失配；半步数值
+安全，但所有非零尺度完整cap loss更差，完整witness仍0。24项相关QA通过。
+下一步回到全部位置/旋转联合目标，不再只围绕尾部旋转下降选方向；见
+[修正后局部性报告](../reports/tracking/trajectory_search/corrected_rotation_locality_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
