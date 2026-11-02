@@ -106,3 +106,30 @@ def test_aligned_arm_policy_or_budget_drift_is_rejected(field):
     spec[field] = "old_half_reserve_floor" if field == "problem_policy" else spec[field] + 1
     with pytest.raises(ValueError):
         validate_spec(spec, original, aligned_floor=True)
+
+
+def safety_specification():
+    return json.loads(
+        (
+            Path(__file__).resolve().parents[3]
+            / "configs/tracking/trajectory_search/reserve_safety_search_20261102.json"
+        ).read_text()
+    )
+
+
+def test_safety_feedback_registration_requires_explicit_feedback_and_aligned_mode():
+    spec = safety_specification()
+    validate_spec(spec, spec["search_config"], aligned_floor=True, safety_feedback=True)
+    with pytest.raises(ValueError):
+        validate_spec(spec, spec["search_config"], aligned_floor=True)
+    with pytest.raises(ValueError):
+        validate_spec(spec, spec["search_config"], safety_feedback=True)
+
+
+@pytest.mark.parametrize("field", ["reserve_feedback_policy", "total_response_budget", "model_budget"])
+def test_safety_feedback_policy_and_budget_drift_rejected(field):
+    spec = safety_specification()
+    original = deepcopy(spec["search_config"])
+    spec[field] = "all_three_models" if field == "reserve_feedback_policy" else spec[field] + 1
+    with pytest.raises(ValueError):
+        validate_spec(spec, original, aligned_floor=True, safety_feedback=True)

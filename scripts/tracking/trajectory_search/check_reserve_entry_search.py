@@ -18,6 +18,8 @@ from s2a.research.trajectory_search.replay_order_trajectory import rollout_repla
 from s2a.research.trajectory_search.reserve_aligned_cap_objective import POLICY as ALIGNED_POLICY
 from s2a.research.trajectory_search.reserve_aligned_cap_objective import ReserveAlignedCapObjective
 from s2a.research.trajectory_search.reserve_entry_acceptance import InheritedSearchDomain, ReserveEntryAcceptance
+from s2a.research.trajectory_search.reserve_safety_feedback import POLICY as SAFETY_FEEDBACK_POLICY
+from s2a.research.trajectory_search.reserve_safety_feedback import ReserveSafetyFeedback
 from s2a.research.trajectory_search.restored_anchor_sqp_evidence import REPO, checked, read, reference, require
 from scripts.maintenance.run_cpu_tests import snapshot
 from scripts.tracking.trajectory_search.cap_distance_search_audit import audit_cap_search
@@ -36,11 +38,14 @@ QA = REPO / "outputs/qa/reserve_entry_search_final_20261102/result.json"
 ROOT = REPO / "outputs/reserve_entry_search_20261102"
 
 
-def validate_spec(spec, original, *, aligned_floor=False):
+def validate_spec(spec, original, *, aligned_floor=False, safety_feedback=False):
+    require(not safety_feedback or aligned_floor, "Safety feedback uses the aligned constraint registration")
     expected = dict(
-        experiment="aligned_reserve_search" if aligned_floor else "reserve_entry_search",
+        experiment="reserve_safety_search"
+        if safety_feedback
+        else ("aligned_reserve_search" if aligned_floor else "reserve_entry_search"),
         seed=42,
-        arms=["aligned"] if aligned_floor else ["baseline", "reserve"],
+        arms=["safety_feedback"] if safety_feedback else (["aligned"] if aligned_floor else ["baseline", "reserve"]),
         search_config=original,
         producer_response_budget_per_arm=122,
         independent_response_budget_per_arm=122,
@@ -59,6 +64,8 @@ def validate_spec(spec, original, *, aligned_floor=False):
     )
     if aligned_floor:
         expected["problem_policy"] = ALIGNED_POLICY
+    if safety_feedback:
+        expected["reserve_feedback_policy"] = SAFETY_FEEDBACK_POLICY
     require(
         spec == expected and original["max_stages"] == 60 and original["max_responses"] == 122,
         "Fixed matched arms, original config and all finite budgets",
@@ -86,9 +93,16 @@ def native_metric_entry(entry, rollout, metric):
     return rebuilt
 
 
-def main(arm, *, config_path=CONFIG, plan_path=PLAN, qa_path=QA, output_root=ROOT, aligned_floor=False):
+def main(
+    arm, *, config_path=CONFIG, plan_path=PLAN, qa_path=QA, output_root=ROOT, aligned_floor=False, safety_feedback=False
+):
     phase_deadline(300)
-    require(arm in (("aligned",) if aligned_floor else ("baseline", "reserve")), "Explicit registered arm")
+    require(not safety_feedback or aligned_floor, "Registered feedback constraint mode")
+    require(
+        arm
+        in (("safety_feedback",) if safety_feedback else (("aligned",) if aligned_floor else ("baseline", "reserve"))),
+        "Explicit registered arm",
+    )
     spec = read(reference(config_path))
     output = output_root / arm
     runtime = ResponseProbeRuntime(output, qa_path)
@@ -98,13 +112,14 @@ def main(arm, *, config_path=CONFIG, plan_path=PLAN, qa_path=QA, output_root=ROO
     )
     cap = runtime.load(prior["producer_final_ref"])["answer"]
     cfg = spec["search_config"]
-    validate_spec(spec, cap["config"], aligned_floor=aligned_floor)
+    validate_spec(spec, cap["config"], aligned_floor=aligned_floor, safety_feedback=safety_feedback)
     require(
         cfg == cap["config"] and cfg["max_stages"] == 60 and cfg["max_responses"] == 122,
         "Exact matched original config",
     )
     require(
-        spec["arms"] == (["aligned"] if aligned_floor else ["baseline", "reserve"])
+        spec["arms"]
+        == (["safety_feedback"] if safety_feedback else (["aligned"] if aligned_floor else ["baseline", "reserve"]))
         and spec["seed"] == 42
         and not spec["automatic_retry"],
         "Fixed arms and seed",
@@ -210,6 +225,7 @@ def main(arm, *, config_path=CONFIG, plan_path=PLAN, qa_path=QA, output_root=ROO
                 objective=ReserveAlignedCapObjective() if aligned_floor else CapDistanceObjective(),
                 domain=domain,
                 pose_acceptance=ReserveEntryAcceptance() if arm != "baseline" else None,
+                reserve_feedback=ReserveSafetyFeedback() if safety_feedback else None,
             )
 
         phase_deadline(spec["execution_timeout_seconds"])
@@ -241,6 +257,7 @@ def main(arm, *, config_path=CONFIG, plan_path=PLAN, qa_path=QA, output_root=ROO
                 cfg,
                 domain_reference=root_entry,
                 preserve_pose_reserve=arm != "baseline",
+                reserve_safety_feedback=safety_feedback,
                 objective_audit=ReserveAlignedCapAuditPolicy() if aligned_floor else None,
             )
 
