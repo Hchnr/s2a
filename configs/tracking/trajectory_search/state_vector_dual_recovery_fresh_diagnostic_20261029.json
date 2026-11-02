@@ -1,0 +1,47 @@
+{
+  "schema_version": "s2a.state-vector-fresh-diagnostic.v1",
+  "seed": 42,
+  "output_dir": "outputs/tracking_v5_state_vector_dual_recovery_fresh_diagnostic_20261029",
+  "expected_responses": 122,
+  "expected_unique_commands": 121,
+  "expected_inner_steps": 36600,
+  "expected_queries": 38065,
+  "numeric_tolerance": 1e-10,
+  "torque_tolerance": 1e-08,
+  "timeout_seconds": 1800,
+  "automatic_retry": false,
+  "tool_transform_policy": "original_independent_solve",
+  "source_paths": [
+    "scripts/tracking/trajectory_search/check_tracking_v5_state_vector_fresh_diagnostic.py",
+    "scripts/tracking/trajectory_search/execute_tracking_v5_state_vector_fresh_diagnostic.py",
+    "scripts/tracking/trajectory_search/state_vector_fresh_diagnostic_admission.py",
+    "scripts/verification/trajectory_search/native_replay_inputs.py",
+    "tests/research/trajectory_search/test_fresh_decision_diagnostics.py",
+    "tests/research/trajectory_search/test_native_replay_inputs.py",
+    "tests/research/trajectory_search/test_fresh_diagnostic_admission.py"
+  ],
+  "plan_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/plans/v0.0.1/tracking/trajectory_search/state_vector_dual_recovery_fresh_diagnostic_20261029.md",
+    "sha256": "b2b6f3fadc87ad841b8a06413925ba545c5a0e6eb97219a0241dcbb7ced9734a"
+  },
+  "producer_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/tracking_v5_state_vector_dual_recovery_20261029/verified.json",
+    "sha256": "436fbe20f20cf6678aa329c05e928845b563f76cb0a976c11395e16481aba551"
+  },
+  "producer_registration_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/tracking_v5_state_vector_dual_recovery_20261029/registration.json",
+    "sha256": "039029faf7b34d34ba3c7f679da0a5a638f6af6c32d1a3738f279917d752e797"
+  },
+  "failed_checker_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/tracking_v5_state_vector_dual_recovery_check_20261029/verified.json",
+    "sha256": "6036f0cd4a711ef44b556b489cf946252d2d30e8dafb8cb232cfef0c4d4fcb85"
+  },
+  "failed_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/state_vector_dual_recovery_checker_recovery_v2_20261029/result.json",
+    "sha256": "cc55b1626b3ef7c3667850eb9d80f86fe538e82c030da06e21b4da382dcb60e1"
+  },
+  "initial_failed_owner_ref": {
+    "path": "/share-mixed/project/eai_pwm/home/hcr/repos/s2a/outputs/state_vector_dual_recovery_checker_20261029/result.json",
+    "sha256": "2ec7846a7b13adcc25163af6060c69c74598eab2f279d990d548e7c2d646709f"
+  }
+}

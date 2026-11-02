@@ -1,6 +1,6 @@
 # AGENTS.md — S2A
 
-先读 `README.md` 和 `plans/v0.0.1/001_state_to_action.md`。本仓库研究：世界模型输出期望 state/delta_state，经 S2A 反解 action，再通过固定控制器和机器人得到期望状态。
+先读 `README.md` 和 `plans/v0.0.1/goals/001_state_to_action.md`。本仓库研究：世界模型输出期望 state/delta_state，经 S2A 反解 action，再通过固定控制器和机器人得到期望状态。
 
 - 用户于2026-10-22明确指定后续实现、测试、配置、报告及实验产物全部在 `/share-mixed/project/eai_pwm/home/hcr/repos/s2a` 下维护；命令从本仓库执行。旧 `/share/project/eai_pwm/home/hcr/repos/s2a` 正被外部清理，不向其写入或恢复；历史引用保留原声明和SHA，通过明确的路径迁移记录定位安全副本。
 - `src/s2a/` 放可复用算法，`scripts/` 放实验入口，`tests/` 放测试，`configs/` 放显式配置，`plans/` 与 `reports/` 保留在 Git 范围内，生成产物写 `outputs/`。
@@ -38,3 +38,7 @@ CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python -m pytest
 ## 提交节奏（用户2026-10-28明确要求）
 
 完成可验证的小阶段后及时本地提交，避免多个阶段长期堆积。提交前运行对应检查，提交说明如实标注尚未完成的验证。
+
+## CPU 并发偏好
+
+CPU 回归默认使用 32 个并发进程，最终全量检查按可用资源使用 64 个并发进程。每进程设置 OPENBLAS_NUM_THREADS、OMP_NUM_THREADS、MKL_NUM_THREADS、NUMEXPR_NUM_THREADS 和 LP_NUM_THREADS 为 1，CUDA_VISIBLE_DEVICES 和 LD_LIBRARY_PATH 为空；各 worker 使用独占 outputs 临时目录，全部子进程实际 wait/reap 后登记结果。优先使用 `python -m scripts.maintenance.run_cpu_tests` 统一入口；不要以并发或目录迁移更改原测试、来源身份、实验预算或资格门槛。
