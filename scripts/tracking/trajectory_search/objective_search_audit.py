@@ -58,6 +58,21 @@ class SumQAuditPolicy:
         return predicted, before[field] - predicted[field]
 
 
+def validate_progress_configuration(config, reference=None):
+    """Keep the frozen default; explicitly admit only the registered two-field variant."""
+    if reference is None:
+        return validate_config(config)
+    validate_config(reference)
+    require(isinstance(config, dict) and config.keys() == reference.keys(), "Complete progress variant config")
+    for key, original in reference.items():
+        expected = 1e-5 if key in ("minimum_predicted_reduction", "minimum_actual_reduction") else original
+        require(
+            type(config[key]) is type(expected) and config[key] == expected,
+            "Only registered progress field values: " + key,
+        )
+    return config
+
+
 def audit_search(
     answer,
     initial_Js,
@@ -74,10 +89,11 @@ def audit_search(
     domain_reference=None,
     preserve_pose_reserve=False,
     reserve_safety_feedback=False,
+    progress_reference=None,
 ):
     """Audit the entire saved state machine; scientific search failure may pass."""
     policy = SumQAuditPolicy() if objective is None else objective
-    validate_config(config)
+    validate_progress_configuration(config, progress_reference)
     if reserve_safety_feedback:
         require(
             answer.get("reserve_feedback_policy") == "safe_reserve_rejection_minimum_alpha_safety_only",

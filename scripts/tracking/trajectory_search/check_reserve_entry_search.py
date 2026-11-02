@@ -282,6 +282,7 @@ def main(
                 domain_reference=root_entry,
                 preserve_pose_reserve=arm != "baseline",
                 reserve_safety_feedback=safety_feedback,
+                progress_reference=cap["config"] if progress_floor is not None else None,
                 objective_audit=ReserveAlignedCapAuditPolicy() if aligned_floor else None,
             )
 
@@ -358,6 +359,10 @@ def main(
         signal.alarm(0)
         if dynamics is not None:
             producer["actual_model_queries"] = dynamics.queries
+        if producer["answer"] is not None:
+            retained_qps = [stage["qp"] for stage in producer["answer"]["stages"] if stage["qp"] is not None]
+            result["qp_solves"] = len(retained_qps)
+            result["nnls_fit_attempts"] = sum(qp["nnls_fit_attempts"] for qp in retained_qps)
         try:
             runtime.context.finish()
             strict_native_environment()
