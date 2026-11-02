@@ -81,3 +81,28 @@ def test_any_native_decision_drift_fails_exact_gate(field):
         m[field].flat[0] += 1e-14
     with pytest.raises(ValueError):
         native_metric_entry(e, dict(trace=0), m)
+
+
+def aligned_specification():
+    return json.loads(
+        (
+            Path(__file__).resolve().parents[3]
+            / "configs/tracking/trajectory_search/aligned_reserve_search_20261102.json"
+        ).read_text()
+    )
+
+
+def test_aligned_arm_requires_explicit_mode_and_its_own_fixed_budget():
+    spec = aligned_specification()
+    validate_spec(spec, spec["search_config"], aligned_floor=True)
+    with pytest.raises(ValueError):
+        validate_spec(spec, spec["search_config"])
+
+
+@pytest.mark.parametrize("field", ["problem_policy", "total_response_budget", "model_budget"])
+def test_aligned_arm_policy_or_budget_drift_is_rejected(field):
+    spec = aligned_specification()
+    original = deepcopy(spec["search_config"])
+    spec[field] = "old_half_reserve_floor" if field == "problem_policy" else spec[field] + 1
+    with pytest.raises(ValueError):
+        validate_spec(spec, original, aligned_floor=True)

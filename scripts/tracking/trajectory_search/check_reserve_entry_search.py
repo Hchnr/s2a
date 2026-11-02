@@ -15,6 +15,8 @@ from s2a.infrastructure.publication import publish_result, result_json
 from s2a.research.trajectory_search.cap_distance_objective import CapDistanceObjective
 from s2a.research.trajectory_search.objective_search_driver import search
 from s2a.research.trajectory_search.replay_order_trajectory import rollout_replay_order_trajectory
+from s2a.research.trajectory_search.reserve_aligned_cap_objective import POLICY as ALIGNED_POLICY
+from s2a.research.trajectory_search.reserve_aligned_cap_objective import ReserveAlignedCapObjective
 from s2a.research.trajectory_search.reserve_entry_acceptance import InheritedSearchDomain, ReserveEntryAcceptance
 from s2a.research.trajectory_search.restored_anchor_sqp_evidence import REPO, checked, read, reference, require
 from scripts.maintenance.run_cpu_tests import snapshot
@@ -22,6 +24,7 @@ from scripts.tracking.trajectory_search.cap_distance_search_audit import audit_c
 from scripts.tracking.trajectory_search.check_cap_distance_gn import phase_deadline
 from scripts.tracking.trajectory_search.check_replay_order_stencil import compare_values
 from scripts.tracking.trajectory_search.probe_tracking_v5_interior_trajectory_search import run_search
+from scripts.tracking.trajectory_search.reserve_aligned_cap_audit import ReserveAlignedCapAuditPolicy
 from scripts.tracking.trajectory_search.response_probe_runtime import ResponseProbeRuntime
 from scripts.verification.trajectory_search.check_tracking_v5_prefix_trust_control import check_full_candidate
 from scripts.verification.trajectory_search.check_tracking_v5_saved_direction_backtracking import case_engine
@@ -33,18 +36,18 @@ QA = REPO / "outputs/qa/reserve_entry_search_final_20261102/result.json"
 ROOT = REPO / "outputs/reserve_entry_search_20261102"
 
 
-def validate_spec(spec, original):
+def validate_spec(spec, original, *, aligned_floor=False):
     expected = dict(
-        experiment="reserve_entry_search",
+        experiment="aligned_reserve_search" if aligned_floor else "reserve_entry_search",
         seed=42,
-        arms=["baseline", "reserve"],
+        arms=["aligned"] if aligned_floor else ["baseline", "reserve"],
         search_config=original,
         producer_response_budget_per_arm=122,
         independent_response_budget_per_arm=122,
-        total_response_budget=488,
-        total_inner_step_budget=146400,
-        total_query_budget=152260,
-        model_budget=4,
+        total_response_budget=244 if aligned_floor else 488,
+        total_inner_step_budget=73200 if aligned_floor else 146400,
+        total_query_budget=76130 if aligned_floor else 152260,
+        model_budget=2 if aligned_floor else 4,
         qp_budget_per_arm=60,
         qp_iteration_budget_per_arm=6000,
         nnls_fit_budget_per_arm=60,
@@ -54,6 +57,8 @@ def validate_spec(spec, original):
         owner_timeout_seconds=1800,
         automatic_retry=False,
     )
+    if aligned_floor:
+        expected["problem_policy"] = ALIGNED_POLICY
     require(
         spec == expected and original["max_stages"] == 60 and original["max_responses"] == 122,
         "Fixed matched arms, original config and all finite budgets",
@@ -81,25 +86,27 @@ def native_metric_entry(entry, rollout, metric):
     return rebuilt
 
 
-def main(arm):
+def main(arm, *, config_path=CONFIG, plan_path=PLAN, qa_path=QA, output_root=ROOT, aligned_floor=False):
     phase_deadline(300)
-    require(arm in ("baseline", "reserve"), "Explicit registered arm")
-    spec = read(reference(CONFIG))
-    output = ROOT / arm
-    runtime = ResponseProbeRuntime(output, QA)
+    require(arm in (("aligned",) if aligned_floor else ("baseline", "reserve")), "Explicit registered arm")
+    spec = read(reference(config_path))
+    output = output_root / arm
+    runtime = ResponseProbeRuntime(output, qa_path)
     prior = runtime.load(
         reference(REPO / "outputs/cap_distance_gn_20261102/result.json"),
         "80f58cde84778d1e3b2f7ff3ca0b85c5414419da976a057710421d23f03012e9",
     )
     cap = runtime.load(prior["producer_final_ref"])["answer"]
     cfg = spec["search_config"]
-    validate_spec(spec, cap["config"])
+    validate_spec(spec, cap["config"], aligned_floor=aligned_floor)
     require(
         cfg == cap["config"] and cfg["max_stages"] == 60 and cfg["max_responses"] == 122,
         "Exact matched original config",
     )
     require(
-        spec["arms"] == ["baseline", "reserve"] and spec["seed"] == 42 and not spec["automatic_retry"],
+        spec["arms"] == (["aligned"] if aligned_floor else ["baseline", "reserve"])
+        and spec["seed"] == 42
+        and not spec["automatic_retry"],
         "Fixed arms and seed",
     )
     qualified = runtime.load(
@@ -129,8 +136,8 @@ def main(arm):
         dict(
             arm=arm,
             spec=spec,
-            config_ref=reference(CONFIG),
-            plan_ref=reference(PLAN),
+            config_ref=reference(config_path),
+            plan_ref=reference(plan_path),
             qa_ref=runtime.qa_ref,
             input_refs=list(runtime.refs.values()),
             source_before_ref=publish_result(output / "source_before.json", runtime.before),
@@ -200,9 +207,9 @@ def main(arm):
                 lo,
                 hi,
                 config,
-                objective=CapDistanceObjective(),
+                objective=ReserveAlignedCapObjective() if aligned_floor else CapDistanceObjective(),
                 domain=domain,
-                pose_acceptance=ReserveEntryAcceptance() if arm == "reserve" else None,
+                pose_acceptance=ReserveEntryAcceptance() if arm != "baseline" else None,
             )
 
         phase_deadline(spec["execution_timeout_seconds"])
@@ -233,7 +240,8 @@ def main(arm):
                 interface.input_max,
                 cfg,
                 domain_reference=root_entry,
-                preserve_pose_reserve=arm == "reserve",
+                preserve_pose_reserve=arm != "baseline",
+                objective_audit=ReserveAlignedCapAuditPolicy() if aligned_floor else None,
             )
 
         result["production_ledger"] = audit(answer)
