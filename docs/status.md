@@ -237,6 +237,13 @@ pose下限对齐策略已实现并完整验证一次新方向：1QP/1NNLS、14�
 restore；但全部caps仍12/24、witness0。下一步另登记有限连续迭代验证，不能用
 单步效果宣称解决停滞；见[下限对齐新方向报告](../reports/tracking/trajectory_search/aligned_cap_distance_probe_20261102.md)。
 
+下限对齐的实际有限迭代已独立审核通过：9stage/4接纳/0restore，最终loss2.009187、
+reserve .911682，仍caps12/24、witness0，radius到下限。新费用44双侧响应/
+13200内步/13730查询、2model、9QP/9NNLS；50项专项通过，旧baseline60QP/91响应
+闭合回放完整答案不变。相比只加接纳门有更多下降，但未解决停滞；末段预测reserve
+.9088而实际.8901，下一步核查当前安全拒绝的临界模型误差/校正，不能复用旧结构
+不一致解释。见[连续迭代报告](../reports/tracking/trajectory_search/aligned_reserve_search_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
