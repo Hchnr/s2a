@@ -205,6 +205,12 @@ anchor85的72联动探针已实际采集并独立复算：148响应/44400内步/
 8.50e-8，但该后验比较不授予新方向资格。下一步用新模型生成完整目标方向并另行
 验证；见[联动局部模型报告](../reports/tracking/trajectory_search/anchor85_coupled_stencil_20261102.md)。
 
+新模型生成的联合方向已完整审核（1QP/1NNLS、14响应/4200内步/4370查询、43项
+专项通过）。alpha .125下降2.56e-4、实际/预测比.991、reserve .929，保持原pose
+进入条件；但旧顺序会先接纳alpha .5并重新restore。全部caps仍12/24、witness0。
+下一步显式设计保护reserve的接纳变体及有限迭代比较，不追认旧规则已选较小步；
+见[刷新模型新方向报告](../reports/tracking/trajectory_search/refreshed_cap_distance_probe_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
