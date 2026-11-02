@@ -211,6 +211,12 @@ anchor85的72联动探针已实际采集并独立复算：148响应/44400内步/
 下一步显式设计保护reserve的接纳变体及有限迭代比较，不追认旧规则已选较小步；
 见[刷新模型新方向报告](../reports/tracking/trajectory_search/refreshed_cap_distance_probe_20261102.md)。
 
+显式reserve接纳与原根域继承已实现，默认55QP/122响应软件回放保持完整答案
+SHA不变；新方向单stage回放按原顺序选alpha .125、reserve .929，独立审核及
+三类篡改拒绝通过。29项专项通过，尚无新响应/新有限搜索，不能将软件回放计为
+控制进展或连续收敛证据；下一步独立登记有限迭代及完整响应审核，见
+[接纳变体实现报告](../reports/tracking/trajectory_search/reserve_entry_acceptance_implementation_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
