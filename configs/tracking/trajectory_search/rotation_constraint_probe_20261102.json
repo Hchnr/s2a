@@ -1,0 +1,20 @@
+{
+  "seed": 42,
+  "stage_index": 58,
+  "anchor_index": 85,
+  "target_group": 23,
+  "alpha": 1.0,
+  "radius": 0.005,
+  "qp_budget": 1,
+  "qp_iteration_budget": 100,
+  "nnls_fit_budget": 1,
+  "producer_response_budget": 3,
+  "independent_response_budget": 3,
+  "total_response_budget": 6,
+  "total_inner_step_budget": 1800,
+  "total_query_budget": 1874,
+  "model_budget": 2,
+  "timeout_seconds": 600,
+  "automatic_retry": false,
+  "tool_policy": "native_solve"
+}
