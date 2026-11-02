@@ -152,8 +152,14 @@ caps、prefix9、witness0；未获得物理资格。61项专项通过，下一�
 
 Cap-distance目标与显式objective共享驱动已实现，58项专项通过；共享驱动的
 sum-q路径与闭合原基线完整软件回放同值，没有新增研究运行。浮点边界的有理化
-求值已另行固定。下一步完成独立cap审核并冻结执行配置；见
+求值已另行固定。该实现阶段见
 [实现报告](../reports/tracking/trajectory_search/cap_distance_implementation_20261102.md)。
+
+独立cap审核及唯一对照现已完成：79项专项通过，89生产响应和全部独立复算、
+原KKT/反馈/严格fresh及owner源码/回收审核通过。loss2.231→2.010、后3点改善，
+但caps18/24→12/24、prefix9→2、witness0，因60阶段上限停止；不派发到控制，
+不授予物理或任务资格。下一步核查末端旋转、活动约束与响应失配；完整指标、
+成本与来源见[cap-distance报告](../reports/tracking/trajectory_search/cap_distance_gn_20261102.md)。
 
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
