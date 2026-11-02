@@ -264,6 +264,14 @@ loss2.008818、reserve .903607，仍caps12/24、witness0。新费用40双侧响�
 停止，不能据此证明物理无可行下降。下一步固定核查未调用方向及其完整跟踪意义，
 不直接放宽门或仅按微小loss选优；见[实际搜索报告](../reports/tracking/trajectory_search/reserve_safety_search_20261102.md)。
 
+停止前3个固定未调用方向已新增完整核查：10双侧响应/3000内步/3122查询、2model，
+0新QP/拟合，43项专项通过。三方向均joint/buffer安全且loss下降，前两reserve
+失败；最小方向reserve .901292、下降3.10e-5，低于旧进展门，仍caps12/24、witness0。
+这证明有小幅局部下降，不证明累计跟踪改善，也未追认旧接纳。下一步仅作为显式
+新算法对照设计更小进展门、保持原实际安全和完整资格及最大预算；见
+[固定方向报告](../reports/tracking/trajectory_search/deferred_cap_directions_20261102.md)与
+[进展门对照设计](../plans/v0.0.1/tracking/trajectory_search/small_progress_comparison_design_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
