@@ -26,6 +26,9 @@ def audit_cap_search(
     input_max,
     config,
     compare=numerical_compare,
+    *,
+    domain_reference=None,
+    preserve_pose_reserve=False,
 ):
     """Retain every original gate, then bind the additional solver-scale record."""
     checked = audit_objective_search(
@@ -40,6 +43,8 @@ def audit_cap_search(
         config,
         compare=compare,
         objective=CapDistanceAuditPolicy(),
+        domain_reference=domain_reference,
+        preserve_pose_reserve=preserve_pose_reserve,
     )
     require(answer["qp_objective_scaling_policy"] == QP_OBJECTIVE_SCALING_POLICY, "Whole-objective scaling policy")
     require(answer["dual_recovery_policy"] == DUAL_RECOVERY_POLICY, "Pose-only restricted recovery policy")

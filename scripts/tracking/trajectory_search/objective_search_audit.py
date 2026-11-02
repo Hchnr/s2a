@@ -71,10 +71,21 @@ def audit_search(
     compare=numerical_compare,
     *,
     objective=None,
+    domain_reference=None,
+    preserve_pose_reserve=False,
 ):
     """Audit the entire saved state machine; scientific search failure may pass."""
     policy = SumQAuditPolicy() if objective is None else objective
     validate_config(config)
+    if preserve_pose_reserve:
+        require(
+            answer.get("pose_acceptance_policy") == "pose_reserve_at_least_original_entry_fraction",
+            "Explicit reserve acceptance policy",
+        )
+    else:
+        require("pose_acceptance_policy" not in answer, "No unaudited acceptance policy")
+    if domain_reference is None:
+        require("inherited_domain" not in answer, "No unaudited inherited domain")
     _tree("exact registered config", config, answer["config"], compare)
     require(answer["pose_objective_policy"] == policy.policy, "Registered normalized-vector GN objective")
     require(type(answer["pose_damping"]) is float and answer["pose_damping"] == POSE_DAMPING, "Fixed GN damping1")
@@ -113,12 +124,21 @@ def audit_search(
         ),
         "Historical start must pass original safety and the unchanged buffer",
     )
-    lower = np.maximum(np.tile(input_min, (12, 1)), initial - config["global_displacement_limit"])
-    upper = np.minimum(np.tile(input_max, (12, 1)), initial + config["global_displacement_limit"])
+    domain_initial = initial
+    domain_pose = _pose(historical_initial)
+    if domain_reference is not None:
+        domain_initial = array(domain_reference["commands"], "Original root command", (12, 6))
+        domain_pose = _pose(domain_reference)
+        metadata = answer["inherited_domain"]
+        require(metadata["policy"] == "inherited_original_root_command_and_pose_envelope", "Explicit inherited domain")
+        exact_array("Bound original root command", domain_initial, metadata["reference_command"])
+        exact_array("Bound original root squared errors", domain_pose, metadata["reference_squared"])
+    lower = np.maximum(np.tile(input_min, (12, 1)), domain_initial - config["global_displacement_limit"])
+    upper = np.minimum(np.tile(input_max, (12, 1)), domain_initial + config["global_displacement_limit"])
     lower[0], upper[0] = np.maximum(lower[0], previous - 0.25), np.minimum(upper[0], previous + 0.25)
     exact_array("fixed global lower", lower, answer["global_lower"])
     exact_array("fixed global upper", upper, answer["global_upper"])
-    initial_maximum = max(1.0, float(np.max(_pose(historical_initial))))
+    initial_maximum = max(1.0, float(np.max(domain_pose)))
     pose_ceiling = np.full(24, initial_maximum * (1.0 + config["pose_ceiling_fraction"]))
     exact_array("fixed common initial-maximum pose envelope", pose_ceiling, answer["pose_ceiling"])
     safety, squared, error_vectors, all_metrics = [], [], [], []
@@ -283,6 +303,12 @@ def audit_search(
                         reason = "original_witness"
                     elif not original_safe(ri) or np.any(squared[ri] > pose_ceiling):
                         reason = "actual_admission_failed"
+                    elif (
+                        preserve_pose_reserve
+                        and mode == "pose"
+                        and actual["reserve"] < config["reserve_entry_fraction"]
+                    ):
+                        reason = "pose_reserve_below_entry"
                     elif actual_reduction < actual_floor:
                         reason = "actual_reduction_insufficient"
                     elif ratio < config["accept_ratio"]:

@@ -61,7 +61,20 @@ class SumQObjective:
 
 
 def search(
-    evaluate, historical_initial, Js, Jq, Je, previous, input_min, input_max, config, *, objective=None, qp_solver=None
+    evaluate,
+    historical_initial,
+    Js,
+    Jq,
+    Je,
+    previous,
+    input_min,
+    input_max,
+    config,
+    *,
+    objective=None,
+    qp_solver=None,
+    domain=None,
+    pose_acceptance=None,
 ):
     """Search finite full-H12 responses, always reserving the final initial repeat."""
     policy = SumQObjective() if objective is None else objective
@@ -79,6 +92,8 @@ def search(
     global_upper = np.minimum(np.tile(input_max, (12, 1)), initial_command + config["global_displacement_limit"])
     global_lower[0] = np.maximum(global_lower[0], previous - 0.25)
     global_upper[0] = np.minimum(global_upper[0], previous + 0.25)
+    if domain is not None:
+        global_lower, global_upper = domain.bounds(previous, input_min, input_max, config)
     _require(
         np.all(initial_command >= global_lower - 1e-12)
         and np.all(initial_command <= global_upper + 1e-12)
@@ -90,7 +105,7 @@ def search(
         historical_initial["audit"]["feasible"] and np.all(initial_safety >= config["safety_buffer"]),
         "Original safety-buffer-qualified initial anchor",
     )
-    ceiling = initial_global_envelope(initial_q, config)
+    ceiling = initial_global_envelope(initial_q, config) if domain is None else domain.ceiling(config)
     answer = dict(
         pose_ceiling_policy=POSE_CEILING_POLICY,
         pose_objective_policy=policy.policy,
@@ -121,6 +136,10 @@ def search(
         total_qp_iterations=0,
         control_qualified=False,
     )
+    if domain is not None:
+        answer["inherited_domain"] = domain.metadata()
+    if pose_acceptance is not None:
+        answer["pose_acceptance_policy"] = pose_acceptance.policy
     seen = set()
 
     def request(commands, role, stage_index=None, alpha_index=None, alpha=None):
@@ -284,6 +303,8 @@ def search(
                         reason, accepted = "original_witness", True
                     elif not admission:
                         reason = "actual_admission_failed"
+                    elif pose_acceptance is not None and not pose_acceptance.allows(actual, config, mode):
+                        reason = "pose_reserve_below_entry"
                     elif actual_reduction < minimum_actual:
                         reason = "actual_reduction_insufficient"
                     elif ratio < config["accept_ratio"]:
