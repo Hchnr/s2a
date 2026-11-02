@@ -141,9 +141,14 @@ dot/@并在采样时保留J布局，响应及独立指标最大差0，13项专�
 
 新预测器初始化及72个signed1e-4探针现已重新验证：两侧各74完整H12响应、
 评分和Js/Jq/Je矩阵精确同值，因果零结构通过。生产端32批并发，全部进程实际
-回收；23项专项通过。原18/24初始化caps尚未全部满足，下一步单独登记同预测器
-sum-q对照，未新增搜索或物理资格。证据与成本见
+回收；23项专项通过。原18/24初始化caps尚未全部满足；证据与成本见
 [新探针报告](../reports/tracking/trajectory_search/replay_order_stencil_20261102.md)。
+
+同预测器sum-q对照已完成：122生产响应及全部独立复算、完整KKT/反馈/原1e-10
+fresh决策审核通过，响应同值。总q29.62→27.47，但后3点18.80→18.96，仍18/24
+caps、prefix9、witness0；未获得物理资格。61项专项通过，下一步按设计执行
+同预测器cap-distance对照。费用与边界见
+[sum-q报告](../reports/tracking/trajectory_search/replay_order_sumq_20261102.md)。
 
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
