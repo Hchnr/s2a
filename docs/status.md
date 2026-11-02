@@ -257,6 +257,13 @@ Jq/Je及anchor不变。最终52项专项通过；六stage保存前缀回放选�
 验证反馈后的新方向或连续迭代；下一步另登记有限新执行，见
 [安全反馈实现报告](../reports/tracking/trajectory_search/reserve_safety_feedback_implementation_20261102.md)。
 
+仅Js反馈实际新搜索已完整native审核：12stage/6接纳/2安全only更新、0restore，
+loss2.008818、reserve .903607，仍caps12/24、witness0。新费用40双侧响应/
+12000内步/12482查询、2model、12QP/12NNLS；71项专项通过，旧aligned9QP/22响应
+闭合回放答案不变。末3stage共15候选未执行，因全步预测下降低于原1e-4而缩步
+停止，不能据此证明物理无可行下降。下一步固定核查未调用方向及其完整跟踪意义，
+不直接放宽门或仅按微小loss选优；见[实际搜索报告](../reports/tracking/trajectory_search/reserve_safety_search_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
