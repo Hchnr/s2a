@@ -1,0 +1,21 @@
+{
+  "seed": 42,
+  "alphas": [
+    1.0,
+    0.5,
+    0.25,
+    0.125,
+    0.0625
+  ],
+  "radius": 0.005,
+  "qp_budget": 1,
+  "qp_iteration_budget": 100,
+  "nnls_fit_budget": 1,
+  "response_count_per_side": 7,
+  "total_query_budget": 4370,
+  "total_inner_step_budget": 4200,
+  "model_budget": 2,
+  "timeout_seconds": 600,
+  "automatic_retry": false,
+  "problem_policy": "cap_distance_gn_with_reserve_entry_floor"
+}

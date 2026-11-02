@@ -29,8 +29,10 @@ def audit_cap_search(
     *,
     domain_reference=None,
     preserve_pose_reserve=False,
+    objective_audit=None,
 ):
     """Retain every original gate, then bind the additional solver-scale record."""
+    policy = CapDistanceAuditPolicy() if objective_audit is None else objective_audit
     checked = audit_objective_search(
         answer,
         initial_Js,
@@ -42,7 +44,7 @@ def audit_cap_search(
         input_max,
         config,
         compare=compare,
-        objective=CapDistanceAuditPolicy(),
+        objective=policy,
         domain_reference=domain_reference,
         preserve_pose_reserve=preserve_pose_reserve,
     )
@@ -64,7 +66,7 @@ def audit_cap_search(
             _pose(anchor),
             _error(anchor),
         )
-        B, g, A, b = CapDistanceAuditPolicy.problem(
+        B, g, A, b = policy.problem(
             x,
             safety,
             squared,

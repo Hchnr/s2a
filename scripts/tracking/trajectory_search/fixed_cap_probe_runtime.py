@@ -14,16 +14,33 @@ from scripts.verification.trajectory_search.accepted_point_sqp_math_audit import
 from scripts.verification.trajectory_search.check_tracking_v5_tail_translation_reserve_v2 import semantic_compare
 
 
-def run_fixed_cap_probe(runtime, spec, config, plan, anchor, models, cap, model_ref, entry_path, experiment):
+def run_fixed_cap_probe(
+    runtime,
+    spec,
+    config,
+    plan,
+    anchor,
+    models,
+    cap,
+    model_ref,
+    entry_path,
+    experiment,
+    *,
+    objective=None,
+    objective_audit=None,
+):
     """Audit one QP, freeze five scales, then independently replay every response."""
+    policy = CapDistanceObjective() if objective is None else objective
+    audit_policy = CapDistanceAuditPolicy() if objective_audit is None else objective_audit
+    require(policy.policy == audit_policy.policy, "Explicit matching objective and independent policy")
     previous = np.asarray(runtime.source["previous_command"])[:6]
     lower, upper = (np.asarray(cap[k]) for k in ("global_lower", "global_upper"))
     ceiling = np.asarray(cap["pose_ceiling"])
     cfg = cap["config"]
-    problem = CapDistanceObjective.problem(
+    problem = policy.problem(
         anchor, models["Js"], models["Jq"], models["Je"], previous, lower, upper, ceiling, spec["radius"], "pose", cfg
     )
-    B, g, A, b = CapDistanceAuditPolicy.problem(
+    B, g, A, b = audit_policy.problem(
         np.asarray(anchor["commands"]),
         np.asarray(anchor["safety_slack"]),
         _pose(anchor),
@@ -55,6 +72,7 @@ def run_fixed_cap_probe(runtime, spec, config, plan, anchor, models, cap, model_
             b=b,
             initial_t=problem["initial_t"],
             new_model_fits=0,
+            problem_policy=policy.policy,
             model_ref=model_ref,
         ),
     )
