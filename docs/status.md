@@ -130,6 +130,11 @@ pytest全绿。目录、身份及本轮读取回归验收不授予所有历史�
 这只证明力矩代数一致性，完整响应、严格 ratio 及任务资格尚未通过。
 证据和下一步见[算术契约报告](../reports/tracking/trajectory_search/native_osc_arithmetic_20261102.md)。
 
+后续固定命令完整响应对照：两侧共8条H12响应通过原响应容差，但并非完全同值。
+首次失败命令对的条件性 ratio 差降至5.18e-11，尚未授予完整搜索资格；另发现
+Jacobian存储布局影响，下一步核查dot/@路径。失败、额外成本和5项专项测试见
+[完整响应报告](../reports/tracking/trajectory_search/native_replay_response_contract_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
