@@ -161,6 +161,13 @@ sum-q路径与闭合原基线完整软件回放同值，没有新增研究运行
 不授予物理或任务资格。下一步核查末端旋转、活动约束与响应失配；完整指标、
 成本与来源见[cap-distance报告](../reports/tracking/trajectory_search/cap_distance_gn_20261102.md)。
 
+保存模型诊断显示安全约束与局部梯度显著竞争，不能仅凭接近global盒解释失败。
+随后固定单旋转方向诊断完成1QP、两侧6响应并通过独立数值/源码审核：旋转误差
+.13113→.12820rad，但制动安全slack为负，整体cap loss变差，候选未下发。
+75项专项通过。下一步区分Js局部失配与有限步曲率，原安全门保持；见
+[约束诊断](../reports/tracking/trajectory_search/cap_distance_constraint_diagnostic_20261102.md)和
+[旋转探针报告](../reports/tracking/trajectory_search/rotation_constraint_probe_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
