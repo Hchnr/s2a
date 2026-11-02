@@ -251,6 +251,12 @@ reserve .911682，仍caps12/24、witness0，radius到下限。新费用44双侧�
 见[后验校正报告](../reports/tracking/trajectory_search/aligned_rejection_shadow_20261102.md)
 与[安全反馈设计](../plans/v0.0.1/tracking/trajectory_search/reserve_safety_feedback_design_20261102.md)。
 
+仅Js的reserve安全反馈已显式实现并独立审核，原pose ceiling来源保持优先、
+Jq/Je及anchor不变。最终52项专项通过；六stage保存前缀回放选择response13并
+通过五类篡改拒绝，旧baseline60QP/91响应完整答案SHA保持。0新响应/查询，尚未
+验证反馈后的新方向或连续迭代；下一步另登记有限新执行，见
+[安全反馈实现报告](../reports/tracking/trajectory_search/reserve_safety_feedback_implementation_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
