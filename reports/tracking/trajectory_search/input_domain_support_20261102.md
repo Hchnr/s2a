@@ -19,7 +19,7 @@
 
 仓库已有完整input域、全24caps、每步重新差分的非线性SLSQP，不能把简单
 恢复这些设置包装为新机制：旧4000响应/53迭代仍无完整witness，独立检查仅
-完成500/4000，见[原报告](state_updated_trajectory_control_20261028.md:12)。
+完成500/4000，见[原报告](state_updated_trajectory_control_20261028.md)。
 其安全阶段只在初始不安全时运行，旧起点安全所以未进入；当前qualified LP方向
 则提供已独立确认、旋转更接近但安全失败的不同数值起点。
 
@@ -27,6 +27,7 @@
 响应及安全Jacobian，恢复原buffer，而非只用原anchor的一阶切向方向或继续
 放宽进展参数。先验证能否在保留轨迹改善的同时恢复安全，之后再登记连续搜索。
 它不等于重跑旧4000响应，也不预设能解全部caps或证明任务收益。
+完整合同与有限预算见[非线性可行性投影设计](../../../plans/v0.0.1/tracking/trajectory_search/nonlinear_feasibility_projection_design_20261102.md)，实现与实际执行尚未完成。
 
 ## 验证、费用与来源
 
