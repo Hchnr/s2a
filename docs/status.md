@@ -137,8 +137,13 @@ Jacobian存储布局影响，下一步核查dot/@路径。失败、额外成本�
 
 最新v4已在固定四条命令上得到与独立回放完全同值的完整H12响应：修正任务
 dot/@并在采样时保留J布局，响应及独立指标最大差0，13项专项通过。
-仍须重新验证新预测器初始化/有限差分探针并执行同预测器对照；没有新增物理
-资格。来源、实际成本及边界见[布局契约报告](../reports/tracking/trajectory_search/native_replay_layout_contract_20261102.md)。
+来源、实际成本及边界见[布局契约报告](../reports/tracking/trajectory_search/native_replay_layout_contract_20261102.md)。
+
+新预测器初始化及72个signed1e-4探针现已重新验证：两侧各74完整H12响应、
+评分和Js/Jq/Je矩阵精确同值，因果零结构通过。生产端32批并发，全部进程实际
+回收；23项专项通过。原18/24初始化caps尚未全部满足，下一步单独登记同预测器
+sum-q对照，未新增搜索或物理资格。证据与成本见
+[新探针报告](../reports/tracking/trajectory_search/replay_order_stencil_20261102.md)。
 
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
