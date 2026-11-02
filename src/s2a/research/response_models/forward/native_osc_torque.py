@@ -33,9 +33,11 @@ def replay_order_uncoupled_torque(mass, jacobian, pose, goal, q, velocity, initi
     orientation_error = 0.5 * (
         np.cross(pose[:3, 0], goal[:3, 0]) + np.cross(pose[:3, 1], goal[:3, 1]) + np.cross(pose[:3, 2], goal[:3, 2])
     )
-    force = kp[:3] * position_error - kd[:3] * np.dot(jp, velocity)
-    moment = kp[3:] * orientation_error - kd[3:] * np.dot(jr, velocity)
-    task = np.dot(jacobian.T, np.concatenate((np.dot(lambda_position, force), np.dot(lambda_orientation, moment))))
+    # These are matmul in the independent replay, unlike control_utils' dot
+    # products above. dot and matmul can round differently for strided views.
+    force = kp[:3] * position_error - kd[:3] * (jp @ velocity)
+    moment = kp[3:] * orientation_error - kd[3:] * (jr @ velocity)
+    task = jacobian.T @ np.r_[lambda_position @ force, lambda_orientation @ moment]
     joint_kv = np.sqrt(null_kp) * 2
     spring = np.dot(mass, null_kp * (initial_joint - q) - joint_kv * velocity)
     return task + np.dot(null.T, spring)
