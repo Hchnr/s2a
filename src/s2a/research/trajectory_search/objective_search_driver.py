@@ -75,6 +75,7 @@ def search(
     qp_solver=None,
     domain=None,
     pose_acceptance=None,
+    reserve_feedback=None,
 ):
     """Search finite full-H12 responses, always reserving the final initial repeat."""
     policy = SumQObjective() if objective is None else objective
@@ -140,6 +141,8 @@ def search(
         answer["inherited_domain"] = domain.metadata()
     if pose_acceptance is not None:
         answer["pose_acceptance_policy"] = pose_acceptance.policy
+    if reserve_feedback is not None:
+        answer["reserve_feedback_policy"] = reserve_feedback.policy
     seen = set()
 
     def request(commands, role, stage_index=None, alpha_index=None, alpha=None):
@@ -342,6 +345,10 @@ def search(
                         break
             if not accepted:
                 source = choose_rejected_source(stage, answer["evaluated_candidates"], ceiling, config)
+                safety_only = False
+                if source is None and reserve_feedback is not None:
+                    source = reserve_feedback.choose(stage, answer["evaluated_candidates"], ceiling, config)
+                    safety_only = source is not None
                 if source is not None:
                     source_index = source["response_index"]
                     observed_safety, observed_q = _outputs(answer["evaluated_candidates"][source_index])
@@ -350,17 +357,19 @@ def search(
                     Js, safety_update = causal_secant_update(
                         Js, feedback_step.ravel(), observed_safety - anchor_safety, sp, config
                     )
-                    Jq, pose_update = causal_secant_update(
-                        Jq, feedback_step.ravel(), observed_q - anchor_q, qp_periods, config
-                    )
-                    Je, error_update = causal_secant_update(
-                        Je,
-                        feedback_step.ravel(),
-                        normalized_error_vector(answer["evaluated_candidates"][source_index])
-                        - normalized_error_vector(anchor),
-                        error_periods,
-                        config,
-                    )
+                    pose_update, error_update = None, None
+                    if not safety_only:
+                        Jq, pose_update = causal_secant_update(
+                            Jq, feedback_step.ravel(), observed_q - anchor_q, qp_periods, config
+                        )
+                        Je, error_update = causal_secant_update(
+                            Je,
+                            feedback_step.ravel(),
+                            normalized_error_vector(answer["evaluated_candidates"][source_index])
+                            - normalized_error_vector(anchor),
+                            error_periods,
+                            config,
+                        )
                     stage["rejected_update"] = dict(
                         source_response_index=source_index,
                         alpha=source["alpha"],
@@ -369,6 +378,8 @@ def search(
                         pose=pose_update,
                         error_vector=error_update,
                     )
+                    if safety_only:
+                        stage["rejected_update"]["kind"] = "reserve_safety_only"
                     answer["rejected_update_count"] += 1
                 radius *= 0.5
                 if stage["termination"] is None:

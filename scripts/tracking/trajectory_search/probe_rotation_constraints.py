@@ -85,12 +85,16 @@ def reconstruct_models(answer, stencil, stop):
             continue
         observed = answer["evaluated_candidates"][source]
         step = (np.asarray(observed["commands"]) - np.asarray(origin["commands"])).ravel()
+        safety_only = (
+            stage["accepted_response_index"] is None and stage["rejected_update"].get("kind") == "reserve_safety_only"
+        )
         for key, change, periods in [
             ("Js", np.asarray(observed["safety_slack"]) - np.asarray(origin["safety_slack"]), sp),
             ("Jq", _pose(observed) - _pose(origin), pp),
             ("Je", _error(observed) - _error(origin), ep),
         ]:
-            models[key], _ = _causal_update(models[key], step, change, periods, answer["config"])
+            if not safety_only or key == "Js":
+                models[key], _ = _causal_update(models[key], step, change, periods, answer["config"])
     return models
 
 

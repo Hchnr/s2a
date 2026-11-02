@@ -73,10 +73,18 @@ def audit_search(
     objective=None,
     domain_reference=None,
     preserve_pose_reserve=False,
+    reserve_safety_feedback=False,
 ):
     """Audit the entire saved state machine; scientific search failure may pass."""
     policy = SumQAuditPolicy() if objective is None else objective
     validate_config(config)
+    if reserve_safety_feedback:
+        require(
+            answer.get("reserve_feedback_policy") == "safe_reserve_rejection_minimum_alpha_safety_only",
+            "Explicit safety-only reserve feedback policy",
+        )
+    else:
+        require("reserve_feedback_policy" not in answer, "No unaudited reserve feedback policy")
     if preserve_pose_reserve:
         require(
             answer.get("pose_acceptance_policy") == "pose_reserve_at_least_original_entry_fraction",
@@ -375,6 +383,29 @@ def audit_search(
                 ):
                     eligible.append((attempt["alpha"], ri, step))
         chosen = min(eligible, key=lambda row: (row[0], row[1])) if eligible else None
+        safety_only = False
+        if chosen is None and accepted is None and reserve_safety_feedback and mode == "pose":
+            reserve_eligible = []
+            for attempt in attempts:
+                ri = attempt["response_index"]
+                if (
+                    ri is None
+                    or attempt["accepted"]
+                    or attempt["acceptance_reason"] != "pose_reserve_below_entry"
+                    or not (attempt["predicted_metrics"]["reserve"] >= config["reserve_entry_fraction"])
+                ):
+                    continue
+                step = array(attempt["actual_step"], "actual reserve-rejection step", (12, 6)).ravel()
+                if (
+                    original_safe(ri)
+                    and np.all(squared[ri] <= pose_ceiling)
+                    and np.any(step != 0)
+                    and np.sum(step**2) >= config["secant_min_squared_step"]
+                    and all_metrics[ri]["reserve"] < config["reserve_entry_fraction"]
+                ):
+                    reserve_eligible.append((attempt["alpha"], ri, step))
+            chosen = min(reserve_eligible, key=lambda row: (row[0], row[1])) if reserve_eligible else None
+            safety_only = chosen is not None
         rejected_update = stage["rejected_update"]
         if chosen is None:
             require(rejected_update is None, "No rejected-response update outside the fixed eligible set")
@@ -383,7 +414,10 @@ def audit_search(
             require(
                 isinstance(rejected_update, dict)
                 and set(rejected_update)
-                == {"source_response_index", "alpha", "step", "safety", "pose", "error_vector"},
+                == (
+                    {"source_response_index", "alpha", "step", "safety", "pose", "error_vector"}
+                    | ({"kind"} if safety_only else set())
+                ),
                 "Complete rejected-response update",
             )
             integer(rejected_update["source_response_index"], ri, "Independently selected minimum-alpha safe rejection")
@@ -397,15 +431,25 @@ def audit_search(
                 array(rejected_update["step"], "feedback step", (12, 6)).ravel(),
             )
             new_Js, safety_update = _causal_update(Js, step, safety[ri] - safety[anchor], safety_periods, config)
-            new_Jq, pose_update = _causal_update(Jq, step, squared[ri] - squared[anchor], pose_periods, config)
-            new_Je, error_update = _causal_update(
-                Je, step, error_vectors[ri] - error_vectors[anchor], error_periods, config
-            )
-            _update_binding("rejected safety causal secant", safety_update, rejected_update["safety"], compare)
-            _update_binding("rejected pose causal secant", pose_update, rejected_update["pose"], compare)
-            _update_binding(
-                "rejected error-vector causal secant", error_update, rejected_update["error_vector"], compare
-            )
+            if safety_only:
+                require(
+                    rejected_update["kind"] == "reserve_safety_only"
+                    and rejected_update["pose"] is None
+                    and rejected_update["error_vector"] is None,
+                    "Safety-only feedback cannot update pose/error models",
+                )
+                new_Jq, new_Je = Jq, Je
+                _update_binding("rejected safety causal secant", safety_update, rejected_update["safety"], compare)
+            else:
+                new_Jq, pose_update = _causal_update(Jq, step, squared[ri] - squared[anchor], pose_periods, config)
+                new_Je, error_update = _causal_update(
+                    Je, step, error_vectors[ri] - error_vectors[anchor], error_periods, config
+                )
+                _update_binding("rejected safety causal secant", safety_update, rejected_update["safety"], compare)
+                _update_binding("rejected pose causal secant", pose_update, rejected_update["pose"], compare)
+                _update_binding(
+                    "rejected error-vector causal secant", error_update, rejected_update["error_vector"], compare
+                )
             Js, Jq, Je = new_Js, new_Jq, new_Je
             rejected_sources.append(ri)
         compare("actual radius update", new_radius, stage["radius_after"])

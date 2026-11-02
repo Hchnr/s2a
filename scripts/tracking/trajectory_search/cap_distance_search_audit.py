@@ -29,6 +29,7 @@ def audit_cap_search(
     *,
     domain_reference=None,
     preserve_pose_reserve=False,
+    reserve_safety_feedback=False,
     objective_audit=None,
 ):
     """Retain every original gate, then bind the additional solver-scale record."""
@@ -47,6 +48,7 @@ def audit_cap_search(
         objective=policy,
         domain_reference=domain_reference,
         preserve_pose_reserve=preserve_pose_reserve,
+        reserve_safety_feedback=reserve_safety_feedback,
     )
     require(answer["qp_objective_scaling_policy"] == QP_OBJECTIVE_SCALING_POLICY, "Whole-objective scaling policy")
     require(answer["dual_recovery_policy"] == DUAL_RECOVERY_POLICY, "Pose-only restricted recovery policy")
@@ -95,8 +97,13 @@ def audit_cap_search(
             observed = entries[source]
             step = (np.asarray(observed["commands"]) - x).ravel()
             Js, _ = _causal_update(Js, step, np.asarray(observed["safety_slack"]) - safety, safety_periods, config)
-            Jq, _ = _causal_update(Jq, step, _pose(observed) - squared, pose_periods, config)
-            Je, _ = _causal_update(Je, step, _error(observed) - error, error_periods, config)
+            safety_only = (
+                stage["accepted_response_index"] is None
+                and stage["rejected_update"].get("kind") == "reserve_safety_only"
+            )
+            if not safety_only:
+                Jq, _ = _causal_update(Jq, step, _pose(observed) - squared, pose_periods, config)
+                Je, _ = _causal_update(Je, step, _error(observed) - error, error_periods, config)
     return dict(
         **checked,
         qp_objective_scaling_policy=QP_OBJECTIVE_SCALING_POLICY,
