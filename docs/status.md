@@ -231,6 +231,12 @@ reserve无restore但只接纳1步，后续安全reserve拒绝未满足原反馈�
 保留旧默认和原门；见[后验核查](../reports/tracking/trajectory_search/reserve_rejection_shadow_20261102.md)
 与[下限对齐设计](../plans/v0.0.1/tracking/trajectory_search/reserve_aligned_floor_design_20261102.md)。
 
+pose下限对齐策略已实现并完整验证一次新方向：1QP/1NNLS、14响应/4200内步/
+4370查询，43项最终专项通过，旧默认55QP/122响应回放完整答案SHA保持。
+首个原规则合格步alpha .5下降1.88e-4、reserve1.056（旧对应步.855），无需立即
+restore；但全部caps仍12/24、witness0。下一步另登记有限连续迭代验证，不能用
+单步效果宣称解决停滞；见[下限对齐新方向报告](../reports/tracking/trajectory_search/aligned_cap_distance_probe_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
