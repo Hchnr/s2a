@@ -174,6 +174,12 @@ sum-q路径与闭合原基线完整软件回放同值，没有新增研究运行
 未下发候选。下一步验证因果安全模型局部修正及新方向，原门槛保持；见
 [局部性报告](../reports/tracking/trajectory_search/rotation_direction_locality_20261102.md)。
 
+一次原有因果安全更新在保存的小尺度样本上改善预测，独立实现逐值一致；但随后
+新方向完整复算仍不安全：min slack=-5.50e-6，caps13/24、prefix2、witness0。
+实际1QP/1NNLS及生产/独立各3响应（共6/1800内步/1874查询），46项专项通过，
+未下发候选。秩一修正不保证其他方向安全，下一步需判别新方向局部失配与大步
+误差；见[修正探针报告](../reports/tracking/trajectory_search/corrected_rotation_probe_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
