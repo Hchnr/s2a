@@ -133,3 +133,62 @@ def test_safety_feedback_policy_and_budget_drift_rejected(field):
     spec[field] = "all_three_models" if field == "reserve_feedback_policy" else spec[field] + 1
     with pytest.raises(ValueError):
         validate_spec(spec, original, aligned_floor=True, safety_feedback=True)
+
+
+def small_progress_specification():
+    spec = json.loads(
+        (
+            Path(__file__).resolve().parents[3]
+            / "configs/tracking/trajectory_search/small_progress_search_20261102.json"
+        ).read_text()
+    )
+    original = deepcopy(spec["search_config"])
+    for key in ["minimum_predicted_reduction", "minimum_actual_reduction"]:
+        original[key] = 1e-4
+    return spec, original
+
+
+def test_small_progress_changes_only_two_algorithm_fields_without_mutating_original():
+    from scripts.tracking.trajectory_search.check_reserve_entry_search import registered_config
+
+    spec, original = small_progress_specification()
+    before = deepcopy(original)
+    validate_spec(spec, original, aligned_floor=True, safety_feedback=True, progress_floor=1e-5)
+    actual = registered_config(original, 1e-5)
+    assert {k for k in original if actual[k] != original[k]} == {
+        "minimum_predicted_reduction",
+        "minimum_actual_reduction",
+    }
+    assert original == before and actual == spec["search_config"]
+    assert registered_config(original) == original
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        "safety_buffer",
+        "reserve_entry_fraction",
+        "global_displacement_limit",
+        "max_responses",
+        "minimum_predicted_reduction",
+        "minimum_actual_reduction",
+        "progress_policy",
+        "flag",
+        "floor_value",
+    ],
+)
+def test_small_progress_rejects_non_whitelisted_or_partial_changes(fault):
+    spec, original = small_progress_specification()
+    floor = 1e-5
+    if fault == "progress_policy":
+        spec[fault] = "unregistered"
+    elif fault == "flag":
+        floor = None
+    elif fault == "floor_value":
+        floor = 1e-6
+    elif fault == "minimum_actual_reduction":
+        spec["search_config"][fault] = 1e-4
+    else:
+        spec["search_config"][fault] *= 2
+    with pytest.raises(ValueError):
+        validate_spec(spec, original, aligned_floor=True, safety_feedback=True, progress_floor=floor)

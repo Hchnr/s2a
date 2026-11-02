@@ -38,15 +38,37 @@ QA = REPO / "outputs/qa/reserve_entry_search_final_20261102/result.json"
 ROOT = REPO / "outputs/reserve_entry_search_20261102"
 
 
-def validate_spec(spec, original, *, aligned_floor=False, safety_feedback=False):
+def registered_arms(aligned_floor=False, safety_feedback=False, progress_floor=None):
+    require(not safety_feedback or aligned_floor, "Registered feedback constraint mode")
+    if progress_floor is not None:
+        require(
+            progress_floor == 1e-5 and aligned_floor and safety_feedback, "Only the fixed two-field progress variant"
+        )
+        return ["small_progress"]
+    return ["safety_feedback"] if safety_feedback else (["aligned"] if aligned_floor else ["baseline", "reserve"])
+
+
+def registered_config(original, progress_floor=None):
+    config = copy.deepcopy(original)
+    if progress_floor is not None:
+        require(progress_floor == 1e-5, "Fixed progress floor")
+        for key in ("minimum_predicted_reduction", "minimum_actual_reduction"):
+            require(original[key] == 1e-4, "Original progress floor identity")
+            config[key] = progress_floor
+    return config
+
+
+def validate_spec(spec, original, *, aligned_floor=False, safety_feedback=False, progress_floor=None):
     require(not safety_feedback or aligned_floor, "Safety feedback uses the aligned constraint registration")
     expected = dict(
-        experiment="reserve_safety_search"
+        experiment="small_progress_search"
+        if progress_floor is not None
+        else "reserve_safety_search"
         if safety_feedback
         else ("aligned_reserve_search" if aligned_floor else "reserve_entry_search"),
         seed=42,
-        arms=["safety_feedback"] if safety_feedback else (["aligned"] if aligned_floor else ["baseline", "reserve"]),
-        search_config=original,
+        arms=registered_arms(aligned_floor, safety_feedback, progress_floor),
+        search_config=registered_config(original, progress_floor),
         producer_response_budget_per_arm=122,
         independent_response_budget_per_arm=122,
         total_response_budget=244 if aligned_floor else 488,
@@ -66,6 +88,8 @@ def validate_spec(spec, original, *, aligned_floor=False, safety_feedback=False)
         expected["problem_policy"] = ALIGNED_POLICY
     if safety_feedback:
         expected["reserve_feedback_policy"] = SAFETY_FEEDBACK_POLICY
+    if progress_floor is not None:
+        expected["progress_policy"] = "minimum_cap_decrease_1e_5"
     require(
         spec == expected and original["max_stages"] == 60 and original["max_responses"] == 122,
         "Fixed matched arms, original config and all finite budgets",
@@ -94,15 +118,18 @@ def native_metric_entry(entry, rollout, metric):
 
 
 def main(
-    arm, *, config_path=CONFIG, plan_path=PLAN, qa_path=QA, output_root=ROOT, aligned_floor=False, safety_feedback=False
+    arm,
+    *,
+    config_path=CONFIG,
+    plan_path=PLAN,
+    qa_path=QA,
+    output_root=ROOT,
+    aligned_floor=False,
+    safety_feedback=False,
+    progress_floor=None,
 ):
     phase_deadline(300)
-    require(not safety_feedback or aligned_floor, "Registered feedback constraint mode")
-    require(
-        arm
-        in (("safety_feedback",) if safety_feedback else (("aligned",) if aligned_floor else ("baseline", "reserve"))),
-        "Explicit registered arm",
-    )
+    require(arm in registered_arms(aligned_floor, safety_feedback, progress_floor), "Explicit registered arm")
     spec = read(reference(config_path))
     output = output_root / arm
     runtime = ResponseProbeRuntime(output, qa_path)
@@ -112,17 +139,14 @@ def main(
     )
     cap = runtime.load(prior["producer_final_ref"])["answer"]
     cfg = spec["search_config"]
-    validate_spec(spec, cap["config"], aligned_floor=aligned_floor, safety_feedback=safety_feedback)
-    require(
-        cfg == cap["config"] and cfg["max_stages"] == 60 and cfg["max_responses"] == 122,
-        "Exact matched original config",
+    validate_spec(
+        spec, cap["config"], aligned_floor=aligned_floor, safety_feedback=safety_feedback, progress_floor=progress_floor
     )
     require(
-        spec["arms"]
-        == (["safety_feedback"] if safety_feedback else (["aligned"] if aligned_floor else ["baseline", "reserve"]))
-        and spec["seed"] == 42
-        and not spec["automatic_retry"],
-        "Fixed arms and seed",
+        cfg == registered_config(cap["config"], progress_floor)
+        and cfg["max_stages"] == 60
+        and cfg["max_responses"] == 122,
+        "Exact matched original config",
     )
     qualified = runtime.load(
         reference(REPO / "outputs/anchor85_coupled_stencil_20261102/result.json"),
