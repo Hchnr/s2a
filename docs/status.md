@@ -198,6 +198,13 @@ anchor85的±1e-4单轴探针只能通过64/72轴原command门；固定连续区
 实际局部模型重建或控制资格。下一步先登记并行采集/独立审核预算再执行；见
 [采样域报告](../reports/tracking/trajectory_search/anchor85_sampling_domain_20261102.md)。
 
+anchor85的72联动探针已实际采集并独立复算：148响应/44400内步/46209查询、
+33model，32不同worker均exit0且回收；31项专项通过。Js/Jq/Je新模型及独立正规
+方程重建通过原1e-10审核，完整响应/anchor/repeat逐值一致。13个非线性不安全
+数值探针如实保留，未下发。已见联合alpha .25方向安全预测误差由3.80e-5降至
+8.50e-8，但该后验比较不授予新方向资格。下一步用新模型生成完整目标方向并另行
+验证；见[联动局部模型报告](../reports/tracking/trajectory_search/anchor85_coupled_stencil_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
