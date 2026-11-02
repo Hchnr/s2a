@@ -224,6 +224,13 @@ reserve无restore但只接纳1步，后续安全reserve拒绝未满足原反馈�
 因此不采用为优胜默认；下一步核查这些已付费拒绝数据的模型校正作用。40项最终
 专项通过，所有进程回收；见[实际有限对照报告](../reports/tracking/trajectory_search/reserve_entry_search_20261102.md)。
 
+后验检查不支持盲目增加reserve拒绝反馈：最小安全拒绝样本原Js误差仅2.81e-8，
+秩一更新未稳定改善其他尺度。更直接的是原pose QP只保留半数reserve，而实际
+接纳要求.9；24个reserve拒绝的模型预测均已低于该门。停滞anchor .928585时，
+最小alpha .0625预测.899566，半径缩小仍贴原下限。下一步显式对齐QP与接纳条件，
+保留旧默认和原门；见[后验核查](../reports/tracking/trajectory_search/reserve_rejection_shadow_20261102.md)
+与[下限对齐设计](../plans/v0.0.1/tracking/trajectory_search/reserve_aligned_floor_design_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
