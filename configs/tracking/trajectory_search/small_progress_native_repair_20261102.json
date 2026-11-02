@@ -1,0 +1,13 @@
+{
+  "seed": 42,
+  "source_result_sha256": "844c4e05a24b41dda33e36aac180bb421afa73e63f88f8eb70b213615f6e4c5a",
+  "source_production_responses": 36,
+  "new_independent_responses": 36,
+  "new_query_budget": 11233,
+  "new_inner_step_budget": 10800,
+  "new_model_budget": 1,
+  "new_qp_budget": 0,
+  "new_nnls_budget": 0,
+  "timeout_seconds": 1200,
+  "automatic_retry": false
+}
