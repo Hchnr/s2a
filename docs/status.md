@@ -244,6 +244,13 @@ reserve .911682，仍caps12/24、witness0，radius到下限。新费用44双侧�
 .9088而实际.8901，下一步核查当前安全拒绝的临界模型误差/校正，不能复用旧结构
 不一致解释。见[连续迭代报告](../reports/tracking/trajectory_search/aligned_reserve_search_20261102.md)。
 
+对齐后stage5的最小安全reserve拒绝response13用于后验更新时，独立实现逐值一致；
+同方向未拟合alpha .5的Js最大误差由3.90e-6降至2.50e-8，其他已见方向也有不同
+程度改善，但仍有reserve假阳性，Jq在最远方向变差。0新响应/查询，未改旧接纳。
+下一步仅隔离Js安全反馈，保留Jq/Je及完整实际门，不把后验改善提升为新方向资格；
+见[后验校正报告](../reports/tracking/trajectory_search/aligned_rejection_shadow_20261102.md)
+与[安全反馈设计](../plans/v0.0.1/tracking/trajectory_search/reserve_safety_feedback_design_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
