@@ -135,6 +135,11 @@ pytest全绿。目录、身份及本轮读取回归验收不授予所有历史�
 Jacobian存储布局影响，下一步核查dot/@路径。失败、额外成本和5项专项测试见
 [完整响应报告](../reports/tracking/trajectory_search/native_replay_response_contract_20261102.md)。
 
+最新v4已在固定四条命令上得到与独立回放完全同值的完整H12响应：修正任务
+dot/@并在采样时保留J布局，响应及独立指标最大差0，13项专项通过。
+仍须重新验证新预测器初始化/有限差分探针并执行同预测器对照；没有新增物理
+资格。来源、实际成本及边界见[布局契约报告](../reports/tracking/trajectory_search/native_replay_layout_contract_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
