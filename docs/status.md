@@ -150,6 +150,11 @@ caps、prefix9、witness0；未获得物理资格。61项专项通过，下一�
 同预测器cap-distance对照。费用与边界见
 [sum-q报告](../reports/tracking/trajectory_search/replay_order_sumq_20261102.md)。
 
+Cap-distance目标与显式objective共享驱动已实现，58项专项通过；共享驱动的
+sum-q路径与闭合原基线完整软件回放同值，没有新增研究运行。浮点边界的有理化
+求值已另行固定。下一步完成独立cap审核并冻结执行配置；见
+[实现报告](../reports/tracking/trajectory_search/cap_distance_implementation_20261102.md)。
+
 迁移前实现阶段的专项、样式及真实输入记录见
 [实现准入报告](../reports/tracking/trajectory_search/state_vector_dual_recovery_implementation_20261029.md)。
 最终源码的Ruff/format、结构、导入图、179项修复复核、兼容环境40项和两真实
