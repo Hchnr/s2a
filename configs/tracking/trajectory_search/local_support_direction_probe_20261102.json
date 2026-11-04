@@ -1,0 +1,18 @@
+{
+  "seed": 42,
+  "source_lp_sha256": "6ff37e4cf90c1763cdffe0c961c6078c8838371351909f9b38b1470a2630b09b",
+  "anchor_index": 23,
+  "group": 23,
+  "reserve_fraction": 0.9,
+  "alphas": [1.0, 0.5, 0.25],
+  "response_count_per_side": 5,
+  "total_response_budget": 10,
+  "total_inner_step_budget": 3000,
+  "total_query_budget": 3122,
+  "model_budget": 2,
+  "new_lp_budget": 0,
+  "new_qp_budget": 0,
+  "new_nnls_budget": 0,
+  "timeout_seconds": 600,
+  "automatic_retry": false
+}

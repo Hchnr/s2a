@@ -1,0 +1,15 @@
+{
+  "seed": 42,
+  "stage_indices": [9, 10, 11],
+  "anchor_index": 18,
+  "response_count_per_side": 5,
+  "total_response_budget": 10,
+  "total_inner_step_budget": 3000,
+  "total_query_budget": 3122,
+  "model_budget": 2,
+  "qp_budget": 0,
+  "nnls_fit_budget": 0,
+  "new_model_fits": 0,
+  "timeout_seconds": 600,
+  "automatic_retry": false
+}

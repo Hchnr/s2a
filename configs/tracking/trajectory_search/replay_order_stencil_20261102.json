@@ -1,0 +1,16 @@
+{
+  "experiment": "replay_order_stencil",
+  "seed": 42,
+  "jobs": 32,
+  "production_responses": 74,
+  "independent_responses": 74,
+  "response_budget": 148,
+  "inner_step_budget": 44400,
+  "query_budget": 46209,
+  "model_budget": 33,
+  "nominal_probe_magnitude": 0.0001,
+  "tool_policy": "native_solve",
+  "automatic_retry": false,
+  "physics_steps": 0,
+  "world_model_calls": 0
+}

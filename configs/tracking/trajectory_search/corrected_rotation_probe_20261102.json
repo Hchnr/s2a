@@ -1,0 +1,14 @@
+{
+  "seed": 42,
+  "fit_index": 5,
+  "radius": 0.005,
+  "qp_budget": 1,
+  "qp_iteration_budget": 100,
+  "nnls_fit_budget": 1,
+  "response_count_per_side": 3,
+  "total_query_budget": 1874,
+  "total_inner_step_budget": 1800,
+  "model_budget": 2,
+  "timeout_seconds": 600,
+  "automatic_retry": false
+}

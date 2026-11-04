@@ -1,0 +1,13 @@
+{
+  "seed": 42,
+  "anchor_indices": [0, 23],
+  "reserve_fractions": [0.0, 0.9],
+  "lp_budget": 48,
+  "lp_time_limit_seconds": 10,
+  "lp_max_iterations": 10000,
+  "certificate_tolerance": 1e-8,
+  "owner_timeout_seconds": 1200,
+  "automatic_retry": false,
+  "new_response_budget": 0,
+  "new_model_budget": 0
+}

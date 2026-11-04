@@ -1,0 +1,194 @@
+"""Finite paired budgets and independent native decision fields cannot drift."""
+
+import json
+from copy import deepcopy
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from scripts.tracking.trajectory_search.check_reserve_entry_search import native_metric_entry, validate_spec
+from tests.research.trajectory_search.test_state_vector_gn_search import entry
+
+
+def specification():
+    return json.loads(
+        (
+            Path(__file__).resolve().parents[3]
+            / "configs/tracking/trajectory_search/reserve_entry_search_20261102.json"
+        ).read_text()
+    )
+
+
+def test_actual_registered_specification_is_finite_and_matches_original_config():
+    spec = specification()
+    validate_spec(spec, spec["search_config"])
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "total_response_budget",
+        "total_query_budget",
+        "qp_budget_per_arm",
+        "model_budget",
+        "owner_timeout_seconds",
+        "automatic_retry",
+    ],
+)
+def test_budget_or_restart_drift_rejected(field):
+    spec = specification()
+    original = deepcopy(spec["search_config"])
+    spec[field] = True if field == "automatic_retry" else spec[field] + 1
+    with pytest.raises(ValueError):
+        validate_spec(spec, original)
+
+
+def native_case():
+    e = entry(np.zeros((12, 6)), np.zeros(72))
+    metric = {
+        k: deepcopy(e[k])
+        for k in [
+            "safety_slack",
+            "tcp_errors",
+            "normalized_squared_errors",
+            "feasible",
+            "prefix_length",
+            "maximum_normalized_squared_error",
+            "maximum_pose_cap_violation",
+            "pose_loss",
+        ]
+    }
+    metric["joint_feasible"] = e["audit"]["feasible"]
+    return e, metric
+
+
+def test_native_fields_are_copied_without_aliasing_production_or_metric_arrays():
+    e, m = native_case()
+    rollout = dict(trace=123)
+    rebuilt = native_metric_entry(e, rollout, m)
+    assert rebuilt["rollout"] is rollout
+    m["tcp_errors"][0, 0] = 9
+    assert rebuilt["tcp_errors"][0, 0] == e["tcp_errors"][0, 0] == 0
+
+
+@pytest.mark.parametrize("field", ["safety_slack", "tcp_errors", "joint_feasible"])
+def test_any_native_decision_drift_fails_exact_gate(field):
+    e, m = native_case()
+    if field == "joint_feasible":
+        m[field] = False
+    else:
+        m[field].flat[0] += 1e-14
+    with pytest.raises(ValueError):
+        native_metric_entry(e, dict(trace=0), m)
+
+
+def aligned_specification():
+    return json.loads(
+        (
+            Path(__file__).resolve().parents[3]
+            / "configs/tracking/trajectory_search/aligned_reserve_search_20261102.json"
+        ).read_text()
+    )
+
+
+def test_aligned_arm_requires_explicit_mode_and_its_own_fixed_budget():
+    spec = aligned_specification()
+    validate_spec(spec, spec["search_config"], aligned_floor=True)
+    with pytest.raises(ValueError):
+        validate_spec(spec, spec["search_config"])
+
+
+@pytest.mark.parametrize("field", ["problem_policy", "total_response_budget", "model_budget"])
+def test_aligned_arm_policy_or_budget_drift_is_rejected(field):
+    spec = aligned_specification()
+    original = deepcopy(spec["search_config"])
+    spec[field] = "old_half_reserve_floor" if field == "problem_policy" else spec[field] + 1
+    with pytest.raises(ValueError):
+        validate_spec(spec, original, aligned_floor=True)
+
+
+def safety_specification():
+    return json.loads(
+        (
+            Path(__file__).resolve().parents[3]
+            / "configs/tracking/trajectory_search/reserve_safety_search_20261102.json"
+        ).read_text()
+    )
+
+
+def test_safety_feedback_registration_requires_explicit_feedback_and_aligned_mode():
+    spec = safety_specification()
+    validate_spec(spec, spec["search_config"], aligned_floor=True, safety_feedback=True)
+    with pytest.raises(ValueError):
+        validate_spec(spec, spec["search_config"], aligned_floor=True)
+    with pytest.raises(ValueError):
+        validate_spec(spec, spec["search_config"], safety_feedback=True)
+
+
+@pytest.mark.parametrize("field", ["reserve_feedback_policy", "total_response_budget", "model_budget"])
+def test_safety_feedback_policy_and_budget_drift_rejected(field):
+    spec = safety_specification()
+    original = deepcopy(spec["search_config"])
+    spec[field] = "all_three_models" if field == "reserve_feedback_policy" else spec[field] + 1
+    with pytest.raises(ValueError):
+        validate_spec(spec, original, aligned_floor=True, safety_feedback=True)
+
+
+def small_progress_specification():
+    spec = json.loads(
+        (
+            Path(__file__).resolve().parents[3]
+            / "configs/tracking/trajectory_search/small_progress_search_20261102.json"
+        ).read_text()
+    )
+    original = deepcopy(spec["search_config"])
+    for key in ["minimum_predicted_reduction", "minimum_actual_reduction"]:
+        original[key] = 1e-4
+    return spec, original
+
+
+def test_small_progress_changes_only_two_algorithm_fields_without_mutating_original():
+    from scripts.tracking.trajectory_search.check_reserve_entry_search import registered_config
+
+    spec, original = small_progress_specification()
+    before = deepcopy(original)
+    validate_spec(spec, original, aligned_floor=True, safety_feedback=True, progress_floor=1e-5)
+    actual = registered_config(original, 1e-5)
+    assert {k for k in original if actual[k] != original[k]} == {
+        "minimum_predicted_reduction",
+        "minimum_actual_reduction",
+    }
+    assert original == before and actual == spec["search_config"]
+    assert registered_config(original) == original
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        "safety_buffer",
+        "reserve_entry_fraction",
+        "global_displacement_limit",
+        "max_responses",
+        "minimum_predicted_reduction",
+        "minimum_actual_reduction",
+        "progress_policy",
+        "flag",
+        "floor_value",
+    ],
+)
+def test_small_progress_rejects_non_whitelisted_or_partial_changes(fault):
+    spec, original = small_progress_specification()
+    floor = 1e-5
+    if fault == "progress_policy":
+        spec[fault] = "unregistered"
+    elif fault == "flag":
+        floor = None
+    elif fault == "floor_value":
+        floor = 1e-6
+    elif fault == "minimum_actual_reduction":
+        spec["search_config"][fault] = 1e-4
+    else:
+        spec["search_config"][fault] *= 2
+    with pytest.raises(ValueError):
+        validate_spec(spec, original, aligned_floor=True, safety_feedback=True, progress_floor=floor)

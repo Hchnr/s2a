@@ -1,0 +1,12 @@
+{
+  "seed": 42,
+  "max_evaluations": 320,
+  "max_iterations": 4,
+  "maximum_responses_per_side": 321,
+  "total_response_budget": 642,
+  "total_inner_step_budget": 192600,
+  "total_query_budget": 200306,
+  "model_budget": 2,
+  "timeout_seconds": 1800,
+  "automatic_retry": false
+}
