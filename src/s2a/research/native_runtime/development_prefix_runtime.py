@@ -13,6 +13,7 @@ import numpy as np
 from s2a.research.native_runtime import bootstrap
 from s2a.research.native_runtime.bootstrap_v2 import _private_asset_records
 from s2a.research.native_runtime.development_prefix_replay import ReplayObservers, replay_saved_prefix
+from s2a.research.native_runtime.final_prefix_inner import FinalPrefixInner
 
 
 class PrefixReplayFailure(RuntimeError):
@@ -50,6 +51,7 @@ def run_prefix_runtime(
     continuation_limit=8,
     progress=None,
     registered_seed=43,
+    capture_final_prefix_inner=False,
 ):
     """Use only a saved prefix; failed stages and partial integration remain visible."""
     count = len(commands)
@@ -57,6 +59,7 @@ def run_prefix_runtime(
         type(continuation_limit) is not int
         or continuation_limit not in (8, 16)
         or type(continuation_budget) is not int
+        or type(capture_final_prefix_inner) is not bool
         or (continuation is None and continuation_budget != 0)
         or (continuation is not None and not 0 < continuation_budget <= continuation_limit)
     ):
@@ -85,6 +88,9 @@ def run_prefix_runtime(
         "cleanup_complete": False,
     }
     output = Path(output)
+    prefix_inner = FinalPrefixInner(count) if capture_final_prefix_inner else None
+    if prefix_inner is not None:
+        receipt["final_prefix_inner_partial"] = prefix_inner.samples
     env, partial = None, None
     stage = "admission"
     active, closing = [False], [False]
@@ -216,7 +222,10 @@ def run_prefix_runtime(
                     bootstrap._require(
                         stage in ("replay", "continuation") and not closing[0], "Integration outside registered work"
                     )
-                    return counted(_name, _original, *args, **kwargs)
+                    value = counted(_name, _original, *args, **kwargs)
+                    if _name == "mj_step" and stage == "replay" and prefix_inner is not None:
+                        prefix_inner.observe(env, receipt.get("control_steps_completed", 0))
+                    return value
 
                 bootstrap._patch(stack, runtime.mujoco, name, step)
             for cls in (runtime.env_class, runtime.env_base_class):
@@ -304,6 +313,9 @@ def run_prefix_runtime(
                 progress=progress,
             )
             receipt["prefix_control_steps"] = count
+            if prefix_inner is not None:
+                receipt["final_prefix_inner"] = prefix_inner.finish()
+                receipt.pop("final_prefix_inner_partial", None)
             if continuation is not None:
                 bootstrap._require(bool(terminal), "Terminal endpoint must be captured before continuation")
                 stage = "continuation"

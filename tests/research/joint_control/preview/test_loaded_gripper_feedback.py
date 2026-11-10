@@ -63,7 +63,7 @@ class FakeHistory:
         return {"steps": list(self.steps)}
 
 
-def fixture(*, reject=False):
+def fixture(*, reject=False, initial_inner_loss=False):
     env, arm, gripper, history, receipt = object(), FakeArm(reject=reject), FakeGripper(), FakeHistory(), {}
     policy = LoadedGripperFeedback(
         env,
@@ -78,6 +78,7 @@ def fixture(*, reject=False):
         receipt,
         dynamics_reader=lambda _env, _jac: (np.eye(7), np.zeros(7), np.eye(4)),
         gripper_reader=lambda _env: {"opening": 0.9, "motor": np.zeros(2), "period_velocity": 0.0},
+        initial_inner_loss=initial_inner_loss,
     )
     return env, policy, arm, gripper, history, receipt
 
@@ -122,3 +123,10 @@ def test_buffer_loss_stops_before_next_gripper_or_arm_proposal():
     policy.complete(env, first["command"], 0, inner)
     result = policy.select(np.zeros(7), limits, np.zeros((6, 7)), first["command"], 1)
     assert result["stop"]["reason"] == "observed_joint_buffer_loss" and gripper.commits == 1
+
+
+def test_final_prefix_inner_loss_blocks_first_new_action():
+    _env, policy, _arm, gripper, _history, receipt = fixture(initial_inner_loss=True)
+    result = policy.select(np.zeros(7), np.tile([-1.0, 1.0], (7, 1)), np.zeros((6, 7)), np.zeros(7), 0)
+    assert result["stop"]["reason"] == "observed_joint_buffer_loss"
+    assert gripper.commits == 0 and receipt["gripper_proposals"]["attempted"] == 0

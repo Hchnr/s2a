@@ -46,6 +46,7 @@ class LoadedGripperFeedback:
         *,
         dynamics_reader=current_robot_dynamics,
         gripper_reader=current_gripper_state,
+        initial_inner_loss=False,
     ):
         self.env, self.arm_policy, self.gripper, self.inner_history = env, arm_policy, gripper, inner_history
         self.poses, self.openings = np.asarray(poses, dtype=float).copy(), np.asarray(openings, dtype=float).copy()
@@ -62,11 +63,12 @@ class LoadedGripperFeedback:
             or not 0 <= cursor <= 32
             or type(start_step) is not int
             or start_step < 0
+            or type(initial_inner_loss) is not bool
         ):
             raise ValueError("One finite generated TCP/opening chunk and aligned cursor are required")
         self.cursor, self.start_step, self.receipt = cursor, start_step, receipt
         self.dynamics_reader, self.gripper_reader = dynamics_reader, gripper_reader
-        self.pending, self.last_inner_loss = None, False
+        self.pending, self.last_inner_loss = None, initial_inner_loss
         self.receipt["gripper_proposals"] = {
             "attempted": 0,
             "completed": 0,
