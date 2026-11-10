@@ -1,9 +1,22 @@
 """Check the selected reference and history on both reviewed development prefixes."""
 
+import subprocess
+import sys
+
 import numpy as np
 import pytest
 
 from scripts.simulation.runtime import run_combined_warning_feedback as run
+
+
+def test_checker_import_does_not_load_candidate_decision_modules():
+    code = (
+        "import sys; from scripts.simulation.runtime import run_combined_warning_feedback as x; "
+        "assert x.quality.QUALITY_MODULE not in sys.modules; "
+        "assert x.quality.baseline.POLICY_MODULE not in sys.modules; "
+        "assert x.quality.baseline.PREVIEW_MODULE not in sys.modules"
+    )
+    subprocess.run([sys.executable, "-c", code], check=True, capture_output=True, text=True)
 
 
 def test_real_inputs_end_at_first_warning_and_keep_only_completed_history():
