@@ -1,0 +1,108 @@
+"""Restored histories must represent a completed action and one current endpoint."""
+
+import numpy as np
+import pytest
+
+from s2a.research.joint_control.preview.completed_history import (
+    CompletedHistory,
+    recompute_completed_innovation,
+    restore_completed_history,
+    restore_recomputed_history,
+)
+
+
+def completed():
+    plan = np.array([[0.1, 0, 0, 0, 0, 0], [0.2, 0, 0, 0, 0, 0]])
+    return CompletedHistory(np.r_[plan[0], 0.0], np.arange(12), -np.arange(12), plan, 3)
+
+
+def test_restoration_uses_distinct_copies_and_shifted_completed_plan():
+    past = completed()
+    coupled, tracking = restore_completed_history(past, np.eye(4), np.zeros(6))
+    np.testing.assert_array_equal(coupled.current(np.eye(4), np.zeros(6)), np.arange(12))
+    np.testing.assert_array_equal(tracking.history.current(np.eye(4), np.zeros(6)), -np.arange(12))
+    np.testing.assert_array_equal(tracking.history.shifted(2), np.tile(past.last_plan[1], (2, 1)))
+    assert coupled.completed_periods == tracking.history.completed_periods == 3
+    assert tracking.phase == "ready" and tracking.history.pending_plan is None and coupled.pending is None
+    tracking.history.last_plan[0, 0] = 0.9
+    assert past.last_plan[0, 0] == 0.1
+    assert not past.last_plan.flags.writeable
+
+
+def test_history_rejects_unexecuted_first_command_and_infeasible_plan():
+    past = completed()
+    plan = past.last_plan.copy()
+    plan[0, 0] = 0.11
+    with pytest.raises(ValueError, match="actual previous command"):
+        CompletedHistory(past.previous_command, past.coupled_innovation, past.tracking_innovation, plan, 3)
+    plan = past.last_plan.copy()
+    plan[1, 0] = 0.9
+    with pytest.raises(ValueError, match="rate"):
+        CompletedHistory(past.previous_command, past.coupled_innovation, past.tracking_innovation, plan, 3)
+
+
+def test_restored_history_rejects_a_different_current_endpoint():
+    coupled, tracking = restore_completed_history(completed(), np.eye(4), np.zeros(6))
+    moved = np.eye(4)
+    moved[0, 3] = 0.1
+    with pytest.raises(ValueError, match="last completed"):
+        coupled.current(moved, np.zeros(6))
+    with pytest.raises(ValueError, match="last completed"):
+        tracking.history.current(moved, np.zeros(6))
+
+
+def test_completed_innovation_uses_measured_endpoint_and_prior_prediction():
+    previous = np.eye(4)
+    actual = np.eye(4)
+    actual[0, 3] = 0.03
+    prediction = np.zeros(12)
+    prediction[0] = 0.01
+    prediction[6] = 0.1
+    twist = np.zeros(6)
+    twist[0] = 0.3
+    innovation = recompute_completed_innovation(previous, np.zeros(6), prediction, actual, twist)
+    np.testing.assert_allclose(innovation[0], 0.02, atol=1e-12, rtol=0)
+    np.testing.assert_allclose(innovation[6], 0.01, atol=1e-12, rtol=0)
+
+
+def test_recomputed_restore_rejects_unexplained_saved_innovation():
+    plan = np.zeros((2, 6))
+    past = CompletedHistory(np.zeros(7), np.zeros(12), np.zeros(12), plan, 1)
+    coupled, tracking, difference = restore_recomputed_history(
+        past, np.eye(4), np.zeros(6), np.zeros(12), np.zeros(12), np.eye(4), np.zeros(6)
+    )
+    assert difference == {"coupled": 0.0, "tracking": 0.0}
+    assert coupled.pending is None and tracking.phase == "ready"
+    changed = np.zeros(12)
+    changed[0] = 1e-3
+    with pytest.raises(ValueError, match="innovations"):
+        restore_recomputed_history(past, np.eye(4), np.zeros(6), changed, np.zeros(12), np.eye(4), np.zeros(6))
+
+
+def test_restored_history_can_use_a_refiner_without_changing_completed_plan():
+    past = completed()
+    calls = []
+
+    def refiner(*args, **_kwargs):
+        calls.append(True)
+        plan = np.zeros((1, 6))
+        args[-1].stage_plan(plan)
+        return {"command": plan[0], "planned_commands": plan, "nominal_response": np.zeros(12)}
+
+    _, tracking = restore_completed_history(past, np.eye(4), np.zeros(6), refiner=refiner)
+    result = tracking.prepare(
+        None,
+        {},
+        np.eye(4),
+        np.zeros(6),
+        np.array([np.eye(4)]),
+        np.eye(4),
+        0,
+        np.zeros((1, 6)),
+        past.previous_command[:6],
+        {},
+        site_from_tcp=np.eye(4),
+    )
+    assert calls == [True]
+    np.testing.assert_array_equal(result["command"], np.zeros(6))
+    np.testing.assert_array_equal(past.last_plan, completed().last_plan)

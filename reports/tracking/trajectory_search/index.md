@@ -63,3 +63,7 @@
 | [轨迹目标实现准备](wam_trajectory_objective_20261025.md) | `reports/wam_trajectory_objective_20261025.md` |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。
+
+## 新增报告
+
+- [完整轨迹细化：两种命令域的 CPU 对照](whole_trajectory_refinement_20261110.md)

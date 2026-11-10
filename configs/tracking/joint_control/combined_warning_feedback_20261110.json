@@ -1,0 +1,31 @@
+{
+  "schema": "s2a.combined-warning-feedback.v1",
+  "cases": [
+    {"case_index": 2, "case_id": "task0_init0_s43_raw", "prefix_steps": 9, "chunk_index": 1, "cursor": 1, "target": "akita_black_bowl_1"},
+    {"case_index": 6, "case_id": "task1_init0_s43_raw", "prefix_steps": 9, "chunk_index": 1, "cursor": 1, "target": "wine_bottle_1"}
+  ],
+  "branches": ["original", "quality"],
+  "continuation_steps": 8,
+  "control_dt_s": 0.05,
+  "joint_buffer_rad": 0.05,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "arm_rate_limit": 0.25,
+  "braking_time_s": 0.1,
+  "absolute_comparison_tolerance": 1e-10,
+  "first_decision_tolerance": 1e-8,
+  "max_control_steps_per_phase": 68,
+  "max_native_steps_per_phase": 1700,
+  "max_models_per_phase": 12,
+  "max_contexts_per_phase": 12,
+  "max_refiner_calls_per_phase": 32,
+  "max_refiner_response_evaluations_per_phase": 15360,
+  "max_quality_calls_per_phase": 16,
+  "max_quality_response_evaluations_per_phase": 2560,
+  "max_audit_endpoint_queries_per_phase": 3200,
+  "max_audit_transition_steps_per_phase": 41600,
+  "worker_timeout_seconds": 1800,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

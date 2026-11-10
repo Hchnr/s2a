@@ -1,0 +1,715 @@
+"""Apply past-only quality feedback to the newly replanned reference."""
+
+import argparse
+import json
+import signal
+import sys
+from pathlib import Path
+
+import numpy as np
+
+from s2a.geometry import inverse
+from s2a.infrastructure.native_environment import restore_cv2_environment
+from s2a.infrastructure.owned_processes import run_owned_workers
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.research.native_runtime.development_continuation import (
+    current_joint_site_state,
+    current_robot_dynamics,
+    run_continuation,
+)
+from scripts.maintenance.run_cpu_tests import snapshot
+from scripts.simulation.runtime import replay_multicase_development_prefix as prefix
+from scripts.simulation.runtime import run_combined_warning_feedback as base
+from scripts.simulation.runtime import run_replan_reference_switch as switch
+
+REPO = prefix.REPO
+CONFIG = REPO / "configs/tracking/joint_control/replan_quality_feedback_20261110.json"
+PLAN = REPO / "plans/v0.0.1/tracking/joint_control/replan_quality_feedback_20261110.md"
+QA = REPO / "outputs/qa/replan_quality_feedback_20261110/result.json"
+DRY = REPO / "outputs/replan_quality_feedback_dry_20261110/result.json"
+ROOT = REPO / "outputs/replan_quality_feedback_20261110"
+FULL_CONFIG = REPO / "configs/tracking/joint_control/replan_full_horizon_feedback_20261110.json"
+FULL_PLAN = REPO / "plans/v0.0.1/tracking/joint_control/replan_full_horizon_feedback_20261110.md"
+FULL_QA = REPO / "outputs/qa/replan_full_horizon_feedback_20261110/result.json"
+FULL_DRY = REPO / "outputs/replan_full_horizon_feedback_dry_20261110/result.json"
+FULL_ROOT = REPO / "outputs/replan_full_horizon_feedback_20261110"
+FULL_MODULE = "s2a.research.joint_control.preview.full_horizon_feedback"
+RESTORE_CONFIG = REPO / "configs/tracking/joint_control/replan_restoration_feedback_20261110.json"
+RESTORE_PLAN = REPO / "plans/v0.0.1/tracking/joint_control/replan_restoration_feedback_20261110.md"
+RESTORE_QA = REPO / "outputs/qa/replan_restoration_feedback_20261110/result.json"
+RESTORE_DRY = REPO / "outputs/replan_restoration_feedback_dry_20261110/result.json"
+RESTORE_ROOT = REPO / "outputs/replan_restoration_feedback_20261110"
+RESTORE_MODULE = "s2a.research.joint_control.preview.restoration_horizon_feedback"
+FULL_PRODUCER = {
+    "path": str(FULL_ROOT / "producer/result.json"),
+    "sha256": "677f0fed299ccff22caf96eadaa1dc5476edcc44e238f16a4d332a16be82668f",
+}
+FULL_CHECKER = {
+    "path": str(FULL_ROOT / "checker/result.json"),
+    "sha256": "ffe672c10d11e9c1ef412dba73dc536474c1ea1147ab93a29a5f65e989442ba0",
+}
+MODEL_RESULT = {
+    "path": str(REPO / "outputs/replan_full_horizon_quality_20261110/result.json"),
+    "sha256": "b07c99f8127a182aebaf862338e58e2e8c1fb365eaf1cf5a239b124832ce8408",
+}
+BASE_PRODUCER = {
+    "path": str(switch.ROOT / "producer/result.json"),
+    "sha256": "58bf371b022e9daded4929df1904cc6f15ea4866f7e34791cb359f4a5f65044e",
+}
+BASE_CHECKER = {
+    "path": str(switch.ROOT / "checker/result.json"),
+    "sha256": "ba09b7ca0a4ca39de3edeb545e09db580ff5a8a7cad4af77e71f3c368c87102b",
+}
+CASES = (2, 6)
+
+
+def source_refs(*, full=False, restore=False):
+    prefix.require(not (full and restore), "Only one registered candidate")
+    paths = (
+        Path(__file__),
+        CONFIG,
+        PLAN,
+        REPO / "tests/research/native_runtime/test_replan_quality_feedback_inputs.py",
+    )
+    if full or restore:
+        paths += (
+            FULL_CONFIG,
+            FULL_PLAN,
+            REPO / "src/s2a/research/joint_control/preview/full_horizon_feedback.py",
+            REPO / "tests/research/joint_control/preview/test_full_horizon_feedback.py",
+            REPO / "tests/research/native_runtime/test_replan_full_horizon_feedback_inputs.py",
+        )
+    if restore:
+        paths += (
+            RESTORE_CONFIG,
+            RESTORE_PLAN,
+            REPO / "src/s2a/research/joint_control/preview/restoration_horizon_feedback.py",
+            REPO / "tests/research/joint_control/preview/test_restoration_horizon_feedback.py",
+            REPO / "tests/research/native_runtime/test_replan_restoration_feedback_inputs.py",
+        )
+    return switch.source_refs() + [prefix.reference(path) for path in paths]
+
+
+def load_inputs():
+    config_ref = prefix.reference(CONFIG)
+    config = prefix.read(config_ref)
+    prefix.require(
+        config
+        == {
+            "schema": "s2a.replan-quality-feedback.v1",
+            "cases": [2, 6],
+            "sampling_seed": 43,
+            "prefix_steps": 16,
+            "reference_chunk_index": 2,
+            "reference_cursor": 0,
+            "branch": "quality_new",
+            "continuation_steps": 8,
+            "control_dt_s": 0.05,
+            "joint_buffer_rad": 0.05,
+            "position_cap_m": 0.01,
+            "rotation_cap_rad": 0.05,
+            "arm_rate_limit": 0.25,
+            "braking_time_s": 0.1,
+            "max_control_steps_per_phase": 48,
+            "max_native_steps_per_phase": 1200,
+            "max_models_per_phase": 6,
+            "max_contexts_per_phase": 6,
+            "max_refiner_calls_per_phase": 16,
+            "max_refiner_response_evaluations_per_phase": 7680,
+            "max_quality_calls_per_phase": 16,
+            "max_quality_response_evaluations_per_phase": 2560,
+            "max_audit_endpoint_queries_per_phase": 3200,
+            "max_audit_transition_steps_per_phase": 41600,
+            "worker_timeout_seconds": 1800,
+            "world_model_calls": 0,
+            "fresh_cases": 0,
+            "automatic_retry": False,
+        },
+        "Exact registered new-reference quality comparison",
+    )
+    prior = []
+    for ref in (BASE_PRODUCER, BASE_CHECKER):
+        result = prefix.read(ref)
+        prefix.require(
+            result["complete"] is result["passed"] is result["sources_unchanged"] is True
+            and len(result["branch_refs"]) == 4,
+            "The matched old/new producer and checker are closed",
+        )
+        prior.append(result)
+    inputs = switch.load_inputs()
+    refs = inputs["source_sha256"]
+    refs.update(
+        {
+            str(CONFIG): config_ref["sha256"],
+            BASE_PRODUCER["path"]: BASE_PRODUCER["sha256"],
+            BASE_CHECKER["path"]: BASE_CHECKER["sha256"],
+        }
+    )
+    for result in prior:
+        for position in (0, 2):
+            ref = result["branch_refs"][position]
+            prefix.checked(ref)
+            refs[ref["path"]] = ref["sha256"]
+    return inputs
+
+
+def load_full_inputs():
+    """Use the same two new-reference cases under an explicitly larger solver budget."""
+    config_ref = prefix.reference(FULL_CONFIG)
+    config = prefix.read(config_ref)
+    prefix.require(
+        config
+        == {
+            "schema": "s2a.replan-full-horizon-feedback.v1",
+            "cases": [2, 6],
+            "sampling_seed": 43,
+            "prefix_steps": 16,
+            "reference_chunk_index": 2,
+            "reference_cursor": 0,
+            "branch": "full_quality_new",
+            "continuation_steps": 8,
+            "control_dt_s": 0.05,
+            "joint_buffer_rad": 0.05,
+            "position_cap_m": 0.01,
+            "rotation_cap_rad": 0.05,
+            "arm_rate_limit": 0.25,
+            "braking_time_s": 0.1,
+            "max_control_steps_per_phase": 48,
+            "max_native_steps_per_phase": 1200,
+            "max_models_per_phase": 6,
+            "max_contexts_per_phase": 6,
+            "max_refiner_calls_per_phase": 16,
+            "max_refiner_response_evaluations_per_phase": 7680,
+            "max_quality_calls_per_phase": 16,
+            "max_quality_response_evaluations_per_phase": 5120,
+            "max_audit_endpoint_queries_per_phase": 3200,
+            "max_audit_transition_steps_per_phase": 41600,
+            "worker_timeout_seconds": 1800,
+            "world_model_calls": 0,
+            "fresh_cases": 0,
+            "automatic_retry": False,
+        },
+        "Exact registered full-horizon feedback scope",
+    )
+    prior = prefix.read(MODEL_RESULT)
+    prefix.require(
+        prior["complete"] is prior["passed"] is prior["sources_unchanged"] is True and len(prior["case_refs"]) == 2,
+        "Both fixed-state model diagnostics closed",
+    )
+    inputs = load_inputs()
+    refs = inputs["source_sha256"]
+    refs.update({str(FULL_CONFIG): config_ref["sha256"], MODEL_RESULT["path"]: MODEL_RESULT["sha256"]})
+    for ref in prior["case_refs"]:
+        prefix.checked(ref)
+        refs[ref["path"]] = ref["sha256"]
+    return inputs
+
+
+def load_restoration_inputs():
+    """Keep the two prior physical branches and register the restoration candidate."""
+    config_ref = prefix.reference(RESTORE_CONFIG)
+    config = prefix.read(config_ref)
+    expected = dict(prefix.read(prefix.reference(FULL_CONFIG)))
+    expected.update(schema="s2a.replan-restoration-feedback.v1", branch="restoration_quality_new")
+    prefix.require(config == expected, "Exact registered first-point restoration scope")
+    inputs = load_full_inputs()
+    refs = inputs["source_sha256"]
+    refs[str(RESTORE_CONFIG)] = config_ref["sha256"]
+    for phase, ref in (("producer", FULL_PRODUCER), ("checker", FULL_CHECKER)):
+        result = prefix.read(ref)
+        prefix.require(
+            result["phase"] == phase
+            and result["complete"] is result["passed"] is result["sources_unchanged"] is True
+            and len(result["branch_refs"]) == 2,
+            "Both full-horizon physical branches are closed",
+        )
+        refs[ref["path"]] = ref["sha256"]
+        seen = set()
+        for case_ref in result["branch_refs"]:
+            case_result = prefix.read(case_ref)
+            prefix.require(
+                case_result["phase"] == phase
+                and case_result["case_index"] in CASES
+                and case_result["case_index"] not in seen
+                and case_result["branch"] == "full_quality_new"
+                and case_result["complete"] is case_result["passed"] is True,
+                "Original two-case comparison is intact",
+            )
+            seen.add(case_result["case_index"])
+            refs[case_ref["path"]] = case_ref["sha256"]
+        prefix.require(seen == set(CASES), "Both original cases must remain in the comparison")
+    return inputs
+
+
+def make_full_refiner(env, case, receipt, *, restore=False):
+    """Restore completed histories and bind one eight-point solver/auditor pair."""
+    from s2a.research.joint_control.preview.completed_history import restore_recomputed_history
+    from s2a.research.joint_control.preview.quality_feedback_refiner import QualityFeedbackRefiner
+    from s2a.research.joint_control.preview.refined_feedback import RefinedPreviewFeedback
+    from s2a.research.response_models.causal.causal_inner_error import CausalInnerError
+
+    _q, _limits, jacobian = current_joint_site_state(env)
+    _mass, velocity, site = current_robot_dynamics(env, jacobian)
+    twist = jacobian @ velocity
+    evidence, completed = case["previous_evidence"], case["completed_history"]
+    if restore:
+        from s2a.research.joint_control.preview.restoration_horizon_feedback import RestorationHorizonSolverAudit
+
+        adapter = RestorationHorizonSolverAudit()
+    else:
+        from s2a.research.joint_control.preview.full_horizon_feedback import FullHorizonSolverAudit
+
+        adapter = FullHorizonSolverAudit()
+    history = CausalInnerError()
+    refiner = QualityFeedbackRefiner(
+        history,
+        receipt,
+        start_step=case["spec"]["prefix_steps"],
+        start_cursor=case["intervention_spec"]["cursor"],
+        solver=adapter.solve,
+        auditor=adapter.audit,
+        max_quality_response_evaluations=320,
+    )
+    coupled, tracking, difference = restore_recomputed_history(
+        completed,
+        evidence["site"],
+        evidence["twist"],
+        evidence["coupled_prediction"],
+        evidence["tracking_prediction"],
+        site,
+        twist,
+        refiner=refiner,
+    )
+    site_from_tcp = inverse(np.asarray(case["controller"]["source_from_site"])) @ case["tool"]
+    targets = case["targets"] @ inverse(site_from_tcp)
+    anchor = case["anchor"] @ inverse(site_from_tcp)
+    policy = RefinedPreviewFeedback(
+        env,
+        coupled,
+        tracking,
+        targets,
+        anchor,
+        site_from_tcp,
+        case["intervention_spec"]["cursor"],
+        completed.previous_command,
+        case["controller"]["contract"],
+        receipt,
+    )
+    receipt["initial_innovation_recompute_max_difference"] = difference
+    return policy, history
+
+
+def read_actual_tcp(env, case):
+    """Read the completed robot endpoint without stepping or forwarding physics."""
+    _q, _limits, jacobian = current_joint_site_state(env)
+    _mass, _velocity, site = current_robot_dynamics(env, jacobian)
+    return site @ inverse(np.asarray(case["controller"]["source_from_site"])) @ case["tool"]
+
+
+def after_quality_completed(quality_done, receipt, case, expected=None, *, tcp_reader=read_actual_tcp):
+    """Update completed control history before scoring this same actual endpoint."""
+
+    def completed(env, command, offset):
+        history = quality_done(env, command, offset)
+        period = receipt["continuation_partial"]["periods"][-1]
+        prefix.require(period["step"] == 16 + offset, "Only the just-completed endpoint is scored")
+        actual_tcp = tcp_reader(env, case)
+        expected_score = None if expected is None else expected[offset]["completed_feedback"]
+        score = switch.completed_reference_scores(
+            actual_tcp, case["scoring_targets"], "new", offset, period["tcp_error"], expected=expected_score
+        )
+        score["policy_history"] = history
+        return score
+
+    return completed
+
+
+def branch_key(index, *, full=False, restore=False):
+    prefix.require(index in CASES, "Fixed registered quality branch")
+    prefix.require(not (full and restore), "Only one registered candidate")
+    branch = "restoration_quality_new" if restore else "full_quality_new" if full else "quality_new"
+    return f"case_{index:02d}_{branch}"
+
+
+def worker(phase, index, *, full=False, restore=False):
+    def interrupted(signum, _frame):
+        raise InterruptedError(f"Worker received signal {signum}")
+
+    signal.signal(signal.SIGTERM, interrupted)
+    prefix.require(not (full and restore), "Only one registered candidate")
+    root = RESTORE_ROOT if restore else FULL_ROOT if full else ROOT
+    directory = root / phase / branch_key(index, full=full, restore=restore)
+    registration = prefix.read(prefix.reference(root / phase / "registration.json"))
+    inputs = load_restoration_inputs() if restore else load_full_inputs() if full else load_inputs()
+    prefix.require(
+        inputs["source_sha256"] == registration["source_sha256"]
+        and inputs["asset_refs"] == registration["asset_refs"]
+        and source_refs(full=full, restore=restore) == registration["source_refs"],
+        "Frozen branch inputs and sources",
+    )
+    case = next(item for item in inputs["cases"] if item["spec"]["case_index"] == index)
+    selected = switch.selected_case(case, "new")
+    expected, expected_stop = None, None
+    if phase == "checker":
+        original = prefix.read(
+            prefix.reference(root / "producer" / branch_key(index, full=full, restore=restore) / "result.json")
+        )
+        prefix.require(original["complete"] is original["passed"] is True, "Closed producer branch required")
+        expected = original["runtime"]["continuation"]["periods"]
+        expected_stop = original["runtime"]["continuation"]["stop"]
+    result = {
+        "complete": False,
+        "passed": False,
+        "phase": phase,
+        "case_index": index,
+        "branch": "restoration_quality_new" if restore else "full_quality_new" if full else "quality_new",
+        "automatic_retry": False,
+    }
+    try:
+        cv2 = inputs["cv2_admission"]
+        result["cv2_admission"] = restore_cv2_environment(cv2["cv2_probe_ref"], cv2["cv2_runtime_source_refs"])
+        from s2a.research.native_runtime.development_prefix_runtime import PrefixReplayFailure, run_prefix_runtime
+
+        def continuation(env, terminal, observers, receipt, *, progress=None):
+            receipt["preview_calls"] = {"attempted": 0, "completed": 0}
+            receipt["refiner_calls"] = {"attempted": 0, "completed": 0}
+            receipt["refiner_response_evaluations"] = 0
+            if phase == "checker":
+                action = base.quality.checker_action(expected)
+
+                def quality_done(_env, _command, _offset):
+                    return None
+            else:
+                policy, history = (
+                    make_full_refiner(env, selected, receipt, restore=restore)
+                    if full or restore
+                    else base.quality.make_quality_refiner(env, selected, receipt)
+                )
+                select, quality_done = base.quality.quality_callbacks(policy, history, receipt, 16)
+                action = base.guarded_action(select, receipt)
+            on_completed = after_quality_completed(quality_done, receipt, case, expected)
+            outcome = run_continuation(
+                env,
+                terminal,
+                observers,
+                receipt,
+                start_step=16,
+                previous_command=case["commands"][-1],
+                targets=selected["fixed_targets"],
+                tool=case["tool"],
+                target_object=selected["intervention_spec"]["target"],
+                choose_action=action,
+                stop_on_outside=True,
+                expected_periods=expected,
+                on_completed=on_completed,
+                progress=progress,
+            )
+            if phase == "checker":
+                return base.reconcile_checker_stop(outcome, expected_stop, mode="quality", start_step=16)
+            return outcome
+
+        def progress(receipt):
+            print(
+                json.dumps(
+                    {
+                        "phase": phase,
+                        "case": index,
+                        "checked_prefix_endpoints": receipt.get("checked_endpoints", 0),
+                        "control_completed": receipt.get("control_steps_completed", 0),
+                        "new_commands": receipt.get("newly_selected_commands", 0),
+                        "refiner": receipt.get("refiner_calls"),
+                        "quality": receipt.get("quality_refiner"),
+                        "native_steps": receipt["counters"]["mj_step"],
+                    },
+                    allow_nan=False,
+                ),
+                flush=True,
+            )
+
+        try:
+            receipt = run_prefix_runtime(
+                case["config"],
+                case["record"],
+                case["record_xml"],
+                case["commands"],
+                case["saved"],
+                case["receipts"],
+                directory / "runtime",
+                inputs["asset_refs"],
+                case["controller"],
+                continuation=continuation,
+                continuation_budget=8,
+                progress=progress,
+            )
+        except PrefixReplayFailure as error:
+            result["runtime"] = error.receipt
+            raise
+        if phase == "checker":
+            prefix.require(
+                base.quality.QUALITY_MODULE not in sys.modules
+                and base.quality.baseline.POLICY_MODULE not in sys.modules
+                and base.quality.baseline.PREVIEW_MODULE not in sys.modules
+                and FULL_MODULE not in sys.modules
+                and RESTORE_MODULE not in sys.modules
+                and receipt["newly_selected_commands"] == 0
+                and receipt["preview_calls"]["attempted"] == receipt["refiner_calls"]["attempted"] == 0,
+                "Checker only replays saved actions and scores actual states",
+            )
+        result.update(
+            complete=True,
+            passed=True,
+            runtime=receipt,
+            candidate_policy_imported=base.quality.baseline.POLICY_MODULE in sys.modules,
+            preview_module_imported=base.quality.baseline.PREVIEW_MODULE in sys.modules,
+            quality_module_imported=base.quality.QUALITY_MODULE in sys.modules,
+            full_module_imported=FULL_MODULE in sys.modules,
+            restoration_module_imported=RESTORE_MODULE in sys.modules,
+        )
+    except BaseException as error:
+        result["error"] = {"type": type(error).__name__, "message": str(error)}
+        raise
+    finally:
+        print(publish(directory / "result.json", result), flush=True)
+
+
+def run_phase(phase, *, full=False, restore=False):
+    prefix.require(not (full and restore), "Only one registered candidate")
+    root, dry_path, qa_path = (
+        (RESTORE_ROOT, RESTORE_DRY, RESTORE_QA)
+        if restore
+        else (FULL_ROOT, FULL_DRY, FULL_QA)
+        if full
+        else (ROOT, DRY, QA)
+    )
+    max_quality_responses = 5120 if full or restore else 2560
+    directory = root / phase
+    prefix.require(not directory.exists(), "New phase output only; no automatic retry")
+    dry_ref, qa_ref = prefix.reference(dry_path), prefix.reference(qa_path)
+    dry, qa = prefix.read(dry_ref), prefix.read(qa_ref)
+    prefix.require(dry["complete"] is dry["passed"] is True and dry["physics_steps"] == 0, "Zero-model dry closed")
+    prefix.require(
+        qa["complete"] is qa["passed"] is qa["source_unchanged"] is qa["actual_wait"] is qa["reaped"] is True,
+        "CPU QA closed",
+    )
+    before = snapshot(REPO)["sources"]
+    prefix.require(before == prefix.read(qa["source_before_ref"])["sources"], "Full QA source identity")
+    sources = source_refs(full=full, restore=restore)
+    inputs = load_restoration_inputs() if restore else load_full_inputs() if full else load_inputs()
+    prefix.require(
+        dry["source_refs"] == sources
+        and dry["source_sha256"] == inputs["source_sha256"]
+        and dry["asset_refs"] == inputs["asset_refs"],
+        "Dry source and input identity",
+    )
+    producer_ref = None
+    if phase == "checker":
+        producer_ref = prefix.reference(root / "producer/result.json")
+        producer = prefix.read(producer_ref)
+        prefix.require(
+            producer["complete"] is producer["passed"] is producer["sources_unchanged"] is True
+            and len(producer["branch_refs"]) == 2,
+            "Quality producer must complete before replay",
+        )
+        for ref in producer["branch_refs"]:
+            prefix.checked(ref)
+    registration = publish(
+        directory / "registration.json",
+        {
+            "dry_ref": dry_ref,
+            "qa_ref": qa_ref,
+            "baseline_producer_ref": BASE_PRODUCER,
+            "baseline_checker_ref": BASE_CHECKER,
+            "producer_ref": producer_ref,
+            "source_refs": sources,
+            "source_sha256": inputs["source_sha256"],
+            "asset_refs": inputs["asset_refs"],
+            "cases": list(CASES),
+            "max_control_steps": 48,
+            "max_native_steps": 1200,
+            "max_refiner_calls": 16,
+            "max_refiner_response_evaluations": 7680,
+            "max_quality_calls": 16,
+            "max_quality_response_evaluations": max_quality_responses,
+            "max_audit_endpoint_queries": 3200,
+            "max_audit_transition_steps": 41600,
+            "world_model_calls": 0,
+            "fresh_cases": 0,
+            "automatic_retry": False,
+        },
+    )
+    specs = [
+        {
+            "key": branch_key(index, full=full, restore=restore),
+            "argv": [
+                sys.executable,
+                "-m",
+                "scripts.simulation.runtime.run_replan_quality_feedback",
+                *(["--restore"] if restore else ["--full"] if full else []),
+                "--worker",
+                phase,
+                str(index),
+            ],
+            "log": directory / branch_key(index, full=full, restore=restore) / "worker.log",
+        }
+        for index in CASES
+    ]
+    lifecycle = run_owned_workers(specs, cwd=REPO, timeout_seconds=1800)
+    for item in lifecycle["workers"]:
+        item["log_ref"] = prefix.reference(item.pop("log"))
+    workers_ref = publish(directory / "workers.json", lifecycle)
+    result = {
+        "complete": False,
+        "passed": False,
+        "phase": phase,
+        "registration_ref": registration,
+        "workers_ref": workers_ref,
+        "world_model_calls": 0,
+        "fresh_cases": 0,
+        "automatic_retry": False,
+    }
+    try:
+        prefix.require(
+            not lifecycle["launch_error"]
+            and len(lifecycle["workers"]) == 2
+            and all(
+                worker["returncode"] == 0 and worker["actual_wait"] and worker["reaped"] and not worker["signal_sent"]
+                for worker in lifecycle["workers"]
+            ),
+            "Both workers closed and reaped",
+        )
+        refs = [
+            prefix.reference(directory / branch_key(index, full=full, restore=restore) / "result.json")
+            for index in CASES
+        ]
+        branches = [prefix.read(ref) for ref in refs]
+        prefix.require(all(branch["complete"] is branch["passed"] is True for branch in branches), "Complete branches")
+        prefix.require(
+            all(prefix.reference(path)["sha256"] == digest for path, digest in inputs["source_sha256"].items())
+            and source_refs(full=full, restore=restore) == sources
+            and snapshot(REPO)["sources"] == before,
+            "Sources and inputs unchanged",
+        )
+        controls = sum(branch["runtime"]["control_steps_completed"] for branch in branches)
+        native = sum(branch["runtime"]["counters"]["mj_step"]["completed"] for branch in branches)
+        models = sum(branch["runtime"]["counters"]["model_construct"]["completed"] for branch in branches)
+        contexts = sum(branch["runtime"]["counters"]["context"]["completed"] for branch in branches)
+        refiners = sum(branch["runtime"]["refiner_calls"]["attempted"] for branch in branches)
+        evaluations = sum(
+            branch["runtime"].get("quality_refiner", {}).get("baseline_response_evaluations", 0) for branch in branches
+        )
+        quality_calls = sum(
+            branch["runtime"].get("quality_refiner", {}).get("quality_calls_attempted", 0) for branch in branches
+        )
+        quality_responses = sum(
+            branch["runtime"].get("quality_refiner", {}).get("quality_response_evaluations", 0) for branch in branches
+        )
+        endpoint_queries = sum(
+            branch["runtime"].get("quality_refiner", {}).get("endpoint_queries_charged", 0) for branch in branches
+        )
+        transition_steps = sum(
+            branch["runtime"].get("quality_refiner", {}).get("transition_steps_charged", 0) for branch in branches
+        )
+        prefix.require(
+            controls <= 48
+            and native == controls * 25
+            and native <= 1200
+            and models <= 6
+            and contexts <= 6
+            and refiners <= 16
+            and evaluations <= 7680
+            and quality_calls <= 16
+            and quality_responses <= max_quality_responses
+            and endpoint_queries <= 3200
+            and transition_steps <= 41600,
+            "Registered phase budgets",
+        )
+        if phase == "checker":
+            prefix.require(
+                refiners
+                == evaluations
+                == quality_calls
+                == quality_responses
+                == endpoint_queries
+                == transition_steps
+                == 0
+                and all(
+                    not branch["candidate_policy_imported"]
+                    and not branch["preview_module_imported"]
+                    and not branch["quality_module_imported"]
+                    and not branch["full_module_imported"]
+                    and not branch["restoration_module_imported"]
+                    and branch["runtime"]["newly_selected_commands"] == 0
+                    for branch in branches
+                ),
+                "No independent checker decisions",
+            )
+        result.update(
+            complete=True,
+            passed=True,
+            sources_unchanged=True,
+            branch_refs=refs,
+            control_steps=controls,
+            native_steps=native,
+            model_initializations=models,
+            software_contexts=contexts,
+            refiner_calls=refiners,
+            refiner_response_evaluations=evaluations,
+            quality_calls=quality_calls,
+            quality_response_evaluations=quality_responses,
+            audit_endpoint_queries_charged=endpoint_queries,
+            audit_transition_steps_charged=transition_steps,
+            newly_selected_commands=sum(branch["runtime"]["newly_selected_commands"] for branch in branches),
+        )
+    finally:
+        print(publish(directory / "result.json", result), flush=True)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    variant = parser.add_mutually_exclusive_group()
+    variant.add_argument("--full", action="store_true", help="Use the separately registered eight-point candidate")
+    variant.add_argument("--restore", action="store_true", help="Use the registered first-point restoration candidate")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--dry-run", action="store_true")
+    group.add_argument("--produce", action="store_true")
+    group.add_argument("--check", action="store_true")
+    group.add_argument("--worker", nargs=2, metavar=("PHASE", "CASE"))
+    args = parser.parse_args()
+    prefix.environment()
+    dry_path = RESTORE_DRY if args.restore else FULL_DRY if args.full else DRY
+    if args.dry_run:
+        prefix.require(not dry_path.exists(), "New dry output only")
+        inputs = load_restoration_inputs() if args.restore else load_full_inputs() if args.full else load_inputs()
+        print(
+            publish(
+                dry_path,
+                {
+                    "complete": True,
+                    "passed": True,
+                    "source_refs": source_refs(full=args.full, restore=args.restore),
+                    "source_sha256": inputs["source_sha256"],
+                    "asset_refs": inputs["asset_refs"],
+                    "prefix_steps": [case["spec"]["prefix_steps"] for case in inputs["cases"]],
+                    "completed_history_periods": [
+                        case["completed_history"].completed_periods for case in inputs["cases"]
+                    ],
+                    "models": 0,
+                    "physics_steps": 0,
+                    "world_model_calls": 0,
+                    "fresh_cases": 0,
+                },
+            ),
+            flush=True,
+        )
+    elif args.produce:
+        run_phase("producer", full=args.full, restore=args.restore)
+    elif args.check:
+        run_phase("checker", full=args.full, restore=args.restore)
+    else:
+        phase, index = args.worker
+        prefix.require(phase in ("producer", "checker"), "Registered phase")
+        worker(phase, int(index), full=args.full, restore=args.restore)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,37 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[开发轨迹的重规划阶段一致性](replan_task_event_stability_20261110.md)
+
+最新：[新参考重规划的质量恢复实际反馈](replan_restoration_feedback_20261110.md)
+
+最新：[新参考重规划起点的八点约束实际反馈](replan_full_horizon_feedback_20261110.md)
+
+最新：[新参考重规划起点的八点质量模型检查](replan_full_horizon_quality_20261110.md)
+
+最新：[重规划新参考下的质量约束实际反馈](replan_quality_feedback_20261110.md)
+
+最新：[同一重规划状态下的新旧参考对照](replan_reference_switch_20261110.md)
+
+最新：[组合预警的16周期固定参考反馈对照](combined_warning_long_feedback_20261110.md)
+
+最新：[组合预警首次触发后的实际反馈对照](combined_warning_feedback_20261110.md)
+
+最新：[跟踪质量与关节速度组合预警回顾](combined_quality_warning_20261110.md)
+
+最新：[额外制动约束静态消融](braking_constraint_ablation_20261110.md)
+
+最新：[多点质量可行性恢复](full_horizon_feasibility_restoration_20261110.md)
+
+最新：[更早速度预警多点搜索](velocity_warning_full_horizon_20261110.md)
+
+最新：[首次预警8点质量搜索](full_horizon_quality_feasibility_20261110.md)
+
+最新诊断：[质量反馈停止状态可行性](quality_stop_feasibility_20261110.md)
+
+最新：[两案例质量约束实际反馈](early_quality_feedback_20261110.md)
+
+近期新增：[两案例质量约束模型检查](early_quality_feasibility_20261110.md) · [首次预警原细化器闭环](early_refiner_feedback_20261110.md) · [首次预警原细化器重建](early_refiner_reconstruction_20261110.md) · [首次预警的预览与退避实际对照](early_warning_tracking_20261110.md) · [12案例因果预警回顾](causal_warning_audit_20261110.md) · [两案例短时安全对照](multicase_emergency_retreat_20261110.md) · [两条原生命令前缀重放](multicase_native_prefix_replay_20261110.md) · [首次关节越界上下文](multicase_joint_limit_context_20261110.md) · [多开发案例参考、接触与关节安全](multicase_reference_geometry_20261110.md) · [首轮失败记录](multicase_reference_geometry_v1_20261110.md)
+
 本页导航原始文件；正文、配置值和历史身份保持。目录迁移不改变实验或控制资格。
 
 [当前状态](../../../docs/status.md) · [研究索引](../../../docs/research_index.md) · [路径与身份](../../../docs/migrations/repository_layout_20261029.json)

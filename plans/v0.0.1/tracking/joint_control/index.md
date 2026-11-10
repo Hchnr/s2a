@@ -1,5 +1,23 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[开发参考阶段一致性与独立复核](replan_task_event_stability_20261110.md) · [逐点复核](replan_task_event_stability_check_20261110.md)
+
+近期：[新参考重规划的安全优先质量恢复反馈](replan_restoration_feedback_20261110.md)
+
+近期：[新参考重规划起点的八点约束实际反馈](replan_full_horizon_feedback_20261110.md)
+
+近期：[新参考重规划起点的八点质量可行性](replan_full_horizon_quality_20261110.md)
+
+近期：[重规划新参考下的质量约束实际反馈](replan_quality_feedback_20261110.md)
+
+近期：[同一重规划状态下的新旧参考对照](replan_reference_switch_20261110.md)
+
+近期：[组合预警的16周期固定参考实际反馈](combined_warning_long_feedback_20261110.md)
+
+近期：[组合预警首次触发时的实际反馈对照](combined_warning_feedback_20261110.md)
+
+近期：[跟踪质量与关节速度的组合预警回顾](combined_quality_warning_20261110.md)
+
 本页导航原始文件；正文、配置值和历史身份保持。目录迁移不改变实验或控制资格。
 
 [当前状态](../../../../docs/status.md) · [研究索引](../../../../docs/research_index.md) · [路径与身份](../../../../docs/migrations/repository_layout_20261029.json)

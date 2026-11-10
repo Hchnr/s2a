@@ -2,6 +2,155 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-10 开发任务阶段重规划分析：12条原轨迹、888对chunk及28416个同绝对
+端点已独立复核；位置/姿态差中位0.02743 m/0.11527 rad。旧首闭合预测在执行窗外
+的136对中，新预测87次推迟、29次未见；一条案例75个chunk均无闭合预测。探索性
+下一8步保留交集仅闭合1次、打开4次，非反事实成功率。两轮专项43/51项通过，
+0新物理/WAM/GPU/fresh，详见[阶段报告](../reports/tracking/joint_control/replan_task_event_stability_20261110.md)。
+
+2026-11-10 新参考质量恢复反馈：task0实际7/8，低于八点硬质量的8/8；task1
+执行1周期后审核拒绝，与首点质量分支推进长度相同。已执行内环守住0.05 rad
+缓冲，9动作及225内步独立重放逐值一致；70项CPU专项通过，0新WAM/GPU/fresh。
+不能据此提升为统一候选，详见[反馈报告](../reports/tracking/joint_control/replan_restoration_feedback_20261110.md)。
+
+2026-11-10 新参考八点质量实际反馈：task0完成8周期、实际双阈值8/8，原反馈6/8、
+首点质量7/8；task1在首条新动作前未找到八点witness并停止。已执行内环守住0.05 rad
+缓冲，8动作及200内步独立重放逐值一致；决策1.294–1.491秒/周期不具实时资格。
+61项CPU专项通过，0新WAM/GPU/fresh，详见[反馈报告](../reports/tracking/joint_control/replan_full_horizon_feedback_20261110.md)。
+
+2026-11-10 新参考重规划八点模型搜索：task0两种初值均找到经独立复算的八点
+模型witness；task1均未找到，最优已审核关节候选的最差归一化质量超限0.5611。
+有限搜索不证明全局无解，尚未派发；27项CPU专项通过，0物理/WAM/GPU/fresh，
+详见[模型检查报告](../reports/tracking/joint_control/replan_full_horizon_quality_20261110.md)。
+
+2026-11-10 新参考质量反馈：task0质量分支实际7/8双阈值（原反馈6/8），仍有
+26微米位置超限；task1质量分支只执行1周期，第2次决策前无witness并停止。
+已执行内环守住0.05 rad缓冲，9动作独立重放逐值一致；44项CPU专项通过，
+0新WAM/GPU/fresh，详见[反馈报告](../reports/tracking/joint_control/replan_quality_feedback_20261110.md)。
+
+2026-11-10 同状态新旧参考实际对照：两案例均从原始端点16开始，跟踪new参考
+自身双阈值分别6/8、3/8；跟踪old参考自身均8/8，但对共同new参考均只有1/8。
+四分支关节内环守住0.05 rad缓冲，独立重放32动作逐值一致；47项CPU专项通过，
+0新WAM/GPU/fresh，详见[对照报告](../reports/tracking/joint_control/replan_reference_switch_20261110.md)。
+
+2026-11-10 组合预警16周期实际反馈：两案例的原反馈和质量反馈均完成16周期、
+实际双阈值16/16且内环守住0.05 rad缓冲；原反馈同样达标，未证明质量约束收益。
+64条动作及内环独立重放逐值一致，首8周期与上一轮一致；62项CPU专项通过，
+0新WAM/GPU/fresh。固定step8参考跨两个原重规划时刻，非新WAM闭环；见[报告](../reports/tracking/joint_control/combined_warning_long_feedback_20261110.md)。
+
+2026-11-10 组合首次预警实际反馈：两案例的原反馈和质量反馈均完成8周期、
+实际双阈值8/8且2 ms关节内环守住0.05 rad缓冲；原反馈同样达标，未证明质量
+约束有收益。独立重放32条动作逐值一致；45项CPU专项通过，0新WAM/GPU/fresh。
+窗口结束于原首次超限之前，且跨step16使用固定旧chunk后缀，详见[反馈报告](../reports/tracking/joint_control/combined_warning_feedback_20261110.md)。
+
+2026-11-10 组合质量与速度预警回顾：12条原开发记录中11条曾出现位姿超限，
+组合规则在11条的首次超限前报警，原速度规则仅1条提前；另1条组合报警但至
+端点599未观察到位姿超限。结果是已研究数据的回顾，不代表可恢复控制或任务成功；
+28项32并发CPU专项通过，0物理/WAM/GPU/fresh，详见[报告](../reports/tracking/joint_control/combined_quality_warning_20261110.md)。
+
+2026-11-10 额外模型制动静态消融：保持0.05 rad模型内环缓冲及原位姿阈值，
+去掉额外q+0.1v约束后，两案例最差归一化质量超限从0.60770/2.86481小幅降至
+0.56787/2.73899，均无8点质量witness，且候选违反额外制动预测；47项CPU专项
+通过，0物理/WAM/GPU/fresh，详见[消融报告](../reports/tracking/joint_control/braking_constraint_ablation_20261110.md)。
+
+2026-11-10 更早预警的多点可行性恢复：两案例关节安全模型候选的最佳最差
+位姿归一化超限为0.60770/2.86481，均未找到全8点质量witness；0.1 s模型
+制动上限在最佳候选处近活跃。42项CPU专项通过，0物理/WAM/GPU/fresh，
+模型局部优化不证明全局无解，详见[恢复报告](../reports/tracking/joint_control/full_horizon_feasibility_restoration_20261110.md)。
+
+2026-11-10 更早速度预警多点搜索：task0端点39首点模型解复算通过，但两次
+全8点搜索未找到witness；task1端点47在警报前已姿态超限，首点及全8点均未
+找到witness。两处初始计划预测分别5/8、0/8达标，不同时间参考chunk不同；
+36项CPU专项通过，0物理/WAM/GPU/fresh，见[报告](../reports/tracking/joint_control/velocity_warning_full_horizon_20261110.md)。
+
+2026-11-10 首次预警起点的8点质量模型搜索：两案例、原计划和单点质量热启动
+四次搜索均未找到全8点witness；线性关节约束可行，非线性线搜索终止。原种子
+模型各4/8点满足双阈值；0物理积分/WAM/GPU/fresh。有限搜索不证明全局无解，
+34项CPU专项通过，见[多点搜索报告](../reports/tracking/joint_control/full_horizon_quality_feasibility_20261110.md)。
+
+2026-11-10 质量反馈停止状态的冻结模型诊断：两处均找到满足关节约束的模型
+计划，但SO(3)首点误差分别0.073236/0.064913 rad，均超0.05 rad；有无经验
+收紧及关节witness热启动的六次质量搜索均达到60次迭代而未找到解，不能证明
+全局不可达。43项CPU专项通过，0物理积分/WAM/GPU/fresh；详见[诊断报告](../reports/tracking/joint_control/quality_stop_feasibility_20261110.md)。
+
+2026-11-10 两案例质量约束实际反馈：质量分支各执行5周期后均因有限搜索
+未找到下一witness而在派发前停止，已执行内环守住0.05 rad缓冲；位姿双阈值
+分别5/5和4/5，均未完成8周期。task1模型姿态卡在0.05 rad边界，实际略超；
+26个实际新动作独立重放一致，56项CPU专项通过，0新WAM/GPU/fresh。有限
+搜索失败不证明全局不可达，详见[反馈报告](../reports/tracking/joint_control/early_quality_feedback_20261110.md)。
+
+2026-11-10 两案例16状态质量模型检查：绝对首点位姿约束在每条轨迹前5个
+状态找到模型witness、后3个状态未找到；过去误差收紧后找到与否相同。18个不同
+witness的独立模型关节复算通过，尚未实际派发；原单周期模型与实际旋转误差
+向量最大差约0.000504 rad。35项CPU专项通过，0物理/WAM/GPU/fresh，见
+[质量检查报告](../reports/tracking/joint_control/early_quality_feasibility_20261110.md)。
+
+2026-11-10 首次预警原细化器闭环：两案例各8周期的实际2 ms内环均守住原
+0.05 rad关节缓冲，无越界；但各自后4点旋转误差超0.05 rad，位姿双阈值仅
+4/8，未获完整跟踪资格。两类历史由各分支实际完成端点更新，独立动作重放
+一致；两阶段共444控制周期/11100内步，44项CPU专项通过，0 WAM/GPU/fresh。
+详见[闭环报告](../reports/tracking/joint_control/early_refiner_feedback_20261110.md)。
+
+2026-11-10 首次预警原约束细化重建：从两条原初态重放至端点43/52，依据上一
+完成周期预测及当前实测端点重算两类创新；两案例原细化动作最大差分别
+2.81e-13/3.13e-14，完整计划及route亦复现。本次未派发新动作；31项CPU专项
+通过、95原命令周期、0 WAM/GPU/fresh，见[重建报告](../reports/tracking/joint_control/early_refiner_reconstruction_20261110.md)。
+
+2026-11-10 两案例首次预警实际对照：历史8周期内环仍守住0.05 rad缓冲；
+四个新预览/退避分支在执行4–5周期后均实际越界并停止，虽已执行的19个周期
+位姿双阈值全部达标，仍全部不具安全资格。六分支动作独立重放一致，合计
+640控制周期/16000内步，55项CPU专项通过，0 WAM/GPU/fresh；详见
+[实际对照](../reports/tracking/joint_control/early_warning_tracking_20261110.md)。
+
+2026-11-10 12案例因果预警回顾：固定0.10 rad及当前速度0.2 s外推在原7条
+端点越界案例中均曾于0.05 rad缓冲内提前报警；原5条未见端点越界的案例中
+各有4条报警，且不少报警后的四个端点未越界。两案例固定0.10首次警报为端点
+43/52，前一周期跟踪达标；尚未测试该触发后的控制。31项CPU专项通过，零新
+物理/模型/GPU/fresh，详见[预警回顾](../reports/tracking/joint_control/causal_warning_audit_20261110.md)。
+
+2026-11-10 两案例短时安全对照：历史分支在8周期内分别有16/120个2 ms样本
+实际关节越界，限速归零及Jacobian退避的四条分支均无实际越界；但四条都低于
+0.05 rad原安全缓冲、位姿双阈值均为0/8，未获控制资格。六分支独立运行时按
+保存动作重放一致；两阶段共1374控制周期/34350积分步，66项CPU专项通过，
+0新WAM/GPU/fresh。起点后验选择，非在线触发或任务恢复证明；见
+[安全对照报告](../reports/tracking/joint_control/multicase_emergency_retreat_20261110.md)。
+
+2026-11-10 两条开发轨迹前缀重放：task0/task1各一条从原初态重放114/99个
+保存命令，215个端点的完整state逐字节一致，已保存控制器缓存最大差0；两子
+进程正常回收。新增213个仿真控制周期、5325个积分步，60项CPU专项通过，
+0新WAM/GPU/fresh。历史initial_joint未单独保存；未测试新安全动作，详见
+[重放报告](../reports/tracking/joint_control/multicase_native_prefix_replay_20261110.md)。
+
+2026-11-10 多案例越界上下文：7条首次越界均在关节上限，5条涉及q7、各1条
+涉及q5/q6；丢失该关节0.05rad缓冲到越界相隔3–16周期。首次越界端点仅1条
+观察到机器人—场景接触，不能据此排除未采样时刻的接触或归因。34项专项通过，
+新增28次静态forward、无时间推进/WAM/GPU/fresh；见[报告](../reports/tracking/joint_control/multicase_joint_limit_context_20261110.md)。
+
+2026-11-10 多案例开发诊断闭合：原首轮6条完成、6条失败的记录保持，另行
+补齐6条并通过33项CPU专项。12条既有开发轨迹中7条存在实际仿真关节越界；
+11条无目标grasp接触，另1条有接触但任务仍失败。424个含预测闭合的查询中，
+首个闭合目标对冻结对象仅7个有双pad静态接触；该数字不能当动态成功率。
+未新增时间推进/WAM/GPU/fresh；见[多案例报告](../reports/tracking/joint_control/multicase_reference_geometry_20261110.md)。
+
+2026-11-10 多案例诊断首轮：12条已有开发案例中6条完成、6条因新增对象旋转
+逐位一致检查失败（最大差约4.4e-16至6.7e-16）；原总结果保持失败，12个
+worker实际回收。对象状态上的浮点重复归一化在合成例可复现同量级差异，不能
+据此改判原结果。已单独登记仅补齐6条缺失案例，控制和任务门槛不变；见
+[失败报告](../reports/tracking/joint_control/multicase_reference_geometry_v1_20261110.md)。
+
+2026-11-10 完整轨迹细化：共同安全基线分别在原 root 域和完整输入域进行
+有界非线性优化，两组均触及8次迭代上限；所有响应独立逐条复算一致，完整
+witness均为0。两组最优合格结果相同，仍为12/24 caps、prefix2，改善很小；
+求解器返回值未通过模型安全及逐项保护。62项专项通过，新增物理/WAM/GPU/
+fresh均为0。按预登记转向多开发参考、上游质量和实际安全分析；见
+[完整报告](../reports/tracking/trajectory_search/whole_trajectory_refinement_20261110.md)。
+
+2026-11-10：中断投影保存的236条响应已做后验自洽筛查；13条标记安全的候选
+及不安全对照/重复共15响应已独立native复算、逐值一致。13条虽满足原安全
+buffer，却均只有10/24 caps、prefix2；最佳最差误差的候选终点位置49.85mm，
+基线为16.90mm，没有完整witness。原实验最终账本和中断时部分费用仍未知，
+不追认为完整通过；其余223条未独立复算。见[复核报告](../reports/tracking/trajectory_search/interrupted_projection_assessment_20261110.md)。
+
 2026-11-02算法域核查：保留原安全/变化率行，仅诊断完整input域时，终点支持
 下界由原root约1.45变为约-6.58。旧局部排除不能升级为机器人不可达，负支持
 也不证明完整caps可行。29项专项及2LP审核通过，0新响应/物理/GPU。
