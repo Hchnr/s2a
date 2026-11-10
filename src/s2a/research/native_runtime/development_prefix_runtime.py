@@ -21,6 +21,19 @@ class PrefixReplayFailure(RuntimeError):
         self.receipt = receipt
 
 
+def validate_registered_runtime(config, registered_seed):
+    """Keep the historical seed43 default and admit seed42 only explicitly."""
+    if (
+        type(registered_seed) is not int
+        or registered_seed not in (42, 43)
+        or type(config.get("seed")) is not int
+        or config["seed"] != registered_seed
+        or type(config.get("task_id")) is not int
+        or config["task_id"] not in (8, 9)
+    ):
+        raise ValueError("Recorded seed and development task must match explicit registration")
+
+
 def run_prefix_runtime(
     config,
     record,
@@ -36,6 +49,7 @@ def run_prefix_runtime(
     continuation_budget=0,
     continuation_limit=8,
     progress=None,
+    registered_seed=43,
 ):
     """Use only a saved prefix; failed stages and partial integration remain visible."""
     count = len(commands)
@@ -127,7 +141,7 @@ def run_prefix_runtime(
 
     try:
         bootstrap._cpu_environment()
-        bootstrap._require(config["seed"] == 43 and config["task_id"] in (8, 9), "Fixed seed and development tasks")
+        validate_registered_runtime(config, registered_seed)
         bootstrap._require(
             config["camera_observations"] is False
             and config["refresh_controller_after_restore"] is True
