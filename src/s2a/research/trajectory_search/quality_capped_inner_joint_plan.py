@@ -26,7 +26,7 @@ def solve_interior_plan(
     braking_time_s=0.1,
     past_inner_error_rad=None,
 ):
-    """Find a model witness; original first-pose caps are recorded, never imposed.
+    """Find a model witness that satisfies the absolute first-period pose caps.
 
     Joint positions are affine in actions for frozen free M/J, including anchor
     resets. All 2ms endpoints, not only 50ms control endpoints, are constrained.
