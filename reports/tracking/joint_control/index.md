@@ -1,5 +1,11 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[第三任务早期预警的安全与跟踪反馈](task2_warning_feedback_20261111.md)
+
+最新：[第三任务的早期关节预警前缀复现](task2_warning_prefix_20261111.md)
+
+最新：[打开事件的四案例安全筛查与匹配反馈](causal_opening_event_feedback_20261111.md)
+
 最新：[批量展开的固定状态质量求解对照](batched_quality_solver_20261111.md)
 
 最新：[质量求解器对照首次QA准入失败](batched_quality_solver_qa_incident_20261111.md)

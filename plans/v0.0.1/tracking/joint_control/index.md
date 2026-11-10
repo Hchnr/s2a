@@ -1,5 +1,13 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[三任务停止/预警状态的可行性优先搜索对照](multitask_feasibility_first_20261111.md)
+
+近期：[第三任务早期预警的安全与跟踪反馈](task2_warning_feedback_20261111.md)
+
+近期：[第三任务的早期关节预警前缀资格](task2_warning_prefix_20261111.md)
+
+近期：[四次打开事件的安全筛查与匹配反馈](causal_opening_event_feedback_20261111.md)
+
 近期：[批量展开接入质量求解的固定状态对照](batched_quality_solver_20261111.md)
 
 近期：[自由关节预览内环的等价批量计算](batched_joint_rollout_20261111.md)

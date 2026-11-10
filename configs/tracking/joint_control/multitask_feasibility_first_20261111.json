@@ -1,0 +1,32 @@
+{
+  "schema": "s2a.multitask-feasibility-first.v1",
+  "cases": [
+    {"case_index": 2, "case_id": "task0_init0_s43_raw", "kind": "stopped_quality", "step": 48, "completed_feedback_steps": 5},
+    {"case_index": 6, "case_id": "task1_init0_s43_raw", "kind": "stopped_quality", "step": 57, "completed_feedback_steps": 5},
+    {"case_index": 10, "case_id": "task2_init0_s43_raw", "kind": "warning_start", "step": 34, "completed_feedback_steps": 0},
+    {"case_index": 11, "case_id": "task2_init0_s43_terminal058", "kind": "warning_start", "step": 82, "completed_feedback_steps": 0}
+  ],
+  "seed": 43,
+  "solvers": ["original", "feasibility_first"],
+  "plan_horizon": 8,
+  "control_dt_s": 0.05,
+  "inner_dt_s": 0.002,
+  "joint_buffer_rad": 0.05,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "arm_rate_limit": 0.25,
+  "braking_time_s": 0.1,
+  "max_response_evaluations_per_solver": 160,
+  "max_optimizer_calls": 8,
+  "max_optimizer_responses": 1280,
+  "max_models": 4,
+  "max_static_forward_queries": 14,
+  "max_independent_endpoint_queries": 1600,
+  "max_independent_transition_steps": 20800,
+  "max_workers": 4,
+  "worker_timeout_seconds": 1800,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
