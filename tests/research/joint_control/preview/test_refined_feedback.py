@@ -106,3 +106,25 @@ def test_select_rejects_inconsistent_completed_history_lengths():
     policy.tracking.history.completed_periods = 1
     with pytest.raises(ValueError, match="same completed periods"):
         policy.select(np.zeros(7), LIMITS, JAC, np.zeros(7), 0)
+
+
+def test_explicit_gripper_command_is_bound_to_the_completed_seven_dimensional_action():
+    env, policy, _receipt = fixture()
+    action = policy.select(np.zeros(7), LIMITS, JAC, np.zeros(7), 0, gripper_command=1.0)
+    assert action["command"][6] == 1.0
+    env.robots[0].controller.goal_pos = np.array([0.005, 0, 0])
+    wrong = action["command"].copy()
+    wrong[6] = 0.0
+    with pytest.raises(ValueError, match="differs"):
+        policy.observe(env, wrong, 0)
+    policy.observe(env, action["command"], 0)
+    assert policy.previous[6] == 1.0
+
+
+@pytest.mark.parametrize("gripper_command", [True, 1.01, -1.01, float("nan"), float("inf"), "0"])
+def test_invalid_gripper_command_is_rejected_before_preparing_arm_history(gripper_command):
+    _env, policy, receipt = fixture()
+    with pytest.raises(ValueError, match="bounded gripper"):
+        policy.select(np.zeros(7), LIMITS, JAC, np.zeros(7), 0, gripper_command=gripper_command)
+    assert policy.pending is None and policy.tracking.phase == "ready"
+    assert receipt["preview_calls"] == receipt["refiner_calls"] == {"attempted": 0, "completed": 0}

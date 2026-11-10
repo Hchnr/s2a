@@ -1,0 +1,20 @@
+{
+  "schema": "s2a.causal-gripper-history.v1",
+  "cases": [
+    {"case_index": 0, "case_id": "task0_init0_s42_raw", "prefix_steps": 136, "task_id": 8},
+    {"case_index": 5, "case_id": "task1_init0_s42_terminal058", "prefix_steps": 360, "task_id": 9}
+  ],
+  "seed": 42,
+  "control_dt_s": 0.05,
+  "atol": 1e-10,
+  "rtol": 0,
+  "max_reconstructed_steps": 496,
+  "max_planner_calls": 496,
+  "max_candidate_sequences": 3254256,
+  "max_workers": 2,
+  "worker_timeout_seconds": 1800,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

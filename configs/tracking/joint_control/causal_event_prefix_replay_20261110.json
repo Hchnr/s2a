@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.causal-event-prefix-replay.v1",
+  "cases": [
+    {"case_index": 0, "case_id": "task0_init0_s42_raw", "prefix_steps": 136, "source_step": 128, "event_endpoint": 139, "task_id": 8},
+    {"case_index": 5, "case_id": "task1_init0_s42_terminal058", "prefix_steps": 360, "source_step": 344, "event_endpoint": 364, "task_id": 9}
+  ],
+  "seed": 42,
+  "atol": 1e-10,
+  "rtol": 0,
+  "max_control_steps": 496,
+  "max_native_steps": 12400,
+  "max_models": 6,
+  "max_contexts": 6,
+  "max_workers": 2,
+  "worker_timeout_seconds": 1800,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

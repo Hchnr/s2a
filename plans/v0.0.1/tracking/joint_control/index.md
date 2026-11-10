@@ -1,5 +1,19 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[已生成新旧参考的八周期因果衔接](causal_event_bridge_feedback_20261110.md)
+
+近期：[闭合后切回已生成的新参考](causal_event_switch_feedback_20261110.md)
+
+近期：[闭合事件记忆的16周期固定参考对照](causal_event_long_feedback_20261110.md)
+
+近期：[旧/新闭合参考的匹配状态实际反馈对照](causal_event_feedback_20261110.md)
+
+近期：[闭合机会的夹爪历史重建](causal_gripper_history_20261110.md)
+
+近期：[两处闭合影子机会的原生命令前缀](causal_event_prefix_replay_20261110.md)
+
+近期：[跨重规划因果事件记忆](causal_event_memory_20261110.md) · [影子回放独立复核](causal_event_memory_check_20261110.md)
+
 近期：[开发参考阶段一致性与独立复核](replan_task_event_stability_20261110.md) · [逐点复核](replan_task_event_stability_check_20261110.md)
 
 近期：[新参考重规划的安全优先质量恢复反馈](replan_restoration_feedback_20261110.md)

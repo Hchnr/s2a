@@ -12,13 +12,28 @@ from s2a.research.native_runtime.development_prefix_replay import (
     replay_saved_prefix,
     saved_prefix,
 )
-from s2a.research.native_runtime.development_prefix_runtime import run_prefix_runtime
+from s2a.research.native_runtime.development_prefix_runtime import run_prefix_runtime, validate_registered_runtime
 from scripts.simulation.runtime.replay_multicase_development_prefix import read_recorded_prefix, select_prefix
 
 
 def xml(paths, *, gravity="0 0 -9.81"):
     elements = "".join(f'<mesh name="m{i}" file="{path}"/>' for i, path in enumerate(paths))
     return f'<mujoco><option gravity="{gravity}"/><asset>{elements}</asset></mujoco>'.encode()
+
+
+def test_runtime_seed_requires_exact_explicit_registration():
+    validate_registered_runtime({"seed": 43, "task_id": 8}, 43)
+    validate_registered_runtime({"seed": 42, "task_id": 9}, 42)
+    for config, registered_seed in (
+        ({"seed": 42, "task_id": 8}, 43),
+        ({"seed": 43, "task_id": 9}, 42),
+        ({"seed": 42, "task_id": 10}, 42),
+        ({"seed": 42.0, "task_id": 8}, 42),
+        ({"seed": 42, "task_id": 8}, True),
+        ({"seed": 44, "task_id": 8}, 44),
+    ):
+        with pytest.raises(ValueError, match="explicit registration"):
+            validate_registered_runtime(config, registered_seed)
 
 
 def test_record_mapping_is_reversible_and_rejects_changed_asset_order():

@@ -1,0 +1,32 @@
+{
+  "schema": "s2a.causal-event-feedback.v1",
+  "cases": [
+    {"case_index": 0, "case_id": "task0_init0_s42_raw", "prefix_steps": 136, "old_step": 128, "task_id": 8, "target": "akita_black_bowl_1"},
+    {"case_index": 5, "case_id": "task1_init0_s42_terminal058", "prefix_steps": 360, "old_step": 344, "task_id": 9, "target": "wine_bottle_1"}
+  ],
+  "branches": ["latest", "remembered"],
+  "seed": 42,
+  "continuation_steps": 8,
+  "control_dt_s": 0.05,
+  "joint_buffer_rad": 0.05,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "arm_rate_limit": 0.25,
+  "comparison_atol": 1e-10,
+  "comparison_rtol": 0,
+  "max_control_steps_per_phase": 1024,
+  "max_native_steps_per_phase": 25600,
+  "max_models_per_phase": 12,
+  "max_contexts_per_phase": 12,
+  "max_refiner_calls_per_phase": 32,
+  "max_refiner_response_evaluations_per_phase": 15360,
+  "max_quality_calls_per_phase": 32,
+  "max_quality_response_evaluations_per_phase": 5120,
+  "max_gripper_planner_calls_per_phase": 1024,
+  "max_gripper_candidate_sequences_per_phase": 6718464,
+  "max_workers": 4,
+  "worker_timeout_seconds": 1800,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
