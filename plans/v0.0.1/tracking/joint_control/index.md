@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[闭合后切回已生成的新参考](causal_event_switch_feedback_20261110.md)
+
 近期：[闭合事件记忆的16周期固定参考对照](causal_event_long_feedback_20261110.md)
 
 近期：[旧/新闭合参考的匹配状态实际反馈对照](causal_event_feedback_20261110.md)
