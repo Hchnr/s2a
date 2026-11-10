@@ -34,6 +34,20 @@ FULL_QA = REPO / "outputs/qa/replan_full_horizon_feedback_20261110/result.json"
 FULL_DRY = REPO / "outputs/replan_full_horizon_feedback_dry_20261110/result.json"
 FULL_ROOT = REPO / "outputs/replan_full_horizon_feedback_20261110"
 FULL_MODULE = "s2a.research.joint_control.preview.full_horizon_feedback"
+RESTORE_CONFIG = REPO / "configs/tracking/joint_control/replan_restoration_feedback_20261110.json"
+RESTORE_PLAN = REPO / "plans/v0.0.1/tracking/joint_control/replan_restoration_feedback_20261110.md"
+RESTORE_QA = REPO / "outputs/qa/replan_restoration_feedback_20261110/result.json"
+RESTORE_DRY = REPO / "outputs/replan_restoration_feedback_dry_20261110/result.json"
+RESTORE_ROOT = REPO / "outputs/replan_restoration_feedback_20261110"
+RESTORE_MODULE = "s2a.research.joint_control.preview.restoration_horizon_feedback"
+FULL_PRODUCER = {
+    "path": str(FULL_ROOT / "producer/result.json"),
+    "sha256": "677f0fed299ccff22caf96eadaa1dc5476edcc44e238f16a4d332a16be82668f",
+}
+FULL_CHECKER = {
+    "path": str(FULL_ROOT / "checker/result.json"),
+    "sha256": "ffe672c10d11e9c1ef412dba73dc536474c1ea1147ab93a29a5f65e989442ba0",
+}
 MODEL_RESULT = {
     "path": str(REPO / "outputs/replan_full_horizon_quality_20261110/result.json"),
     "sha256": "b07c99f8127a182aebaf862338e58e2e8c1fb365eaf1cf5a239b124832ce8408",
@@ -49,20 +63,29 @@ BASE_CHECKER = {
 CASES = (2, 6)
 
 
-def source_refs(*, full=False):
+def source_refs(*, full=False, restore=False):
+    prefix.require(not (full and restore), "Only one registered candidate")
     paths = (
         Path(__file__),
         CONFIG,
         PLAN,
         REPO / "tests/research/native_runtime/test_replan_quality_feedback_inputs.py",
     )
-    if full:
+    if full or restore:
         paths += (
             FULL_CONFIG,
             FULL_PLAN,
             REPO / "src/s2a/research/joint_control/preview/full_horizon_feedback.py",
             REPO / "tests/research/joint_control/preview/test_full_horizon_feedback.py",
             REPO / "tests/research/native_runtime/test_replan_full_horizon_feedback_inputs.py",
+        )
+    if restore:
+        paths += (
+            RESTORE_CONFIG,
+            RESTORE_PLAN,
+            REPO / "src/s2a/research/joint_control/preview/restoration_horizon_feedback.py",
+            REPO / "tests/research/joint_control/preview/test_restoration_horizon_feedback.py",
+            REPO / "tests/research/native_runtime/test_replan_restoration_feedback_inputs.py",
         )
     return switch.source_refs() + [prefix.reference(path) for path in paths]
 
@@ -182,10 +205,45 @@ def load_full_inputs():
     return inputs
 
 
-def make_full_refiner(env, case, receipt):
+def load_restoration_inputs():
+    """Keep the two prior physical branches and register the restoration candidate."""
+    config_ref = prefix.reference(RESTORE_CONFIG)
+    config = prefix.read(config_ref)
+    expected = dict(prefix.read(prefix.reference(FULL_CONFIG)))
+    expected.update(schema="s2a.replan-restoration-feedback.v1", branch="restoration_quality_new")
+    prefix.require(config == expected, "Exact registered first-point restoration scope")
+    inputs = load_full_inputs()
+    refs = inputs["source_sha256"]
+    refs[str(RESTORE_CONFIG)] = config_ref["sha256"]
+    for phase, ref in (("producer", FULL_PRODUCER), ("checker", FULL_CHECKER)):
+        result = prefix.read(ref)
+        prefix.require(
+            result["phase"] == phase
+            and result["complete"] is result["passed"] is result["sources_unchanged"] is True
+            and len(result["branch_refs"]) == 2,
+            "Both full-horizon physical branches are closed",
+        )
+        refs[ref["path"]] = ref["sha256"]
+        seen = set()
+        for case_ref in result["branch_refs"]:
+            case_result = prefix.read(case_ref)
+            prefix.require(
+                case_result["phase"] == phase
+                and case_result["case_index"] in CASES
+                and case_result["case_index"] not in seen
+                and case_result["branch"] == "full_quality_new"
+                and case_result["complete"] is case_result["passed"] is True,
+                "Original two-case comparison is intact",
+            )
+            seen.add(case_result["case_index"])
+            refs[case_ref["path"]] = case_ref["sha256"]
+        prefix.require(seen == set(CASES), "Both original cases must remain in the comparison")
+    return inputs
+
+
+def make_full_refiner(env, case, receipt, *, restore=False):
     """Restore completed histories and bind one eight-point solver/auditor pair."""
     from s2a.research.joint_control.preview.completed_history import restore_recomputed_history
-    from s2a.research.joint_control.preview.full_horizon_feedback import FullHorizonSolverAudit
     from s2a.research.joint_control.preview.quality_feedback_refiner import QualityFeedbackRefiner
     from s2a.research.joint_control.preview.refined_feedback import RefinedPreviewFeedback
     from s2a.research.response_models.causal.causal_inner_error import CausalInnerError
@@ -194,7 +252,15 @@ def make_full_refiner(env, case, receipt):
     _mass, velocity, site = current_robot_dynamics(env, jacobian)
     twist = jacobian @ velocity
     evidence, completed = case["previous_evidence"], case["completed_history"]
-    history, adapter = CausalInnerError(), FullHorizonSolverAudit()
+    if restore:
+        from s2a.research.joint_control.preview.restoration_horizon_feedback import RestorationHorizonSolverAudit
+
+        adapter = RestorationHorizonSolverAudit()
+    else:
+        from s2a.research.joint_control.preview.full_horizon_feedback import FullHorizonSolverAudit
+
+        adapter = FullHorizonSolverAudit()
+    history = CausalInnerError()
     refiner = QualityFeedbackRefiner(
         history,
         receipt,
@@ -258,31 +324,36 @@ def after_quality_completed(quality_done, receipt, case, expected=None, *, tcp_r
     return completed
 
 
-def branch_key(index, *, full=False):
+def branch_key(index, *, full=False, restore=False):
     prefix.require(index in CASES, "Fixed registered quality branch")
-    return f"case_{index:02d}_{'full_quality_new' if full else 'quality_new'}"
+    prefix.require(not (full and restore), "Only one registered candidate")
+    branch = "restoration_quality_new" if restore else "full_quality_new" if full else "quality_new"
+    return f"case_{index:02d}_{branch}"
 
 
-def worker(phase, index, *, full=False):
+def worker(phase, index, *, full=False, restore=False):
     def interrupted(signum, _frame):
         raise InterruptedError(f"Worker received signal {signum}")
 
     signal.signal(signal.SIGTERM, interrupted)
-    root = FULL_ROOT if full else ROOT
-    directory = root / phase / branch_key(index, full=full)
+    prefix.require(not (full and restore), "Only one registered candidate")
+    root = RESTORE_ROOT if restore else FULL_ROOT if full else ROOT
+    directory = root / phase / branch_key(index, full=full, restore=restore)
     registration = prefix.read(prefix.reference(root / phase / "registration.json"))
-    inputs = load_full_inputs() if full else load_inputs()
+    inputs = load_restoration_inputs() if restore else load_full_inputs() if full else load_inputs()
     prefix.require(
         inputs["source_sha256"] == registration["source_sha256"]
         and inputs["asset_refs"] == registration["asset_refs"]
-        and source_refs(full=full) == registration["source_refs"],
+        and source_refs(full=full, restore=restore) == registration["source_refs"],
         "Frozen branch inputs and sources",
     )
     case = next(item for item in inputs["cases"] if item["spec"]["case_index"] == index)
     selected = switch.selected_case(case, "new")
     expected, expected_stop = None, None
     if phase == "checker":
-        original = prefix.read(prefix.reference(root / "producer" / branch_key(index, full=full) / "result.json"))
+        original = prefix.read(
+            prefix.reference(root / "producer" / branch_key(index, full=full, restore=restore) / "result.json")
+        )
         prefix.require(original["complete"] is original["passed"] is True, "Closed producer branch required")
         expected = original["runtime"]["continuation"]["periods"]
         expected_stop = original["runtime"]["continuation"]["stop"]
@@ -291,7 +362,7 @@ def worker(phase, index, *, full=False):
         "passed": False,
         "phase": phase,
         "case_index": index,
-        "branch": "full_quality_new" if full else "quality_new",
+        "branch": "restoration_quality_new" if restore else "full_quality_new" if full else "quality_new",
         "automatic_retry": False,
     }
     try:
@@ -310,8 +381,8 @@ def worker(phase, index, *, full=False):
                     return None
             else:
                 policy, history = (
-                    make_full_refiner(env, selected, receipt)
-                    if full
+                    make_full_refiner(env, selected, receipt, restore=restore)
+                    if full or restore
                     else base.quality.make_quality_refiner(env, selected, receipt)
                 )
                 select, quality_done = base.quality.quality_callbacks(policy, history, receipt, 16)
@@ -379,6 +450,7 @@ def worker(phase, index, *, full=False):
                 and base.quality.baseline.POLICY_MODULE not in sys.modules
                 and base.quality.baseline.PREVIEW_MODULE not in sys.modules
                 and FULL_MODULE not in sys.modules
+                and RESTORE_MODULE not in sys.modules
                 and receipt["newly_selected_commands"] == 0
                 and receipt["preview_calls"]["attempted"] == receipt["refiner_calls"]["attempted"] == 0,
                 "Checker only replays saved actions and scores actual states",
@@ -391,6 +463,7 @@ def worker(phase, index, *, full=False):
             preview_module_imported=base.quality.baseline.PREVIEW_MODULE in sys.modules,
             quality_module_imported=base.quality.QUALITY_MODULE in sys.modules,
             full_module_imported=FULL_MODULE in sys.modules,
+            restoration_module_imported=RESTORE_MODULE in sys.modules,
         )
     except BaseException as error:
         result["error"] = {"type": type(error).__name__, "message": str(error)}
@@ -399,9 +472,16 @@ def worker(phase, index, *, full=False):
         print(publish(directory / "result.json", result), flush=True)
 
 
-def run_phase(phase, *, full=False):
-    root, dry_path, qa_path = (FULL_ROOT, FULL_DRY, FULL_QA) if full else (ROOT, DRY, QA)
-    max_quality_responses = 5120 if full else 2560
+def run_phase(phase, *, full=False, restore=False):
+    prefix.require(not (full and restore), "Only one registered candidate")
+    root, dry_path, qa_path = (
+        (RESTORE_ROOT, RESTORE_DRY, RESTORE_QA)
+        if restore
+        else (FULL_ROOT, FULL_DRY, FULL_QA)
+        if full
+        else (ROOT, DRY, QA)
+    )
+    max_quality_responses = 5120 if full or restore else 2560
     directory = root / phase
     prefix.require(not directory.exists(), "New phase output only; no automatic retry")
     dry_ref, qa_ref = prefix.reference(dry_path), prefix.reference(qa_path)
@@ -413,8 +493,8 @@ def run_phase(phase, *, full=False):
     )
     before = snapshot(REPO)["sources"]
     prefix.require(before == prefix.read(qa["source_before_ref"])["sources"], "Full QA source identity")
-    sources = source_refs(full=full)
-    inputs = load_full_inputs() if full else load_inputs()
+    sources = source_refs(full=full, restore=restore)
+    inputs = load_restoration_inputs() if restore else load_full_inputs() if full else load_inputs()
     prefix.require(
         dry["source_refs"] == sources
         and dry["source_sha256"] == inputs["source_sha256"]
@@ -459,17 +539,17 @@ def run_phase(phase, *, full=False):
     )
     specs = [
         {
-            "key": branch_key(index, full=full),
+            "key": branch_key(index, full=full, restore=restore),
             "argv": [
                 sys.executable,
                 "-m",
                 "scripts.simulation.runtime.run_replan_quality_feedback",
-                *(["--full"] if full else []),
+                *(["--restore"] if restore else ["--full"] if full else []),
                 "--worker",
                 phase,
                 str(index),
             ],
-            "log": directory / branch_key(index, full=full) / "worker.log",
+            "log": directory / branch_key(index, full=full, restore=restore) / "worker.log",
         }
         for index in CASES
     ]
@@ -497,12 +577,15 @@ def run_phase(phase, *, full=False):
             ),
             "Both workers closed and reaped",
         )
-        refs = [prefix.reference(directory / branch_key(index, full=full) / "result.json") for index in CASES]
+        refs = [
+            prefix.reference(directory / branch_key(index, full=full, restore=restore) / "result.json")
+            for index in CASES
+        ]
         branches = [prefix.read(ref) for ref in refs]
         prefix.require(all(branch["complete"] is branch["passed"] is True for branch in branches), "Complete branches")
         prefix.require(
             all(prefix.reference(path)["sha256"] == digest for path, digest in inputs["source_sha256"].items())
-            and source_refs(full=full) == sources
+            and source_refs(full=full, restore=restore) == sources
             and snapshot(REPO)["sources"] == before,
             "Sources and inputs unchanged",
         )
@@ -554,6 +637,7 @@ def run_phase(phase, *, full=False):
                     and not branch["preview_module_imported"]
                     and not branch["quality_module_imported"]
                     and not branch["full_module_imported"]
+                    and not branch["restoration_module_imported"]
                     and branch["runtime"]["newly_selected_commands"] == 0
                     for branch in branches
                 ),
@@ -582,7 +666,9 @@ def run_phase(phase, *, full=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--full", action="store_true", help="Use the separately registered eight-point candidate")
+    variant = parser.add_mutually_exclusive_group()
+    variant.add_argument("--full", action="store_true", help="Use the separately registered eight-point candidate")
+    variant.add_argument("--restore", action="store_true", help="Use the registered first-point restoration candidate")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--dry-run", action="store_true")
     group.add_argument("--produce", action="store_true")
@@ -590,17 +676,17 @@ def main():
     group.add_argument("--worker", nargs=2, metavar=("PHASE", "CASE"))
     args = parser.parse_args()
     prefix.environment()
-    dry_path = FULL_DRY if args.full else DRY
+    dry_path = RESTORE_DRY if args.restore else FULL_DRY if args.full else DRY
     if args.dry_run:
         prefix.require(not dry_path.exists(), "New dry output only")
-        inputs = load_full_inputs() if args.full else load_inputs()
+        inputs = load_restoration_inputs() if args.restore else load_full_inputs() if args.full else load_inputs()
         print(
             publish(
                 dry_path,
                 {
                     "complete": True,
                     "passed": True,
-                    "source_refs": source_refs(full=args.full),
+                    "source_refs": source_refs(full=args.full, restore=args.restore),
                     "source_sha256": inputs["source_sha256"],
                     "asset_refs": inputs["asset_refs"],
                     "prefix_steps": [case["spec"]["prefix_steps"] for case in inputs["cases"]],
@@ -616,13 +702,13 @@ def main():
             flush=True,
         )
     elif args.produce:
-        run_phase("producer", full=args.full)
+        run_phase("producer", full=args.full, restore=args.restore)
     elif args.check:
-        run_phase("checker", full=args.full)
+        run_phase("checker", full=args.full, restore=args.restore)
     else:
         phase, index = args.worker
         prefix.require(phase in ("producer", "checker"), "Registered phase")
-        worker(phase, int(index), full=args.full)
+        worker(phase, int(index), full=args.full, restore=args.restore)
 
 
 if __name__ == "__main__":
