@@ -26,6 +26,19 @@ PLAN = REPO / "plans/v0.0.1/tracking/joint_control/combined_warning_feedback_202
 QA = REPO / "outputs/qa/combined_warning_feedback_20261110/result.json"
 DRY = REPO / "outputs/combined_warning_feedback_dry_20261110/result.json"
 ROOT = REPO / "outputs/combined_warning_feedback_20261110"
+LONG_CONFIG = REPO / "configs/tracking/joint_control/combined_warning_long_feedback_20261110.json"
+LONG_PLAN = REPO / "plans/v0.0.1/tracking/joint_control/combined_warning_long_feedback_20261110.md"
+LONG_QA = REPO / "outputs/qa/combined_warning_long_feedback_20261110/result.json"
+LONG_DRY = REPO / "outputs/combined_warning_long_feedback_dry_20261110/result.json"
+LONG_ROOT = REPO / "outputs/combined_warning_long_feedback_20261110"
+PRIOR_PRODUCER = {
+    "path": str(ROOT / "producer/result.json"),
+    "sha256": "71aeaa44bdb9a2182d87fa808edfda1bc32e2c67162fd0695bbcfd41f64e64a4",
+}
+PRIOR_CHECKER = {
+    "path": str(ROOT / "checker/result.json"),
+    "sha256": "95a9d802307d16ee0729a5c1c4634adf1c75ce26e5a768a3b94301a90d6c7441",
+}
 AUDIT = {
     "path": str(REPO / "outputs/combined_quality_warning_20261110/result.json"),
     "sha256": "e0b92c73c38aa5e5ec2eefe42c31c9efcc586127e91390d6afd5a04577ce9be9",
@@ -68,7 +81,7 @@ def completed_from_prefix(rows, commands):
     )
 
 
-def source_refs():
+def source_refs(*, longer=False):
     paths = (
         Path(__file__),
         CONFIG,
@@ -78,6 +91,13 @@ def source_refs():
         REPO / "tests/research/joint_control/tracking/test_combined_warning_inputs.py",
         REPO / "tests/research/native_runtime/test_combined_warning_feedback_inputs.py",
     )
+    if longer:
+        paths += (
+            LONG_CONFIG,
+            LONG_PLAN,
+            REPO / "tests/research/native_runtime/test_long_development_continuation.py",
+            REPO / "tests/research/native_runtime/test_combined_warning_long_feedback_inputs.py",
+        )
     return quality.source_refs() + [prefix.reference(path) for path in paths]
 
 
@@ -197,6 +217,65 @@ def load_inputs():
     return inputs
 
 
+def load_long_inputs():
+    """Extend only the current generated reference, preserving every original gate."""
+    config_ref = prefix.reference(LONG_CONFIG)
+    config = prefix.read(config_ref)
+    prefix.require(
+        config
+        == {
+            "schema": "s2a.combined-warning-long-feedback.v1",
+            "cases": [2, 6],
+            "sampling_seed": 43,
+            "prefix_steps": 9,
+            "chunk_index": 1,
+            "cursor": 1,
+            "branches": ["original", "quality"],
+            "continuation_steps": 16,
+            "control_dt_s": 0.05,
+            "joint_buffer_rad": 0.05,
+            "position_cap_m": 0.01,
+            "rotation_cap_rad": 0.05,
+            "arm_rate_limit": 0.25,
+            "braking_time_s": 0.1,
+            "max_control_steps_per_phase": 100,
+            "max_native_steps_per_phase": 2500,
+            "max_models_per_phase": 12,
+            "max_contexts_per_phase": 12,
+            "max_refiner_calls_per_phase": 64,
+            "max_refiner_response_evaluations_per_phase": 30720,
+            "max_quality_calls_per_phase": 32,
+            "max_quality_response_evaluations_per_phase": 5120,
+            "max_audit_endpoint_queries_per_phase": 6400,
+            "max_audit_transition_steps_per_phase": 83200,
+            "worker_timeout_seconds": 1800,
+            "world_model_calls": 0,
+            "fresh_cases": 0,
+            "automatic_retry": False,
+        },
+        "Exact registered longer feedback scope",
+    )
+    for ref in (PRIOR_PRODUCER, PRIOR_CHECKER):
+        result = prefix.read(ref)
+        prefix.require(
+            result["complete"] is result["passed"] is result["sources_unchanged"] is True
+            and len(result["branch_refs"]) == 4,
+            "The earlier eight-step producer and checker are closed",
+        )
+    inputs = load_inputs()
+    inputs["source_sha256"].update(
+        {
+            str(LONG_CONFIG): config_ref["sha256"],
+            PRIOR_PRODUCER["path"]: PRIOR_PRODUCER["sha256"],
+            PRIOR_CHECKER["path"]: PRIOR_CHECKER["sha256"],
+        }
+    )
+    for case in inputs["cases"]:
+        prefix.require(case["targets"].shape == (40, 4, 4), "The current generated reference contains sixteen targets")
+        case["fixed_targets"] = case["targets"][1:17].copy()
+    return inputs
+
+
 def first_decision_comparison(selected, row):
     """Compare a completed calculation with the original current decision."""
     command = np.asarray(selected["command"], dtype=float)
@@ -249,7 +328,7 @@ def guarded_action(choose_action, receipt, *, first_decision_check=None):
     return select
 
 
-def reconcile_checker_stop(continuation, expected_stop, *, mode, start_step):
+def reconcile_checker_stop(continuation, expected_stop, *, mode, start_step, horizon=8):
     """Verify physical stops and label optimization stops as not re-solved."""
     reason = None if expected_stop is None else expected_stop.get("reason")
     decision_stop = reason in ("quality_no_witness", "quality_witness_rejected", "observed_joint_buffer_loss")
@@ -260,7 +339,7 @@ def reconcile_checker_stop(continuation, expected_stop, *, mode, start_step):
     periods = continuation["periods"]
     prefix.require(
         continuation["stop"] is None
-        and len(periods) < 8
+        and len(periods) < horizon
         and expected_stop.get("at_step") == start_step + len(periods)
         and expected_stop.get("next_action_dispatched") is False,
         "Decision stop must follow exactly the replayed actions",
@@ -280,24 +359,25 @@ def branch_key(index, mode):
     return f"case_{index:02d}_{mode}"
 
 
-def worker(phase, index, mode):
+def worker(phase, index, mode, *, longer=False):
     def interrupted(signum, _frame):
         raise InterruptedError(f"Worker received signal {signum}")
 
     signal.signal(signal.SIGTERM, interrupted)
-    directory = ROOT / phase / branch_key(index, mode)
-    registration = prefix.read(prefix.reference(ROOT / phase / "registration.json"))
-    inputs = load_inputs()
+    root, horizon = (LONG_ROOT, 16) if longer else (ROOT, 8)
+    directory = root / phase / branch_key(index, mode)
+    registration = prefix.read(prefix.reference(root / phase / "registration.json"))
+    inputs = load_long_inputs() if longer else load_inputs()
     prefix.require(
         inputs["source_sha256"] == registration["source_sha256"]
         and inputs["asset_refs"] == registration["asset_refs"]
-        and source_refs() == registration["source_refs"],
+        and source_refs(longer=longer) == registration["source_refs"],
         "Frozen branch inputs and sources",
     )
     case = next(item for item in inputs["cases"] if item["spec"]["case_index"] == index)
     expected, expected_stop = None, None
     if phase == "checker":
-        original = prefix.read(prefix.reference(ROOT / "producer" / branch_key(index, mode) / "result.json"))
+        original = prefix.read(prefix.reference(root / "producer" / branch_key(index, mode) / "result.json"))
         prefix.require(original["complete"] is original["passed"] is True, "Closed producer branch required")
         expected = original["runtime"]["continuation"]["periods"]
         expected_stop = original["runtime"]["continuation"]["stop"]
@@ -350,9 +430,10 @@ def worker(phase, index, mode):
                 expected_periods=expected,
                 on_completed=on_completed,
                 progress=progress,
+                continuation_limit=horizon,
             )
             if phase == "checker":
-                return reconcile_checker_stop(outcome, expected_stop, mode=mode, start_step=9)
+                return reconcile_checker_stop(outcome, expected_stop, mode=mode, start_step=9, horizon=horizon)
             return outcome
 
         def progress(receipt):
@@ -386,7 +467,8 @@ def worker(phase, index, mode):
                 inputs["asset_refs"],
                 case["controller"],
                 continuation=continuation,
-                continuation_budget=8,
+                continuation_budget=horizon,
+                continuation_limit=horizon,
                 progress=progress,
             )
         except PrefixReplayFailure as error:
@@ -416,10 +498,13 @@ def worker(phase, index, mode):
         print(publish(directory / "result.json", result), flush=True)
 
 
-def run_phase(phase):
-    directory = ROOT / phase
+def run_phase(phase, *, longer=False):
+    root, dry_path, qa_path, horizon = (LONG_ROOT, LONG_DRY, LONG_QA, 16) if longer else (ROOT, DRY, QA, 8)
+    max_controls, max_native = 4 * (9 + horizon), 25 * 4 * (9 + horizon)
+    max_refiners, max_quality = 4 * horizon, 2 * horizon
+    directory = root / phase
     prefix.require(not directory.exists(), "New phase output only; no automatic retry")
-    dry_ref, qa_ref = prefix.reference(DRY), prefix.reference(QA)
+    dry_ref, qa_ref = prefix.reference(dry_path), prefix.reference(qa_path)
     dry, qa = prefix.read(dry_ref), prefix.read(qa_ref)
     prefix.require(dry["complete"] is dry["passed"] is True and dry["physics_steps"] == 0, "Zero-model dry closed")
     prefix.require(
@@ -428,7 +513,8 @@ def run_phase(phase):
     )
     before = snapshot(REPO)["sources"]
     prefix.require(before == prefix.read(qa["source_before_ref"])["sources"], "Full QA source identity")
-    sources, inputs = source_refs(), load_inputs()
+    sources = source_refs(longer=longer)
+    inputs = load_long_inputs() if longer else load_inputs()
     prefix.require(
         dry["source_refs"] == sources
         and dry["source_sha256"] == inputs["source_sha256"]
@@ -437,7 +523,7 @@ def run_phase(phase):
     )
     producer_ref = None
     if phase == "checker":
-        producer_ref = prefix.reference(ROOT / "producer/result.json")
+        producer_ref = prefix.reference(root / "producer/result.json")
         producer = prefix.read(producer_ref)
         prefix.require(
             producer["complete"] is producer["passed"] is producer["sources_unchanged"] is True
@@ -457,14 +543,14 @@ def run_phase(phase):
             "source_sha256": inputs["source_sha256"],
             "asset_refs": inputs["asset_refs"],
             "branches": [list(branch) for branch in BRANCHES],
-            "max_control_steps": 68,
-            "max_native_steps": 1700,
-            "max_refiner_calls": 32,
-            "max_refiner_response_evaluations": 15360,
-            "max_quality_calls": 16,
-            "max_quality_response_evaluations": 2560,
-            "max_audit_endpoint_queries": 3200,
-            "max_audit_transition_steps": 41600,
+            "max_control_steps": max_controls,
+            "max_native_steps": max_native,
+            "max_refiner_calls": max_refiners,
+            "max_refiner_response_evaluations": 480 * max_refiners,
+            "max_quality_calls": max_quality,
+            "max_quality_response_evaluations": 160 * max_quality,
+            "max_audit_endpoint_queries": 200 * max_quality,
+            "max_audit_transition_steps": 2600 * max_quality,
             "world_model_calls": 0,
             "fresh_cases": 0,
             "automatic_retry": False,
@@ -477,6 +563,7 @@ def run_phase(phase):
                 sys.executable,
                 "-m",
                 "scripts.simulation.runtime.run_combined_warning_feedback",
+                *(["--long"] if longer else []),
                 "--worker",
                 phase,
                 str(index),
@@ -515,7 +602,7 @@ def run_phase(phase):
         prefix.require(all(branch["complete"] is branch["passed"] is True for branch in branches), "Complete branches")
         prefix.require(
             all(prefix.reference(path)["sha256"] == digest for path, digest in inputs["source_sha256"].items())
-            and source_refs() == sources
+            and source_refs(longer=longer) == sources
             and snapshot(REPO)["sources"] == before,
             "Sources and inputs unchanged",
         )
@@ -543,17 +630,17 @@ def run_phase(phase):
             branch["runtime"].get("quality_refiner", {}).get("transition_steps_charged", 0) for branch in branches
         )
         prefix.require(
-            controls <= 68
+            controls <= max_controls
             and native == controls * 25
-            and native <= 1700
+            and native <= max_native
             and models <= 12
             and contexts <= 12
-            and refiners <= 32
-            and evaluations <= 15360
-            and quality_calls <= 16
-            and quality_responses <= 2560
-            and endpoint_queries <= 3200
-            and transition_steps <= 41600,
+            and refiners <= max_refiners
+            and evaluations <= 480 * max_refiners
+            and quality_calls <= max_quality
+            and quality_responses <= 160 * max_quality
+            and endpoint_queries <= 200 * max_quality
+            and transition_steps <= 2600 * max_quality,
             "Registered phase budgets",
         )
         if phase == "checker":
@@ -591,6 +678,7 @@ def run_phase(phase):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--long", action="store_true", help="Use the separately registered sixteen-period comparison")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--dry-run", action="store_true")
     group.add_argument("--produce", action="store_true")
@@ -598,16 +686,17 @@ def main():
     group.add_argument("--worker", nargs=3, metavar=("PHASE", "CASE", "BRANCH"))
     args = parser.parse_args()
     prefix.environment()
+    dry_path = LONG_DRY if args.long else DRY
     if args.dry_run:
-        prefix.require(not DRY.exists(), "New dry output only")
-        inputs = load_inputs()
+        prefix.require(not dry_path.exists(), "New dry output only")
+        inputs = load_long_inputs() if args.long else load_inputs()
         print(
             publish(
-                DRY,
+                dry_path,
                 {
                     "complete": True,
                     "passed": True,
-                    "source_refs": source_refs(),
+                    "source_refs": source_refs(longer=args.long),
                     "source_sha256": inputs["source_sha256"],
                     "asset_refs": inputs["asset_refs"],
                     "cases": [case["intervention_spec"] for case in inputs["cases"]],
@@ -624,13 +713,13 @@ def main():
             flush=True,
         )
     elif args.produce:
-        run_phase("producer")
+        run_phase("producer", longer=args.long)
     elif args.check:
-        run_phase("checker")
+        run_phase("checker", longer=args.long)
     else:
         phase, index, mode = args.worker
         prefix.require(phase in ("producer", "checker"), "Registered phase")
-        worker(phase, int(index), mode)
+        worker(phase, int(index), mode, longer=args.long)
 
 
 if __name__ == "__main__":
