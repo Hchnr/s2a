@@ -6,6 +6,8 @@ import numpy as np
 import pytest
 
 from s2a.research.joint_control.preview.full_horizon_feedback import FullHorizonSolverAudit
+from s2a.research.joint_control.preview.quality_feedback_refiner import QualitySelectionStopped
+from tests.research.joint_control.preview.test_quality_feedback_refiner import fixture as feedback_fixture
 from tests.research.trajectory_search.test_full_horizon_quality import fixture
 
 
@@ -64,3 +66,26 @@ def test_wrong_horizon_is_rejected_before_the_solver_runs():
     with pytest.raises(ValueError):
         adapter.solve(*changed)
     assert calls == []
+
+
+def test_full_solver_integrates_with_the_existing_feedback_transaction(monkeypatch):
+    adapter = FullHorizonSolverAudit()
+    transaction, history, receipt, arguments = feedback_fixture(
+        monkeypatch, solver=adapter.solve, auditor=adapter.audit, max_quality_response_evaluations=320
+    )
+    result = transaction.prepare(*arguments, site_from_tcp=np.eye(4))
+    assert result["quality"]["verification"]["pose_horizon"] == 8
+    assert result["quality"]["verification"]["all_pose_caps_satisfied"] is True
+    assert receipt["quality_refiner"]["witness_audits_passed"] == 1
+    assert history.snapshot()["completed_periods"] == 0
+
+
+def test_full_feedback_does_not_dispatch_when_eighth_target_is_unreachable(monkeypatch):
+    adapter = FullHorizonSolverAudit()
+    transaction, history, _receipt, arguments = feedback_fixture(
+        monkeypatch, solver=adapter.solve, auditor=adapter.audit, max_quality_response_evaluations=320
+    )
+    arguments[4][7, 0, 3] = 3.0
+    with pytest.raises(QualitySelectionStopped, match="nonlinear_search_no_witness"):
+        transaction.prepare(*arguments, site_from_tcp=np.eye(4))
+    assert transaction.history.pending_plan is None and history.snapshot()["completed_periods"] == 0

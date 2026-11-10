@@ -28,6 +28,16 @@ PLAN = REPO / "plans/v0.0.1/tracking/joint_control/replan_quality_feedback_20261
 QA = REPO / "outputs/qa/replan_quality_feedback_20261110/result.json"
 DRY = REPO / "outputs/replan_quality_feedback_dry_20261110/result.json"
 ROOT = REPO / "outputs/replan_quality_feedback_20261110"
+FULL_CONFIG = REPO / "configs/tracking/joint_control/replan_full_horizon_feedback_20261110.json"
+FULL_PLAN = REPO / "plans/v0.0.1/tracking/joint_control/replan_full_horizon_feedback_20261110.md"
+FULL_QA = REPO / "outputs/qa/replan_full_horizon_feedback_20261110/result.json"
+FULL_DRY = REPO / "outputs/replan_full_horizon_feedback_dry_20261110/result.json"
+FULL_ROOT = REPO / "outputs/replan_full_horizon_feedback_20261110"
+FULL_MODULE = "s2a.research.joint_control.preview.full_horizon_feedback"
+MODEL_RESULT = {
+    "path": str(REPO / "outputs/replan_full_horizon_quality_20261110/result.json"),
+    "sha256": "b07c99f8127a182aebaf862338e58e2e8c1fb365eaf1cf5a239b124832ce8408",
+}
 BASE_PRODUCER = {
     "path": str(switch.ROOT / "producer/result.json"),
     "sha256": "58bf371b022e9daded4929df1904cc6f15ea4866f7e34791cb359f4a5f65044e",
@@ -39,13 +49,21 @@ BASE_CHECKER = {
 CASES = (2, 6)
 
 
-def source_refs():
+def source_refs(*, full=False):
     paths = (
         Path(__file__),
         CONFIG,
         PLAN,
         REPO / "tests/research/native_runtime/test_replan_quality_feedback_inputs.py",
     )
+    if full:
+        paths += (
+            FULL_CONFIG,
+            FULL_PLAN,
+            REPO / "src/s2a/research/joint_control/preview/full_horizon_feedback.py",
+            REPO / "tests/research/joint_control/preview/test_full_horizon_feedback.py",
+            REPO / "tests/research/native_runtime/test_replan_full_horizon_feedback_inputs.py",
+        )
     return switch.source_refs() + [prefix.reference(path) for path in paths]
 
 
@@ -112,6 +130,109 @@ def load_inputs():
     return inputs
 
 
+def load_full_inputs():
+    """Use the same two new-reference cases under an explicitly larger solver budget."""
+    config_ref = prefix.reference(FULL_CONFIG)
+    config = prefix.read(config_ref)
+    prefix.require(
+        config
+        == {
+            "schema": "s2a.replan-full-horizon-feedback.v1",
+            "cases": [2, 6],
+            "sampling_seed": 43,
+            "prefix_steps": 16,
+            "reference_chunk_index": 2,
+            "reference_cursor": 0,
+            "branch": "full_quality_new",
+            "continuation_steps": 8,
+            "control_dt_s": 0.05,
+            "joint_buffer_rad": 0.05,
+            "position_cap_m": 0.01,
+            "rotation_cap_rad": 0.05,
+            "arm_rate_limit": 0.25,
+            "braking_time_s": 0.1,
+            "max_control_steps_per_phase": 48,
+            "max_native_steps_per_phase": 1200,
+            "max_models_per_phase": 6,
+            "max_contexts_per_phase": 6,
+            "max_refiner_calls_per_phase": 16,
+            "max_refiner_response_evaluations_per_phase": 7680,
+            "max_quality_calls_per_phase": 16,
+            "max_quality_response_evaluations_per_phase": 5120,
+            "max_audit_endpoint_queries_per_phase": 3200,
+            "max_audit_transition_steps_per_phase": 41600,
+            "worker_timeout_seconds": 1800,
+            "world_model_calls": 0,
+            "fresh_cases": 0,
+            "automatic_retry": False,
+        },
+        "Exact registered full-horizon feedback scope",
+    )
+    prior = prefix.read(MODEL_RESULT)
+    prefix.require(
+        prior["complete"] is prior["passed"] is prior["sources_unchanged"] is True and len(prior["case_refs"]) == 2,
+        "Both fixed-state model diagnostics closed",
+    )
+    inputs = load_inputs()
+    refs = inputs["source_sha256"]
+    refs.update({str(FULL_CONFIG): config_ref["sha256"], MODEL_RESULT["path"]: MODEL_RESULT["sha256"]})
+    for ref in prior["case_refs"]:
+        prefix.checked(ref)
+        refs[ref["path"]] = ref["sha256"]
+    return inputs
+
+
+def make_full_refiner(env, case, receipt):
+    """Restore completed histories and bind one eight-point solver/auditor pair."""
+    from s2a.research.joint_control.preview.completed_history import restore_recomputed_history
+    from s2a.research.joint_control.preview.full_horizon_feedback import FullHorizonSolverAudit
+    from s2a.research.joint_control.preview.quality_feedback_refiner import QualityFeedbackRefiner
+    from s2a.research.joint_control.preview.refined_feedback import RefinedPreviewFeedback
+    from s2a.research.response_models.causal.causal_inner_error import CausalInnerError
+
+    _q, _limits, jacobian = current_joint_site_state(env)
+    _mass, velocity, site = current_robot_dynamics(env, jacobian)
+    twist = jacobian @ velocity
+    evidence, completed = case["previous_evidence"], case["completed_history"]
+    history, adapter = CausalInnerError(), FullHorizonSolverAudit()
+    refiner = QualityFeedbackRefiner(
+        history,
+        receipt,
+        start_step=case["spec"]["prefix_steps"],
+        start_cursor=case["intervention_spec"]["cursor"],
+        solver=adapter.solve,
+        auditor=adapter.audit,
+        max_quality_response_evaluations=320,
+    )
+    coupled, tracking, difference = restore_recomputed_history(
+        completed,
+        evidence["site"],
+        evidence["twist"],
+        evidence["coupled_prediction"],
+        evidence["tracking_prediction"],
+        site,
+        twist,
+        refiner=refiner,
+    )
+    site_from_tcp = inverse(np.asarray(case["controller"]["source_from_site"])) @ case["tool"]
+    targets = case["targets"] @ inverse(site_from_tcp)
+    anchor = case["anchor"] @ inverse(site_from_tcp)
+    policy = RefinedPreviewFeedback(
+        env,
+        coupled,
+        tracking,
+        targets,
+        anchor,
+        site_from_tcp,
+        case["intervention_spec"]["cursor"],
+        completed.previous_command,
+        case["controller"]["contract"],
+        receipt,
+    )
+    receipt["initial_innovation_recompute_max_difference"] = difference
+    return policy, history
+
+
 def read_actual_tcp(env, case):
     """Read the completed robot endpoint without stepping or forwarding physics."""
     _q, _limits, jacobian = current_joint_site_state(env)
@@ -137,30 +258,31 @@ def after_quality_completed(quality_done, receipt, case, expected=None, *, tcp_r
     return completed
 
 
-def branch_key(index):
+def branch_key(index, *, full=False):
     prefix.require(index in CASES, "Fixed registered quality branch")
-    return f"case_{index:02d}_quality_new"
+    return f"case_{index:02d}_{'full_quality_new' if full else 'quality_new'}"
 
 
-def worker(phase, index):
+def worker(phase, index, *, full=False):
     def interrupted(signum, _frame):
         raise InterruptedError(f"Worker received signal {signum}")
 
     signal.signal(signal.SIGTERM, interrupted)
-    directory = ROOT / phase / branch_key(index)
-    registration = prefix.read(prefix.reference(ROOT / phase / "registration.json"))
-    inputs = load_inputs()
+    root = FULL_ROOT if full else ROOT
+    directory = root / phase / branch_key(index, full=full)
+    registration = prefix.read(prefix.reference(root / phase / "registration.json"))
+    inputs = load_full_inputs() if full else load_inputs()
     prefix.require(
         inputs["source_sha256"] == registration["source_sha256"]
         and inputs["asset_refs"] == registration["asset_refs"]
-        and source_refs() == registration["source_refs"],
+        and source_refs(full=full) == registration["source_refs"],
         "Frozen branch inputs and sources",
     )
     case = next(item for item in inputs["cases"] if item["spec"]["case_index"] == index)
     selected = switch.selected_case(case, "new")
     expected, expected_stop = None, None
     if phase == "checker":
-        original = prefix.read(prefix.reference(ROOT / "producer" / branch_key(index) / "result.json"))
+        original = prefix.read(prefix.reference(root / "producer" / branch_key(index, full=full) / "result.json"))
         prefix.require(original["complete"] is original["passed"] is True, "Closed producer branch required")
         expected = original["runtime"]["continuation"]["periods"]
         expected_stop = original["runtime"]["continuation"]["stop"]
@@ -169,7 +291,7 @@ def worker(phase, index):
         "passed": False,
         "phase": phase,
         "case_index": index,
-        "branch": "quality_new",
+        "branch": "full_quality_new" if full else "quality_new",
         "automatic_retry": False,
     }
     try:
@@ -187,7 +309,11 @@ def worker(phase, index):
                 def quality_done(_env, _command, _offset):
                     return None
             else:
-                policy, history = base.quality.make_quality_refiner(env, selected, receipt)
+                policy, history = (
+                    make_full_refiner(env, selected, receipt)
+                    if full
+                    else base.quality.make_quality_refiner(env, selected, receipt)
+                )
                 select, quality_done = base.quality.quality_callbacks(policy, history, receipt, 16)
                 action = base.guarded_action(select, receipt)
             on_completed = after_quality_completed(quality_done, receipt, case, expected)
@@ -252,6 +378,7 @@ def worker(phase, index):
                 base.quality.QUALITY_MODULE not in sys.modules
                 and base.quality.baseline.POLICY_MODULE not in sys.modules
                 and base.quality.baseline.PREVIEW_MODULE not in sys.modules
+                and FULL_MODULE not in sys.modules
                 and receipt["newly_selected_commands"] == 0
                 and receipt["preview_calls"]["attempted"] == receipt["refiner_calls"]["attempted"] == 0,
                 "Checker only replays saved actions and scores actual states",
@@ -263,6 +390,7 @@ def worker(phase, index):
             candidate_policy_imported=base.quality.baseline.POLICY_MODULE in sys.modules,
             preview_module_imported=base.quality.baseline.PREVIEW_MODULE in sys.modules,
             quality_module_imported=base.quality.QUALITY_MODULE in sys.modules,
+            full_module_imported=FULL_MODULE in sys.modules,
         )
     except BaseException as error:
         result["error"] = {"type": type(error).__name__, "message": str(error)}
@@ -271,10 +399,12 @@ def worker(phase, index):
         print(publish(directory / "result.json", result), flush=True)
 
 
-def run_phase(phase):
-    directory = ROOT / phase
+def run_phase(phase, *, full=False):
+    root, dry_path, qa_path = (FULL_ROOT, FULL_DRY, FULL_QA) if full else (ROOT, DRY, QA)
+    max_quality_responses = 5120 if full else 2560
+    directory = root / phase
     prefix.require(not directory.exists(), "New phase output only; no automatic retry")
-    dry_ref, qa_ref = prefix.reference(DRY), prefix.reference(QA)
+    dry_ref, qa_ref = prefix.reference(dry_path), prefix.reference(qa_path)
     dry, qa = prefix.read(dry_ref), prefix.read(qa_ref)
     prefix.require(dry["complete"] is dry["passed"] is True and dry["physics_steps"] == 0, "Zero-model dry closed")
     prefix.require(
@@ -283,7 +413,8 @@ def run_phase(phase):
     )
     before = snapshot(REPO)["sources"]
     prefix.require(before == prefix.read(qa["source_before_ref"])["sources"], "Full QA source identity")
-    sources, inputs = source_refs(), load_inputs()
+    sources = source_refs(full=full)
+    inputs = load_full_inputs() if full else load_inputs()
     prefix.require(
         dry["source_refs"] == sources
         and dry["source_sha256"] == inputs["source_sha256"]
@@ -292,7 +423,7 @@ def run_phase(phase):
     )
     producer_ref = None
     if phase == "checker":
-        producer_ref = prefix.reference(ROOT / "producer/result.json")
+        producer_ref = prefix.reference(root / "producer/result.json")
         producer = prefix.read(producer_ref)
         prefix.require(
             producer["complete"] is producer["passed"] is producer["sources_unchanged"] is True
@@ -318,7 +449,7 @@ def run_phase(phase):
             "max_refiner_calls": 16,
             "max_refiner_response_evaluations": 7680,
             "max_quality_calls": 16,
-            "max_quality_response_evaluations": 2560,
+            "max_quality_response_evaluations": max_quality_responses,
             "max_audit_endpoint_queries": 3200,
             "max_audit_transition_steps": 41600,
             "world_model_calls": 0,
@@ -328,16 +459,17 @@ def run_phase(phase):
     )
     specs = [
         {
-            "key": branch_key(index),
+            "key": branch_key(index, full=full),
             "argv": [
                 sys.executable,
                 "-m",
                 "scripts.simulation.runtime.run_replan_quality_feedback",
+                *(["--full"] if full else []),
                 "--worker",
                 phase,
                 str(index),
             ],
-            "log": directory / branch_key(index) / "worker.log",
+            "log": directory / branch_key(index, full=full) / "worker.log",
         }
         for index in CASES
     ]
@@ -365,12 +497,12 @@ def run_phase(phase):
             ),
             "Both workers closed and reaped",
         )
-        refs = [prefix.reference(directory / branch_key(index) / "result.json") for index in CASES]
+        refs = [prefix.reference(directory / branch_key(index, full=full) / "result.json") for index in CASES]
         branches = [prefix.read(ref) for ref in refs]
         prefix.require(all(branch["complete"] is branch["passed"] is True for branch in branches), "Complete branches")
         prefix.require(
             all(prefix.reference(path)["sha256"] == digest for path, digest in inputs["source_sha256"].items())
-            and source_refs() == sources
+            and source_refs(full=full) == sources
             and snapshot(REPO)["sources"] == before,
             "Sources and inputs unchanged",
         )
@@ -403,7 +535,7 @@ def run_phase(phase):
             and refiners <= 16
             and evaluations <= 7680
             and quality_calls <= 16
-            and quality_responses <= 2560
+            and quality_responses <= max_quality_responses
             and endpoint_queries <= 3200
             and transition_steps <= 41600,
             "Registered phase budgets",
@@ -421,6 +553,7 @@ def run_phase(phase):
                     not branch["candidate_policy_imported"]
                     and not branch["preview_module_imported"]
                     and not branch["quality_module_imported"]
+                    and not branch["full_module_imported"]
                     and branch["runtime"]["newly_selected_commands"] == 0
                     for branch in branches
                 ),
@@ -449,6 +582,7 @@ def run_phase(phase):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--full", action="store_true", help="Use the separately registered eight-point candidate")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--dry-run", action="store_true")
     group.add_argument("--produce", action="store_true")
@@ -456,16 +590,17 @@ def main():
     group.add_argument("--worker", nargs=2, metavar=("PHASE", "CASE"))
     args = parser.parse_args()
     prefix.environment()
+    dry_path = FULL_DRY if args.full else DRY
     if args.dry_run:
-        prefix.require(not DRY.exists(), "New dry output only")
-        inputs = load_inputs()
+        prefix.require(not dry_path.exists(), "New dry output only")
+        inputs = load_full_inputs() if args.full else load_inputs()
         print(
             publish(
-                DRY,
+                dry_path,
                 {
                     "complete": True,
                     "passed": True,
-                    "source_refs": source_refs(),
+                    "source_refs": source_refs(full=args.full),
                     "source_sha256": inputs["source_sha256"],
                     "asset_refs": inputs["asset_refs"],
                     "prefix_steps": [case["spec"]["prefix_steps"] for case in inputs["cases"]],
@@ -481,13 +616,13 @@ def main():
             flush=True,
         )
     elif args.produce:
-        run_phase("producer")
+        run_phase("producer", full=args.full)
     elif args.check:
-        run_phase("checker")
+        run_phase("checker", full=args.full)
     else:
         phase, index = args.worker
         prefix.require(phase in ("producer", "checker"), "Registered phase")
-        worker(phase, int(index))
+        worker(phase, int(index), full=args.full)
 
 
 if __name__ == "__main__":
