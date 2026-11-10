@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[闭合事件记忆的匹配状态实际反馈](causal_event_feedback_20261110.md)
+
 最新：[闭合机会的夹爪控制历史重建](causal_gripper_history_20261110.md)
 
 最新：[闭合影子机会的原生命令前缀重放](causal_event_prefix_replay_20261110.md)
