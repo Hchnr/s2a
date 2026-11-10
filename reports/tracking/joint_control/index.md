@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[额外制动约束静态消融](braking_constraint_ablation_20261110.md)
+
 最新：[多点质量可行性恢复](full_horizon_feasibility_restoration_20261110.md)
 
 最新：[更早速度预警多点搜索](velocity_warning_full_horizon_20261110.md)
