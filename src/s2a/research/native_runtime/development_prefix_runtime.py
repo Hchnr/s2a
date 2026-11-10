@@ -22,11 +22,33 @@ class PrefixReplayFailure(RuntimeError):
 
 
 def run_prefix_runtime(
-    config, record, record_xml, commands, saved, receipts, output, asset_refs, controller, *, progress=None
+    config,
+    record,
+    record_xml,
+    commands,
+    saved,
+    receipts,
+    output,
+    asset_refs,
+    controller,
+    *,
+    continuation=None,
+    continuation_budget=0,
+    progress=None,
 ):
     """Use only a saved prefix; failed stages and partial integration remain visible."""
     count = len(commands)
-    limits = {"configure": 1, "model_construct": 3, "context": 3, "mj_step": 25 * count, "mj_step2": 0}
+    if (continuation is None and continuation_budget != 0) or (
+        continuation is not None and not 0 < continuation_budget <= 8
+    ):
+        raise ValueError("Explicit bounded continuation budget required")
+    limits = {
+        "configure": 1,
+        "model_construct": 3,
+        "context": 3,
+        "mj_step": 25 * (count + continuation_budget),
+        "mj_step2": 0,
+    }
     receipt = {
         "complete": False,
         "passed": False,
@@ -172,7 +194,9 @@ def run_prefix_runtime(
                 original = getattr(runtime.mujoco, name)
 
                 def step(*args, _name=name, _original=original, **kwargs):
-                    bootstrap._require(stage == "replay" and not closing[0], "Integration outside saved prefix")
+                    bootstrap._require(
+                        stage in ("replay", "continuation") and not closing[0], "Integration outside registered work"
+                    )
                     return counted(_name, _original, *args, **kwargs)
 
                 bootstrap._patch(stack, runtime.mujoco, name, step)
@@ -180,7 +204,9 @@ def run_prefix_runtime(
                 original = cls.step
 
                 def control_step(*args, _original=original, **kwargs):
-                    bootstrap._require(stage == "replay" and not closing[0], "Dispatch outside saved prefix")
+                    bootstrap._require(
+                        stage in ("replay", "continuation") and not closing[0], "Dispatch outside registered work"
+                    )
                     return _original(*args, **kwargs)
 
                 bootstrap._patch(stack, cls, "step", control_step)
@@ -241,6 +267,11 @@ def run_prefix_runtime(
 
             stage = "replay"
             observers = ReplayObservers(endpoint, current_observation, render_anchor, render_current_cameras)
+            terminal = {}
+
+            def save_terminal(sample, endpoint_receipt):
+                terminal.update(sample=sample, endpoint_receipt=endpoint_receipt)
+
             replay_saved_prefix(
                 env,
                 commands,
@@ -250,10 +281,22 @@ def run_prefix_runtime(
                 observers,
                 receipt,
                 initialize=initialize_gripper,
+                on_terminal=save_terminal,
                 progress=progress,
             )
+            receipt["prefix_control_steps"] = count
+            if continuation is not None:
+                bootstrap._require(bool(terminal), "Terminal endpoint must be captured before continuation")
+                stage = "continuation"
+                receipt["continuation"] = continuation(env, terminal, observers, receipt, progress=progress)
+                receipt.pop("continuation_partial", None)
+                bootstrap._require(
+                    receipt["control_steps_completed"] <= count + continuation_budget,
+                    "Continuation control budget exceeded",
+                )
             bootstrap._require(
-                receipt["counters"]["mj_step"]["completed"] == count * 25, "Complete 25 inner steps per command"
+                receipt["counters"]["mj_step"]["completed"] == receipt["control_steps_completed"] * 25,
+                "Complete 25 inner steps per completed command",
             )
             receipt["endpoint_controller"] = {
                 name: np.asarray(getattr(robot.controller, name)).tolist()

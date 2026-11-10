@@ -81,6 +81,19 @@ def environment():
     require(all(os.environ.get(key) == "1" for key in THREAD_VARS), "Single-thread CPU numerical libraries")
 
 
+def read_recorded_prefix(path, count, total):
+    """Count the whole bound log without decoding observations beyond the prefix."""
+    values = []
+    seen = 0
+    with Path(path).open() as stream:
+        for line in stream:
+            if seen < count:
+                values.append(json.loads(line))
+            seen += 1
+    require(seen == total and len(values) == count, "Complete original log and bounded prefix")
+    return values
+
+
 def load_inputs():
     refs = {}
     spec_ref = reference(CONFIG)
@@ -158,13 +171,9 @@ def load_inputs():
         )
         manifest = json.loads(reviewed(folder / "manifest.json").read_text())
         controller = json.loads(reviewed(folder / "controller.json").read_text())
-        rows = [json.loads(line) for line in reviewed(folder / "steps.jsonl").read_text().splitlines()]
-        endpoint_receipts = [
-            json.loads(line)
-            for line in reviewed(Path(worker["endpoint_receipts_ref"]["path"])).read_text().splitlines()
-        ]
+        rows = read_recorded_prefix(reviewed(folder / "steps.jsonl"), n, 600)
+        endpoint_receipts = read_recorded_prefix(reviewed(Path(worker["endpoint_receipts_ref"]["path"])), n + 1, 601)
         arrays_path = reviewed(Path(worker["arrays_ref"]["path"]))
-        require(len(rows) == 600 and len(endpoint_receipts) == 601, "Complete original logs")
         require(
             manifest["runtime_config"]["seed"] == 43
             and manifest["record"]["task_id"] == manifest["runtime_config"]["task_id"],
@@ -178,7 +187,7 @@ def load_inputs():
                 "The mapping template is the verified task0 original record",
             )
         case_xml = map_record_xml(original_xml, template_xml, mapped_xml).decode()
-        commands = np.asarray([row["command"] for row in rows[:n]], dtype=float)
+        commands = np.asarray([row["command"] for row in rows], dtype=float)
         with np.load(arrays_path, allow_pickle=False) as archive:
             saved = saved_prefix(archive, n)
         require(commands.shape == (n, 7) and np.isfinite(commands).all(), "Complete causal saved commands")

@@ -12,6 +12,8 @@ from s2a.research.native_runtime.development_prefix_replay import (
     replay_saved_prefix,
     saved_prefix,
 )
+from s2a.research.native_runtime.development_prefix_runtime import run_prefix_runtime
+from scripts.simulation.runtime.replay_multicase_development_prefix import read_recorded_prefix
 
 
 def xml(paths, *, gravity="0 0 -9.81"):
@@ -57,6 +59,14 @@ def test_saved_prefix_excludes_later_states_and_rejects_broken_cache():
     source["gripper_current_action_offsets"][2] = -1
     with pytest.raises(ValueError, match="cache"):
         saved_prefix(source, 2)
+
+
+def test_log_reader_counts_but_does_not_decode_future_rows(tmp_path):
+    path = tmp_path / "rows.jsonl"
+    path.write_text('{"step":0}\n{"step":1}\nnot-a-decoded-future-row\n')
+    assert read_recorded_prefix(path, 2, 3) == [{"step": 0}, {"step": 1}]
+    with pytest.raises(ValueError, match="Complete original log"):
+        read_recorded_prefix(path, 2, 4)
 
 
 def fixture(*, mismatch=None, fail_step=False):
@@ -125,6 +135,29 @@ def test_motor_initialization_follows_first_observation_before_endpoint():
         initialize=lambda _env: events.append(("initialize_motor", env.index)),
     )
     assert events[:4] == [("current", 0), ("initialize_motor", 0), ("endpoint", 0), ("anchor", 0)]
+
+
+def test_terminal_callback_gets_already_observed_state_without_extra_refresh():
+    env, saved, receipts, observers, events = fixture()
+    captured = []
+    replay_saved_prefix(
+        env,
+        np.zeros((2, 7)),
+        saved,
+        receipts,
+        Path("."),
+        observers,
+        {},
+        on_terminal=lambda sample, receipt: captured.append((sample["sim_states"].copy(), receipt["endpoint_step"])),
+    )
+    assert captured[0][1] == 2
+    np.testing.assert_array_equal(captured[0][0], saved["sim_states"][2])
+    assert events[-1] == ("endpoint", 2)
+
+
+def test_continuation_requires_explicit_nonzero_budget_before_runtime():
+    with pytest.raises(ValueError, match="budget"):
+        run_prefix_runtime(None, None, None, np.zeros((1, 7)), None, None, None, None, None, continuation=lambda: None)
 
 
 def test_mismatch_stops_before_the_next_dispatch():

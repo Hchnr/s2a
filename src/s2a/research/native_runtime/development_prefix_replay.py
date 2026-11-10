@@ -76,7 +76,9 @@ def saved_prefix(archive, steps):
     return saved
 
 
-def replay_saved_prefix(env, commands, saved, receipts, output, observers, receipt, *, initialize=None, progress=None):
+def replay_saved_prefix(
+    env, commands, saved, receipts, output, observers, receipt, *, initialize=None, on_terminal=None, progress=None
+):
     """Compare each endpoint before dispatching the next previously saved command."""
     commands = np.asarray(commands, dtype=float)
     count = len(commands)
@@ -131,6 +133,8 @@ def replay_saved_prefix(env, commands, saved, receipts, output, observers, recei
         if progress is not None:
             progress(receipt)
         if index == count:
+            if on_terminal is not None:
+                on_terminal(actual, actual_receipt)
             break
         if index % 8 == 0:
             observers.render_cameras(env, 256)
