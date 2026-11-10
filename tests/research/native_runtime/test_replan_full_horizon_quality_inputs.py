@@ -26,3 +26,14 @@ def test_only_auditable_joint_candidates_are_returned_for_each_mode():
     assert run.candidate_for_audit("restore_seed", {"witness_found": False}) is None
     with pytest.raises(ValueError, match="Registered solver"):
         run.candidate_for_audit("unregistered", full)
+
+
+def test_independent_quality_slack_uses_the_worst_of_all_eight_tcp_points():
+    errors = np.zeros((8, 6))
+    errors[2, 0] = 0.012
+    errors[7, 3] = 0.075
+    assert run.worst_quality_slack(errors) == pytest.approx(0.5)
+    errors[7, 3] = 0
+    assert run.worst_quality_slack(errors) == pytest.approx(0.2)
+    with pytest.raises(ValueError):
+        run.worst_quality_slack(errors[:1])
