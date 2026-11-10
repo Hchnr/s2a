@@ -3,6 +3,7 @@
 import numpy as np
 import pytest
 
+from s2a.geometry import pose_error
 from s2a.research.joint_control.tracking.early_quality_diagnostic import (
     completed_error_profile,
     independently_check_witness,
@@ -99,3 +100,36 @@ def test_independent_rollout_checks_model_witness_and_rejects_tampering():
             upper,
             past_inner_error_rad=profile,
         )
+
+
+def test_joint_only_witness_reports_but_does_not_claim_first_pose_quality():
+    args = list(inputs())
+    profile = np.full((25, 7), 0.003)
+    witness = joint_solve(*args, past_inner_error_rad=profile)
+    assert witness["witness_found"]
+    args[7] = args[7].copy()
+    args[7][:, 0, 3] += 1.0
+    witness["first_tcp_error"] = pose_error(args[7][0], witness["rollout"]["pose"][0] @ args[6])
+    model, velocity, _seed, previous, interface, site, tool, targets, _twists, lower, upper = args
+    audit_args = (
+        witness,
+        model["mass"],
+        model["jacobian"],
+        np.full(6, 100.0),
+        np.full(6, 20.0),
+        model["q"],
+        velocity,
+        model["q"],
+        interface,
+        previous,
+        site,
+        tool,
+        targets[0],
+        lower,
+        upper,
+    )
+    checked = independently_check_witness(*audit_args, past_inner_error_rad=profile, enforce_pose_caps=False)
+    assert checked["passed"] is True
+    assert checked["first_pose_caps_enforced"] is False and checked["first_pose_caps_satisfied"] is False
+    with pytest.raises(ValueError, match="first-pose caps"):
+        independently_check_witness(*audit_args, past_inner_error_rad=profile)

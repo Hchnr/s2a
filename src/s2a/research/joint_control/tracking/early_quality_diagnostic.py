@@ -60,8 +60,11 @@ def independently_check_witness(
     upper,
     *,
     past_inner_error_rad,
+    enforce_pose_caps=True,
 ):
     """Rebuild each period from the scalar transition, then audit constraints."""
+    if type(enforce_pose_caps) is not bool:
+        raise ValueError("Explicit boolean first-pose enforcement required")
     if witness.get("witness_found") is not True:
         raise ValueError("A claimed model witness is required")
     commands = finite(witness["planned_commands"])
@@ -111,7 +114,8 @@ def independently_check_witness(
     predicted_site[:3, :3] = Rotation.from_rotvec(movement[3:]).as_matrix() @ predicted_site[:3, :3]
     error = pose_error(first_target, predicted_site @ site_from_tcp)
     np.testing.assert_allclose(error, witness["first_tcp_error"], atol=1e-10, rtol=0)
-    if np.linalg.norm(error[:3]) > 0.01 + 1e-10 or np.linalg.norm(error[3:]) > 0.05 + 1e-10:
+    pose_ok = bool(np.linalg.norm(error[:3]) <= 0.01 + 1e-10 and np.linalg.norm(error[3:]) <= 0.05 + 1e-10)
+    if enforce_pose_caps and not pose_ok:
         raise ValueError("Independent absolute first-pose caps failed")
     return {
         "joint_rollout_max_difference": differences,
@@ -120,5 +124,7 @@ def independently_check_witness(
         "independent_period_model_builds": len(commands),
         "independent_endpoint_queries": 25 * len(commands),
         "independent_transition_steps": 325 * len(commands),
+        "first_pose_caps_satisfied": pose_ok,
+        "first_pose_caps_enforced": enforce_pose_caps,
         "passed": True,
     }
