@@ -2,6 +2,11 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 质量求解耗时剖析：三个已保存开发状态各两次结果完全一致，原独立
+审核均通过；不带profiler求解墙钟1.07–1.12秒，审核约21 ms。SLSQP与关节轨迹
+展开各占profiler self time约两成；零内环误差仅作离线诊断，不授予安全/实时
+资格。55项CPU专项通过，0新物理/WAM/GPU/fresh，详见[耗时报告](../reports/tracking/joint_control/quality_solver_runtime_profile_20261111.md)。
+
 2026-11-11 两因素实际对照：两种位姿下，旧opening的切换后8/8端点grasp，衔接
 opening为3/8；旧位姿+旧opening末端抬升5.31 cm，而衔接位姿+旧opening仅0.16 cm。
 四组任务成功均为0；旧opening明显偏离最新目标。32条新动作独立重放逐值一致，
