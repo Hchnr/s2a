@@ -2,6 +2,11 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 首点硬恢复：task2两个开发变体各执行1周期后在下一次320响应预算内
+无witness；raw实际首点位置略超阈值，terminal首点双阈值通过。两次停止搜索均
+未评估到线性关节安全候选，2条动作及50内步独立重放一致；76项CPU专项通过，
+详见[反馈报告](../reports/tracking/joint_control/task2_first_hard_restoration_20261111.md)。
+
 2026-11-11 task2多点恢复：相同step32/80起点分别执行0/1周期后，候选硬约束审核
 拒绝，未改善此前首点质量分支的持续性；唯一动作及25内步独立重放一致。69项CPU
 专项通过，0新WAM/GPU/fresh，详见[恢复报告](../reports/tracking/joint_control/task2_earlier_restoration_feedback_20261111.md)。
