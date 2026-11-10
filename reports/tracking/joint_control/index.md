@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[安全可行初值上的两阶段首点优先反馈](task2_staged_first_feasibility_20261111.md)
+
 最新：[原安全约束内的可行初值恢复反馈](task2_feasible_start_restoration_20261111.md)
 
 最新：[保持首点硬约束的多点恢复反馈](task2_first_hard_restoration_20261111.md)
