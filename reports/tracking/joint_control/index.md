@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[第三个任务新参考生成时的前瞻反馈](task2_earlier_preview_feedback_20261111.md)
+
 最新：[三任务首周期位置可达域外界](first_step_position_bound_20261111.md)
 
 最新：[三任务停止/预警状态的可行性优先搜索对照](multitask_feasibility_first_20261111.md)
