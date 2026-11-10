@@ -11,9 +11,9 @@ import numpy as np
 from s2a.controllers.osc import OSCInterface
 from s2a.infrastructure.owned_processes import run_owned_workers
 from s2a.infrastructure.publication import publish_result as publish
-from s2a.research.joint_control.preview.batched_free_joint_rollout import BatchedFreeJointRollout
 from s2a.research.joint_control.preview.interior_joint_preview import build_joint_preview
 from s2a.research.joint_control.tracking.early_quality_diagnostic import independently_check_witness
+from s2a.research.trajectory_search.isolated_batched_quality_solver import IsolatedBatchedQualitySolver
 from s2a.research.trajectory_search.quality_capped_inner_joint_plan import solve_interior_plan
 from scripts.maintenance.run_cpu_tests import snapshot
 from scripts.simulation.runtime import prepare_batched_quality_solver as binding
@@ -21,7 +21,7 @@ from scripts.simulation.runtime import prepare_quality_solver_runtime_profile as
 from scripts.simulation.runtime import replay_multicase_development_prefix as prefix
 
 REPO = prefix.REPO
-QA = REPO / "outputs/qa/batched_quality_solver_20261111/result.json"
+QA = REPO / "outputs/qa/batched_quality_solver_20261111_v2/result.json"
 DRY = REPO / "outputs/batched_quality_solver_dry_20261111/result.json"
 ROOT = REPO / "outputs/batched_quality_solver_20261111"
 
@@ -103,20 +103,15 @@ def run_sample(sample, config, ledger):
             dt=0.002,
         )
     )
-    candidate, prepare_time = timed(lambda: BatchedFreeJointRollout(model))
+    candidate, prepare_time = timed(lambda: IsolatedBatchedQualitySolver(model))
     contract = sample["contract"]
     interface = OSCInterface(*(contract[key] for key in ("input_min", "input_max", "output_min", "output_max")))
-
-    def batched_rollout(actual_model, velocity, deltas, site, lower, upper, *, enforce_limits):
-        prefix.require(actual_model is model, "Prepared rollout is bound to the current frozen model")
-        return candidate.rollout(velocity, deltas, site, lower, upper, enforce_limits=enforce_limits)
 
     def solve(mode):
         ledger["solver_calls_attempted"] += 1
         kwargs = {"past_inner_error_rad": sample["past_inner_error_rad"]}
-        if mode == "batched":
-            kwargs["rollout_fn"] = batched_rollout
-        result = solve_interior_plan(
+        solver = candidate.solve if mode == "batched" else solve_interior_plan
+        result = solver(
             model,
             sample["velocity"],
             sample["seed"],

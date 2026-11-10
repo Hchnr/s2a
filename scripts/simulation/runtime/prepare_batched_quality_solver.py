@@ -23,7 +23,9 @@ def source_refs():
             CONFIG,
             PLAN,
             REPO / "src/s2a/research/trajectory_search/quality_capped_inner_joint_plan.py",
+            REPO / "src/s2a/research/trajectory_search/isolated_batched_quality_solver.py",
             REPO / "tests/research/trajectory_search/test_quality_capped_inner_joint_plan.py",
+            REPO / "tests/research/trajectory_search/test_isolated_batched_quality_solver.py",
             REPO / "tests/research/native_runtime/test_batched_quality_solver_inputs.py",
         )
     ]
