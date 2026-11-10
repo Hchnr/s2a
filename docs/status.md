@@ -2,6 +2,11 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 批量质量求解对照：三个相关开发时刻各两次原/批量求解均获witness，
+12次独立审核通过，成对命令最大差6.73e-14；批量求解约0.887–0.927秒，仍不具
+20 Hz资格。默认控制器未切换，0新物理/WAM/GPU/fresh；68项CPU专项通过，详见
+[对照报告](../reports/tracking/joint_control/batched_quality_solver_20261111.md)。
+
 2026-11-11 批量求解器对照首次QA在收集前拒绝：原求解器/历史测试的SHA与迁移
 身份清单冲突，未执行测试或求解；原字节已恢复并核验，后续使用独立候选入口，
 详见[QA记录](../reports/tracking/joint_control/batched_quality_solver_qa_incident_20261111.md)。
