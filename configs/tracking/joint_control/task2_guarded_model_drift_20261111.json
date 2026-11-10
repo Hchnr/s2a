@@ -1,0 +1,28 @@
+{
+  "schema": "s2a.task2-guarded-model-drift.v1",
+  "cases": [
+    {"case_index": 10, "start_step": 32, "completed_periods": 1},
+    {"case_index": 11, "start_step": 80, "completed_periods": 4}
+  ],
+  "seed": 43,
+  "control_dt_s": 0.05,
+  "inner_dt_s": 0.002,
+  "joint_buffer_rad": 0.05,
+  "braking_time_s": 0.1,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "arm_rate_limit": 0.25,
+  "max_models": 2,
+  "max_static_forward_queries": 10,
+  "max_eight_step_rollouts": 10,
+  "max_counterfactual_model_builds": 10,
+  "max_counterfactual_first_rollouts": 10,
+  "max_independent_first_responses": 10,
+  "max_independent_transition_steps": 250,
+  "max_workers": 2,
+  "worker_timeout_seconds": 1200,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
