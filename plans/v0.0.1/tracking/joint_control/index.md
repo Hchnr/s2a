@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[停止状态的后移计划双点资格检查](task2_shifted_seed_qualification_20261111.md)
+
 近期：[已执行双点计划的状态与模型偏差](task2_guarded_model_drift_20261111.md)
 
 近期：[数值余量双点搜索的实际反馈](task2_guarded_two_step_feedback_20261111.md)
