@@ -2,6 +2,11 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 两因素实际对照：两种位姿下，旧opening的切换后8/8端点grasp，衔接
+opening为3/8；旧位姿+旧opening末端抬升5.31 cm，而衔接位姿+旧opening仅0.16 cm。
+四组任务成功均为0；旧opening明显偏离最新目标。32条新动作独立重放逐值一致，
+182项CPU专项通过；另保留原中断的未知额外费用，详见[对照报告](../reports/tracking/joint_control/causal_event_bridge_factorial_20261111.md)。
+
 2026-11-11 两因素对照中断：两路producer最后各记录64周期原前缀，进程和句柄已
 消失，无退出或完整结果收据；实际总费用未知。原部分证据保持，另行登记从原初态
 的独占恢复，详见[中断账本](../reports/tracking/joint_control/causal_event_factorial_interruption_20261111.md)。
