@@ -65,18 +65,21 @@ def run_continuation(
     task_observer=None,
     on_completed=None,
     progress=None,
+    continuation_limit=8,
 ):
-    """Dispatch at most eight actions; privileged task data are scoring-only."""
+    """Dispatch a registered eight- or sixteen-step fixed-reference continuation."""
     targets, tool = np.asarray(targets, dtype=float), np.asarray(tool, dtype=float)
     previous = np.asarray(previous_command, dtype=float).copy()
-    if targets.shape != (8, 4, 4) or tool.shape != (4, 4) or previous.shape != (7,):
-        raise ValueError("Eight already-generated targets, tool and previous command required")
+    if type(continuation_limit) is not int or continuation_limit not in (8, 16):
+        raise ValueError("An explicit eight- or sixteen-step continuation is required")
+    if targets.shape != (continuation_limit, 4, 4) or tool.shape != (4, 4) or previous.shape != (7,):
+        raise ValueError("Registered already-generated targets, tool and previous command required")
     if not np.isfinite(targets).all() or not np.isfinite(tool).all() or not np.isfinite(previous).all():
         raise ValueError("Finite continuation inputs required")
-    if expected_periods is not None and not 0 <= len(expected_periods) <= 8:
+    if expected_periods is not None and not 0 <= len(expected_periods) <= continuation_limit:
         raise ValueError("A bounded recorded continuation is required")
-    if historical_states is not None and np.asarray(historical_states).shape != (8, 79):
-        raise ValueError("Exactly eight historical comparison states required")
+    if historical_states is not None and np.asarray(historical_states).shape != (continuation_limit, 79):
+        raise ValueError("Exactly the registered historical comparison states are required")
     if task_observer is None:
         from s2a.research.wam.tracking.runtime.checkpoint_simulation import object_progress
 
@@ -89,7 +92,7 @@ def run_continuation(
     periods = []
     partial = {"periods": periods, "stop": None}
     receipt["continuation_partial"] = partial
-    count = 8 if expected_periods is None else len(expected_periods)
+    count = continuation_limit if expected_periods is None else len(expected_periods)
     if terminal["endpoint_receipt"]["endpoint_step"] != start_step:
         raise ValueError("Continuation begins at the verified prefix endpoint")
     try:

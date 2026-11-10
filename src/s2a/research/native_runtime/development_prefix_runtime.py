@@ -34,12 +34,17 @@ def run_prefix_runtime(
     *,
     continuation=None,
     continuation_budget=0,
+    continuation_limit=8,
     progress=None,
 ):
     """Use only a saved prefix; failed stages and partial integration remain visible."""
     count = len(commands)
-    if (continuation is None and continuation_budget != 0) or (
-        continuation is not None and not 0 < continuation_budget <= 8
+    if (
+        type(continuation_limit) is not int
+        or continuation_limit not in (8, 16)
+        or type(continuation_budget) is not int
+        or (continuation is None and continuation_budget != 0)
+        or (continuation is not None and not 0 < continuation_budget <= continuation_limit)
     ):
         raise ValueError("Explicit bounded continuation budget required")
     limits = {
