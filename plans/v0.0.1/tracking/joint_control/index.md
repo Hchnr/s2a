@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[第三个任务的提前多点质量恢复反馈](task2_earlier_restoration_feedback_20261111.md)
+
 近期：[第三个任务新参考生成时的前瞻反馈](task2_earlier_preview_feedback_20261111.md)
 
 近期：[三任务首周期位置可达域外界](first_step_position_bound_20261111.md)
