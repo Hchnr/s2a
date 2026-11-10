@@ -53,12 +53,14 @@ def fake_runtime(*, outside=False):
     return env, observers, state_reader, task_observer, terminal
 
 
-def execute(*, outside=False, expected=None, on_completed=None):
+def execute(*, outside=False, expected=None, on_completed=None, choose=None):
     env, observers, state_reader, task_observer, terminal = fake_runtime(outside=outside)
     calls = []
 
     def action(q, _limits, _jacobian, _previous, offset):
         calls.append((offset, q.copy()))
+        if choose is not None:
+            return choose(offset)
         return {"command": np.zeros(7)}
 
     receipt = {"control_steps_attempted": 0, "control_steps_completed": 0, "newly_selected_commands": 0}
@@ -118,3 +120,42 @@ def test_completed_hook_runs_for_violation_before_stopping_next_dispatch():
     result, _, calls = execute(outside=True, on_completed=lambda _env, _command, offset: events.append(offset))
     assert events == [0]
     assert len(calls) == result["steps_completed"] == 1
+
+
+def test_no_witness_stops_before_dispatch_and_preserves_completed_periods():
+    def choose(offset):
+        if offset == 2:
+            return {"stop": {"reason": "quality_no_witness", "solver_status": "no_witness"}}
+        return {"command": np.zeros(7), "newly_selected": True}
+
+    result, receipt, calls = execute(choose=choose)
+    assert [item[0] for item in calls] == [0, 1, 2]
+    assert result["steps_completed"] == 2
+    assert result["stop"] == {
+        "reason": "quality_no_witness",
+        "solver_status": "no_witness",
+        "at_step": 3,
+        "next_action_dispatched": False,
+    }
+    assert receipt["control_steps_attempted"] == receipt["control_steps_completed"] == 2
+    assert receipt["newly_selected_commands"] == 2
+
+
+def test_empty_recorded_actions_replay_without_calling_action_selector():
+    result, receipt, calls = execute(expected=[])
+    assert result == {"periods": [], "stop": None, "steps_completed": 0}
+    assert calls == []
+    assert receipt["control_steps_attempted"] == receipt["newly_selected_commands"] == 0
+
+
+@pytest.mark.parametrize(
+    "decision",
+    [
+        {"stop": {"reason": "no_witness"}, "command": np.zeros(7)},
+        {"stop": {"reason": "no_witness"}, "newly_selected": True},
+        {"stop": {}},
+    ],
+)
+def test_invalid_stop_cannot_dispatch_or_select_a_command(decision):
+    with pytest.raises(ValueError, match="pre-dispatch stop"):
+        execute(choose=lambda _offset: decision)

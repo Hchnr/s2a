@@ -53,7 +53,7 @@ def recompute_completed_innovation(previous_site, previous_twist, prediction, cu
     return history.observe_completed(current_site, current_twist)
 
 
-def restore_completed_history(completed, current_site, current_twist):
+def restore_completed_history(completed, current_site, current_twist, *, refiner=None):
     """Return two independent ready histories at the just-observed endpoint."""
     if not isinstance(completed, CompletedHistory):
         raise TypeError("Explicit completed history is required")
@@ -62,7 +62,7 @@ def restore_completed_history(completed, current_site, current_twist):
     coupled.innovation = completed.coupled_innovation.copy()
     coupled.expected_pose, coupled.expected_twist = site.copy(), twist.copy()
     coupled.completed_periods = completed.completed_periods
-    tracking = TrackingPreviewTransaction()
+    tracking = TrackingPreviewTransaction(refiner=refiner)
     tracking.history.innovation = completed.tracking_innovation.copy()
     tracking.history.expected_pose, tracking.history.expected_twist = site.copy(), twist.copy()
     tracking.history.completed_periods = completed.completed_periods
@@ -71,7 +71,15 @@ def restore_completed_history(completed, current_site, current_twist):
 
 
 def restore_recomputed_history(
-    completed, previous_site, previous_twist, coupled_prediction, tracking_prediction, current_site, current_twist
+    completed,
+    previous_site,
+    previous_twist,
+    coupled_prediction,
+    tracking_prediction,
+    current_site,
+    current_twist,
+    *,
+    refiner=None,
 ):
     """Restore only if prior predictions explain both saved completed innovations."""
     if not isinstance(completed, CompletedHistory):
@@ -95,5 +103,5 @@ def restore_recomputed_history(
         completed.last_plan,
         completed.completed_periods,
     )
-    coupled, tracking = restore_completed_history(rebuilt, current_site, current_twist)
+    coupled, tracking = restore_completed_history(rebuilt, current_site, current_twist, refiner=refiner)
     return coupled, tracking, difference

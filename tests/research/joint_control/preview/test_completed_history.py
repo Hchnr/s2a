@@ -77,3 +77,32 @@ def test_recomputed_restore_rejects_unexplained_saved_innovation():
     changed[0] = 1e-3
     with pytest.raises(ValueError, match="innovations"):
         restore_recomputed_history(past, np.eye(4), np.zeros(6), changed, np.zeros(12), np.eye(4), np.zeros(6))
+
+
+def test_restored_history_can_use_a_refiner_without_changing_completed_plan():
+    past = completed()
+    calls = []
+
+    def refiner(*args, **_kwargs):
+        calls.append(True)
+        plan = np.zeros((1, 6))
+        args[-1].stage_plan(plan)
+        return {"command": plan[0], "planned_commands": plan, "nominal_response": np.zeros(12)}
+
+    _, tracking = restore_completed_history(past, np.eye(4), np.zeros(6), refiner=refiner)
+    result = tracking.prepare(
+        None,
+        {},
+        np.eye(4),
+        np.zeros(6),
+        np.array([np.eye(4)]),
+        np.eye(4),
+        0,
+        np.zeros((1, 6)),
+        past.previous_command[:6],
+        {},
+        site_from_tcp=np.eye(4),
+    )
+    assert calls == [True]
+    np.testing.assert_array_equal(result["command"], np.zeros(6))
+    np.testing.assert_array_equal(past.last_plan, completed().last_plan)

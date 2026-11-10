@@ -73,8 +73,8 @@ def run_continuation(
         raise ValueError("Eight already-generated targets, tool and previous command required")
     if not np.isfinite(targets).all() or not np.isfinite(tool).all() or not np.isfinite(previous).all():
         raise ValueError("Finite continuation inputs required")
-    if expected_periods is not None and not 1 <= len(expected_periods) <= 8:
-        raise ValueError("A nonempty bounded recorded continuation is required")
+    if expected_periods is not None and not 0 <= len(expected_periods) <= 8:
+        raise ValueError("A bounded recorded continuation is required")
     if historical_states is not None and np.asarray(historical_states).shape != (8, 79):
         raise ValueError("Exactly eight historical comparison states required")
     if task_observer is None:
@@ -97,6 +97,23 @@ def run_continuation(
             step = start_step + offset
             q, limits, jacobian = state_reader(env)
             selected = choose_action(q.copy(), limits.copy(), jacobian.copy(), previous.copy(), offset)
+            if not isinstance(selected, dict):
+                raise ValueError("Action selection must return a decision")
+            if "stop" in selected:
+                stop = selected["stop"]
+                if (
+                    not isinstance(stop, dict)
+                    or not isinstance(stop.get("reason"), str)
+                    or not stop["reason"]
+                    or "command" in selected
+                    or selected.get("newly_selected", False) is not False
+                    or expected_periods is not None
+                ):
+                    raise ValueError("A pre-dispatch stop must contain a reason and no selected command")
+                partial["stop"] = {**stop, "at_step": step, "next_action_dispatched": False}
+                if progress is not None:
+                    progress(receipt)
+                break
             newly_selected = selected.get("newly_selected", False)
             if not isinstance(newly_selected, bool):
                 raise ValueError("Explicit new-command accounting must be boolean")
