@@ -1,6 +1,7 @@
 """Causal preview/refinement transactions over actually completed control periods."""
 
 import time
+from numbers import Real
 
 import numpy as np
 
@@ -54,7 +55,14 @@ class RefinedPreviewFeedback:
         self.receipt["refiner_calls"] = {"attempted": 0, "completed": 0}
         self.receipt["refiner_response_evaluations"] = 0
 
-    def select(self, q, limits, jacobian, previous, offset):
+    def select(self, q, limits, jacobian, previous, offset, *, gripper_command=0.0):
+        if (
+            isinstance(gripper_command, (bool, np.bool_))
+            or not isinstance(gripper_command, Real)
+            or not np.isfinite(gripper_command)
+            or not -1 <= gripper_command <= 1
+        ):
+            raise ValueError("An explicit finite bounded gripper command is required")
         if self.pending is not None or self.tracking.phase != "ready" or self.coupled.pending is not None:
             raise ValueError("Previous action must be observed before another selection")
         if self.coupled.completed_periods != self.tracking.history.completed_periods:
@@ -117,7 +125,7 @@ class RefinedPreviewFeedback:
         model = build_response(mass, jacobian, controller.kp, controller.kd, relative)
         self.tracking.commit(command)
         self.coupled.commit_executed(site, twist, model, command[:3], self.contract)
-        dispatched = np.r_[command, 0.0]
+        dispatched = np.r_[command, float(gripper_command)]
         self.pending = {
             "command": dispatched.copy(),
             "goal_pos": np.asarray(refined["expected_goal_pos"]).copy(),
