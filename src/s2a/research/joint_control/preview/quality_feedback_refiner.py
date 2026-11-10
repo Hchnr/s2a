@@ -112,6 +112,9 @@ class QualityFeedbackRefiner:
         kp, kd = dynamics["kp"], dynamics["kd"]
         model = build_joint_preview(mass, jacobian, kp, kd, q, controller.initial_joint, null_kp=10.0, dt=0.002)
         interface = OSCInterface(*(contract[k] for k in ("input_min", "input_max", "output_min", "output_max")))
+        if any(np.all(interface.decode(command)[3:] == 0) for command in seed):
+            plan_history.pending_plan = None
+            raise QualitySelectionStopped("quality_no_witness", "unsupported_rotation_latch")
         tcp_poses, tcp_anchor = poses @ site_from_tcp, anchor @ site_from_tcp
         desired = tcp_poses[index : index + len(seed)]
         if len(desired) != len(seed):
@@ -148,6 +151,7 @@ class QualityFeedbackRefiner:
         self.stats["endpoint_queries_charged"] += 25 * len(seed)
         self.stats["transition_steps_charged"] += 325 * len(seed)
         try:
+            plan = finite(solved["planned_commands"], seed.shape).copy()
             verification = self.auditor(
                 solved,
                 mass,
@@ -166,13 +170,16 @@ class QualityFeedbackRefiner:
                 limits[:, 1],
                 past_inner_error_rad=past["inner_position_error_rad"],
             )
-            if verification.get("passed") is not True:
+            if (
+                verification.get("passed") is not True
+                or verification.get("independent_endpoint_queries") != 25 * len(seed)
+                or verification.get("independent_transition_steps") != 325 * len(seed)
+            ):
                 raise ValueError("Independent witness audit did not pass")
         except (AssertionError, ValueError) as error:
             plan_history.pending_plan = None
             raise QualitySelectionStopped("quality_witness_rejected", str(solved["status"]), str(error)) from error
         self.stats["witness_audits_passed"] += 1
-        plan = finite(solved["planned_commands"], seed.shape).copy()
         nominal = rollout_joint_preview(
             model,
             velocity,

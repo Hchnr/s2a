@@ -74,7 +74,12 @@ def test_no_witness_clears_unexecuted_plan_and_preserves_actual_history(monkeypa
 
 def test_failed_independent_audit_stops_before_a_candidate_is_staged(monkeypatch):
     def solver(*_args, **_kwargs):
-        return {"witness_found": True, "status": "model_witness", "response_evaluations": 1}
+        return {
+            "witness_found": True,
+            "status": "model_witness",
+            "response_evaluations": 1,
+            "planned_commands": np.zeros((8, 6)),
+        }
 
     def reject(*_args, **_kwargs):
         raise ValueError("tampered witness")
@@ -86,6 +91,23 @@ def test_failed_independent_audit_stops_before_a_candidate_is_staged(monkeypatch
     assert transaction.history.pending_plan is None and history.snapshot()["completed_periods"] == 0
     assert receipt["quality_refiner"]["witness_audits_attempted"] == 1
     assert receipt["quality_refiner"]["endpoint_queries_charged"] == 200
+
+
+def test_unsupported_future_rotation_latch_stops_without_calling_solver(monkeypatch):
+    transaction, history, receipt, arguments = fixture(monkeypatch)
+
+    def latch_baseline(*args, **_kwargs):
+        plan = np.zeros((8, 6))
+        plan[0, 3] = 0.001
+        args[-1].stage_plan(plan)
+        return {"planned_commands": plan, "evaluations": 2, "optimization": None}
+
+    transaction._refiner.baseline = latch_baseline
+    with pytest.raises(quality.QualitySelectionStopped) as caught:
+        transaction.prepare(*arguments, site_from_tcp=np.eye(4))
+    assert caught.value.reason == "quality_no_witness" and caught.value.status == "unsupported_rotation_latch"
+    assert transaction.history.pending_plan is None and history.snapshot()["completed_periods"] == 0
+    assert receipt["quality_refiner"]["quality_calls_attempted"] == 0
 
 
 def test_checked_plan_is_committed_then_only_completed_samples_tighten_next_solve(monkeypatch):
