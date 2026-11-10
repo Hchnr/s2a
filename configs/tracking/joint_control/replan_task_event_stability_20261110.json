@@ -1,0 +1,21 @@
+{
+  "schema": "s2a.replan-task-event-stability.v1",
+  "cases": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  "steps_per_case": 600,
+  "queries_per_case": 75,
+  "query_interval": 8,
+  "horizon": 40,
+  "closing_below": 0.35,
+  "opening_above": 0.8,
+  "reference_position_scale_m": 0.02,
+  "reference_rotation_scale_rad": 0.1,
+  "current_position_scale_m": 0.03,
+  "current_rotation_scale_rad": 0.15,
+  "max_workers": 12,
+  "worker_timeout_seconds": 600,
+  "model_initializations": 0,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
