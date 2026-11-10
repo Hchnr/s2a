@@ -167,7 +167,8 @@ def load_inputs():
     return inputs
 
 
-def analyze(case, stats):
+def restore_warning_context(case, stats):
+    """Restore only the current robot and reference, without stepping physics."""
     import mujoco
 
     def prohibited(*_args, **_kwargs):
@@ -209,6 +210,11 @@ def analyze(case, stats):
         current["limits"][:, 0],
         current["limits"][:, 1],
     )
+    return current, site_from_tcp, targets, args, differences
+
+
+def analyze(case, stats):
+    current, site_from_tcp, targets, args, differences = restore_warning_context(case, stats)
     profile = np.zeros((25, 7))
     output, terminal_normals = {}, None
     for label in ("full_original", "first_quality", "full_first_warm"):
