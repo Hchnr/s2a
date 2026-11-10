@@ -1,0 +1,25 @@
+{
+  "schema": "s2a.task2-warning-prefix.v1",
+  "cases": [
+    {"case_index": 10, "case_id": "task2_init0_s43_raw", "prefix_steps": 34},
+    {"case_index": 11, "case_id": "task2_init0_s43_terminal058", "prefix_steps": 82}
+  ],
+  "task_id": 6,
+  "seed": 43,
+  "warning_rule": "velocity_0p2s",
+  "joint_buffer_rad": 0.05,
+  "control_dt_s": 0.05,
+  "inner_dt_s": 0.002,
+  "absolute_tolerance": 1e-10,
+  "relative_tolerance": 0,
+  "max_control_steps": 116,
+  "max_inner_steps": 2900,
+  "max_models": 6,
+  "max_contexts": 6,
+  "max_workers": 2,
+  "worker_timeout_seconds": 1800,
+  "new_actions": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
