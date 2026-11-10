@@ -1,0 +1,13 @@
+{
+  "seed": 42,
+  "arms": ["root", "full"],
+  "max_evaluations_per_arm": 640,
+  "max_iterations_per_arm": 8,
+  "maximum_responses_per_side": 641,
+  "total_response_budget_per_arm": 1282,
+  "total_inner_step_budget_per_arm": 384600,
+  "total_query_budget_per_arm": 399986,
+  "model_budget_per_arm": 2,
+  "timeout_seconds": 1800,
+  "automatic_retry": false
+}
