@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[第三个任务的双点硬约束实际反馈](task2_two_step_feedback_20261111.md)
+
 近期：[提前一拍的双点质量可行性](two_step_viability_20261111.md)
 
 近期：[三任务停止状态的位姿与安全联合外界](stopped_pose_safety_bound_20261111.md)
