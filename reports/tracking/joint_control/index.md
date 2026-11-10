@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[质量求解器对照首次QA准入失败](batched_quality_solver_qa_incident_20261111.md)
+
 最新：[自由关节预览的批量展开对照](batched_joint_rollout_20261111.md)
 
 最新：[质量约束求解的固定状态CPU耗时剖析](quality_solver_runtime_profile_20261111.md)
