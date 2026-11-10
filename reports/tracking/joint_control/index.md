@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[更早速度预警多点搜索](velocity_warning_full_horizon_20261110.md)
+
 最新：[首次预警8点质量搜索](full_horizon_quality_feasibility_20261110.md)
 
 最新诊断：[质量反馈停止状态可行性](quality_stop_feasibility_20261110.md)
