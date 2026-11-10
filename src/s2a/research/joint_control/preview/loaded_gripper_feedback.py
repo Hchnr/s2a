@@ -2,7 +2,8 @@
 
 import numpy as np
 
-from s2a.research.joint_control.preview.quality_feedback_refiner import QualitySelectionStopped
+from s2a.geometry import inverse, validate_transform
+from s2a.research.joint_control.preview.quality_feedback_refiner import QualityFeedbackRefiner, QualitySelectionStopped
 from s2a.research.native_runtime.development_continuation import current_robot_dynamics
 
 
@@ -80,6 +81,70 @@ class LoadedGripperFeedback:
             "candidate_sequences": 0,
             "committed": 0,
             "aborted_before_dispatch": 0,
+        }
+
+    def rebind_reference(self, poses, openings, anchor, *, offset, next_cursor, generated_step):
+        """Switch only a generated reference at an already completed boundary."""
+        arm, past, gripper_state = self.arm_policy, self.inner_history.snapshot(), self.gripper.state()
+        if (
+            self.pending is not None
+            or self.last_inner_loss
+            or gripper_state.get("staged") is not False
+            or gripper_state.get("faulted") is not False
+            or arm.pending is not None
+            or arm.coupled.pending is not None
+            or arm.tracking.phase != "ready"
+            or type(offset) is not int
+            or not 0 < offset < self.max_steps
+            or arm.coupled.completed_periods != arm.initial_periods + offset
+            or arm.tracking.history.completed_periods != arm.coupled.completed_periods
+            or past["completed_periods"] != offset
+            or past["last_completed_step"] != self.start_step + offset - 1
+            or self.inner_history._prediction is not None
+        ):
+            raise ValueError("A fully observed matching action history is required before switching")
+        refiner = arm.tracking._refiner
+        if (
+            not isinstance(refiner, QualityFeedbackRefiner)
+            or refiner.history is not self.inner_history
+            or refiner.receipt is not self.receipt
+            or refiner.start_step != self.start_step
+            or refiner.start_cursor != self.cursor
+            or arm.cursor != self.cursor
+        ):
+            raise ValueError("The original quality and reference history must remain bound")
+        if (
+            type(next_cursor) is not int
+            or next_cursor < offset
+            or type(generated_step) is not int
+            or generated_step < 0
+            or generated_step + next_cursor != self.start_step + offset
+        ):
+            raise ValueError("The new cursor must preserve absolute endpoint timing")
+        base = next_cursor - offset
+        if base + self.max_steps + 7 > 40:
+            raise ValueError("The new generated reference cannot cover the remaining preview")
+        poses = validate_transform(np.asarray(poses, dtype=float))
+        anchor = validate_transform(np.asarray(anchor, dtype=float))
+        openings = np.asarray(openings, dtype=float)
+        if (
+            poses.shape != (40, 4, 4)
+            or anchor.shape != (4, 4)
+            or openings.shape != (40,)
+            or not np.isfinite(openings).all()
+            or np.any((openings < 0) | (openings > 1))
+        ):
+            raise ValueError("A complete generated TCP/opening reference is required")
+        site_targets = poses @ inverse(self.site_from_tcp)
+        site_anchor = anchor @ inverse(self.site_from_tcp)
+        self.poses, self.openings, self.cursor = poses.copy(), openings.copy(), base
+        arm.targets, arm.anchor, arm.cursor = site_targets.copy(), site_anchor.copy(), base
+        refiner.start_cursor = base
+        return {
+            "completed_offset": offset,
+            "next_cursor": next_cursor,
+            "generated_step": generated_step,
+            "cursor_base": base,
         }
 
     def select(self, q, limits, jacobian, previous, offset):

@@ -1,10 +1,13 @@
 """A complete action commits both histories only after observed execution."""
 
+from types import SimpleNamespace
+
 import numpy as np
 import pytest
 
 from s2a.research.joint_control.preview.loaded_gripper_feedback import LoadedGripperFeedback
-from s2a.research.joint_control.preview.quality_feedback_refiner import QualitySelectionStopped
+from s2a.research.joint_control.preview.quality_feedback_refiner import QualityFeedbackRefiner, QualitySelectionStopped
+from s2a.research.response_models.causal.causal_inner_error import CausalInnerError
 
 
 class FakeGripper:
@@ -32,7 +35,7 @@ class FakeGripper:
         self.aborts += 1
 
     def state(self):
-        return {"commits": self.commits}
+        return {"commits": self.commits, "staged": self.pending is not None, "faulted": False}
 
 
 class FakeArm:
@@ -139,3 +142,58 @@ def test_explicit_16_step_contract_allows_a_later_causal_period():
     assert result["command"][6] == 1.0
     with pytest.raises(ValueError, match="aligned cursor"):
         fixture(max_steps=24)
+
+
+def switch_fixture():
+    inner, receipt, gripper = CausalInnerError(), {}, FakeGripper()
+    for step in range(360, 368):
+        inner.stage(step, np.zeros((25, 7)))
+        inner.complete(step, np.zeros((25, 7)))
+    refiner = QualityFeedbackRefiner(inner, receipt, start_step=360, start_cursor=16)
+    coupled = SimpleNamespace(pending=None, completed_periods=368)
+    tracking = SimpleNamespace(phase="ready", history=SimpleNamespace(completed_periods=368), _refiner=refiner)
+    arm = SimpleNamespace(
+        pending=None, coupled=coupled, tracking=tracking, initial_periods=360, cursor=16, previous=np.arange(7)
+    )
+    poses = np.tile(np.eye(4), (40, 1, 1))
+    policy = LoadedGripperFeedback(
+        object(), arm, gripper, inner, poses, np.ones(40), 16, np.eye(4), 360, receipt, max_steps=16
+    )
+    return policy, arm, refiner, inner, gripper
+
+
+def test_switch_preserves_completed_arm_gripper_and_inner_history():
+    policy, arm, refiner, inner, gripper = switch_fixture()
+    new_poses = np.tile(np.eye(4), (40, 1, 1))
+    new_poses[:, 0, 3] = 0.02
+    new_openings = np.full(40, 0.9)
+    before = inner.snapshot()
+    action = arm.previous.copy()
+    grip = gripper.state()
+    result = policy.rebind_reference(new_poses, new_openings, np.eye(4), offset=8, next_cursor=8, generated_step=360)
+    assert result == {"completed_offset": 8, "next_cursor": 8, "generated_step": 360, "cursor_base": 0}
+    assert arm.cursor == policy.cursor == refiner.start_cursor == 0
+    assert arm.coupled.completed_periods == arm.tracking.history.completed_periods == 368
+    np.testing.assert_array_equal(arm.previous, action)
+    np.testing.assert_array_equal(inner.snapshot()["inner_position_error_rad"], before["inner_position_error_rad"])
+    assert gripper.state() == grip and inner.snapshot()["completed_periods"] == 8
+    np.testing.assert_array_equal(arm.targets, new_poses)
+
+
+@pytest.mark.parametrize("corruption", ["wrong_time", "pending", "inner_loss", "gripper_staged"])
+def test_switch_rejects_uncompleted_history_or_misaligned_reference(corruption):
+    policy, arm, _refiner, _inner, gripper = switch_fixture()
+    cursor = 8
+    if corruption == "wrong_time":
+        cursor = 9
+    elif corruption == "pending":
+        arm.pending = {}
+    elif corruption == "inner_loss":
+        policy.last_inner_loss = True
+    else:
+        gripper.pending = {}
+    with pytest.raises(ValueError):
+        policy.rebind_reference(
+            np.tile(np.eye(4), (40, 1, 1)), np.ones(40), np.eye(4), offset=8, next_cursor=cursor, generated_step=360
+        )
+    assert arm.cursor == policy.cursor == 16
