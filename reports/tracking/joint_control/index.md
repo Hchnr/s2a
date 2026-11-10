@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[两因素对照的中断账本](causal_event_factorial_interruption_20261111.md)
+
 最新：[已生成参考的八周期因果衔接反馈](causal_event_bridge_feedback_20261110.md)
 
 最新：[闭合后切回已生成新参考的实际反馈](causal_event_switch_feedback_20261110.md)

@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[两因素对照的独占目录恢复](causal_event_factorial_recovery_20261111.md)
+
 近期：[因果衔接中位姿与开度的固定两因素对照](causal_event_bridge_factorial_20261110.md)
 
 近期：[已生成新旧参考的八周期因果衔接](causal_event_bridge_feedback_20261110.md)

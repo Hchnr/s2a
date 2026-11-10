@@ -1,0 +1,29 @@
+{
+  "schema": "s2a.causal-event-factorial-recovery.v1",
+  "original_head": "9dfde8667ce629a4c3ce3cc553f2c55eefba1a9b",
+  "recovery_mode": "restart_from_original_initial_state",
+  "prior_registration": {
+    "path": "outputs/causal_event_bridge_factorial_20261110/producer/registration.json",
+    "sha256": "861acede26517b592e335a3324027d2f9f19b12a3a67b308f66d9edb4006676f"
+  },
+  "prior_references": {
+    "path": "outputs/causal_event_bridge_factorial_20261110/producer/references.json",
+    "sha256": "952417fb54b96acd926a7b49c522a84ec3a45f5b7cbe902993660a8930f458c8"
+  },
+  "prior_worker_logs": {
+    "bridge_pose_old_opening": {
+      "path": "outputs/causal_event_bridge_factorial_20261110/producer/bridge_pose_old_opening/worker.log",
+      "sha256": "55ea575e5adf4c8d6a199700ec11fbef4fbc3253792ed0edd3e7e254d75d9d68"
+    },
+    "old_pose_bridge_opening": {
+      "path": "outputs/causal_event_bridge_factorial_20261110/producer/old_pose_bridge_opening/worker.log",
+      "sha256": "1a870779e34211eb6fd4198c5185d3650ff70c184b70d1421121ea1b112f9aa7"
+    }
+  },
+  "prior_recorded_min_control_steps_per_branch": 64,
+  "prior_final_exit_and_cost_known": false,
+  "new_attempts": 1,
+  "automatic_retry": false,
+  "world_model_calls": 0,
+  "fresh_cases": 0
+}
