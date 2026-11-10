@@ -37,14 +37,18 @@ class QualityFeedbackRefiner:
         baseline=refine_native_preview,
         solver=solve_interior_plan,
         auditor=independently_check_witness,
+        max_quality_response_evaluations=160,
     ):
         if not isinstance(history, CausalInnerError) or type(start_step) is not int or type(start_cursor) is not int:
             raise ValueError("Causal inner-error history and fixed start indices required")
         if start_step < 0 or start_cursor < 0:
             raise ValueError("Nonnegative start indices required")
+        if type(max_quality_response_evaluations) is not int or max_quality_response_evaluations not in (160, 320):
+            raise ValueError("An explicitly registered quality response budget is required")
         self.history, self.receipt = history, receipt
         self.start_step, self.start_cursor = start_step, start_cursor
         self.baseline, self.solver, self.auditor = baseline, solver, auditor
+        self.max_quality_response_evaluations = max_quality_response_evaluations
         self.stats = receipt["quality_refiner"] = {
             "baseline_calls_attempted": 0,
             "baseline_calls_completed": 0,
@@ -139,7 +143,7 @@ class QualityFeedbackRefiner:
         )
         self.stats["quality_calls_completed"] += 1
         count = int(solved["response_evaluations"])
-        if not 0 <= count <= 160:
+        if not 0 <= count <= self.max_quality_response_evaluations:
             raise ValueError("Per-period quality response budget exceeded")
         self.stats["quality_response_evaluations"] += count
         if solved["witness_found"] is not True:

@@ -14,7 +14,7 @@ from s2a.research.response_models.causal.causal_inner_error import CausalInnerEr
 from s2a.research.trajectory_search.quality_capped_inner_joint_plan import solve_interior_plan
 
 
-def fixture(monkeypatch, *, solver=solve_interior_plan, auditor=quality.independently_check_witness):
+def fixture(monkeypatch, *, solver=solve_interior_plan, auditor=quality.independently_check_witness, **options):
     contract = {
         "input_min": [-1.0] * 6,
         "input_max": [1.0] * 6,
@@ -50,7 +50,7 @@ def fixture(monkeypatch, *, solver=solve_interior_plan, auditor=quality.independ
     )
     history, receipt = CausalInnerError(), {}
     refiner = quality.QualityFeedbackRefiner(
-        history, receipt, start_step=10, start_cursor=0, baseline=baseline, solver=solver, auditor=auditor
+        history, receipt, start_step=10, start_cursor=0, baseline=baseline, solver=solver, auditor=auditor, **options
     )
     transaction = TrackingPreviewTransaction(refiner=refiner)
     poses = np.tile(np.eye(4), (9, 1, 1))
@@ -160,3 +160,20 @@ def test_checked_plan_is_committed_then_only_completed_samples_tighten_next_solv
     np.testing.assert_array_equal(captured[0], np.zeros((25, 7)))
     np.testing.assert_allclose(captured[1], np.full((25, 7), 0.001), atol=1e-14, rtol=0)
     assert receipt["quality_refiner"]["witness_audits_passed"] == 1
+
+
+def test_response_budget_remains_160_by_default_and_requires_explicit_320(monkeypatch):
+    def solver(*_args, **_kwargs):
+        return {"witness_found": False, "status": "no_witness", "response_evaluations": 161}
+
+    transaction, _, _, arguments = fixture(monkeypatch, solver=solver)
+    with pytest.raises(ValueError, match="response budget"):
+        transaction.prepare(*arguments, site_from_tcp=np.eye(4))
+    transaction, _, receipt, arguments = fixture(monkeypatch, solver=solver, max_quality_response_evaluations=320)
+    with pytest.raises(quality.QualitySelectionStopped):
+        transaction.prepare(*arguments, site_from_tcp=np.eye(4))
+    assert receipt["quality_refiner"]["quality_response_evaluations"] == 161
+    with pytest.raises(ValueError, match="registered quality response budget"):
+        quality.QualityFeedbackRefiner(
+            CausalInnerError(), {}, start_step=0, start_cursor=0, max_quality_response_evaluations=321
+        )
