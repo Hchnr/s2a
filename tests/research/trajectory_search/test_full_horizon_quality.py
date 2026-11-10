@@ -156,3 +156,52 @@ def test_explicit_default_preserves_hard_quality_solver_result():
         and original["response_evaluations"] == explicit["response_evaluations"]
     )
     np.testing.assert_array_equal(original["planned_commands"], explicit["planned_commands"])
+
+
+def test_braking_ablation_keeps_actual_joint_buffer_and_reports_extra_brake_violation():
+    mass, jacobian, kp, kd = np.eye(7), np.c_[np.eye(6), np.zeros(6)], np.full(6, 100.0), np.full(6, 20.0)
+    q, velocity = np.zeros(7), np.zeros(7)
+    q[0], velocity[0] = 0.92, 0.6
+    model = build_joint_preview(mass, jacobian, kp, kd, q, q, null_kp=10, dt=0.002)
+    seed, previous = np.array([[0, 0, 0, 0.001, 0, 0]]), np.zeros(6)
+    lower, upper = -np.ones(7), np.ones(7)
+    interface = OSCInterface(-np.ones(6), np.ones(6), -np.ones(6), np.ones(6))
+    rollout = rollout_joint_preview(model, velocity, seed, np.eye(4), lower, upper, enforce_limits=False)
+    args = (
+        model,
+        velocity,
+        seed,
+        previous,
+        interface,
+        np.eye(4),
+        np.eye(4),
+        rollout["pose"],
+        rollout["twist"],
+        lower,
+        upper,
+    )
+    result = solve_full_horizon(*args, enforce_braking=False)
+    assert result["witness_found"] and result["braking_constraint_enforced"] is False
+    check_args = (
+        result,
+        mass,
+        jacobian,
+        kp,
+        kd,
+        q,
+        velocity,
+        q,
+        interface,
+        previous,
+        np.eye(4),
+        np.eye(4),
+        rollout["pose"],
+        lower,
+        upper,
+    )
+    with pytest.raises(ValueError, match="braking"):
+        audit_full_horizon_witness(*check_args, past_inner_error_rad=np.zeros((25, 7)))
+    checked = audit_full_horizon_witness(*check_args, past_inner_error_rad=np.zeros((25, 7)), enforce_braking=False)
+    assert checked["passed"] and checked["all_pose_caps_satisfied"]
+    assert not checked["braking_constraint_satisfied"] and not checked["braking_constraint_enforced"]
+    assert checked["constraint_minima"]["inner_upper"] > 0

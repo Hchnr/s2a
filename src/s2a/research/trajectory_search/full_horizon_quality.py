@@ -56,10 +56,13 @@ def solve_full_horizon(
     terminal_normals=None,
     braking_time_s=0.1,
     feasibility_restoration=False,
+    enforce_braking=True,
 ):
     """Search for a model plan satisfying all original quality and safety caps."""
     if type(feasibility_restoration) is not bool:
         raise ValueError("Explicit boolean feasibility-restoration mode required")
+    if type(enforce_braking) is not bool:
+        raise ValueError("Explicit boolean extra-braking mode required")
     seed, previous = finite(seed), finite(previous, (6,))
     if seed.ndim != 2 or seed.shape[1] != 6 or not 1 <= len(seed) <= 8:
         raise ValueError("One to eight seed commands required")
@@ -117,9 +120,10 @@ def solve_full_horizon(
     brake_jac = rollout["joint_position_jacobian"] + braking_time_s * rollout["joint_velocity_jacobian"]
     brake_a = brake_jac.reshape(brake.size, width) * scale
     brake_offset = brake.ravel() - brake_a @ seed_x
-    a = np.vstack((a, brake_a))
-    joint_lo = np.r_[joint_lo, np.tile(lower + 0.05, h) - brake_offset]
-    joint_hi = np.r_[joint_hi, np.tile(upper - 0.05, h) - brake_offset]
+    if enforce_braking:
+        a = np.vstack((a, brake_a))
+        joint_lo = np.r_[joint_lo, np.tile(lower + 0.05, h) - brake_offset]
+        joint_hi = np.r_[joint_hi, np.tile(upper - 0.05, h) - brake_offset]
     if terminal_normals is None:
         inner, identity = rollout["inner_joint_position"], np.eye(7)
         terminal_normals = np.vstack(
@@ -137,6 +141,7 @@ def solve_full_horizon(
         "past_inner_error_rad": error.copy(),
         "joint_margin_rad": 0.05,
         "braking_time_s": 0.1,
+        "braking_constraint_enforced": enforce_braking,
         "position_cap_m": 0.01,
         "rotation_cap_rad": 0.05,
         "pose_horizon": h,

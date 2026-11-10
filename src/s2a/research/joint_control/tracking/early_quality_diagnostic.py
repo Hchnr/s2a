@@ -61,10 +61,13 @@ def independently_check_witness(
     *,
     past_inner_error_rad,
     enforce_pose_caps=True,
+    enforce_braking=True,
 ):
     """Rebuild each period from the scalar transition, then audit constraints."""
     if type(enforce_pose_caps) is not bool:
         raise ValueError("Explicit boolean first-pose enforcement required")
+    if type(enforce_braking) is not bool:
+        raise ValueError("Explicit boolean extra-braking enforcement required")
     if witness.get("witness_found") is not True:
         raise ValueError("A claimed model witness is required")
     commands = finite(witness["planned_commands"])
@@ -106,7 +109,14 @@ def independently_check_witness(
         terminal_normals=witness["terminal_normals"],
         braking_time_s=0.1,
     )
-    if not audit["feasible"]:
+    brake_names = ("braking_lower", "braking_upper")
+    brake_ok = all(not len(audit["groups"][name]["violated_indices"]) for name in brake_names)
+    included_ok = all(
+        not len(group["violated_indices"])
+        for name, group in audit["groups"].items()
+        if enforce_braking or name not in brake_names
+    )
+    if not included_ok:
         raise ValueError("Independent joint, rate, braking or terminal audit failed")
     movement = np.asarray(jacobian) @ (independent["joint_position"][0] - initial_q)
     predicted_site = finite(site, (4, 4)).copy()
@@ -126,5 +136,7 @@ def independently_check_witness(
         "independent_transition_steps": 325 * len(commands),
         "first_pose_caps_satisfied": pose_ok,
         "first_pose_caps_enforced": enforce_pose_caps,
+        "braking_constraint_satisfied": brake_ok,
+        "braking_constraint_enforced": enforce_braking,
         "passed": True,
     }

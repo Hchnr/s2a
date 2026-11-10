@@ -26,10 +26,13 @@ def audit_full_horizon_witness(
     *,
     past_inner_error_rad,
     enforce_pose_caps=True,
+    enforce_braking=True,
 ):
     """Independently verify joints then reconstruct every TCP from joint endpoints."""
     if type(enforce_pose_caps) is not bool:
         raise ValueError("Explicit boolean pose-cap enforcement required")
+    if type(enforce_braking) is not bool:
+        raise ValueError("Explicit boolean extra-braking enforcement required")
     commands = finite(witness["planned_commands"])
     if commands.ndim != 2 or commands.shape[1] != 6 or not 1 <= len(commands) <= 8:
         raise ValueError("One bounded generated command plan required")
@@ -52,6 +55,7 @@ def audit_full_horizon_witness(
         upper,
         past_inner_error_rad=past_inner_error_rad,
         enforce_pose_caps=enforce_pose_caps,
+        enforce_braking=enforce_braking,
     )
     pose, prior_q = finite(site, (4, 4)).copy(), finite(q, (7,)).copy()
     jacobian = finite(jacobian, (6, 7))
