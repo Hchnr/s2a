@@ -86,6 +86,13 @@ def test_quality_stop_is_explicitly_not_resolved_by_action_replay():
     assert result["stop"] == stop and result["decision_stop_recorded_not_recomputed"]
 
 
+def test_longer_quality_stop_preserves_its_completed_action_count():
+    continuation = {"periods": [{} for _ in range(9)], "stop": None}
+    stop = {"reason": "quality_no_witness", "solver_status": "test", "at_step": 369, "next_action_dispatched": False}
+    result = runtime.reconcile_stop(continuation, stop, start_step=360, current_margin=0.8, horizon=16)
+    assert result["stop"] == stop and result["decision_stop_recorded_not_recomputed"]
+
+
 def test_checker_entry_does_not_import_or_solve_candidate_policies():
     program = (
         "import sys; from scripts.simulation.runtime import run_causal_event_feedback as r; "

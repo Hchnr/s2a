@@ -63,7 +63,7 @@ class FakeHistory:
         return {"steps": list(self.steps)}
 
 
-def fixture(*, reject=False, initial_inner_loss=False):
+def fixture(*, reject=False, initial_inner_loss=False, max_steps=8):
     env, arm, gripper, history, receipt = object(), FakeArm(reject=reject), FakeGripper(), FakeHistory(), {}
     policy = LoadedGripperFeedback(
         env,
@@ -79,6 +79,7 @@ def fixture(*, reject=False, initial_inner_loss=False):
         dynamics_reader=lambda _env, _jac: (np.eye(7), np.zeros(7), np.eye(4)),
         gripper_reader=lambda _env: {"opening": 0.9, "motor": np.zeros(2), "period_velocity": 0.0},
         initial_inner_loss=initial_inner_loss,
+        max_steps=max_steps,
     )
     return env, policy, arm, gripper, history, receipt
 
@@ -130,3 +131,11 @@ def test_final_prefix_inner_loss_blocks_first_new_action():
     result = policy.select(np.zeros(7), np.tile([-1.0, 1.0], (7, 1)), np.zeros((6, 7)), np.zeros(7), 0)
     assert result["stop"]["reason"] == "observed_joint_buffer_loss"
     assert gripper.commits == 0 and receipt["gripper_proposals"]["attempted"] == 0
+
+
+def test_explicit_16_step_contract_allows_a_later_causal_period():
+    _env, policy, _arm, _gripper, _history, _receipt = fixture(max_steps=16)
+    result = policy.select(np.zeros(7), np.tile([-1.0, 1.0], (7, 1)), np.zeros((6, 7)), np.zeros(7), 8)
+    assert result["command"][6] == 1.0
+    with pytest.raises(ValueError, match="aligned cursor"):
+        fixture(max_steps=24)

@@ -130,11 +130,15 @@ def validate_references(spec, old, latest, shadow, measured_tcp):
     return references
 
 
-def selected_case(case, mode):
+def selected_case(case, mode, *, horizon=8):
     """Give the policy only the one chosen reference; other scores stay external."""
     prefix.require(mode in ("latest", "remembered"), "One registered matched branch")
     reference = case["references"][mode]
     cursor = reference["cursor"]
+    prefix.require(
+        type(horizon) is int and horizon in (8, 16) and cursor + horizon + 7 <= 40,
+        "A complete causal reference and preview horizon",
+    )
     return {
         "spec": case["spec"],
         "controller": case["controller"],
@@ -143,8 +147,8 @@ def selected_case(case, mode):
         "openings": reference["openings"].copy(),
         "anchor": reference["anchor"].copy(),
         "cursor": cursor,
-        "fixed_targets": reference["poses"][cursor : cursor + 8].copy(),
-        "fixed_openings": reference["openings"][cursor : cursor + 8].copy(),
+        "fixed_targets": reference["poses"][cursor : cursor + horizon].copy(),
+        "fixed_openings": reference["openings"][cursor : cursor + horizon].copy(),
     }
 
 

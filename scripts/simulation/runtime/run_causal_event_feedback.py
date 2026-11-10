@@ -131,7 +131,7 @@ def checker_action(expected):
     return action
 
 
-def reconcile_stop(continuation, expected_stop, *, start_step, current_margin, prefix_inner_loss=False):
+def reconcile_stop(continuation, expected_stop, *, start_step, current_margin, prefix_inner_loss=False, horizon=8):
     """Verify physical stops and explicitly preserve non-recomputed decisions."""
     reason = None if expected_stop is None else expected_stop.get("reason")
     if reason not in ("quality_no_witness", "quality_witness_rejected", "observed_joint_buffer_loss"):
@@ -141,7 +141,9 @@ def reconcile_stop(continuation, expected_stop, *, start_step, current_margin, p
     periods = continuation["periods"]
     prefix.require(
         continuation["stop"] is None
-        and len(periods) < 8
+        and type(horizon) is int
+        and horizon in (8, 16)
+        and len(periods) < horizon
         and expected_stop.get("at_step") == start_step + len(periods)
         and expected_stop.get("next_action_dispatched") is False,
         "Recorded decision stop must follow all replayed commands",
@@ -198,7 +200,7 @@ def reconstruct_gripper(case, result):
     return LoadedGripperTransaction(controller)
 
 
-def make_feedback(env, case, selected, gripper, receipt):
+def make_feedback(env, case, selected, gripper, receipt, *, max_steps=8):
     """Restore only the actual last completed arm and gripper history."""
     from s2a.research.joint_control.preview.completed_history import CompletedHistory, restore_recomputed_history
     from s2a.research.joint_control.preview.loaded_gripper_feedback import LoadedGripperFeedback
@@ -259,6 +261,7 @@ def make_feedback(env, case, selected, gripper, receipt):
         n,
         receipt,
         initial_inner_loss=receipt["final_prefix_inner"]["below_buffer_samples"] > 0,
+        max_steps=max_steps,
     )
 
 

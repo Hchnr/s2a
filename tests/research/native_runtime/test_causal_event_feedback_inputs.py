@@ -24,6 +24,10 @@ def test_real_cases_bind_reproduced_prefixes_and_paired_absolute_endpoints():
         assert np.any(old["fixed_openings"] != new["fixed_openings"])
         old["targets"][0, 0, 3] += 1
         assert not np.array_equal(old["targets"], case["references"]["remembered"]["poses"])
+        long_old = binding.selected_case(case, "remembered", horizon=16)
+        assert long_old["fixed_targets"].shape == (16, 4, 4) and len(long_old["fixed_openings"]) == 16
+        with pytest.raises(ValueError, match="preview horizon"):
+            binding.selected_case(case, "remembered", horizon=24)
 
 
 def test_reference_binding_rejects_wrong_time_or_detached_opening():

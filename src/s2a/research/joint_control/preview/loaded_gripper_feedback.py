@@ -47,6 +47,7 @@ class LoadedGripperFeedback:
         dynamics_reader=current_robot_dynamics,
         gripper_reader=current_gripper_state,
         initial_inner_loss=False,
+        max_steps=8,
     ):
         self.env, self.arm_policy, self.gripper, self.inner_history = env, arm_policy, gripper, inner_history
         self.poses, self.openings = np.asarray(poses, dtype=float).copy(), np.asarray(openings, dtype=float).copy()
@@ -60,13 +61,16 @@ class LoadedGripperFeedback:
             or not np.isfinite(self.site_from_tcp).all()
             or np.any((self.openings < 0) | (self.openings > 1))
             or type(cursor) is not int
-            or not 0 <= cursor <= 32
+            or type(max_steps) is not int
+            or max_steps not in (8, 16)
+            or not 0 <= cursor
+            or cursor + max_steps + 7 > 40
             or type(start_step) is not int
             or start_step < 0
             or type(initial_inner_loss) is not bool
         ):
             raise ValueError("One finite generated TCP/opening chunk and aligned cursor are required")
-        self.cursor, self.start_step, self.receipt = cursor, start_step, receipt
+        self.cursor, self.start_step, self.receipt, self.max_steps = cursor, start_step, receipt, max_steps
         self.dynamics_reader, self.gripper_reader = dynamics_reader, gripper_reader
         self.pending, self.last_inner_loss = None, initial_inner_loss
         self.receipt["gripper_proposals"] = {
@@ -92,7 +96,7 @@ class LoadedGripperFeedback:
             or not np.isfinite(previous).all()
             or np.any(limits[:, 0] >= limits[:, 1])
             or type(offset) is not int
-            or not 0 <= offset < 8
+            or not 0 <= offset < self.max_steps
         ):
             raise ValueError("Finite joint state, completed command and bounded offset required")
         margin = float(np.min(np.minimum(q - limits[:, 0], limits[:, 1] - q)))
