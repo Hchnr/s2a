@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[旧/新闭合参考的匹配状态实际反馈对照](causal_event_feedback_20261110.md)
+
 近期：[闭合机会的夹爪历史重建](causal_gripper_history_20261110.md)
 
 近期：[两处闭合影子机会的原生命令前缀](causal_event_prefix_replay_20261110.md)
