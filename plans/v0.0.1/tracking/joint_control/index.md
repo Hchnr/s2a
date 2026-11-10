@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[新参考重规划的安全优先质量恢复反馈](replan_restoration_feedback_20261110.md)
+
 近期：[新参考重规划起点的八点约束实际反馈](replan_full_horizon_feedback_20261110.md)
 
 近期：[新参考重规划起点的八点质量可行性](replan_full_horizon_quality_20261110.md)
