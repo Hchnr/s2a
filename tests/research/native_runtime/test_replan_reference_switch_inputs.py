@@ -1,9 +1,23 @@
 """Bind both branches to the same complete predecision history."""
 
+import subprocess
+import sys
+
 import numpy as np
 import pytest
 
+from s2a.geometry import inverse
 from scripts.simulation.runtime import run_replan_reference_switch as run
+
+
+def test_checker_import_does_not_load_a_candidate_policy_or_preview():
+    code = (
+        "import sys; from scripts.simulation.runtime import run_replan_reference_switch as x; "
+        "assert x.base.quality.QUALITY_MODULE not in sys.modules; "
+        "assert x.base.quality.baseline.POLICY_MODULE not in sys.modules; "
+        "assert x.base.quality.baseline.PREVIEW_MODULE not in sys.modules"
+    )
+    subprocess.run([sys.executable, "-c", code], check=True, capture_output=True, text=True)
 
 
 def test_reviewed_old_and_new_chunks_share_the_same_physical_endpoints():
@@ -18,6 +32,13 @@ def test_reviewed_old_and_new_chunks_share_the_same_physical_endpoints():
         np.testing.assert_array_equal(old["fixed_targets"], case["reference_chunks"]["old"][8:16])
         np.testing.assert_array_equal(new["fixed_targets"], case["reference_chunks"]["new"][:8])
         np.testing.assert_array_equal(old["commands"], new["commands"])
+        site_from_tcp = inverse(np.asarray(case["controller"]["source_from_site"])) @ case["tool"]
+        np.testing.assert_allclose(
+            case["saved"]["controller_site_pose"] @ site_from_tcp,
+            case["saved"]["source_pose"] @ case["tool"],
+            atol=1e-10,
+            rtol=0,
+        )
 
 
 def test_unknown_reference_choice_is_rejected():
