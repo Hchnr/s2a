@@ -6,7 +6,7 @@
 
 固定原两案例、seed43、起点端点43和52及此前已生成的chunk5/cursor3和chunk6/cursor4。复用已核身份的原前缀、原控制器合同、资产和软件OSMesa环境，从原初态执行43/52条已保存命令，逐端点核对完整状态与已保存控制缓存。在各自首警报端点读取实际q/qvel、mass/J、site和控制器rotation goal；不推进后续物理、不执行新动作。
 
-原step `t-1`已完成记录仅提取实际上一动作、预览耦合模型 `innovation_after`、细化历史 `tracking_history_after`、上一已完成8点计划及完成周期计数。验证该计划首项等于上一真实动作，并用当前实时site/twist初始化两个历史的expected endpoint；pending为空。保留当前运行时实际controller.initial_joint，不声称历史initial_joint已单独保存。使用当前已生成chunk与上一动作，在原接口、原坐标变换下依次调用 `dependency_safe_preview_runtime.solve_preview` 和 `TrackingPreviewTransaction.prepare`；后者保留原0.05 rad预测内环约束、终端条件及原分支决策，不调用commit或派发动作。
+原step `t-1`已完成记录仅提取实际上一动作、预览耦合模型 `innovation_after`、细化历史 `tracking_history_after`、上一已完成8点计划及完成周期计数。各创新另由该周期的期前site/twist、已提交预测与当前实际端点按原历史更新规则重算，并核对保存值；验证计划首项等于上一真实动作，用当前实时site/twist初始化两个历史的expected endpoint且pending为空。保留当前运行时实际controller.initial_joint，不声称历史initial_joint已单独保存。使用当前已生成chunk与上一动作，在原接口、原坐标变换下依次调用 `dependency_safe_preview_runtime.solve_preview` 和 `TrackingPreviewTransaction.prepare`；后者保留原0.05 rad预测内环约束、终端条件及原分支决策，不调用commit或派发动作。
 
 动作计算完成后，才解码原step `t`记录，比较原实时mass/J/q/qvel、site/twist、实际可用创新及细化前后命令、计划和route。比较是只读评估，原step `t`的动作和后续状态不得传入计算。以各项最大差和固定 `atol=1e-8, rtol=0` 给出是否重现；差异或无法重现必须保留原值，不以求解器成功等同于重现。内点route的首点精度原先并非硬约束，需如实记录其原模型预测和实际质量，不把模型witness当真实控制通过。
 
