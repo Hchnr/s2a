@@ -1,0 +1,27 @@
+{
+  "schema": "s2a.early-warning-tracking.v1",
+  "cases": [
+    {"case_index": 2, "case_id": "task0_init0_s43_raw", "prefix_steps": 43, "chunk_index": 5, "cursor": 3, "target": "akita_black_bowl_1"},
+    {"case_index": 6, "case_id": "task1_init0_s43_raw", "prefix_steps": 52, "chunk_index": 6, "cursor": 4, "target": "wine_bottle_1"}
+  ],
+  "branches": ["history", "preview", "guarded_preview"],
+  "continuation_steps": 8,
+  "joint_warning_margin_rad": 0.1,
+  "joint_retreat_speed_rad_s": 0.3,
+  "control_dt_s": 0.05,
+  "arm_rate_limit": 0.25,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "joint_buffer_rad": 0.05,
+  "absolute_comparison_tolerance": 1e-10,
+  "relative_comparison_tolerance": 0.0,
+  "max_control_steps_per_phase": 333,
+  "max_native_steps_per_phase": 8325,
+  "max_models_per_phase": 18,
+  "max_contexts_per_phase": 18,
+  "max_preview_calls_per_phase": 32,
+  "worker_timeout_seconds": 1800,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

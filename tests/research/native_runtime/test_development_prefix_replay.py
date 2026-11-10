@@ -13,7 +13,7 @@ from s2a.research.native_runtime.development_prefix_replay import (
     saved_prefix,
 )
 from s2a.research.native_runtime.development_prefix_runtime import run_prefix_runtime
-from scripts.simulation.runtime.replay_multicase_development_prefix import read_recorded_prefix
+from scripts.simulation.runtime.replay_multicase_development_prefix import read_recorded_prefix, select_prefix
 
 
 def xml(paths, *, gravity="0 0 -9.81"):
@@ -67,6 +67,18 @@ def test_log_reader_counts_but_does_not_decode_future_rows(tmp_path):
     assert read_recorded_prefix(path, 2, 3) == [{"step": 0}, {"step": 1}]
     with pytest.raises(ValueError, match="Complete original log"):
         read_recorded_prefix(path, 2, 4)
+
+
+def test_registered_prefix_may_be_shortened_but_never_extended():
+    original = {"case_index": 2, "case_id": "case", "prefix_steps": 114}
+    assert select_prefix(original, None) == original
+    assert select_prefix(original, {2: 43})["prefix_steps"] == 43
+    assert original["prefix_steps"] == 114
+    for value in (0, 115, True, 43.0):
+        with pytest.raises(ValueError):
+            select_prefix(original, {2: value})
+    with pytest.raises(ValueError):
+        select_prefix(original, {6: 43})
 
 
 def fixture(*, mismatch=None, fail_step=False):

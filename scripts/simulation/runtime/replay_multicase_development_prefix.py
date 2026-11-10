@@ -94,7 +94,18 @@ def read_recorded_prefix(path, count, total):
     return values
 
 
-def load_inputs():
+def select_prefix(case_spec, prefix_steps):
+    """Select an explicitly bounded earlier endpoint within a reviewed prefix."""
+    if prefix_steps is None:
+        return dict(case_spec)
+    index = case_spec["case_index"]
+    require(index in prefix_steps, "A prefix must be specified for every registered case")
+    n = prefix_steps[index]
+    require(type(n) is int and 0 < n <= case_spec["prefix_steps"], "Earlier prefix must fit reviewed history")
+    return dict(case_spec, prefix_steps=n)
+
+
+def load_inputs(prefix_steps=None):
     refs = {}
     spec_ref = reference(CONFIG)
     spec = read(spec_ref, refs)
@@ -105,6 +116,10 @@ def load_inputs():
     require(
         spec["schema"] == "s2a.multicase-native-prefix-replay.v1" and spec["cases"] == expected,
         "Exact two registered development prefixes",
+    )
+    require(
+        prefix_steps is None or (isinstance(prefix_steps, dict) and set(prefix_steps) == {2, 6}),
+        "Explicit earlier endpoints must cover exactly the two reviewed cases",
     )
     require(
         spec["seed"] == 43
@@ -151,13 +166,17 @@ def load_inputs():
 
     cases = []
     template_xml = None
-    for case_spec in expected:
+    for original_spec in expected:
+        case_spec = select_prefix(original_spec, prefix_steps)
         index, n = case_spec["case_index"], case_spec["prefix_steps"]
         item = review["cases"][index]
         require(item["case"]["case_id"] == case_spec["case_id"], "Registered case identity")
         context_ref = context["case_refs"][index]
         cause = read(context_ref, refs)
-        require(cause["last_at_or_above_buffer_endpoint"] == n, "Registered historical diagnostic endpoint")
+        require(
+            cause["last_at_or_above_buffer_endpoint"] == original_spec["prefix_steps"],
+            "Registered historical diagnostic endpoint",
+        )
         case_dir = (
             REPO / "outputs/tracking_preview_wam_development_v4_20261027/development/cases" / case_spec["case_id"]
         )
