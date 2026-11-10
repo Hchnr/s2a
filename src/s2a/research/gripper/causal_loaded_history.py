@@ -60,7 +60,9 @@ def loaded_state(controller):
     }
 
 
-def reconstruct_loaded_history(rows, chunks, tool, parameters, *, velocity_envelope, gripper_config, atol=1e-10):
+def reconstruct_loaded_history(
+    rows, chunks, tool, parameters, *, velocity_envelope, gripper_config, atol=1e-10, progress=None
+):
     """Replay completed observations and generated references without future state."""
     n, stride, dt = len(rows), 8, 0.05
     if not n or len(chunks) != (n + stride - 1) // stride:
@@ -77,7 +79,16 @@ def reconstruct_loaded_history(rows, chunks, tool, parameters, *, velocity_envel
         raise ValueError("Original gripper latch configuration differs")
     previous, max_difference, planner_calls, candidate_sequences = 0.0, 0.0, 0, 0
     routes = {"native_close_load": 0, "model_tracking": 0}
+    ledger = {
+        "steps_attempted": 0,
+        "steps_completed": 0,
+        "planner_calls_completed": 0,
+        "candidate_sequences_completed": 0,
+    }
     for step, row in enumerate(rows):
+        ledger["steps_attempted"] += 1
+        if progress is not None:
+            progress(dict(ledger))
         query, offset = divmod(step, stride)
         chunk = chunks[query]
         if (
@@ -126,6 +137,13 @@ def reconstruct_loaded_history(rows, chunks, tool, parameters, *, velocity_envel
                 + result.plan["rejected_velocity_sequences"]
             )
         previous = executed
+        ledger.update(
+            steps_completed=step + 1,
+            planner_calls_completed=planner_calls,
+            candidate_sequences_completed=candidate_sequences,
+        )
+        if progress is not None:
+            progress(dict(ledger))
     return controller, {
         "steps": n,
         "routes": routes,

@@ -69,3 +69,21 @@ def test_receipt_comparison_rejects_nonfinite_and_discrete_mismatches():
         compare_recorded({"flag": 1}, {"flag": True})
     with pytest.raises(ValueError):
         compare_recorded({"value": float("nan")}, {"value": 1.0})
+
+
+def test_partial_reconstruction_preserves_completed_work_accounting():
+    rows, chunks, tool, parameters, controller = historical_prefix()
+    rows[1]["chunk_physical_step"] = 3
+    progress = []
+    with pytest.raises(ValueError, match="chunk clock"):
+        reconstruct_loaded_history(
+            rows,
+            chunks,
+            tool,
+            parameters,
+            velocity_envelope=controller["gripper_velocity_envelope"],
+            gripper_config=controller["gripper_config"],
+            progress=progress.append,
+        )
+    assert progress[-1]["steps_attempted"] == 2 and progress[-1]["steps_completed"] == 1
+    assert progress[-1]["planner_calls_completed"] <= 1
