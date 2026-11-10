@@ -9,6 +9,23 @@ from s2a.research.response_models.causal.causal_inner_error import CausalInnerEr
 from s2a.research.response_models.forward.joint_limit_response import build_joint_response, predict_joint_response
 
 
+def state_before_period(initial_state, initial_command, periods, start_step, offset):
+    """Return only current state, prior action and the already-generated plan."""
+    if type(start_step) is not int or type(offset) is not int or not 0 <= offset < len(periods):
+        raise ValueError("A bounded current period is required")
+    if periods[offset]["step"] != start_step + offset:
+        raise ValueError("Current period identity mismatch")
+    if offset:
+        preceding = periods[offset - 1]
+        if preceding["step"] != start_step + offset - 1:
+            raise ValueError("Previous completed period identity mismatch")
+        state, previous = preceding["actual_state"], preceding["command"]
+    else:
+        state, previous = initial_state, initial_command
+    plan = finite(periods[offset]["decision"]["refined_plan"], (8, 6)).copy()
+    return finite(state, (79,)).copy(), finite(previous, (7,)).copy(), plan
+
+
 def completed_error_profile(periods, start_step, offset, forecast):
     """Stage each prediction before observing that completed period's q samples."""
     if type(start_step) is not int or type(offset) is not int or not 0 <= offset <= len(periods):

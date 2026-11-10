@@ -6,6 +6,7 @@ import pytest
 from s2a.research.joint_control.tracking.early_quality_diagnostic import (
     completed_error_profile,
     independently_check_witness,
+    state_before_period,
 )
 from s2a.research.trajectory_search.past_inner_error_joint_plan import solve_interior_plan as joint_solve
 from s2a.research.trajectory_search.quality_capped_inner_joint_plan import solve_interior_plan
@@ -36,6 +37,19 @@ def test_profile_uses_only_strictly_completed_periods_and_inner_time_prefixes():
 def test_profile_rejects_missing_completed_period():
     with pytest.raises(ValueError, match="Consecutive"):
         completed_error_profile([{"step": 2, "actual_inner": []}], 1, 1, lambda _i: np.zeros((25, 7)))
+
+
+def test_current_snapshot_never_reads_its_own_or_later_actual_state():
+    plan = np.zeros((8, 6))
+    periods = [
+        {"step": 10, "actual_state": np.ones(79), "command": np.ones(7) * 0.1, "decision": {"refined_plan": plan}},
+        {"step": 11, "decision": {"refined_plan": plan}},
+        {"step": 12},
+    ]
+    state, previous, actual_plan = state_before_period(np.zeros(79), np.zeros(7), periods, 10, 1)
+    np.testing.assert_array_equal(state, np.ones(79))
+    np.testing.assert_array_equal(previous, np.ones(7) * 0.1)
+    np.testing.assert_array_equal(actual_plan, plan)
 
 
 def test_independent_rollout_checks_model_witness_and_rejects_tampering():
