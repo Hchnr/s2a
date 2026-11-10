@@ -104,6 +104,11 @@ class StaticReferenceProbe:
     def site_transform(self):
         return transform(self.data.site_xpos[self.site].copy(), self.data.site_xmat[self.site].reshape(3, 3).copy())
 
+    def check_object_unchanged(self, position, rotation, qpos):
+        del qpos
+        np.testing.assert_array_equal(self.data.xpos[self.object_body], position)
+        np.testing.assert_array_equal(self.data.xmat[self.object_body], rotation)
+
     def place(self, desired):
         desired = np.asarray(desired, dtype=float)
         if desired.shape != (4, 4) or not np.all(np.isfinite(desired)):
@@ -113,13 +118,13 @@ class StaticReferenceProbe:
         new_base = desired @ inverse(self.site_transform()) @ old_base
         old_object_position = d.xpos[self.object_body].copy()
         old_object_rotation = d.xmat[self.object_body].copy()
+        old_qpos = d.qpos.copy()
         m.body_pos[self.base] = new_base[:3, 3]
         xyzw = Rotation.from_matrix(new_base[:3, :3]).as_quat()
         m.body_quat[self.base] = xyzw[[3, 0, 1, 2]]
         self.forward()
         np.testing.assert_allclose(self.site_transform(), desired, atol=1e-9, rtol=0)
-        np.testing.assert_array_equal(d.xpos[self.object_body], old_object_position)
-        np.testing.assert_array_equal(d.xmat[self.object_body], old_object_rotation)
+        self.check_object_unchanged(old_object_position, old_object_rotation, old_qpos)
 
     def set_opening(self, opening):
         if not np.isfinite(opening) or not 0 <= opening <= 1:

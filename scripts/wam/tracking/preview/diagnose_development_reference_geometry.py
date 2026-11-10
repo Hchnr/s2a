@@ -78,7 +78,7 @@ def verified_input(path, source_map, refs):
     return Path(ref["path"])
 
 
-def process_case(index, review, paths):
+def process_case(index, review, paths, probe_factory=StaticReferenceProbe):
     expected, task_id = expected_case(index)
     reviewed = review["cases"][index]
     require(reviewed["case"]["case_id"] == expected and reviewed["case"]["case_index"] == index, "Fixed case order")
@@ -113,7 +113,7 @@ def process_case(index, review, paths):
     print(json.dumps({"case": expected, "stage": "model_initialization_requested"}), flush=True)
     model = mujoco.MjModel.from_xml_string(migrate_xml(xml_path.read_bytes(), paths).decode("utf-8"))
     print(json.dumps({"case": expected, "stage": "model_initialized", "models": 1}), flush=True)
-    probe = StaticReferenceProbe(model, target)
+    probe = probe_factory(model, target)
     joints = [mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, f"robot0_joint{i}") for i in range(1, 8)]
     require(min(joints) >= 0 and all(model.jnt_limited[j] for j in joints), "Seven limited original robot joints")
     qaddrs = np.asarray([model.jnt_qposadr[j] for j in joints])
@@ -214,6 +214,8 @@ def process_case(index, review, paths):
         "static_zero_both_pads": sum(all(q["variants"][1]["pad_contacts"]) for q in with_close),
         "queries": queries,
         "mj_forward_queries": probe.queries,
+        "max_object_rotation_change": getattr(probe, "max_object_rotation_change", None),
+        "max_qpos_change_during_placement": getattr(probe, "max_qpos_change_during_placement", None),
         "physics_steps": 0,
         "world_model_calls": 0,
         "fresh_cases": 0,
