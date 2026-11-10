@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[数值余量双点搜索的实际反馈](task2_guarded_two_step_feedback_20261111.md)
+
 最新：[双点可行性搜索的数值尺度对照](guarded_two_step_search_20261111.md)
 
 最新：[第三个任务的双点硬约束实际反馈](task2_two_step_feedback_20261111.md)
