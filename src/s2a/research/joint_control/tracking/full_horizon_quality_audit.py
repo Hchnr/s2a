@@ -25,8 +25,11 @@ def audit_full_horizon_witness(
     upper,
     *,
     past_inner_error_rad,
+    enforce_pose_caps=True,
 ):
     """Independently verify joints then reconstruct every TCP from joint endpoints."""
+    if type(enforce_pose_caps) is not bool:
+        raise ValueError("Explicit boolean pose-cap enforcement required")
     commands = finite(witness["planned_commands"])
     if commands.ndim != 2 or commands.shape[1] != 6 or not 1 <= len(commands) <= 8:
         raise ValueError("One bounded generated command plan required")
@@ -48,6 +51,7 @@ def audit_full_horizon_witness(
         lower,
         upper,
         past_inner_error_rad=past_inner_error_rad,
+        enforce_pose_caps=enforce_pose_caps,
     )
     pose, prior_q = finite(site, (4, 4)).copy(), finite(q, (7,)).copy()
     jacobian = finite(jacobian, (6, 7))
@@ -63,14 +67,17 @@ def audit_full_horizon_witness(
     reconstructed, errors = np.asarray(reconstructed), np.asarray(errors)
     np.testing.assert_allclose(reconstructed, witness["rollout"]["pose"], atol=1e-10, rtol=0)
     np.testing.assert_allclose(errors, witness["tcp_errors"], atol=1e-10, rtol=0)
-    if np.any(np.linalg.norm(errors[:, :3], axis=1) > 0.01 + 1e-10) or np.any(
-        np.linalg.norm(errors[:, 3:], axis=1) > 0.05 + 1e-10
-    ):
+    pose_ok = bool(
+        np.all(np.linalg.norm(errors[:, :3], axis=1) <= 0.01 + 1e-10)
+        and np.all(np.linalg.norm(errors[:, 3:], axis=1) <= 0.05 + 1e-10)
+    )
+    if enforce_pose_caps and not pose_ok:
         raise ValueError("All predicted TCP points must satisfy the original quality caps")
     result.update(
         tcp_errors=errors,
         pose_horizon=len(commands),
-        all_pose_caps_satisfied=True,
+        all_pose_caps_satisfied=pose_ok,
+        all_pose_caps_enforced=enforce_pose_caps,
         pose_reconstruction_max_difference=float(np.max(abs(reconstructed - witness["rollout"]["pose"]))),
     )
     return result

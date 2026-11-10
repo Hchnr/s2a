@@ -28,6 +28,16 @@ def pose_quality_constraints(score, horizon, scale):
     return np.asarray(values), np.asarray(rows), np.asarray(errors)
 
 
+def restoration_constraints(values, jacobian, slack):
+    """Apply one nonnegative normalized quality slack, including its Jacobian."""
+    values, jacobian = finite(values), finite(jacobian)
+    if values.ndim != 1 or jacobian.ndim != 2 or jacobian.shape[0] != len(values):
+        raise ValueError("One quality Jacobian row per value required")
+    if not np.isfinite(slack) or slack < 0:
+        raise ValueError("Nonnegative finite quality slack required")
+    return values + slack, np.c_[jacobian, np.ones(len(values))]
+
+
 def solve_full_horizon(
     model,
     velocity,
@@ -45,8 +55,11 @@ def solve_full_horizon(
     past_inner_error_rad=None,
     terminal_normals=None,
     braking_time_s=0.1,
+    feasibility_restoration=False,
 ):
     """Search for a model plan satisfying all original quality and safety caps."""
+    if type(feasibility_restoration) is not bool:
+        raise ValueError("Explicit boolean feasibility-restoration mode required")
     seed, previous = finite(seed), finite(previous, (6,))
     if seed.ndim != 2 or seed.shape[1] != 6 or not 1 <= len(seed) <= 8:
         raise ValueError("One to eight seed commands required")
@@ -130,6 +143,7 @@ def solve_full_horizon(
         "initial_margin_rad": float(np.min(np.minimum(model["q"] - lower, upper - model["q"]))),
         "scope": "frozen model only; all generated TCP points constrained; no physical qualification",
         "seed_tcp_errors": pose_quality_constraints(original["score"], h, scale)[2],
+        "feasibility_restoration": feasibility_restoration,
     }
     if base["initial_margin_rad"] < 0.05 - 1e-12:
         return dict(**base, status="initial_outside_requested_interior", witness_found=False, response_evaluations=1)
@@ -158,39 +172,97 @@ def solve_full_horizon(
 
     success, iterations, message = False, 0, "not_run"
     try:
-        optimized = minimize(
-            objective,
-            start,
-            jac=True,
-            method="SLSQP",
-            bounds=Bounds(lo, hi),
-            constraints=[
-                LinearConstraint(rate, center - 0.25, center + 0.25),
-                LinearConstraint(a, joint_lo, joint_hi),
-                {"type": "ineq", "fun": values, "jac": jac},
+        if feasibility_restoration:
+            zeros_rate, zeros_joint = np.zeros((rate.shape[0], 1)), np.zeros((a.shape[0], 1))
+            start_slack = max(0.0, -float(np.min(values(start)))) + 1e-6
+
+            def restoration_objective(y):
+                difference = y[:-1] - start
+                return float(y[-1] + 1e-9 * difference @ difference), np.r_[2e-9 * difference, 1.0]
+
+            def restoration_values(y):
+                return restoration_constraints(values(y[:-1]), jac(y[:-1]), y[-1])[0]
+
+            def restoration_jac(y):
+                return restoration_constraints(values(y[:-1]), jac(y[:-1]), y[-1])[1]
+
+            constraints = [
+                LinearConstraint(np.c_[rate, zeros_rate], center - 0.25, center + 0.25),
+                LinearConstraint(np.c_[a, zeros_joint], joint_lo, joint_hi),
+                {"type": "ineq", "fun": restoration_values, "jac": restoration_jac},
             ]
-            + ([LinearConstraint(terminal_a, -np.inf, -terminal_offset)] if len(normals) else []),
-            options={"maxiter": 120, "ftol": 1e-9},
-        )
+            if len(normals):
+                constraints.append(
+                    LinearConstraint(np.c_[terminal_a, np.zeros((len(normals), 1))], -np.inf, -terminal_offset)
+                )
+            optimized = minimize(
+                restoration_objective,
+                np.r_[start, start_slack],
+                jac=True,
+                method="SLSQP",
+                bounds=Bounds(np.r_[lo, 0.0], np.r_[hi, np.inf]),
+                constraints=constraints,
+                options={"maxiter": 120, "ftol": 1e-9},
+            )
+            base["optimizer_quality_slack"] = float(optimized.x[-1])
+        else:
+            optimized = minimize(
+                objective,
+                start,
+                jac=True,
+                method="SLSQP",
+                bounds=Bounds(lo, hi),
+                constraints=[
+                    LinearConstraint(rate, center - 0.25, center + 0.25),
+                    LinearConstraint(a, joint_lo, joint_hi),
+                    {"type": "ineq", "fun": values, "jac": jac},
+                ]
+                + ([LinearConstraint(terminal_a, -np.inf, -terminal_offset)] if len(normals) else []),
+                options={"maxiter": 120, "ftol": 1e-9},
+            )
         success, iterations, message = bool(optimized.success), int(optimized.nit), str(optimized.message)
     except Stop as exc:
         message = str(exc)
-    best = None
+    best, best_safe = None, None
     for key, item in list(cache.items()):
         x = np.asarray(key)
         _values, _jacobian, errors = pose_quality_constraints(item["score"], h, scale)
-        if (
+        joint_safe = (
             np.all(x >= lo - 1e-12)
             and np.all(x <= hi + 1e-12)
             and np.max(abs(rate @ x - center)) <= 0.25 + 1e-12
             and np.all(a @ x >= joint_lo - 1e-10)
             and np.all(a @ x <= joint_hi + 1e-10)
             and np.all(terminal_a @ x + terminal_offset <= 1e-10)
+        )
+        slack = max(0.0, float(-np.min(_values)))
+        if (
+            feasibility_restoration
+            and joint_safe
+            and (
+                best_safe is None
+                or (slack, item["score"]["objective"]) < (best_safe[3], best_safe[1]["score"]["objective"])
+            )
+        ):
+            best_safe = (x, item, errors, slack)
+        if (
+            joint_safe
             and np.all(np.linalg.norm(errors[:, :3], axis=1) <= 0.01 + 1e-10)
             and np.all(np.linalg.norm(errors[:, 3:], axis=1) <= 0.05 + 1e-10)
             and (best is None or item["score"]["objective"] < best[1]["score"]["objective"])
         ):
             best = (x, item, errors)
+    if best_safe is not None:
+        x, item, errors, slack = best_safe
+        base["best_joint_safe"] = {
+            "witness_found": True,
+            "planned_commands": x.reshape(h, 6).copy(),
+            "terminal_normals": normals.copy(),
+            "rollout": item["rollout"],
+            "first_tcp_error": errors[0].copy(),
+            "tcp_errors": errors.copy(),
+            "quality_slack": slack,
+        }
     base.update(
         optimizer_success=success,
         iterations=iterations,

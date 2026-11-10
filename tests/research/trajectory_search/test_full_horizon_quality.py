@@ -10,7 +10,11 @@ from s2a.controllers.osc import OSCInterface
 from s2a.research.joint_control.limits.joint_limit_preview_objective import preview_objective
 from s2a.research.joint_control.preview.interior_joint_preview import build_joint_preview, rollout_joint_preview
 from s2a.research.joint_control.tracking.full_horizon_quality_audit import audit_full_horizon_witness
-from s2a.research.trajectory_search.full_horizon_quality import pose_quality_constraints, solve_full_horizon
+from s2a.research.trajectory_search.full_horizon_quality import (
+    pose_quality_constraints,
+    restoration_constraints,
+    solve_full_horizon,
+)
 
 
 def fixture():
@@ -99,3 +103,56 @@ def test_witness_reconstructs_all_tcp_points_and_rejects_tampering():
     damaged["tcp_errors"][4, 0] += 0.01
     with pytest.raises(AssertionError):
         audit_full_horizon_witness(damaged, *check_args[1:], past_inner_error_rad=np.zeros((25, 7)))
+
+
+def test_restoration_slack_jacobian_and_nonnegative_boundary():
+    values = np.array([0.5, -0.25])
+    jac = np.array([[1.0, -2.0], [3.0, 4.0]])
+    adjusted, augmented = restoration_constraints(values, jac, 0.3)
+    np.testing.assert_allclose(adjusted, [0.8, 0.05])
+    np.testing.assert_array_equal(augmented[:, :-1], jac)
+    np.testing.assert_array_equal(augmented[:, -1], [1, 1])
+    with pytest.raises(ValueError, match="Nonnegative"):
+        restoration_constraints(values, jac, -0.1)
+
+
+def test_restoration_does_not_promote_a_joint_safe_pose_failure():
+    args, source = fixture()
+    args = list(args)
+    args[7][-1, 0, 3] += 3.0
+    result = solve_full_horizon(*args, feasibility_restoration=True)
+    assert not result["witness_found"] and result["best_joint_safe"]["quality_slack"] > 0
+    candidate = result["best_joint_safe"]
+    model, velocity, _seed, previous, interface, site, tool, targets, _twists, lower, upper = args
+    mass, jacobian, kp, kd, q, _ = source
+    check_args = (
+        candidate,
+        mass,
+        jacobian,
+        kp,
+        kd,
+        q,
+        velocity,
+        q,
+        interface,
+        previous,
+        site,
+        tool,
+        targets,
+        lower,
+        upper,
+    )
+    checked = audit_full_horizon_witness(*check_args, past_inner_error_rad=np.zeros((25, 7)), enforce_pose_caps=False)
+    assert checked["passed"] and not checked["all_pose_caps_satisfied"] and not checked["all_pose_caps_enforced"]
+    with pytest.raises(ValueError, match="caps"):
+        audit_full_horizon_witness(*check_args, past_inner_error_rad=np.zeros((25, 7)))
+
+
+def test_explicit_default_preserves_hard_quality_solver_result():
+    args, _ = fixture()
+    original, explicit = solve_full_horizon(*args), solve_full_horizon(*args, feasibility_restoration=False)
+    assert (
+        original["status"] == explicit["status"]
+        and original["response_evaluations"] == explicit["response_evaluations"]
+    )
+    np.testing.assert_array_equal(original["planned_commands"], explicit["planned_commands"])
