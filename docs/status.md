@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 两阶段首点优先：两个task2开发变体各执行1周期后仍无witness；实际
+双阈值分别0/1和1/1。第二次搜索分别评估21/12个线性安全候选但无首点合格解；
+2条动作及50内步独立重放一致，84项CPU专项通过，详见[反馈报告](../reports/tracking/joint_control/task2_staged_first_feasibility_20261111.md)。
+
 2026-11-11 可行初值恢复：两个task2分支各执行1周期后仍无witness；第二次决策
 分别评估到6/1个线性安全候选，但均未满足首点质量。2条动作及50内步独立重放
 一致，73项CPU专项通过，详见[反馈报告](../reports/tracking/joint_control/task2_feasible_start_restoration_20261111.md)。
