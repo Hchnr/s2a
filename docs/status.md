@@ -2,6 +2,34 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 可行初值恢复：两个task2分支各执行1周期后仍无witness；第二次决策
+分别评估到6/1个线性安全候选，但均未满足首点质量。2条动作及50内步独立重放
+一致，73项CPU专项通过，详见[反馈报告](../reports/tracking/joint_control/task2_feasible_start_restoration_20261111.md)。
+
+2026-11-11 首点硬恢复：task2两个开发变体各执行1周期后在下一次320响应预算内
+无witness；raw实际首点位置略超阈值，terminal首点双阈值通过。两次停止搜索均
+未评估到线性关节安全候选，2条动作及50内步独立重放一致；76项CPU专项通过，
+详见[反馈报告](../reports/tracking/joint_control/task2_first_hard_restoration_20261111.md)。
+
+2026-11-11 task2多点恢复：相同step32/80起点分别执行0/1周期后，候选硬约束审核
+拒绝，未改善此前首点质量分支的持续性；唯一动作及25内步独立重放一致。69项CPU
+专项通过，0新WAM/GPU/fresh，详见[恢复报告](../reports/tracking/joint_control/task2_earlier_restoration_feedback_20261111.md)。
+
+2026-11-11 task2提前反馈：在参考生成的step32/80，原细化、首点质量、八点质量
+两组分别执行8/1/0和8/5/0周期；没有完整八周期同时满足原位姿和关节缓冲，四处
+质量分支因无witness停止。terminal原细化末周期有11个内环样本跌破缓冲；22条
+动作和550内步独立重放一致，60项CPU专项通过，详见[反馈报告](../reports/tracking/joint_control/task2_earlier_preview_feedback_20261111.md)。
+
+2026-11-11 首周期位置外界：task2 raw step34在冻结模型中，仅保留首动作box和
+变化率时的位置误差下界约0.017674 m，超过原0.01 m阈值；另外三个状态的外界
+不足以判定。256个box角点独立复算通过，31项CPU专项通过；这不是物理不可达
+证明，详见[外界报告](../reports/tracking/joint_control/first_step_position_bound_20261111.md)。
+
+2026-11-11 三任务可行性优先对照：四个开发状态的原/新搜索均只在同一task2预警
+起点找到独立审核通过的模型witness；另三个状态均无witness，改变搜索顺序没有
+新增候选。8次求解共752响应，0物理积分/WAM/GPU/fresh，58项CPU专项通过；
+有限搜索失败不证明不可达，详见[对照报告](../reports/tracking/joint_control/multitask_feasibility_first_20261111.md)。
+
 2026-11-11 task2早期预警反馈：两个开发变体的原/质量分支分别执行8/0及6/3周期；
 两处质量分支无witness，原细化一处实际11个2 ms样本跌破0.05 rad缓冲并在下一
 动作前停止。四分支均无任务成功，17条动作及425内步独立重放逐值一致；35项CPU

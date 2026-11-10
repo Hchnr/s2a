@@ -1,5 +1,17 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[原安全约束内的可行初值恢复反馈](task2_feasible_start_restoration_20261111.md)
+
+最新：[保持首点硬约束的多点恢复反馈](task2_first_hard_restoration_20261111.md)
+
+最新：[第三个任务的提前多点质量恢复反馈](task2_earlier_restoration_feedback_20261111.md)
+
+最新：[第三个任务新参考生成时的前瞻反馈](task2_earlier_preview_feedback_20261111.md)
+
+最新：[三任务首周期位置可达域外界](first_step_position_bound_20261111.md)
+
+最新：[三任务停止/预警状态的可行性优先搜索对照](multitask_feasibility_first_20261111.md)
+
 最新：[第三任务早期预警的安全与跟踪反馈](task2_warning_feedback_20261111.md)
 
 最新：[第三任务的早期关节预警前缀复现](task2_warning_prefix_20261111.md)
