@@ -109,6 +109,8 @@ def test_no_witness_aborts_staged_gripper_before_dispatch():
     _env, policy, _arm, gripper, _history, receipt = fixture(reject=True)
     result = policy.select(np.zeros(7), np.tile([-1.0, 1.0], (7, 1)), np.zeros((6, 7)), np.zeros(7), 0)
     assert result["stop"]["reason"] == "quality_no_witness"
+    assert result["stop"]["gripper_proposal"]["plan"]["valid_sequences"] == 6561
+    assert result["stop"]["gripper_proposal_dispatched"] is False
     assert gripper.aborts == 1 and gripper.commits == 0 and policy.pending is None
     assert receipt["gripper_proposals"]["aborted_before_dispatch"] == 1
 

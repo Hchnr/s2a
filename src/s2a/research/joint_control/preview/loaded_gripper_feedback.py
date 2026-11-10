@@ -194,7 +194,10 @@ class LoadedGripperFeedback:
         except QualitySelectionStopped as error:
             self.gripper.abort(token)
             stats["aborted_before_dispatch"] += 1
-            return error.decision()
+            stopped = error.decision()
+            stopped["stop"]["gripper_proposal"] = token["detail"]
+            stopped["stop"]["gripper_proposal_dispatched"] = False
+            return stopped
         except BaseException:
             self.gripper.abort(token)
             stats["aborted_before_dispatch"] += 1
