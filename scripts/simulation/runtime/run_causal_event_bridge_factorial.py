@@ -3,6 +3,7 @@
 import argparse
 import json
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -26,8 +27,25 @@ ROOT = REPO / "outputs/causal_event_bridge_factorial_20261110"
 CONSTRUCTOR_MODULE = "scripts.simulation.runtime.construct_causal_reference_factorial"
 
 
-def source_refs():
-    return binding.source_refs() + [
+@dataclass(frozen=True)
+class RunContext:
+    qa: Path
+    dry: Path
+    root: Path
+    recovery: bool = False
+
+
+ORIGINAL = RunContext(QA, DRY, ROOT)
+RECOVERY = RunContext(
+    REPO / "outputs/qa/causal_event_bridge_factorial_recovery_20261111/result.json",
+    REPO / "outputs/causal_event_bridge_factorial_recovery_dry_20261111/result.json",
+    REPO / "outputs/causal_event_bridge_factorial_recovery_20261111",
+    recovery=True,
+)
+
+
+def source_refs(context=ORIGINAL):
+    refs = binding.source_refs() + [
         prefix.reference(path)
         for path in (
             Path(__file__),
@@ -36,6 +54,35 @@ def source_refs():
             REPO / "tests/research/native_runtime/test_causal_event_bridge_factorial.py",
         )
     ]
+    if context.recovery:
+        from scripts.simulation.runtime import prepare_causal_event_factorial_recovery as recovery
+
+        refs += recovery.source_refs()
+    return refs
+
+
+def context_inputs(inputs, context):
+    """Bind recovery evidence without changing the original input contract."""
+    receipt = binding.input_receipt(inputs)
+    if not context.recovery:
+        return receipt, None
+    from scripts.simulation.runtime import prepare_causal_event_factorial_recovery as recovery
+
+    evidence, document = recovery.admit(inputs)
+    return {"original_inputs": receipt, "recovery_evidence": evidence}, document
+
+
+def worker_argv(phase, mode, context):
+    argv = [
+        sys.executable,
+        "-m",
+        "scripts.simulation.runtime.run_causal_event_bridge_factorial",
+        "--worker",
+        phase,
+        "--branch",
+        mode,
+    ]
+    return [*argv, "--recovery"] if context.recovery else argv
 
 
 def reference_document(inputs):
@@ -71,16 +118,17 @@ def require_checker_independence():
     prefix.require(CONSTRUCTOR_MODULE not in sys.modules, "Checker must not import the intervention constructor")
 
 
-def worker(phase, mode):
+def worker(phase, mode, context=ORIGINAL):
     prefix.environment()
     prefix.require(mode in binding.MODES, "One registered factorial branch")
     if phase == "checker":
         require_checker_independence()
-    directory = ROOT / phase / mode
-    registration = prefix.read(prefix.reference(ROOT / phase / "registration.json"))
+    directory = context.root / phase / mode
+    registration = prefix.read(prefix.reference(context.root / phase / "registration.json"))
     inputs = binding.load_inputs()
+    input_receipt, _prior_document = context_inputs(inputs, context)
     prefix.require(
-        binding.input_receipt(inputs) == registration["inputs"] and source_refs() == registration["source_refs"],
+        input_receipt == registration["inputs"] and source_refs(context) == registration["source_refs"],
         "Frozen factorial sources and inputs",
     )
     references, component_audits = checked_references(inputs, prefix.read(registration["reference_ref"]))
@@ -304,42 +352,43 @@ def branch_counts(branch, phase, config):
     return counts
 
 
-def execute(phase):
+def execute(phase, context=ORIGINAL):
     prefix.environment()
     if phase == "checker":
         require_checker_independence()
-    qa, dry = prefix.read(prefix.reference(QA)), prefix.read(prefix.reference(DRY))
+    qa, dry = prefix.read(prefix.reference(context.qa)), prefix.read(prefix.reference(context.dry))
     prefix.require(
         qa["complete"] is qa["passed"] is qa["source_unchanged"] is qa["actual_wait"] is qa["reaped"] is True,
         "Frozen factorial CPU QA closed",
     )
     before = snapshot(REPO)["sources"]
     prefix.require(before == prefix.read(qa["source_before_ref"])["sources"], "CPU QA source identity")
-    inputs, sources = binding.load_inputs(), source_refs()
+    inputs, sources = binding.load_inputs(), source_refs(context)
+    input_receipt, prior_document = context_inputs(inputs, context)
     prefix.require(
-        dry["complete"] is dry["passed"] is True
-        and dry["inputs"] == binding.input_receipt(inputs)
-        and dry["source_refs"] == sources,
+        dry["complete"] is dry["passed"] is True and dry["inputs"] == input_receipt and dry["source_refs"] == sources,
         "Zero-model dry preserves factorial inputs",
     )
     producer_refs, reference_ref = None, None
     if phase == "checker":
-        producer = prefix.read(prefix.reference(ROOT / "producer/result.json"))
+        producer = prefix.read(prefix.reference(context.root / "producer/result.json"))
         prefix.require(
             producer["complete"] is producer["passed"] is producer["sources_unchanged"] is True,
             "Both factorial producer branches closed",
         )
         producer_refs, reference_ref = producer["branch_refs"], producer["reference_ref"]
         checked_references(inputs, prefix.read(reference_ref))
-    phase_dir = ROOT / phase
+    phase_dir = context.root / phase
     phase_dir.mkdir(parents=True, exist_ok=False)
     if phase == "producer":
-        reference_ref = publish(phase_dir / "references.json", reference_document(inputs))
+        document = prior_document if context.recovery else reference_document(inputs)
+        checked_references(inputs, document)
+        reference_ref = publish(phase_dir / "references.json", document)
     registration_ref = publish(
         phase_dir / "registration.json",
         {
             "phase": phase,
-            "inputs": binding.input_receipt(inputs),
+            "inputs": input_receipt,
             "source_refs": sources,
             "reference_ref": reference_ref,
             "producer_branch_refs": producer_refs,
@@ -348,15 +397,7 @@ def execute(phase):
     specs = [
         {
             "key": mode,
-            "argv": [
-                sys.executable,
-                "-m",
-                "scripts.simulation.runtime.run_causal_event_bridge_factorial",
-                "--worker",
-                phase,
-                "--branch",
-                mode,
-            ],
+            "argv": worker_argv(phase, mode, context),
             "log": phase_dir / mode / "worker.log",
         }
         for mode in binding.MODES
@@ -410,8 +451,10 @@ def execute(phase):
         )
         for path, digest in inputs["source_sha256"].items():
             prefix.checked({"path": path, "sha256": digest})
+        final_receipt, _prior_document = context_inputs(inputs, context)
         prefix.require(
-            source_refs() == sources and snapshot(REPO)["sources"] == before, "Unchanged factorial sources and inputs"
+            final_receipt == input_receipt and source_refs(context) == sources and snapshot(REPO)["sources"] == before,
+            "Unchanged factorial sources and inputs",
         )
         result.update(complete=True, passed=True, sources_unchanged=True, branch_refs=branch_refs, counts=totals)
     finally:
@@ -426,21 +469,25 @@ def main():
     group.add_argument("--checker", action="store_true")
     group.add_argument("--worker", choices=("producer", "checker"))
     parser.add_argument("--branch", choices=binding.MODES)
+    parser.add_argument("--recovery", action="store_true")
     args = parser.parse_args()
     prefix.environment()
+    context = RECOVERY if args.recovery else ORIGINAL
     if (args.worker is None) != (args.branch is None):
         parser.error("A branch is required only for a worker")
     if args.dry_run:
         inputs = binding.load_inputs()
-        document = reference_document(inputs)
+        input_receipt, prior_document = context_inputs(inputs, context)
+        document = prior_document if context.recovery else reference_document(inputs)
+        checked_references(inputs, document)
         print(
             publish(
-                DRY,
+                context.dry,
                 {
                     "complete": True,
                     "passed": True,
-                    "source_refs": source_refs(),
-                    "inputs": binding.input_receipt(inputs),
+                    "source_refs": source_refs(context),
+                    "inputs": input_receipt,
                     "independent_component_checks": document["independent_component_checks"],
                     "model_initializations": 0,
                     "physics_steps": 0,
@@ -451,9 +498,9 @@ def main():
             flush=True,
         )
     elif args.producer or args.checker:
-        execute("producer" if args.producer else "checker")
+        execute("producer" if args.producer else "checker", context)
     else:
-        worker(args.worker, args.branch)
+        worker(args.worker, args.branch, context)
 
 
 if __name__ == "__main__":

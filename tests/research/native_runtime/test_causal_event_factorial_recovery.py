@@ -6,6 +6,7 @@ import pytest
 
 from scripts.simulation.runtime import bind_causal_event_bridge_factorial as binding
 from scripts.simulation.runtime import prepare_causal_event_factorial_recovery as recovery
+from scripts.simulation.runtime import run_causal_event_bridge_factorial as factorial
 
 
 def test_recovery_binds_interrupted_logs_and_existing_references():
@@ -34,3 +35,20 @@ def test_log_progress_rejects_unregistered_or_incomplete_counts(tmp_path):
     path.write_text('{"phase":"producer","branch":"bridge_pose_old_opening","control_completed":63}\n')
     with pytest.raises((ValueError, KeyError)):
         recovery.last_progress(path, "bridge_pose_old_opening")
+
+
+def test_recovery_has_exclusive_paths_and_propagates_to_every_worker():
+    old, new = factorial.ORIGINAL, factorial.RECOVERY
+    assert old.root != new.root and old.qa != new.qa and old.dry != new.dry
+    for mode in binding.MODES:
+        assert "--recovery" not in factorial.worker_argv("producer", mode, old)
+        assert "--recovery" in factorial.worker_argv("producer", mode, new)
+        assert "--recovery" in factorial.worker_argv("checker", mode, new)
+
+
+def test_recovery_input_receipt_preserves_original_control_inputs():
+    inputs = binding.load_inputs()
+    receipt, document = factorial.context_inputs(inputs, factorial.RECOVERY)
+    assert receipt["original_inputs"] == binding.input_receipt(inputs)
+    assert receipt["recovery_evidence"]["prior_final_exit_and_cost_known"] is False
+    assert set(document["references"]) == set(binding.MODES)
