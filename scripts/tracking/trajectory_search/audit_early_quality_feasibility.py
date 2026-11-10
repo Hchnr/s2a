@@ -1,6 +1,7 @@
 """Audit quality-constrained plans at all saved early-feedback states."""
 
 import argparse
+import ctypes
 import os
 import signal
 import sys
@@ -32,9 +33,13 @@ PLAN = REPO / "plans/v0.0.1/tracking/joint_control/early_quality_feasibility_202
 CORE = REPO / "src/s2a/research/joint_control/tracking/early_quality_diagnostic.py"
 CORE_TEST = REPO / "tests/research/joint_control/tracking/test_early_quality_diagnostic.py"
 INPUT_TEST = REPO / "tests/research/native_runtime/test_early_quality_feasibility_inputs.py"
-QA = REPO / "outputs/qa/early_quality_feasibility_v2_20261110/result.json"
-DRY = REPO / "outputs/early_quality_feasibility_dry_20261110/result.json"
-OUTPUT = REPO / "outputs/early_quality_feasibility_20261110"
+QA = REPO / "outputs/qa/early_quality_feasibility_v3_20261110/result.json"
+DRY = REPO / "outputs/early_quality_feasibility_dry_v2_20261110/result.json"
+OUTPUT = REPO / "outputs/early_quality_feasibility_v2_20261110"
+OSMESA = {
+    "path": str(REPO / "outputs/native_runtime_path_snapshot_20261029/systemlibs/libOSMesa.so.8.0.0"),
+    "sha256": "40e28f0f15c4cd13ad3c353509eb2fad79d8041528c59dc56d6e68fae8d1677a",
+}
 PRODUCER = {
     "path": str(REPO / "outputs/early_refiner_feedback_20261110/producer/result.json"),
     "sha256": "2e900f506f7bda364348822e2891d3c1be4191bb71703590cc8704a4300c669b",
@@ -108,6 +113,8 @@ def load_inputs():
         PRODUCER["sha256"],
         CHECKER["sha256"],
     )
+    prefix.checked(OSMESA)
+    refs[OSMESA["path"]] = OSMESA["sha256"]
     branches = {}
     for owner in (producer, checker):
         for ref in owner["branch_refs"]:
@@ -118,6 +125,7 @@ def load_inputs():
             branches[key] = data
     for case in inputs["cases"]:
         index = case["spec"]["case_index"]
+        prefix.require(case["config"]["osmesa_library"] == OSMESA["path"], "Registered software GL library")
         produced, checked = branches[("producer", index, "refiner")], branches[("checker", index, "refiner")]
         periods = produced["runtime"]["continuation"]["periods"]
         audited = checked["runtime"]["continuation"]["periods"]
@@ -134,6 +142,15 @@ def load_inputs():
         case["initial_joint"] = np.asarray(produced["runtime"]["runtime_initial_joint"], dtype=float)
     inputs["quality_config"] = c
     return inputs
+
+
+def preload_software_gl(case, source_sha256):
+    """Load the verified software library before importing MuJoCo; no context."""
+    ref = prefix.reference(case["config"]["osmesa_library"])
+    prefix.require(ref == OSMESA and source_sha256.get(ref["path"]) == ref["sha256"], "Bound software GL identity")
+    os.environ.update(MUJOCO_GL="osmesa", PYOPENGL_PLATFORM="osmesa")
+    ctypes.CDLL(ref["path"], mode=ctypes.RTLD_GLOBAL)
+    return ref
 
 
 def restored_context(model, data, case, periods, index, stats):
@@ -350,7 +367,7 @@ def worker(index, offset):
         "automatic_retry": False,
     }
     try:
-        os.environ.update(MUJOCO_GL="osmesa", PYOPENGL_PLATFORM="osmesa")
+        result["osmesa_ref"] = preload_software_gl(case, inputs["source_sha256"])
         result["analysis"] = analyze_state(case, offset, stats)
         prefix.require(
             stats["model_initializations_completed"] == 1

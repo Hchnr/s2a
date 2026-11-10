@@ -22,3 +22,5 @@
 只能报告这16个相关开发状态的局部模型解及预测误差；若未找到witness不宣称机器人全局不可达，若找到也不得称实际达标。后续必须另登记相同起点的实际闭环、已完成历史在线更新和独立动作重放；原18正确参考、12 WAM开发、24最终留出及精度/关节标准均不变。
 
 首次CPU QA在来源快照阶段失败，结果 `outputs/qa/early_quality_feasibility_20261110/result.json` SHA `a3d56cfe72ba6e5063150ef769771c26631851f0655132aa9c67921d09e74197`；因仅修改历史求解器docstring导致迁移清单SHA漂移，尚未收集测试或启动模型。已恢复该文件原字节并在新QA目录继续，原失败保留。历史docstring声称不强制首点精度，与代码中的绝对质量不等式及现有测试不一致；本文以代码和测试为准，不修改原迁移身份。
+
+首次16 worker实际执行 `outputs/early_quality_feasibility_20261110/result.json` SHA `67ea65d74ac89f0cdaa220ae2c2c0407ff58fada5451138d8ab0b98f5b278d5f` 失败：每个worker在导入MuJoCo时找不到已指定的OSMesa符号，均在模型构建前退出；16个均实际wait/reap，新增模型/forward/优化/物理均为0，原结果不覆盖。独立CPU导入试验先按现有仿真运行时以绝对路径和RTLD_GLOBAL加载已核SHA的仓库内OSMesa，再导入MuJoCo成功，未建模型或context。现另行登记v2输出和v3 QA，固定原16状态、预算和所有门槛，加入独立干净子进程加载测试；这不是自动重试。
