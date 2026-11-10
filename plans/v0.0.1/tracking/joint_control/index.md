@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[四次打开事件的安全筛查与匹配反馈](causal_opening_event_feedback_20261111.md)
+
 近期：[批量展开接入质量求解的固定状态对照](batched_quality_solver_20261111.md)
 
 近期：[自由关节预览内环的等价批量计算](batched_joint_rollout_20261111.md)
