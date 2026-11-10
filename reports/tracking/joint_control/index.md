@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[跨重规划因果事件记忆影子回放](causal_event_memory_shadow_20261110.md)
+
 最新：[开发轨迹的重规划阶段一致性](replan_task_event_stability_20261110.md)
 
 最新：[新参考重规划的质量恢复实际反馈](replan_restoration_feedback_20261110.md)
