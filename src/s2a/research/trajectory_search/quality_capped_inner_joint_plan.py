@@ -25,21 +25,15 @@ def solve_interior_plan(
     terminal_normals=None,
     braking_time_s=0.1,
     past_inner_error_rad=None,
-    rollout_fn=None,
 ):
-    """Find a model witness while enforcing absolute first-pose caps.
+    """Find a model witness; original first-pose caps are recorded, never imposed.
 
     Joint positions are affine in actions for frozen free M/J, including anchor
     resets. All 2ms endpoints, not only 50ms control endpoints, are constrained.
     This diagnostic does not model contacts, torque saturation or nonlinear M/J.
-    A nondefault rollout is experimental and still requires independent audit.
     """
     if not np.isfinite(braking_time_s) or braking_time_s <= 0:
         raise ValueError("Positive finite braking lookahead required")
-    if rollout_fn is None:
-        rollout_fn = rollout_joint_preview
-    if not callable(rollout_fn):
-        raise ValueError("An explicit rollout implementation must be callable")
     seed, previous = finite(seed), finite(previous, (6,))
     if seed.ndim != 2 or seed.shape[1] != 6 or not 1 <= len(seed) <= 8:
         raise ValueError("One to eight seed commands required")
@@ -81,7 +75,7 @@ def solve_interior_plan(
             delta = np.asarray([interface.decode(c) for c in np.asarray(x).reshape(h, 6)])
             if np.any(np.all(delta[:, 3:] == 0, axis=1)):
                 raise Stop("unsupported_rotation_latch")
-            rollout = rollout_fn(model, velocity, delta, site, lower, upper, enforce_limits=False)
+            rollout = rollout_joint_preview(model, velocity, delta, site, lower, upper, enforce_limits=False)
             cache[key] = dict(rollout=rollout, score=preview_objective(rollout, tool, targets, twists))
         return cache[key]
 
