@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[三任务停止/预警状态的可行性优先搜索对照](multitask_feasibility_first_20261111.md)
+
 最新：[第三任务早期预警的安全与跟踪反馈](task2_warning_feedback_20261111.md)
 
 最新：[第三任务的早期关节预警前缀复现](task2_warning_prefix_20261111.md)
