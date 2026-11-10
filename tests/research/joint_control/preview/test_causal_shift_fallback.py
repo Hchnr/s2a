@@ -124,6 +124,29 @@ def test_failed_fallback_audit_stops_the_transaction_before_dispatch(monkeypatch
     assert adapter.traces[-1]["audit_status"] == "rejected"
 
 
+def test_checked_fallback_commits_only_after_its_completed_observation(monkeypatch):
+    adapter = fallback.CausalShiftFallbackAudit({}, solver=lambda *_a, **_kw: no_witness())
+    transaction, inner_history, receipt, arguments = feedback_fixture(
+        monkeypatch, solver=adapter.solve, auditor=adapter.audit, max_quality_response_evaluations=320
+    )
+    previous = arguments[8]
+    seed = np.tile([0.01, 0, 0, 0.001, 0, 0], (8, 1))
+    transaction.history.completed_periods = 1
+    transaction.history.last_plan = np.vstack((previous, seed[:7]))
+    adapter.attach_history(transaction.history)
+    arguments[4][1, 0, 3] += 0.1
+    result = transaction.prepare(*arguments, site_from_tcp=np.eye(4))
+    assert result["quality"]["verification"]["selection_scope"] == "shifted_plan_first_pose"
+    assert receipt["quality_refiner"]["witness_audits_passed"] == 1
+    assert inner_history.snapshot()["completed_periods"] == 0
+    np.testing.assert_array_equal(transaction.history.last_plan[0], previous)
+    transaction.commit(result["command"])
+    inner_history.complete(10, np.zeros((25, 7)))
+    transaction.observe(np.eye(4), np.zeros(6))
+    assert inner_history.snapshot()["completed_periods"] == 1
+    np.testing.assert_array_equal(transaction.history.last_plan, result["planned_commands"])
+
+
 def test_fallback_rejects_a_first_pose_outside_original_threshold():
     args, _audit_args, targets = solve_and_audit_inputs()
     targets[0, 0, 3] += 0.03
