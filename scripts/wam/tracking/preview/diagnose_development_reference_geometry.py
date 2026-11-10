@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -31,7 +32,7 @@ SNAPSHOT = {
     "path": str(REPO / "outputs/prefix_trust_asset_snapshot_20261029/manifest.json"),
     "sha256": "c9eaaca963a82f504ed38e67df847fc54c144d030f660be52f6439db0b7b3566",
 }
-QA = REPO / "outputs/qa/multicase_development_reference_geometry_20261110/result.json"
+QA = REPO / "outputs/qa/multicase_development_reference_geometry_v2_20261110/result.json"
 PLAN = REPO / "plans/v0.0.1/tracking/joint_control/multicase_development_reference_geometry_20261110.md"
 LIBRARY = REPO / "src/s2a/research/wam/tracking/preview/development_reference_geometry.py"
 TEST = REPO / "tests/research/wam/tracking/preview/test_development_reference_geometry.py"
@@ -109,7 +110,9 @@ def process_case(index, review, paths):
     tool = np.asarray(json.loads(tool_path.read_bytes())["source_from_tcp"], dtype=float)
     site_mapping = np.asarray(controller["source_from_site"], dtype=float)
     require(tool.shape == site_mapping.shape == (4, 4), "Fixed tool and controller transforms")
+    print(json.dumps({"case": expected, "stage": "model_initialization_requested"}), flush=True)
     model = mujoco.MjModel.from_xml_string(migrate_xml(xml_path.read_bytes(), paths).decode("utf-8"))
+    print(json.dumps({"case": expected, "stage": "model_initialized", "models": 1}), flush=True)
     probe = StaticReferenceProbe(model, target)
     joints = [mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, f"robot0_joint{i}") for i in range(1, 8)]
     require(min(joints) >= 0 and all(model.jnt_limited[j] for j in joints), "Seven limited original robot joints")
@@ -127,9 +130,16 @@ def process_case(index, review, paths):
         np.testing.assert_allclose([r["opening_after"] for r in rows], arrays["opening"][1:], atol=1e-12, rtol=0)
         margin = np.minimum(q - limits[:, 0], limits[:, 1] - q)
         endpoint_flags = []
-        for state in states:
+        for endpoint, state in enumerate(states):
             probe.restore(state)
             endpoint_flags.append(probe.contacts())
+            if (endpoint + 1) % 100 == 0 or endpoint == 600:
+                print(
+                    json.dumps(
+                        {"case": expected, "stage": "endpoints", "completed": endpoint + 1, "queries": probe.queries}
+                    ),
+                    flush=True,
+                )
         queries = []
         for query, chunk in enumerate(chunks):
             step = 8 * query
@@ -154,6 +164,13 @@ def process_case(index, review, paths):
                     variants.append({"name": name, "opening": opening, "pad_contacts": probe.contacts()})
             require(probe.data.time == states[step, 0], "Static query never advances time")
             queries.append({"query": query, "step": step, "first_closure_index": first, "variants": variants})
+            if (query + 1) % 10 == 0 or query == 74:
+                print(
+                    json.dumps(
+                        {"case": expected, "stage": "reference", "completed": query + 1, "queries": probe.queries}
+                    ),
+                    flush=True,
+                )
 
     for path, digest in refs.items():
         require(safe_ref(path)["sha256"] == digest, "Consumed input changed during case")
@@ -249,6 +266,11 @@ def main():
             "automatic_retry": False,
         },
     )
+
+    def interrupted(signum, _frame):
+        raise KeyboardInterrupt(f"Owner received signal {signum}")
+
+    signal.signal(signal.SIGTERM, interrupted)
     workers = []
     launch_error = None
     try:
@@ -273,17 +295,36 @@ def main():
         launch_error = traceback.format_exc()
         for worker in workers:
             if worker["process"].poll() is None:
-                worker["process"].terminate()
+                try:
+                    worker["process"].terminate()
+                    worker["signaled_during_launch"] = True
+                except ProcessLookupError:
+                    pass
     deadline = time.monotonic() + 1200
     lifecycle = []
     for worker in workers:
         process = worker["process"]
-        signaled = False
+        signaled = worker.get("signaled_during_launch", False)
         try:
             code = process.wait(timeout=max(0.01, deadline - time.monotonic()))
         except subprocess.TimeoutExpired:
             signaled = True
             process.terminate()
+            try:
+                code = process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                code = process.wait()
+        except BaseException:
+            launch_error = traceback.format_exc()
+            for other in workers:
+                if other["process"].poll() is None:
+                    try:
+                        other["process"].terminate()
+                        other["signaled_during_launch"] = True
+                    except ProcessLookupError:
+                        pass
+            signaled = worker.get("signaled_during_launch", False)
             try:
                 code = process.wait(timeout=10)
             except subprocess.TimeoutExpired:
