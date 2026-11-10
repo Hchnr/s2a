@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[已评估双点搜索中的首点候选](task2_cached_first_pose_20261111.md)
+
 最新：[双点优先、已完成计划后移的因果反馈](task2_causal_shift_fallback_20261111.md)
 
 最新：[同一停止状态的双种子双点搜索](task2_shifted_seed_search_20261111.md)
