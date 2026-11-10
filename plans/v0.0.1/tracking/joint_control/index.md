@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[组合预警首次触发时的实际反馈对照](combined_warning_feedback_20261110.md)
+
 近期：[跟踪质量与关节速度的组合预警回顾](combined_quality_warning_20261110.md)
 
 本页导航原始文件；正文、配置值和历史身份保持。目录迁移不改变实验或控制资格。
