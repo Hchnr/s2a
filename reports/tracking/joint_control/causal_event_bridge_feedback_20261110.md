@@ -22,6 +22,15 @@
 误差为 `0.382623`，对最新opening为 `0.725564`；均为归一化开度，不是米。末端
 实际opening约 `0.615958`，最新目标约 `0.975392`。
 
+本案例使用 `libero_closed_pad_observed_endpoint_eef10_v1` 域；同任务发布标签的
+[既有合同核对](../../wam/qualification/wam_tcp_time_alignment_20261020.md)将slot 9
+解释为下一端点的实测pad opening，而非原生夹爪命令；它没有证明本案例历史训练
+消费的精确字节。这里的参考来自[Action128解码](../../../src/s2a/references/action_reference.py)，
+实际opening由[当前夹爪关节](../../../scripts/simulation/runtime/run_causal_event_feedback.py)计算，
+两者差是归一化参考跟踪误差；实际发送的第7维控制命令与motor target另行记录。
+不能把该LIBERO语义泛化为DROID域：后者在[原计划](../../../plans/v0.0.1/goals/001_state_to_action.md)
+中记录的是来源命令转换后的opening。
+
 16条新动作均已执行，无预设停止；其中第9条之后的8周期由固定衔接参考驱动。实际
 400个2 ms内环样本的最小关节余量为 `0.764479 rad`，无样本低于0.05 rad缓冲或越
 关节范围。该短窗结果不保证后续安全。
