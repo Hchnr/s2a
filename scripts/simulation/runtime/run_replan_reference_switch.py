@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
+from s2a.research.joint_control.tracking.replan_reference_scoring import score_reference_pair
 from scripts.simulation.runtime import compare_multicase_emergency_retreat as previous
 from scripts.simulation.runtime import replay_multicase_development_prefix as prefix
 from scripts.simulation.runtime import run_combined_warning_feedback as base
@@ -153,3 +154,16 @@ def selected_case(case, mode):
         intervention_spec={"cursor": cursor, "target": TARGETS[case["spec"]["case_index"]]},
     )
     return selected
+
+
+def completed_reference_scores(actual_tcp, scoring_targets, mode, offset, own_error, *, expected=None):
+    """Score the completed actual endpoint; references never choose an action here."""
+    prefix.require(mode in CURSORS and set(scoring_targets) == set(CURSORS), "Both aligned scoring references required")
+    scores = score_reference_pair(actual_tcp, scoring_targets["old"], scoring_targets["new"], offset)
+    np.testing.assert_allclose(scores[mode], own_error, atol=1e-10, rtol=0)
+    result = {"actual_tcp_pose": np.asarray(actual_tcp).copy(), "reference_errors": scores}
+    if expected is not None:
+        np.testing.assert_allclose(result["actual_tcp_pose"], expected["actual_tcp_pose"], atol=1e-10, rtol=0)
+        for name in CURSORS:
+            np.testing.assert_allclose(scores[name], expected["reference_errors"][name], atol=1e-10, rtol=0)
+    return result

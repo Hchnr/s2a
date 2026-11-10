@@ -23,3 +23,22 @@ def test_reviewed_old_and_new_chunks_share_the_same_physical_endpoints():
 def test_unknown_reference_choice_is_rejected():
     with pytest.raises(ValueError, match="reference choice"):
         run.selected_case({}, "later")
+
+
+def test_completed_scoring_checks_own_reference_and_detects_tampering():
+    targets = {name: np.tile(np.eye(4), (8, 1, 1)) for name in ("old", "new")}
+    targets["old"][0, 0, 3] = 0.01
+    expected = run.completed_reference_scores(np.eye(4), targets, "new", 0, np.zeros(6))
+    np.testing.assert_allclose(expected["reference_errors"]["old"][:3], [0.01, 0, 0])
+    run.completed_reference_scores(np.eye(4), targets, "new", 0, np.zeros(6), expected=expected)
+    expected["reference_errors"]["old"][0] = 0.02
+    with pytest.raises(AssertionError):
+        run.completed_reference_scores(np.eye(4), targets, "new", 0, np.zeros(6), expected=expected)
+
+
+def test_scoring_rejects_inconsistent_own_error_and_missing_reference():
+    targets = {name: np.tile(np.eye(4), (8, 1, 1)) for name in ("old", "new")}
+    with pytest.raises(AssertionError):
+        run.completed_reference_scores(np.eye(4), targets, "old", 0, np.ones(6))
+    with pytest.raises(ValueError, match="Both aligned"):
+        run.completed_reference_scores(np.eye(4), {"old": targets["old"]}, "old", 0, np.zeros(6))
