@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[跨重规划因果事件记忆](causal_event_memory_20261110.md) · [影子回放独立复核](causal_event_memory_check_20261110.md)
+
 近期：[开发参考阶段一致性与独立复核](replan_task_event_stability_20261110.md) · [逐点复核](replan_task_event_stability_check_20261110.md)
 
 近期：[新参考重规划的安全优先质量恢复反馈](replan_restoration_feedback_20261110.md)
