@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[组合预警的16周期固定参考反馈对照](combined_warning_long_feedback_20261110.md)
+
 最新：[组合预警首次触发后的实际反馈对照](combined_warning_feedback_20261110.md)
 
 最新：[跟踪质量与关节速度组合预警回顾](combined_quality_warning_20261110.md)
