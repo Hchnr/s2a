@@ -129,6 +129,7 @@ def solve_full_horizon(
         "pose_horizon": h,
         "initial_margin_rad": float(np.min(np.minimum(model["q"] - lower, upper - model["q"]))),
         "scope": "frozen model only; all generated TCP points constrained; no physical qualification",
+        "seed_tcp_errors": pose_quality_constraints(original["score"], h, scale)[2],
     }
     if base["initial_margin_rad"] < 0.05 - 1e-12:
         return dict(**base, status="initial_outside_requested_interior", witness_found=False, response_evaluations=1)
@@ -143,7 +144,7 @@ def solve_full_horizon(
     if not lp.success:
         return dict(**base, status="linear_solver_no_witness", witness_found=False, response_evaluations=len(cache))
     if initial_guess is not None:
-        evaluate(start)
+        base["initial_guess_tcp_errors"] = pose_quality_constraints(evaluate(start)["score"], h, scale)[2]
 
     def values(x):
         return pose_quality_constraints(evaluate(x)["score"], h, scale)[0]
