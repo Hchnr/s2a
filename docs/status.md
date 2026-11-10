@@ -2,6 +2,39 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 批量质量求解对照：三个相关开发时刻各两次原/批量求解均获witness，
+12次独立审核通过，成对命令最大差6.73e-14；批量求解约0.887–0.927秒，仍不具
+20 Hz资格。默认控制器未切换，0新物理/WAM/GPU/fresh；68项CPU专项通过，详见
+[对照报告](../reports/tracking/joint_control/batched_quality_solver_20261111.md)。
+
+2026-11-11 批量求解器对照首次QA在收集前拒绝：原求解器/历史测试的SHA与迁移
+身份清单冲突，未执行测试或求解；原字节已恢复并核验，后续使用独立候选入口，
+详见[QA记录](../reports/tracking/joint_control/batched_quality_solver_qa_incident_20261111.md)。
+
+2026-11-11 批量自由预览：三个已保存状态共153对展开逐字段通过1e-10容差，
+最大差7.11e-15；原/批量中位耗时约4.40–4.46/2.48–2.51 ms，批量准备约0.27 ms。
+63项CPU专项通过；尚未接入求解器或物理控制，也不具20 Hz资格，详见[对照报告](../reports/tracking/joint_control/batched_joint_rollout_20261111.md)。
+
+2026-11-11 质量求解耗时剖析：三个已保存开发状态各两次结果完全一致，原独立
+审核均通过；不带profiler求解墙钟1.07–1.12秒，审核约21 ms。SLSQP与关节轨迹
+展开各占profiler self time约两成；零内环误差仅作离线诊断，不授予安全/实时
+资格。55项CPU专项通过，0新物理/WAM/GPU/fresh，详见[耗时报告](../reports/tracking/joint_control/quality_solver_runtime_profile_20261111.md)。
+
+2026-11-11 两因素实际对照：两种位姿下，旧opening的切换后8/8端点grasp，衔接
+opening为3/8；旧位姿+旧opening末端抬升5.31 cm，而衔接位姿+旧opening仅0.16 cm。
+四组任务成功均为0；旧opening明显偏离最新目标。32条新动作独立重放逐值一致，
+182项CPU专项通过；另保留原中断的未知额外费用，详见[对照报告](../reports/tracking/joint_control/causal_event_bridge_factorial_20261111.md)。
+
+2026-11-11 两因素对照中断：两路producer最后各记录64周期原前缀，进程和句柄已
+消失，无退出或完整结果收据；实际总费用未知。原部分证据保持，另行登记从原初态
+的独占恢复，详见[中断账本](../reports/tracking/joint_control/causal_event_factorial_interruption_20261111.md)。
+
+2026-11-10 因果衔接实际反馈：task1 seed42旧参考8周期后，经固定8周期过渡至
+已生成新参考，16条动作均执行；实际TCP对衔接参考16/16双阈值、对最新参考7/16。
+grasp端点367–371，物体最高较起点升高1.38 cm，最终回到起点附近，任务成功0；
+opening仍有较大误差。16动作独立物理重放逐值一致，151项CPU专项通过；固定参考
+短窗、非实时且0新WAM/GPU/fresh，详见[衔接报告](../reports/tracking/joint_control/causal_event_bridge_feedback_20261110.md)。
+
 2026-11-10 闭合后切换参考：task1 seed42原有8周期重放一致，端点368在完整保留
 控制历史后切回step360生成的新参考；首个质量搜索无witness，第9条动作未派发，
 夹爪提案撤销。前8动作独立物理重放逐值一致；112项CPU专项通过，0新WAM/GPU/fresh。

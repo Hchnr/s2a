@@ -1,0 +1,21 @@
+{
+  "schema": "s2a.batched-quality-solver.v1",
+  "case_index": 5,
+  "case_id": "task1_init0_s42_terminal058",
+  "seed": 42,
+  "steps": [352, 355, 359],
+  "repetitions_per_implementation": 2,
+  "max_solver_calls": 12,
+  "max_response_evaluations_per_call": 160,
+  "max_response_evaluations": 1920,
+  "max_independent_audits": 12,
+  "comparison_atol": 1e-10,
+  "comparison_rtol": 0,
+  "past_inner_error": "zero_diagnostic_only",
+  "max_workers": 3,
+  "worker_timeout_seconds": 600,
+  "physical_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
