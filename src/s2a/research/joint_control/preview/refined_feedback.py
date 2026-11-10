@@ -124,7 +124,7 @@ class RefinedPreviewFeedback:
             "goal_ori": np.asarray(refined["expected_goal_ori"]).copy(),
             "offset": offset,
         }
-        return {
+        decision = {
             "command": dispatched,
             "newly_selected": True,
             "preview_command": seed["command"],
@@ -135,6 +135,9 @@ class RefinedPreviewFeedback:
             "decision_seconds": time.monotonic() - started,
             "predecision_minimum_margin_rad": float(np.min(np.minimum(q - limits[:, 0], limits[:, 1] - q))),
         }
+        if "quality" in refined:
+            decision["quality"] = refined["quality"]
+        return decision
 
     def observe(self, env, command, offset):
         if env is not self.env or self.pending is None or offset != self.pending["offset"]:
