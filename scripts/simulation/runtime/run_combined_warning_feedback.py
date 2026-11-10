@@ -170,3 +170,74 @@ def load_inputs():
             },
         )
     return inputs
+
+
+def first_decision_comparison(selected, row):
+    """Compare a completed calculation with the original current decision."""
+    command = np.asarray(selected["command"], dtype=float)
+    old_command = np.asarray(row["command"], dtype=float)
+    plan = np.asarray(selected["refined_plan"], dtype=float)
+    old_plan = np.asarray(row["tracking_refinement"]["planned_commands"], dtype=float)
+    prefix.require(
+        command.shape == old_command.shape == (7,) and plan.shape == old_plan.shape == (8, 6), "Decision shapes"
+    )
+    differences = {
+        "arm_command": float(np.max(np.abs(command[:6] - old_command[:6]))),
+        "plan": float(np.max(np.abs(plan - old_plan))),
+    }
+    same_route = selected["route"] == row["tracking_refinement"]["route"]
+    return {
+        "max_absolute_difference": differences,
+        "same_route": same_route,
+        "passed": bool(same_route and all(np.isfinite(x) and x <= 1e-8 for x in differences.values())),
+        "original_gripper_command": float(old_command[6]),
+        "comparison_gripper_command": float(command[6]),
+        "original_decision_read_after_recomputation": True,
+    }
+
+
+def guarded_action(choose_action, receipt, *, first_decision_check=None):
+    """Stop before a later action once observed inner samples lose the buffer."""
+
+    def select(q, limits, jacobian, previous, offset):
+        q, limits = np.asarray(q, dtype=float), np.asarray(limits, dtype=float)
+        prefix.require(q.shape == (7,) and limits.shape == (7, 2) and np.isfinite(q).all(), "Finite current joints")
+        margin = float(np.min(np.minimum(q - limits[:, 0], limits[:, 1] - q)))
+        periods = receipt["continuation_partial"]["periods"]
+        prior_loss = bool(periods and periods[-1]["inner_below_buffer_samples"] > 0)
+        if margin < 0.05 or prior_loss:
+            return {"stop": {"reason": "observed_joint_buffer_loss", "minimum_current_margin_rad": margin}}
+        selected = choose_action(q, limits, jacobian, previous, offset)
+        if offset == 0 and first_decision_check is not None and "stop" not in selected:
+            comparison = first_decision_check(selected)
+            receipt["first_decision_reconstruction"] = comparison
+            prefix.require(comparison["passed"] is True, "Original first decision reconstruction")
+        return selected
+
+    return select
+
+
+def reconcile_checker_stop(continuation, expected_stop, *, mode, start_step):
+    """Verify physical stops and label optimization stops as not re-solved."""
+    reason = None if expected_stop is None else expected_stop.get("reason")
+    decision_stop = reason in ("quality_no_witness", "quality_witness_rejected", "observed_joint_buffer_loss")
+    if not decision_stop:
+        prefix.require(continuation["stop"] == expected_stop, "Replayed physical stop differs from producer")
+        continuation["decision_stop_recorded_not_recomputed"] = False
+        return continuation
+    periods = continuation["periods"]
+    prefix.require(
+        continuation["stop"] is None
+        and len(periods) < 8
+        and expected_stop.get("at_step") == start_step + len(periods)
+        and expected_stop.get("next_action_dispatched") is False,
+        "Decision stop must follow exactly the replayed actions",
+    )
+    if reason == "observed_joint_buffer_loss":
+        prefix.require(periods and periods[-1]["inner_below_buffer_samples"] > 0, "Buffer stop requires observed loss")
+    else:
+        prefix.require(mode == "quality", "Only quality feedback can stop without a model witness")
+    continuation["stop"] = expected_stop.copy()
+    continuation["decision_stop_recorded_not_recomputed"] = reason != "observed_joint_buffer_loss"
+    continuation["buffer_stop_verified_from_replayed_inner_samples"] = reason == "observed_joint_buffer_loss"
+    return continuation
