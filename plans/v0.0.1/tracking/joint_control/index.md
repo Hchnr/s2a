@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[因果回退停止状态的首点位姿外界](task2_fallback_stop_pose_bound_20261111.md)
+
 近期：[已评估双点搜索中的首点候选](task2_cached_first_pose_20261111.md)
 
 近期：[双点优先、已完成计划后移的因果反馈](task2_causal_shift_fallback_20261111.md)
