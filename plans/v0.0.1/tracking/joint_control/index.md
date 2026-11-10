@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[双点优先、已完成计划后移的因果反馈](task2_causal_shift_fallback_20261111.md)
+
 近期：[相同停止状态的双种子双点搜索](task2_shifted_seed_search_20261111.md)
 
 近期：[停止状态的后移计划双点资格检查](task2_shifted_seed_qualification_20261111.md)
