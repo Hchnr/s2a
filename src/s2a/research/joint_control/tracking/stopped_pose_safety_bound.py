@@ -80,6 +80,8 @@ def safety_scopes(domain, seed, *, rate_limit=0.25):
     joint_lo, joint_hi = finite(domain["joint_lo"], (1456,)), finite(domain["joint_hi"], (1456,))
     if not np.isfinite(rate_limit) or rate_limit <= 0 or np.any(lo > hi):
         raise ValueError("A positive rate limit and ordered input box are required")
+    if not np.array_equal(rate, np.eye(48) - np.eye(48, k=-6)) or not np.array_equal(center[6:], np.zeros(42)):
+        raise ValueError("Original consecutive-command rate rows are required")
     first_lo = np.maximum(lo[:6], center[:6] - rate_limit)
     first_hi = np.minimum(hi[:6], center[:6] + rate_limit)
     if np.any(first_lo > first_hi) or np.any(seed < lo - 1e-12) or np.any(seed > hi + 1e-12):
@@ -148,7 +150,9 @@ def support_upper_bound(direction, scope):
     return certificate
 
 
-def weighted_pose_bounds(linearization, position_direction, rotation_direction, scopes, weights, *, allowance=1e-7):
+def weighted_pose_bounds(
+    linearization, position_direction, rotation_direction, scopes, weights, *, allowance=1e-7, on_support=None
+):
     """Bound a convex combination of normalized position and orientation errors."""
     n, d = finite(position_direction, (3,)), finite(rotation_direction, (3, 3))
     if not np.isclose(np.linalg.norm(n), 1, atol=1e-12, rtol=0) or not np.isclose(
@@ -175,7 +179,11 @@ def weighted_pose_bounds(linearization, position_direction, rotation_direction, 
             weight = float(weight)
             direction = np.zeros(len(scope["lower"]))
             direction[:6] = weight * p_jac + (1 - weight) * r_jac
+            if on_support is not None:
+                on_support(name, "attempted")
             certificate = support_upper_bound(direction, scope)
+            if on_support is not None:
+                on_support(name, "completed")
             seed_gap = weight * p_gap + (1 - weight) * r_gap
             remainder = weight * p_remainder + (1 - weight) * r_remainder
             lower_bound = seed_gap - certificate["support_upper"] - remainder - allowance

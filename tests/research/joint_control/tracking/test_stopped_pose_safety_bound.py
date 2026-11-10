@@ -65,6 +65,27 @@ def test_existing_feasible_pose_is_never_excluded_by_the_box():
     assert result["scopes"]["box"]["best_lower_bound"] <= 1
 
 
+def test_infeasible_support_lp_records_attempt_without_completion():
+    site = tool = target = np.eye(4)
+    lower, upper = -np.ones(6), np.ones(6)
+    seed = np.zeros(6)
+    linear = first_pose_linearization(
+        site, tool, np.zeros((6, 7)), np.zeros(7), np.zeros((7, 6)), seed, lower, upper, target
+    )
+    scope = dict(lower=lower, upper=upper, seed=seed, a=np.zeros((1, 6)), b=np.array([-1.0]))
+    events = []
+    with pytest.raises(ValueError, match="Support LP failed"):
+        weighted_pose_bounds(
+            linear,
+            [1, 0, 0],
+            hat([0, 0, 1]) / np.sqrt(2),
+            {"infeasible": scope},
+            [0.5],
+            on_support=lambda *event: events.append(event),
+        )
+    assert events == [("infeasible", "attempted")]
+
+
 def test_first_period_projection_does_not_drop_future_coefficient():
     joint_a = np.zeros((1456, 48))
     joint_a[0, 0], joint_a[0, 6] = 1.0, 0.5
