@@ -1,0 +1,33 @@
+{
+  "schema": "s2a.stopped-pose-safety-bound.v1",
+  "cases": [
+    {"case_index": 2, "step": 48, "source": "multitask_quality_stop"},
+    {"case_index": 6, "step": 57, "source": "multitask_quality_stop"},
+    {"case_index": 10, "step": 33, "source": "staged_first_stop"},
+    {"case_index": 11, "step": 81, "source": "staged_first_stop"}
+  ],
+  "seed": 43,
+  "control_dt_s": 0.05,
+  "inner_dt_s": 0.002,
+  "joint_buffer_rad": 0.05,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "arm_rate_limit": 0.25,
+  "braking_time_s": 0.1,
+  "scopes": ["box", "first_interval_safety", "eight_interval_safety"],
+  "position_weights": [0.0, 0.25, 0.5, 0.75, 1.0],
+  "normalized_numerical_allowance": 1e-7,
+  "terminal_direction_included": false,
+  "max_models": 4,
+  "max_static_forward_queries": 4,
+  "max_seed_rollouts": 4,
+  "max_support_lp_calls": 40,
+  "max_independent_first_responses": 4,
+  "max_independent_transition_steps": 100,
+  "max_workers": 4,
+  "worker_timeout_seconds": 600,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

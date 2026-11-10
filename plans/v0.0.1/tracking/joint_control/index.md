@@ -1,5 +1,17 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[已执行双点计划的状态与模型偏差](task2_guarded_model_drift_20261111.md)
+
+近期：[数值余量双点搜索的实际反馈](task2_guarded_two_step_feedback_20261111.md)
+
+近期：[双点可行性搜索的数值尺度对照](guarded_two_step_search_20261111.md)
+
+近期：[第三个任务的双点硬约束实际反馈](task2_two_step_feedback_20261111.md)
+
+近期：[提前一拍的双点质量可行性](two_step_viability_20261111.md)
+
+近期：[三任务停止状态的位姿与安全联合外界](stopped_pose_safety_bound_20261111.md)
+
 近期：[安全可行初值上的首点优先恢复](task2_staged_first_feasibility_20261111.md)
 
 近期：[原安全约束内的可行初值恢复反馈](task2_feasible_start_restoration_20261111.md)

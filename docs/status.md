@@ -2,6 +2,28 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 数值余量双点反馈：task2 raw由首动作前停止改善为实际1周期双阈值1/1，
+随后无witness；terminal058仍为4周期4/4后停止，均未完成8周期或任务成功。
+5条动作及125内步独立重放一致，104项CPU专项通过，详见[反馈报告](../reports/tracking/joint_control/task2_guarded_two_step_feedback_20261111.md)。
+
+2026-11-11 双点搜索数值尺度对照：同一task2 raw静态输入从无witness变为独立
+审核通过的双点模型候选，terminal058仍有候选；task0/1仍无witness。最终第二点
+贴近原阈值，尚无新物理反馈；32项CPU专项通过，详见[对照报告](../reports/tracking/joint_control/guarded_two_step_search_20261111.md)。
+
+2026-11-11 双点硬约束实际反馈：task2 raw首动作前无witness，terminal058执行
+4周期且实际双阈值4/4、关节缓冲未失守，随后无witness；未完成8周期或任务成功。
+4条动作及100内步独立重放一致，91项CPU专项通过，详见[反馈报告](../reports/tracking/joint_control/task2_two_step_feedback_20261111.md)。
+
+2026-11-11 提前一拍双点搜索：四个相关开发状态中，task2 terminal058找到独立
+审核通过的前两点模型witness，后六点仍有质量缺口；另三处无witness，raw第二点
+仅数值边界超限仍被拒绝。228响应、29项CPU专项通过，尚无新物理反馈，详见
+[双点报告](../reports/tracking/joint_control/two_step_viability_20261111.md)。
+
+2026-11-11 三任务停止位姿外界：四个已重放开发停止状态在冻结模型首动作box/变化率
+放宽域内均排除位置和姿态同时达标；task0/1为联合冲突，task2 raw/terminal分别
+由位置/姿态单项排除。40次LP及4个独立标量响应复核通过，30项CPU专项通过；这不
+证明真实物理不可达，详见[联合外界报告](../reports/tracking/joint_control/stopped_pose_safety_bound_20261111.md)。
+
 2026-11-11 两阶段首点优先：两个task2开发变体各执行1周期后仍无witness；实际
 双阈值分别0/1和1/1。第二次搜索分别评估21/12个线性安全候选但无首点合格解；
 2条动作及50内步独立重放一致，84项CPU专项通过，详见[反馈报告](../reports/tracking/joint_control/task2_staged_first_feasibility_20261111.md)。
