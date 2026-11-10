@@ -68,3 +68,32 @@ def restore_completed_history(completed, current_site, current_twist):
     tracking.history.completed_periods = completed.completed_periods
     tracking.history.last_plan = completed.last_plan.copy()
     return coupled, tracking
+
+
+def restore_recomputed_history(
+    completed, previous_site, previous_twist, coupled_prediction, tracking_prediction, current_site, current_twist
+):
+    """Restore only if prior predictions explain both saved completed innovations."""
+    if not isinstance(completed, CompletedHistory):
+        raise TypeError("Explicit completed history is required")
+    coupled_innovation = recompute_completed_innovation(
+        previous_site, previous_twist, coupled_prediction, current_site, current_twist
+    )
+    tracking_innovation = recompute_completed_innovation(
+        previous_site, previous_twist, tracking_prediction, current_site, current_twist
+    )
+    difference = {
+        "coupled": float(np.max(np.abs(coupled_innovation - completed.coupled_innovation))),
+        "tracking": float(np.max(np.abs(tracking_innovation - completed.tracking_innovation))),
+    }
+    if any(value > 1e-8 for value in difference.values()):
+        raise ValueError("Prior innovations do not match their completed predictions")
+    rebuilt = CompletedHistory(
+        completed.previous_command,
+        coupled_innovation,
+        tracking_innovation,
+        completed.last_plan,
+        completed.completed_periods,
+    )
+    coupled, tracking = restore_completed_history(rebuilt, current_site, current_twist)
+    return coupled, tracking, difference

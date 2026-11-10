@@ -53,7 +53,7 @@ def fake_runtime(*, outside=False):
     return env, observers, state_reader, task_observer, terminal
 
 
-def execute(*, outside=False, expected=None):
+def execute(*, outside=False, expected=None, on_completed=None):
     env, observers, state_reader, task_observer, terminal = fake_runtime(outside=outside)
     calls = []
 
@@ -77,6 +77,7 @@ def execute(*, outside=False, expected=None):
         expected_periods=expected,
         state_reader=state_reader,
         task_observer=task_observer,
+        on_completed=on_completed,
     )
     return result, receipt, calls
 
@@ -96,3 +97,24 @@ def test_recorded_actions_replay_and_detect_changed_inner_state():
     producer["periods"][2]["actual_inner"][3]["q"][0] = 0.1
     with pytest.raises(AssertionError):
         execute(expected=producer["periods"])
+
+
+def test_completed_hook_observes_each_real_period_before_next_decision():
+    events = []
+
+    def completed(env, command, offset):
+        events.append((offset, env.sim.inner))
+        np.testing.assert_array_equal(command, np.zeros(7))
+        return {"observed_inner_steps": env.sim.inner}
+
+    result, _, calls = execute(on_completed=completed)
+    assert [offset for offset, _ in calls] == list(range(8))
+    assert events == [(offset, 25 * (offset + 1)) for offset in range(8)]
+    assert result["periods"][3]["completed_feedback"]["observed_inner_steps"] == 100
+
+
+def test_completed_hook_runs_for_violation_before_stopping_next_dispatch():
+    events = []
+    result, _, calls = execute(outside=True, on_completed=lambda _env, _command, offset: events.append(offset))
+    assert events == [0]
+    assert len(calls) == result["steps_completed"] == 1

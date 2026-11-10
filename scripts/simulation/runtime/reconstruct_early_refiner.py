@@ -16,8 +16,7 @@ from s2a.infrastructure.native_environment import restore_cv2_environment
 from s2a.infrastructure.publication import publish_result as publish
 from s2a.research.joint_control.preview.completed_history import (
     CompletedHistory,
-    recompute_completed_innovation,
-    restore_completed_history,
+    restore_recomputed_history,
 )
 from s2a.research.joint_control.preview.dependency_safe_preview_runtime import solve_preview
 from s2a.research.native_runtime.development_continuation import current_joint_site_state
@@ -154,25 +153,15 @@ def numerical_reconstruction(env, case, receipt):
         twist = jacobian @ qvel
         historical = case["completed_history"]
         evidence = case["previous_evidence"]
-        coupled_rebuilt = recompute_completed_innovation(
-            evidence["site"], evidence["twist"], evidence["coupled_prediction"], site, twist
+        coupled, tracking, innovation_diff = restore_recomputed_history(
+            historical,
+            evidence["site"],
+            evidence["twist"],
+            evidence["coupled_prediction"],
+            evidence["tracking_prediction"],
+            site,
+            twist,
         )
-        tracking_rebuilt = recompute_completed_innovation(
-            evidence["site"], evidence["twist"], evidence["tracking_prediction"], site, twist
-        )
-        innovation_diff = {
-            "coupled": differences(coupled_rebuilt, historical.coupled_innovation),
-            "tracking": differences(tracking_rebuilt, historical.tracking_innovation),
-        }
-        prefix.require(all(value <= ATOL for value in innovation_diff.values()), "Prior innovations must recompute")
-        rebuilt = CompletedHistory(
-            historical.previous_command,
-            coupled_rebuilt,
-            tracking_rebuilt,
-            historical.last_plan,
-            historical.completed_periods,
-        )
-        coupled, tracking = restore_completed_history(rebuilt, site, twist)
         coupled_before = coupled.current(site, twist)
         tracking_before = tracking.history.current(site, twist)
         source_from_site = np.asarray(case["controller"]["source_from_site"], dtype=float)

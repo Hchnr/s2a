@@ -27,6 +27,25 @@ def current_joint_site_state(env):
     return q, limits, np.vstack((jp, jr))[:, dofs].copy()
 
 
+def current_robot_dynamics(env, jacobian):
+    """Read current robot mass, qvel and site without forwarding or stepping."""
+    import mujoco
+
+    robot, sim = env.robots[0], env.sim
+    model, data = sim.model._model, sim.data._data
+    dofs = np.asarray(robot._ref_joint_vel_indexes, dtype=int)
+    full_mass = np.zeros((model.nv, model.nv))
+    mujoco.mj_fullM(model, full_mass, data.qM)
+    sid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, robot.controller.eef_name)
+    if sid < 0 or dofs.shape != (7,) or np.asarray(jacobian).shape != (6, 7):
+        raise ValueError("Fixed site, seven robot dofs and 6x7 Jacobian required")
+    site = np.eye(4)
+    site[:3, :3] = data.site_xmat[sid].reshape(3, 3)
+    site[:3, 3] = data.site_xpos[sid]
+    velocity = np.asarray(sim.data.qvel)[dofs].copy()
+    return full_mass[np.ix_(dofs, dofs)], velocity, site
+
+
 def run_continuation(
     env,
     terminal,
@@ -44,6 +63,7 @@ def run_continuation(
     historical_states=None,
     state_reader=None,
     task_observer=None,
+    on_completed=None,
     progress=None,
 ):
     """Dispatch at most eight actions; privileged task data are scoring-only."""
@@ -160,6 +180,8 @@ def run_continuation(
                     if period[key] != expected[key]:
                         raise ValueError(f"Independent continuation label differs: {key}")
             periods.append(period)
+            if on_completed is not None:
+                period["completed_feedback"] = on_completed(env, command.copy(), offset)
             previous = command.copy()
             if progress is not None:
                 progress(receipt)

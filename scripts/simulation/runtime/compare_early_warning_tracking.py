@@ -15,7 +15,7 @@ import numpy as np
 from s2a.infrastructure.native_environment import restore_cv2_environment
 from s2a.infrastructure.publication import publish_result as publish
 from s2a.research.joint_control.limits.causal_warning import joint_warnings
-from s2a.research.native_runtime.development_continuation import run_continuation
+from s2a.research.native_runtime.development_continuation import current_robot_dynamics, run_continuation
 from scripts.maintenance.run_cpu_tests import snapshot
 from scripts.simulation.runtime import compare_multicase_emergency_retreat as previous
 from scripts.simulation.runtime import replay_multicase_development_prefix as prefix
@@ -198,21 +198,7 @@ def branch_key(index, mode):
 
 def current_dynamics(env, jacobian):
     """Read actual mass, joint velocity and site from the current simulator state."""
-    import mujoco
-
-    robot, sim = env.robots[0], env.sim
-    model, data = sim.model._model, sim.data._data
-    dofs = np.asarray(robot._ref_joint_vel_indexes, dtype=int)
-    full_mass = np.zeros((model.nv, model.nv))
-    mujoco.mj_fullM(model, full_mass, data.qM)
-    sid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, robot.controller.eef_name)
-    prefix.require(sid >= 0 and dofs.shape == (7,), "Fixed site and seven robot dofs")
-    site = np.eye(4)
-    site[:3, :3] = data.site_xmat[sid].reshape(3, 3)
-    site[:3, 3] = data.site_xpos[sid]
-    velocity = np.asarray(sim.data.qvel)[dofs].copy()
-    prefix.require(jacobian.shape == (6, 7), "Fixed site Jacobian")
-    return full_mass[np.ix_(dofs, dofs)], velocity, site
+    return current_robot_dynamics(env, jacobian)
 
 
 def make_action(phase, mode, case, env, receipt, expected_periods):

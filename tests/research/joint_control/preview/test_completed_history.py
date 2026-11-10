@@ -7,6 +7,7 @@ from s2a.research.joint_control.preview.completed_history import (
     CompletedHistory,
     recompute_completed_innovation,
     restore_completed_history,
+    restore_recomputed_history,
 )
 
 
@@ -62,3 +63,17 @@ def test_completed_innovation_uses_measured_endpoint_and_prior_prediction():
     innovation = recompute_completed_innovation(previous, np.zeros(6), prediction, actual, twist)
     np.testing.assert_allclose(innovation[0], 0.02, atol=1e-12, rtol=0)
     np.testing.assert_allclose(innovation[6], 0.01, atol=1e-12, rtol=0)
+
+
+def test_recomputed_restore_rejects_unexplained_saved_innovation():
+    plan = np.zeros((2, 6))
+    past = CompletedHistory(np.zeros(7), np.zeros(12), np.zeros(12), plan, 1)
+    coupled, tracking, difference = restore_recomputed_history(
+        past, np.eye(4), np.zeros(6), np.zeros(12), np.zeros(12), np.eye(4), np.zeros(6)
+    )
+    assert difference == {"coupled": 0.0, "tracking": 0.0}
+    assert coupled.pending is None and tracking.phase == "ready"
+    changed = np.zeros(12)
+    changed[0] = 1e-3
+    with pytest.raises(ValueError, match="innovations"):
+        restore_recomputed_history(past, np.eye(4), np.zeros(6), changed, np.zeros(12), np.eye(4), np.zeros(6))
