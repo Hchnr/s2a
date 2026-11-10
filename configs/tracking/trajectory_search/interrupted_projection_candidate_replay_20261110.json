@@ -1,0 +1,13 @@
+{
+  "seed": 42,
+  "assessment_sha256": "4e1151091730a4da382a101a7be8442f7fb700a95e1ca9e17ad33e093f48da93",
+  "safe_indices": [73, 74, 79, 80, 110, 125, 141, 147, 153, 214, 219, 220, 226],
+  "unsafe_control_index": 0,
+  "repeat_index": 110,
+  "independent_response_budget": 15,
+  "independent_inner_step_budget": 4500,
+  "independent_query_budget": 4681,
+  "independent_model_budget": 1,
+  "timeout_seconds": 1200,
+  "automatic_retry": false
+}
