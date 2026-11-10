@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 双点搜索数值尺度对照：同一task2 raw静态输入从无witness变为独立
+审核通过的双点模型候选，terminal058仍有候选；task0/1仍无witness。最终第二点
+贴近原阈值，尚无新物理反馈；32项CPU专项通过，详见[对照报告](../reports/tracking/joint_control/guarded_two_step_search_20261111.md)。
+
 2026-11-11 双点硬约束实际反馈：task2 raw首动作前无witness，terminal058执行
 4周期且实际双阈值4/4、关节缓冲未失守，随后无witness；未完成8周期或任务成功。
 4条动作及100内步独立重放一致，91项CPU专项通过，详见[反馈报告](../reports/tracking/joint_control/task2_two_step_feedback_20261111.md)。
