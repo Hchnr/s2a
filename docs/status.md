@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 停止状态双种子搜索：raw step33和terminal058 step84各以已保存LP初值
+及后移计划初值搜索，共346模型响应、0双点候选。terminal后移初值的最近安全尝试
+第二点约0.010735 m / 0.054484 rad；不证明全局不可达，详见[搜索报告](../reports/tracking/joint_control/task2_shifted_seed_search_20261111.md)。
+
 2026-11-11 停止状态后移计划：raw step33及terminal058 step84的后移计划均通过
 冻结模型安全复核，但没有双点质量候选；terminal首点通过而第二点为0.013043 m /
 0.066521 rad，raw前两点均超限。未重新优化或派发，详见[资格报告](../reports/tracking/joint_control/task2_shifted_seed_qualification_20261111.md)。

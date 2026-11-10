@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[同一停止状态的双种子双点搜索](task2_shifted_seed_search_20261111.md)
+
 最新：[停止状态后移计划的双点资格](task2_shifted_seed_qualification_20261111.md)
 
 最新：[已完成双点计划的状态与模型偏差](task2_guarded_model_drift_20261111.md)
