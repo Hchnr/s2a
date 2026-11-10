@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[重规划新参考下的质量约束实际反馈](replan_quality_feedback_20261110.md)
+
 最新：[同一重规划状态下的新旧参考对照](replan_reference_switch_20261110.md)
 
 最新：[组合预警的16周期固定参考反馈对照](combined_warning_long_feedback_20261110.md)
