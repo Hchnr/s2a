@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新诊断：[质量反馈停止状态可行性](quality_stop_feasibility_20261110.md)
+
 最新：[两案例质量约束实际反馈](early_quality_feedback_20261110.md)
 
 近期新增：[两案例质量约束模型检查](early_quality_feasibility_20261110.md) · [首次预警原细化器闭环](early_refiner_feedback_20261110.md) · [首次预警原细化器重建](early_refiner_reconstruction_20261110.md) · [首次预警的预览与退避实际对照](early_warning_tracking_20261110.md) · [12案例因果预警回顾](causal_warning_audit_20261110.md) · [两案例短时安全对照](multicase_emergency_retreat_20261110.md) · [两条原生命令前缀重放](multicase_native_prefix_replay_20261110.md) · [首次关节越界上下文](multicase_joint_limit_context_20261110.md) · [多开发案例参考、接触与关节安全](multicase_reference_geometry_20261110.md) · [首轮失败记录](multicase_reference_geometry_v1_20261110.md)
