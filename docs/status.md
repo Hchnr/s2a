@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 因果后移回退：相同task2开发起点，raw仍1周期1/1后停止；terminal058
+由原双点分支4周期4/4延长至5周期5/5，新增周期为独立审核的首点回退，第二模型点
+超双阈值。6条动作及150内步独立重放一致，未完成任务或8周期，详见[反馈报告](../reports/tracking/joint_control/task2_causal_shift_fallback_20261111.md)。
+
 2026-11-11 停止状态双种子搜索：raw step33和terminal058 step84各以已保存LP初值
 及后移计划初值搜索，共346模型响应、0双点候选。terminal后移初值的最近安全尝试
 第二点约0.010735 m / 0.054484 rad；不证明全局不可达，详见[搜索报告](../reports/tracking/joint_control/task2_shifted_seed_search_20261111.md)。
