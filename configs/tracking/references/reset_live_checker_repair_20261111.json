@@ -1,0 +1,16 @@
+{
+  "schema": "s2a.reset-live-checker-repair.v1",
+  "output": "outputs/reset_live_checker_repair_20261111",
+  "case_index": 8,
+  "producer_sha256": "a4634066e9a4ed8c7b93eeda89501b8f66b0454b0fe854c5976cf46b2c104d0f",
+  "failed_checker_sha256": "bbdcb22927763f9a7cb6bc460155fe70adc073cc7c3da1ed17017e9fad32c93a",
+  "failed_branch_sha256": "554e49aa1cdd870b8b2e51f8cddfe23dae54885f3db55d51ad54c7df4527a850",
+  "max_control_steps": 16,
+  "max_native_steps": 400,
+  "max_models": 3,
+  "max_contexts": 3,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 1800,
+  "automatic_retry": false
+}
