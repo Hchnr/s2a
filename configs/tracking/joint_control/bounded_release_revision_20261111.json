@@ -1,0 +1,42 @@
+{
+  "schema": "s2a.bounded-release-revision.v1",
+  "control_dt_s": 0.05,
+  "stride": 8,
+  "bridge_steps": 8,
+  "release_clearance": 0.04,
+  "opening_revision_gap": 0.04,
+  "current_position_gate_m": 0.03,
+  "current_rotation_gate_rad": 0.15,
+  "joint_buffer_rad": 0.05,
+  "max_holds_per_closing_episode": 1,
+  "correct_reference_cases": 18,
+  "correct_reference_steps": 4907,
+  "development_cases": 12,
+  "development_steps_per_case": 600,
+  "development_chunks_per_case": 75,
+  "correct_reference_qualification": {
+    "path": "outputs/release_floor_matrix_closed_20261028/verified.json",
+    "sha256": "f75baab6041ef74c0819d0eb46358914c7409c1b0fd4dd160f2ebc7316d44e1c"
+  },
+  "development_registration": {
+    "path": "outputs/replan_task_event_stability_20261110/registration.json",
+    "sha256": "f5204badc2c8854acb81af471aa929a7b6a169325e4a0c0fba4c6326cccd7035"
+  },
+  "development_result": {
+    "path": "outputs/replan_task_event_stability_20261110/result.json",
+    "sha256": "9cfe6d4e06512ea79026ea531ec12d030d29e868a0a77fe8ed9569a132d28272"
+  },
+  "studied_branch_producer": {
+    "path": "outputs/causal_event_long_feedback_20261110/producer/remembered/result.json",
+    "sha256": "ca7b9be38fde1568dd578625bf7546635ad67400ced38781ab157ccde256e3f3"
+  },
+  "studied_branch_checker": {
+    "path": "outputs/causal_event_long_feedback_20261110/checker/remembered/result.json",
+    "sha256": "a0e7d092ac615f9ee2fa3764c6d23ff314067ea6a8a16cf432fbecf05d1b0be9"
+  },
+  "shadow_max_workers": 32,
+  "world_model_calls": 0,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
