@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[共享预算双点及已完成计划首点回退反馈](task2_shared_shift_feedback_20261111.md)
+
 最新：[组合反馈停止处的已完成计划资格](task2_shared_shift_qualification_20261111.md)
 
 最新：[共享预算余量优先的实际反馈](task2_margin_guarded_feedback_20261111.md)
