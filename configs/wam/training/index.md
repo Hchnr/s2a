@@ -29,5 +29,9 @@
 | [wam_native_training_continuation_20261021.json](wam_native_training_continuation_20261021.json) | `configs/wam_native_training_continuation_20261021.json` |
 | [wam_native_training_model_contract_20261021.json](wam_native_training_model_contract_20261021.json) | `configs/wam_native_training_model_contract_20261021.json` |
 | [wam_synchronous_native_training_20261021.json](wam_synchronous_native_training_20261021.json) | `configs/wam_synchronous_native_training_20261021.json` |
+| [cached_endpoint_calibration_20261111.json](cached_endpoint_calibration_20261111.json) | 新登记 |
+| [cached_endpoint_shadow_20261111.json](cached_endpoint_shadow_20261111.json) | 新登记 |
+| [causal_opening_event_20261111.json](causal_opening_event_20261111.json) | 新登记 |
+| [supported_opening_event_20261111.json](supported_opening_event_20261111.json) | 新登记 |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。

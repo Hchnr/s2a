@@ -34,4 +34,6 @@
 | [tracking_replan_wam_20261021.json](tracking_replan_wam_20261021.json) | `configs/tracking_replan_wam_20261021.json` |
 | [velocity_model_control_20261025.json](velocity_model_control_20261025.json) | `configs/velocity_model_control_20261025.json` |
 
+新登记：[三任务夹爪反馈](cached_calibration_gripper_feedback_20261111.json) · [独立重放修复](cached_calibration_replay_repair_20261111.json)。
+
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。
