@@ -28,5 +28,6 @@
 | [142 原24fit轨迹触桌区间统计](142_native_training_table_coverage_20261025.md) | `plans/v0.0.1/142_native_training_table_coverage_20261025.md` |
 | [已保存生成样本的累积状态与开度校准](cached_endpoint_calibration_20261111.md) | 新登记 |
 | [冻结参考校准的完整历史轨迹影子检查](cached_endpoint_shadow_20261111.md) | 新登记 |
+| [基于实测状态与生成轨迹的夹爪闭合事件候选](causal_opening_event_20261111.md) | 新登记 |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。
