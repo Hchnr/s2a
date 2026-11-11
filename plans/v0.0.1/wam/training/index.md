@@ -30,5 +30,6 @@
 | [冻结参考校准的完整历史轨迹影子检查](cached_endpoint_shadow_20261111.md) | 新登记 |
 | [基于实测状态与生成轨迹的夹爪闭合事件候选](causal_opening_event_20261111.md) | 新登记 |
 | [受已生成闭合事件支持的因果开度提前](supported_opening_event_20261111.md) | 新登记 |
+| [支持事件离线评分的独立核查](supported_opening_validation_audit_20261111.md) | 新登记 |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。
