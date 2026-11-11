@@ -24,5 +24,6 @@
 | [wam_gripper_replay_20261020.json](wam_gripper_replay_20261020.json) | `configs/wam_gripper_replay_20261020.json` |
 | [wam_wine_gripper_replay_20261020.json](wam_wine_gripper_replay_20261020.json) | `configs/wam_wine_gripper_replay_20261020.json` |
 | [defer_close_release_shadow_20261111.json](defer_close_release_shadow_20261111.json) | 新登记 |
+| [defer_close_correct_feedback_20261111.json](defer_close_correct_feedback_20261111.json) | 新登记 |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。

@@ -43,5 +43,6 @@
 | [198 待执行：固定响应基增加已审查手指历史](198_finger_history_response_candidate_20261025.md) | `plans/v0.0.1/198_finger_history_response_candidate_20261025.md` |
 | [明确张开参考才释放：独立物理对照](gripper_release_floor_20261028.md) | `plans/v0.0.1/gripper_release_floor_20261028.md` |
 | [即将释放时暂缓额外闭合：历史影子检查](defer_close_release_shadow_20261111.md) | 新登记 |
+| [正确参考受载点的暂缓闭合物理对照](defer_close_correct_feedback_20261111.md) | 新登记 |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。
