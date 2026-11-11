@@ -677,3 +677,7 @@ seed43的75个完整窗口仍无低开度预测。这不是新物理或任务结
 3/8端点达位姿门，task1派发0步，task2的2步中1步达标；20个新周期无grasp或任务
 成功。原checker曾在物理前因策略导入隔离失败，独立修复重放通过，原失败保留。
 该候选未获统一控制资格，见[物理反馈报告](../reports/tracking/joint_control/cached_calibration_gripper_feedback_20261111.md)。
+
+另以30条训练demo做五折因果夹爪事件筛查：八个预设阈值均未同时满足误闭合、
+开度误差和跨任务命中条件，未拟合最终候选或读取validation未来标签；见
+[事件训练报告](../reports/wam/training/causal_opening_event_20261111.md)。
