@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 共享预算组合实际反馈：raw恢复1周期1/1，terminal058保持余量分支
+4周期4/4；独立重放5条动作及125内环样本一致，未完成任务或8周期。详见
+[反馈报告](../reports/tracking/joint_control/task2_margin_guarded_feedback_20261111.md)。
+
 2026-11-11 共享预算组合静态对照：task2 raw恢复原双点候选，terminal058保留
 余量候选，均通过独立模型审核；另外两个任务起点仍无候选。尚无组合策略实际
 反馈，详见[静态报告](../reports/tracking/joint_control/margin_guarded_fallback_20261111.md)。

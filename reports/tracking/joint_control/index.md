@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[共享预算余量优先的实际反馈](task2_margin_guarded_feedback_20261111.md)
+
 最新：[共享预算的余量优先与原双点回退](margin_guarded_fallback_20261111.md)
 
 最新：[双点模型余量的实际反馈对照](task2_margin_two_step_feedback_20261111.md)
