@@ -723,4 +723,7 @@ correct_08受载点成对CPU物理对照及独立重放已完成：step85唯一�
 达到所登记位置和旋转门，任务成功仅最后 1 步，不构成稳定成功；见
 [连续反馈报告](../reports/tracking/joint_control/ordered_correct_stream_feedback_20261111.md)。
 独立重放后已捕获 step80/88 的当前双相机图像，保留首次路径错误和重放预算；
-后续 WAM 两图诊断尚未完成，见[观测报告](../reports/tracking/references/ordered_feedback_wam_capture_20261111.md)。
+见[观测报告](../reports/tracking/references/ordered_feedback_wam_capture_20261111.md)。
+两次 WAM 请求已产生响应，但原工作者在结果汇总时因单请求掩码检查错误 exit1，
+逐请求初始噪声 ledger 未保留；独立 CPU 旁证仅报告参考差异、不改写原失败，见
+[模型旁证](../reports/tracking/references/ordered_feedback_wam_partial_audit_20261111.md)。

@@ -1,0 +1,36 @@
+{
+  "schema": "s2a.ordered-feedback-wam-inference.v1",
+  "output": "outputs/ordered_feedback_wam_observation_v2_20261111/inference",
+  "capture_summary": "outputs/ordered_feedback_wam_observation_v2_20261111/producer/result.json",
+  "capture_summary_sha256": "aa78998be68b804f4ee18b56802bf7955bac672b821f21526917e2dec1e63a72",
+  "capture_branch": "outputs/ordered_feedback_wam_observation_v2_20261111/producer/case_08_capture/result.json",
+  "capture_branch_sha256": "f0afd1023d4888741286ac2599495689018d1ecc6f1a6a8de90d36909cd03699",
+  "capture_qa": "outputs/qa/ordered_feedback_wam_capture_v2_20261111/result.json",
+  "capture_qa_sha256": "d9f2a14c365d4a17db7fa848e02384abffa56ea77a18900f130ce5b0e294e5ca",
+  "model_preflight": "outputs/gpu_resume_repro_20261111/preflight.json",
+  "model_preflight_sha256": "52e3f7c7e3aff23285b3f56e871afb1fb008aaefeb9ba8b2ef8c3d2d2db1b34a",
+  "images": [
+    {
+      "step": 80,
+      "path": "outputs/ordered_feedback_wam_observation_v2_20261111/producer/case_08_capture/runtime/anchor0080/current.png",
+      "sha256": "09986f11e165682c8eab81978b1f49c7f37ecbcae5ec1da1c74111ffbcbd1e5d"
+    },
+    {
+      "step": 88,
+      "path": "outputs/ordered_feedback_wam_observation_v2_20261111/producer/case_08_capture/runtime/anchor0088/current.png",
+      "sha256": "ac6ef950b71553a6914049aae72c0c92fb55c22009360527eadc089b71c612dc"
+    }
+  ],
+  "task": "put the cream cheese in the bowl",
+  "gpu_uuid": "GPU-c0b598ba-0a6e-73af-bbcc-97bc89379bdf",
+  "seed": 42,
+  "horizon": 40,
+  "denoise_steps_per_request": 35,
+  "model_initializations": 1,
+  "model_requests": 2,
+  "denoise_calls": 70,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "fits": 0,
+  "automatic_retry": false
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "s2a.ordered-feedback-wam-partial-audit.v1",
+  "output": "outputs/ordered_feedback_wam_observation_v2_20261111/inference_audit",
+  "frozen_runner_commit": "e19af19b70744efbb440f37320837015f8d9b638",
+  "frozen_runner_sha256": "3e1eaae714fb913d114e062ae3362f482e35be1a5386c3b2d05cdef1a7276468",
+  "preflight": "outputs/ordered_feedback_wam_observation_v2_20261111/inference/preflight.json",
+  "preflight_sha256": "02eab91a6389c2f107c9d0f77ef8f3089c53ddbc56d30eeba3d46c2486c28771",
+  "failed": "outputs/ordered_feedback_wam_observation_v2_20261111/inference/model_run/failed.json",
+  "failed_sha256": "7200479094ff1174e9c45b2a7a668089c406198a4546721ead7c8dced2b560a7",
+  "owner": "outputs/ordered_feedback_wam_observation_v2_20261111/inference/owner/result.json",
+  "owner_sha256": "7cb9d962cb156d6f3649f75de980700c965419d6115c9a5a4c6f2c1878a40c29",
+  "runtime": "outputs/ordered_feedback_wam_observation_v2_20261111/inference/model_run/model/runtime.json",
+  "runtime_sha256": "6fbd4f3e534a61e0de99248b8ce3f3ae25114ff8bf01ed947dfe96ec2e7d1887",
+  "worker_log": "outputs/ordered_feedback_wam_observation_v2_20261111/inference/owner/worker.log",
+  "worker_log_sha256": "0fa31d9c4b5823cfd8ff631fe8d1e96fefac69ef9de78afcdfad0985a5379bb3",
+  "responses": [
+    {
+      "step": 80,
+      "request_sha256": "5d955953434c11703d9893ba6a433cae8f6ccd5219151ef8b8d86394a7c1567a",
+      "response_sha256": "cac3f20d77266668e0df2ef9e6be07a00408a7222cf8a6b1c32e39ed85b2e51d",
+      "conditioning_sha256": "5eb62bbbbbec2217335323b9da6c69bd3e5063317b362f84ef96f3502c165bd1"
+    },
+    {
+      "step": 88,
+      "request_sha256": "9f1398d92825bf66029333826aeb63ae3013a5b5b157952c909aa730a725fda0",
+      "response_sha256": "9c4ed3d67fd735b9296cdae1b8ba784f8b5f6cf05953eadc82bba6cdf709ddf4",
+      "conditioning_sha256": "ef99a55a20846cc4c682718f642fb352f58acceecbfd48fe6ff5b7b7462be38b"
+    }
+  ],
+  "previous_model_initializations": 1,
+  "previous_requests": 2,
+  "previous_denoise_calls": 70,
+  "new_model_initializations": 0,
+  "new_model_requests": 0,
+  "new_physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

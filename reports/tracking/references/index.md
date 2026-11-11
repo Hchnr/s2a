@@ -14,5 +14,6 @@
 | [018：世界坐标旋转漂移校正的开发诊断](wam_rotation_drift_diagnostic_20261021.md) | `reports/wam_rotation_drift_diagnostic_20261021.md` |
 | [GPU 恢复后的世界模型单次复现](gpu_resume_repro_20261111.md) | 新增报告 |
 | [已核验反馈轨迹的当前观测捕获](ordered_feedback_wam_capture_20261111.md) | 新增报告 |
+| [当前反馈图像的 WAM 响应与失败旁证](ordered_feedback_wam_partial_audit_20261111.md) | 新增报告 |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。
