@@ -732,5 +732,9 @@ WAM 参考的位置 RMSE 为 0.002405 m，相对正确参考为 0.013118 m；前
 正确参考历史且原模型收尾失败，不构成完整 WAM 闭环。见
 [短窗报告](../reports/tracking/joint_control/saved_wam_feedback_20261111.md)。
 已按该 WAM 短窗实际动作重放并捕获 step88 当前图像，保留首次回调失败及累计
-预算；该图像与正确参考轨迹的 step88 不同，后续因果重观测尚待完成。见
+预算；该图像与正确参考轨迹的 step88 不同。见
 [当前观测报告](../reports/tracking/references/wam_feedback_current_observation_20261111.md)。
+随后在同 step80 图像上重新生成并逐元素匹配已实际执行的参考，才以 WAM 反馈
+到达状态的 step88 图像生成第二参考；完整模型及独立审计已通过，首次执行器
+上下文失败保留。第二参考尚未驱动机器人，见
+[重观测报告](../reports/tracking/references/wam_feedback_reobserve_20261111.md)。

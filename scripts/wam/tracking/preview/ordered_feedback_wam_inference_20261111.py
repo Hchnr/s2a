@@ -12,6 +12,8 @@ import subprocess
 import sys
 import time
 import traceback
+from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 
 from scripts.wam.tracking.preview import gpu_resume_repro_20261111 as repro
@@ -23,6 +25,19 @@ OUTPUT = ROOT / "outputs/ordered_feedback_wam_observation_v2_20261111/inference"
 QA = ROOT / "outputs/qa/ordered_feedback_wam_inference_v3_20261111/result.json"
 GPU = repro.GPU
 TASK = "put the cream cheese in the bowl"
+
+
+@dataclass(frozen=True)
+class InferenceContext:
+    config_path: Path
+    plan_path: Path
+    output: Path
+    qa: Path
+    capture_loader: Callable
+    additional_sources: tuple[Path, ...]
+    worker_module: str
+    request_guard: Callable | None = None
+    response_guard: Callable | None = None
 
 
 def require(condition, message):
@@ -159,16 +174,48 @@ def previous_inputs():
     return repro.inputs(old_config)
 
 
-def local_sources():
+def default_context():
+    return InferenceContext(
+        config_path=CONFIG,
+        plan_path=PLAN,
+        output=OUTPUT,
+        qa=QA,
+        capture_loader=capture_inputs,
+        additional_sources=(ROOT / "tests/research/wam/test_ordered_feedback_wam_inference.py",),
+        worker_module="scripts.wam.tracking.preview.ordered_feedback_wam_inference_20261111",
+    )
+
+
+def checked_context(context):
+    context = default_context() if context is None else context
+    require(
+        isinstance(context, InferenceContext)
+        and context.config_path.resolve().is_relative_to(ROOT / "configs")
+        and context.plan_path.resolve().is_relative_to(ROOT / "plans")
+        and context.output.resolve().is_relative_to(ROOT / "outputs")
+        and context.qa.resolve().is_relative_to(ROOT / "outputs/qa")
+        and all(path.resolve().is_relative_to(ROOT) for path in context.additional_sources)
+        and context.worker_module.startswith("scripts.wam.tracking.preview.")
+        and callable(context.capture_loader)
+        and (context.request_guard is None or callable(context.request_guard))
+        and (context.response_guard is None or callable(context.response_guard)),
+        "Explicit repository-local inference context required",
+    )
+    return context
+
+
+def local_sources(context=None):
+    context = checked_context(context)
     paths = (
-        CONFIG,
-        PLAN,
+        context.config_path,
+        context.plan_path,
         Path(__file__).resolve(),
         Path(repro.__file__).resolve(),
+        repro.CONFIG,
         ROOT / "src/s2a/backends/wam/runtime.py",
         ROOT / "scripts/wam/readout/run_wam_readout_features.py",
         ROOT / "scripts/wam/training/clean/qualify_wam_clean_bridge.py",
-        ROOT / "tests/research/wam/test_ordered_feedback_wam_inference.py",
+        *context.additional_sources,
     )
     return {str(path.relative_to(ROOT)): repro.sha256(path) for path in paths}
 
@@ -203,13 +250,17 @@ def validate_mask_evidence(evidence, request_count):
     )
 
 
-def preflight(config):
+def preflight(config, context=None):
+    context = checked_context(context)
     check_cpu()
-    OUTPUT.mkdir(parents=True, exist_ok=False)
-    repro.write_new(OUTPUT / "preflight_started.json", {"pid": os.getpid(), "config_sha256": repro.sha256(CONFIG)})
+    context.output.mkdir(parents=True, exist_ok=False)
+    repro.write_new(
+        context.output / "preflight_started.json",
+        {"pid": os.getpid(), "config_sha256": repro.sha256(context.config_path)},
+    )
     try:
-        captures = capture_inputs(config)
-        qa = json.loads(QA.read_text())
+        captures = context.capture_loader(config)
+        qa = json.loads(context.qa.read_text())
         require(
             qa["complete"] is qa["passed"] is qa["source_unchanged"] is qa["actual_wait"] is qa["reaped"] is True
             and qa["skipped_count"] == 0,
@@ -217,7 +268,7 @@ def preflight(config):
         )
         snapshot_ref = qa["source_before_ref"]
         snapshot = repro.read_checked(snapshot_ref["path"], snapshot_ref["sha256"])
-        validate_qa_snapshot(snapshot, local_sources())
+        validate_qa_snapshot(snapshot, local_sources(context))
         prepared, bridge, _completed, template, _response = previous_inputs()
         requests = [make_request(template, image) for image in config["images"]]
         cosmos = Path(prepared["model_config"]["cosmos_source_root"]).resolve()
@@ -233,10 +284,10 @@ def preflight(config):
         repro.verify_manifest(weights)
         result = {
             "complete": True,
-            "config_sha256": repro.sha256(CONFIG),
-            "qa_sha256": repro.sha256(QA),
+            "config_sha256": repro.sha256(context.config_path),
+            "qa_sha256": repro.sha256(context.qa),
             "gpu_uuid": GPU,
-            "local_sources": local_sources(),
+            "local_sources": local_sources(context),
             "source_files_verified": len(sources),
             "weight_files_verified": len(weights),
             "weight_bytes": sum(entry["bytes"] for entry in prepared["weight_files"].values()),
@@ -246,32 +297,85 @@ def preflight(config):
             "model_requests": 0,
             "physics_steps": 0,
         }
-        repro.write_new(OUTPUT / "preflight.json", result)
+        repro.write_new(context.output / "preflight.json", result)
         print(json.dumps(result), flush=True)
     except BaseException as error:
-        repro.write_new(OUTPUT / "preflight_failed.json", {"error": repr(error), "traceback": traceback.format_exc()})
+        repro.write_new(
+            context.output / "preflight_failed.json", {"error": repr(error), "traceback": traceback.format_exc()}
+        )
         raise
 
 
-def checked_preflight():
-    result = json.loads((OUTPUT / "preflight.json").read_text())
+def checked_preflight(context=None):
+    context = checked_context(context)
+    result = json.loads((context.output / "preflight.json").read_text())
     require(
         result["complete"] is True
-        and result["config_sha256"] == repro.sha256(CONFIG)
-        and result["qa_sha256"] == repro.sha256(QA)
-        and result["local_sources"] == local_sources(),
+        and result["config_sha256"] == repro.sha256(context.config_path)
+        and result["qa_sha256"] == repro.sha256(context.qa)
+        and result["local_sources"] == local_sources(context),
         "Inference preflight, QA, and source identities must remain unchanged",
     )
     return result
 
 
-def run(config):
+def execute_requests(
+    config, context, service, torch, counter, overrides, domain_reader, directory, template, result, responses
+):
+    """Execute the registered request loop with explicit, injectable service boundaries."""
+    import numpy as np
+
+    for image in config["images"]:
+        if context.request_guard is not None:
+            context.request_guard(image)
+        request = make_request(template, image)
+        require(repro.sha256(ROOT / image["path"]) == image["sha256"], "Current image changed")
+        item = directory / f"step{image['step']}"
+        item.mkdir()
+        repro.write_new(item / "request.json", request)
+        random.seed(42)
+        np.random.seed(42)
+        torch.manual_seed(42)
+        torch.cuda.manual_seed_all(42)
+        started = time.monotonic()
+        sample, batch = service.prepare(overrides.model_validate(copy.deepcopy(request)), item)
+        domain_context = domain_reader(service, sample, batch)
+        caption = json.loads(batch["ai_caption"][0])
+        require(
+            domain_context.is_libero
+            and caption["task_title"] == caption["command"] == TASK
+            and caption["task_plan"] == [],
+            "Actual conditioning differs from current image and task",
+        )
+        repro.write_new(item / "conditioning.json", {"caption": caption, "image_sha256": image["sha256"]})
+        result["model_requests"] += 1
+        with torch.inference_mode(), counter.scope(request["name"], 35):
+            response = service.execute(sample, batch).model_dump(mode="json")
+        elapsed = time.monotonic() - started
+        repro.response_arrays(response)
+        repro.write_new(item / "response.json", response)
+        require(repro.sha256(ROOT / image["path"]) == image["sha256"], "Current image changed during inference")
+        responses.append(
+            {
+                "step": image["step"],
+                "response_sha256": repro.sha256(item / "response.json"),
+                "request_sha256": repro.sha256(item / "request.json"),
+                "elapsed_seconds": elapsed,
+            }
+        )
+        if context.response_guard is not None:
+            responses[-1]["guard"] = context.response_guard(image, response, item)
+    return responses
+
+
+def run(config, context=None):
+    context = checked_context(context)
     require(
         os.environ.get("CUDA_VISIBLE_DEVICES") == GPU and os.environ.get("LD_LIBRARY_PATH") == "",
         "Worker must expose its registered GPU UUID and empty LD",
     )
-    checked_preflight()
-    capture_inputs(config)
+    checked_preflight(context)
+    context.capture_loader(config)
     prepared, bridge, _completed, template, _response = previous_inputs()
     model_config = prepared["model_config"]
     require(Path(sys.executable).resolve() == Path(model_config["model_python"]).resolve(), "Model Python differs")
@@ -280,7 +384,7 @@ def run(config):
         "Cosmos was imported before source admission",
     )
     sys.path.insert(0, str(Path(model_config["cosmos_source_root"]).resolve()))
-    directory = OUTPUT / "model_run"
+    directory = context.output / "model_run"
     directory.mkdir(exist_ok=False)
     result = {"complete": False, "gpu_uuid": GPU, "model_initialization_attempts": 0, "model_requests": 0}
     repro.write_new(directory / "started.json", {**result, "pid": os.getpid()})
@@ -322,48 +426,25 @@ def run(config):
         from cosmos_framework.inference.args import OmniSampleOverrides
 
         responses = []
-        for image in config["images"]:
-            request = make_request(template, image)
-            require(repro.sha256(ROOT / image["path"]) == image["sha256"], "Current image changed")
-            item = directory / f"step{image['step']}"
-            item.mkdir()
-            repro.write_new(item / "request.json", request)
-            random.seed(42)
-            np.random.seed(42)
-            torch.manual_seed(42)
-            torch.cuda.manual_seed_all(42)
-            started = time.monotonic()
-            sample, batch = service.prepare(OmniSampleOverrides.model_validate(copy.deepcopy(request)), item)
-            context = actual_context(service, sample, batch)
-            caption = json.loads(batch["ai_caption"][0])
-            require(
-                context.is_libero
-                and caption["task_title"] == caption["command"] == TASK
-                and caption["task_plan"] == [],
-                "Actual conditioning differs from current image and task",
-            )
-            repro.write_new(item / "conditioning.json", {"caption": caption, "image_sha256": image["sha256"]})
-            result["model_requests"] += 1
-            with torch.inference_mode(), counter.scope(request["name"], 35):
-                response = service.execute(sample, batch).model_dump(mode="json")
-            elapsed = time.monotonic() - started
-            repro.response_arrays(response)
-            repro.write_new(item / "response.json", response)
-            require(repro.sha256(ROOT / image["path"]) == image["sha256"], "Current image changed during inference")
-            responses.append(
-                {
-                    "step": image["step"],
-                    "response_sha256": repro.sha256(item / "response.json"),
-                    "request_sha256": repro.sha256(item / "request.json"),
-                    "elapsed_seconds": elapsed,
-                }
-            )
+        execute_requests(
+            config,
+            context,
+            service,
+            torch,
+            counter,
+            OmniSampleOverrides,
+            actual_context,
+            directory,
+            template,
+            result,
+            responses,
+        )
         require(
             len(counter.calls) == 70 and all(call["completed"] for call in counter.calls),
             "Denoise evidence differs",
         )
         validate_mask_evidence(evidence, len(config["images"]))
-        checked_preflight()
+        checked_preflight(context)
         result.update(
             complete=True,
             responses=responses,
@@ -411,15 +492,16 @@ def gpu_observation():
     return {"memory_mib": selected[0], "compute_apps": selected_apps}
 
 
-def launch(config):
+def launch(config, context=None):
+    context = checked_context(context)
     check_cpu()
-    checked_preflight()
+    checked_preflight(context)
     prepared, _bridge, _completed, _template, _response = previous_inputs()
     before = gpu_observation()
     require(before["memory_mib"] == 0 and before["compute_apps"] == [], "Registered GPU is not idle")
-    owner = OUTPUT / "owner"
+    owner = context.output / "owner"
     owner.mkdir(exist_ok=False)
-    cache = OUTPUT / "cache"
+    cache = context.output / "cache"
     cache.mkdir(exist_ok=False)
     env = dict(os.environ)
     env.update(
@@ -462,7 +544,7 @@ def launch(config):
     command = [
         prepared["model_config"]["model_python"],
         "-m",
-        "scripts.wam.tracking.preview.ordered_feedback_wam_inference_20261111",
+        context.worker_module,
         "run",
     ]
     result = {
