@@ -1,0 +1,18 @@
+{
+  "schema": "s2a.quality-rate-repair-solver.v1",
+  "output": "outputs/quality_rate_repair_solver_20261111",
+  "static_repair": "outputs/cached_live_stop125_rate_repair_20261111/worker/result.json",
+  "static_repair_sha256": "dc3b04563eec8cd97f46747507fcc5e609406642e61bf4dada6176453c7cb744",
+  "case_index": 8,
+  "max_models": 1,
+  "max_forward_queries": 1,
+  "max_optimizer_calls": 1,
+  "max_model_responses": 160,
+  "max_independent_endpoint_queries": 200,
+  "max_independent_transition_steps": 2600,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 600,
+  "automatic_retry": false
+}
