@@ -2,6 +2,9 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 连续 WAM 流完成 CPU 协议与双子进程模拟：64 路相关专项 89 项
+通过；真实模型、物理 runtime 和独立 checker 尚未接入，见[协议报告](../reports/tracking/joint_control/causal_stream_protocol_20261111.md)。
+
 2026-11-11 用户已允许并鼓励恢复GPU，并确认当前容器可见的四张卡均可用；
 当前UUID和首个推理检验登记见[计划](../plans/v0.0.1/tracking/references/gpu_resume_repro_20261111.md)。
 H100 上一次 35 步 WAM 推理的两套 action 数组与历史开发样本逐元素一致，进程
