@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 首次物理位姿失准的 step122 前，固定 step121 完成历史的静态对照中，
+因果偏差质量分支通过原门及补偿门的独立模型审核，但补偿位置仅在数值容差内
+达门；尚未物理执行。详见[早期对照](../reports/tracking/joint_control/early_causal_innovation_quality_20261111.md)。
+
 2026-11-11 在 step125 冻结状态加入 step124 已完成 TCP 偏差后的质量约束，
 69 次模型响应未找到同时满足原门和补偿门的候选；线搜索失败不证明全局不可行。
 未派发动作，见[因果补偿质量搜索](../reports/tracking/joint_control/causal_innovation_quality_search_20261111.md)。
