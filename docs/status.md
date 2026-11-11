@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 共享预算组合静态对照：task2 raw恢复原双点候选，terminal058保留
+余量候选，均通过独立模型审核；另外两个任务起点仍无候选。尚无组合策略实际
+反馈，详见[静态报告](../reports/tracking/joint_control/margin_guarded_fallback_20261111.md)。
+
 2026-11-11 双点余量实际反馈：相同task2开发起点，raw首动作前停止，terminal058
 实际4周期4/4达原误差门后停止；两者均未完成任务。独立重放一致，严格余量不宜
 统一默认，详见[反馈报告](../reports/tracking/joint_control/task2_margin_two_step_feedback_20261111.md)。
