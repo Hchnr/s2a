@@ -77,4 +77,27 @@ H8的8个新增真实闭合均来自task1的同一validation demo、seed42；tas
 | `outputs/qa/supported_opening_event_validation_20261111/result.json` | `d5f09335454135a3d325f056fc1b6a55b6390c3c0736a92118d8499b3e895a71` |
 
 本阶段32进程CPU专项24项通过、0跳过，全仓Ruff和格式检查通过；没有新WAM、
-物理、GPU或fresh。上述原监督器失败仍待独立收据和评分复核。
+物理、GPU或fresh。
+
+## 独立复核
+
+按[独立核查登记](../../../plans/v0.0.1/wam/training/supported_opening_validation_audit_20261111.md)，
+新进程重新读取同一批48条raw响应及六条既有validation demo，独立积分局部SE(3)
+参考、计算因果特征及概率、逐点生成支持mask和候选开度，再重算整体、任务、demo
+与seed分组。raw开度、标签、支持mask及候选开度逐值一致，概率最大差
+`6.67e-16`，分组指标最大差`1.39e-17`；仍确认H8/H16 MAE与跨任务收益三项门
+失败。核对的68个输入文件前后SHA一致，没有新拟合或新样本。
+
+独立核查确认原fit及validation子进程均实际wait/reap、exit0，日志指向上述精确
+结果SHA。原监督器随后文件名错误退出1的观察保留在本会话；当时未单独保存其
+owner退出收据，因此不能把子进程收据当作原owner正常退出的证据。新核查的dry和
+评分进程均实际wait/reap、exit0、未发信号；32进程CPU专项19项通过、0跳过，
+全仓Ruff/格式检查通过，核查源码提交`4df68c1b`。仍无新WAM、物理、GPU或fresh。
+
+| 仓库内独立核查证据 | SHA256 |
+| --- | --- |
+| `outputs/supported_opening_validation_audit_20261111/result.json` | `13ba923a02173a34f325f3a0e0cc8fa5985950c06c013cbb17d40cf1f625c78c` |
+| `outputs/supported_opening_validation_audit_dry_20261111/result.json` | `5e559f4f1de0812c1c9dc7845ae9498e838caf5390d771b14a9f5305e3ec3713` |
+| `outputs/supported_opening_validation_audit_supervisor_20261111/dry-run_workers.json` | `9ccd9dcf38876983d97cd6031cc1ef7dd9af219ee0356934cbf52743dc5e0194` |
+| `outputs/supported_opening_validation_audit_supervisor_20261111/audit_workers.json` | `f4f40afe8872df66cef79e073f2e9fb40be707d824f85ddfaf1398ae9b515030` |
+| `outputs/qa/supported_opening_validation_audit_20261111/result.json` | `40ff00a766c6caac5a594f413904dff9e10ab6c44eb6b42abb7078f0ae9245f9` |
