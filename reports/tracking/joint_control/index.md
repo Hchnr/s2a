@@ -1,5 +1,9 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[有限释放保持的匹配物理反馈](bounded_release_hold_feedback_20261111.md)
+
+最新：[有限释放参考修订的全分母影子检查](bounded_release_revision_shadow_20261111.md)
+
 最新：[跨任务重规划的共享预算三级反馈](replan_shared_shift_feedback_20261111.md)
 
 最新：[共享预算双点及已完成计划首点回退反馈](task2_shared_shift_feedback_20261111.md)

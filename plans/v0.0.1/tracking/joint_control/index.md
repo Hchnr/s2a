@@ -1,5 +1,9 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[有限释放保持的匹配物理反馈](bounded_release_hold_feedback_20261111.md)
+
+近期：[冲突释放参考的有限保持与衔接](bounded_release_revision_20261111.md)
+
 近期：[跨任务重规划参考下的共享预算三级反馈](replan_shared_shift_feedback_20261111.md)
 
 近期：[共享预算双点优先及已完成计划首点回退](task2_shared_shift_feedback_20261111.md)
