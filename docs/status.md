@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 回退停止首点外界：raw step33在冻结模型首动作box/变化率放宽域的
+联合下界为1.008605，排除原首点双阈值但余量很小；terminal058 step85的最强
+下界为0.887498，尚不能判定。均不证明物理可达性，详见[外界报告](../reports/tracking/joint_control/task2_fallback_stop_pose_bound_20261111.md)。
+
 2026-11-11 停止状态缓存审查：raw step33及terminal058 step85各用两个因果初值
 重建双点搜索，291响应中的9个线性安全计划均无首点双阈值候选；未增加响应或新
 物理。有限缓存结果不证明全局不可达，详见[审查报告](../reports/tracking/joint_control/task2_cached_first_pose_20261111.md)。
