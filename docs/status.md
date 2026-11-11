@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 跨任务三级反馈：task0 固定新参考短窗实际 8/8 达双阈值，task1 执行
+1/1 后无通过审核的下一候选；均无 grasp 或任务成功。9 条动作及 225 个内环样本
+独立重放一致，详见[反馈报告](../reports/tracking/joint_control/replan_shared_shift_feedback_20261111.md)。
+
 2026-11-11 共享预算三级反馈：raw实际1/1，terminal058由组合双点4/4延长至
 5/5；新增一周期只通过首点审核，第二模型点超门。6条动作及150内环样本独立重放
 一致，未完成任务或8周期，详见[反馈报告](../reports/tracking/joint_control/task2_shared_shift_feedback_20261111.md)。
