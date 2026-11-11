@@ -1,0 +1,24 @@
+"""A live reference must never be applied to a different replayed branch."""
+
+import pytest
+
+from scripts.simulation.runtime import early_tabletop_live_continuation as live
+
+
+def test_wrong_replayed_state_stops_before_live_reference_use(monkeypatch, tmp_path):
+    producer = {"runtime": {"continuation": {"branch_start": {}}}}
+    branches = {
+        "original": {"producer": producer, "state_sha256": "correct", "image_ref": {"sha256": "image"}},
+        "pose_bounded": {"producer": producer, "state_sha256": "other", "image_ref": {"sha256": "other-image"}},
+    }
+    inputs = {"early_tabletop_live_feedback": {"branches": branches}}
+    monkeypatch.setattr(live.physical_audit, "checker_isolation", lambda: None)
+    monkeypatch.setattr(live.physical_audit, "check_pair", lambda *_args: None)
+    monkeypatch.setattr(live, "execute_early_continuation", lambda *_args, **_kwargs: {"probe": {"steps_completed": 2}})
+    monkeypatch.setattr(
+        live.capture_audit,
+        "compare_capture",
+        lambda *_args: {"state_sha256": "other", "image_ref": {"sha256": "other-image"}},
+    )
+    with pytest.raises(ValueError):
+        live.replay_and_bind_image(None, None, None, {}, inputs, mode="original", output=tmp_path)

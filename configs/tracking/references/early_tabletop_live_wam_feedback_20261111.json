@@ -1,0 +1,44 @@
+{
+  "schema": "s2a.early-tabletop-live-wam-feedback.v1",
+  "output": "outputs/early_tabletop_intervention_live_wam_20261111/phase_b",
+  "capture_owner": "outputs/early_tabletop_intervention_live_wam_20261111/phase_a/result.json",
+  "capture_owner_sha256": "f3766ae57f3fe37e10a6d2f1d18cbb2201e6e17d24ed4b7bb6a066a841374974",
+  "model_owner": "outputs/early_tabletop_intervention_live_wam_20261111/model/owner/result.json",
+  "model_owner_sha256": "0dea3e748ad134a0bae785944af8f69fb25e4c0deda7b6ed397700424e8802d9",
+  "model_result": "outputs/early_tabletop_intervention_live_wam_20261111/model/model_run/result.json",
+  "model_result_sha256": "46cb9f6c1b1b0e20cd284969c69adef5bc445da37dbccd32f110eda8a7512724",
+  "model_preflight": "outputs/early_tabletop_intervention_live_wam_20261111/model/preflight.json",
+  "model_preflight_sha256": "8b7a245a2a23f0b21eba607225c2f4e3e65320b383caf93eebbee6884c6a6cde",
+  "case_index": 8,
+  "seed": 42,
+  "modes": ["original", "pose_bounded"],
+  "branch_step": 118,
+  "model_step": 120,
+  "live_periods": 8,
+  "responses": [
+    {
+      "mode": "original",
+      "path": "outputs/early_tabletop_intervention_live_wam_20261111/model/model_run/original/step120/response.json",
+      "sha256": "84e034b51a2f88668a26e3174e4d2e242901b187d344b00d3e455a43b98d21b6",
+      "image_sha256": "3325714b3cf8f65c2f45d59996d3585820d95c2390cb336a1fd414200cdac45a",
+      "state_sha256": "6fbadacfadb65c073295f69e57bf2d12d87df128593b358ea1c9cc8cbb343d07"
+    },
+    {
+      "mode": "pose_bounded",
+      "path": "outputs/early_tabletop_intervention_live_wam_20261111/model/model_run/pose_bounded/step120/response.json",
+      "sha256": "a0bf4e0a86635809f9fbc4e1f253e08b74fd96e13997924b23c2d63e0b2dbf43",
+      "image_sha256": "1a2a6a58ada903a641972144bb3084fe5d6a78b94afa064026f4bee20a8cd145",
+      "state_sha256": "5e784c3b9029e5922e07dce963b42f5c3b2361048c5ad856c719bc45ee7852dc"
+    }
+  ],
+  "max_control_steps_per_phase": 128,
+  "max_native_steps_per_phase": 3200,
+  "max_new_commands": 16,
+  "max_native_models": 12,
+  "max_software_contexts": 12,
+  "new_model_initializations": 0,
+  "new_model_requests": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 2400,
+  "automatic_retry": false
+}

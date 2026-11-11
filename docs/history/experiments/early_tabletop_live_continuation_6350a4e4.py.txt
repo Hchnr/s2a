@@ -1,0 +1,178 @@
+"""Replay the early branch, bind its fresh WAM response, then run feedback."""
+
+import numpy as np
+
+from s2a.controllers.osc import OSCInterface
+from s2a.geometry import inverse, pose_error
+from s2a.references.action_reference import decode_action_targets
+from s2a.research.native_runtime.development_continuation import run_continuation
+from scripts.simulation.runtime import replay_multicase_development_prefix as prefix
+from scripts.simulation.runtime import run_early_tabletop_capture as capture_audit
+from scripts.simulation.runtime import run_tabletop_projection_feedback_probe as physical_audit
+from scripts.simulation.runtime.early_tabletop_continuation import execute_early_continuation
+from scripts.simulation.runtime.tabletop_projection_inner_recording import ProjectionInnerRecorder
+from scripts.simulation.runtime.tabletop_projection_measurement import CurrentFingerGeometry
+
+
+def replay_and_bind_image(env, terminal, observers, receipt, inputs, *, mode, output, progress=None):
+    """Reproduce both pre-model actions and the exact image supplied to WAM."""
+    branch = inputs["early_tabletop_live_feedback"]["branches"][mode]
+    original = branch["producer"]
+    baseline = inputs["early_tabletop_live_feedback"]["branches"]["original"]["producer"]
+    physical_audit.checker_isolation()
+    previous = execute_early_continuation(
+        env,
+        terminal,
+        observers,
+        receipt,
+        inputs,
+        mode=mode,
+        output=output,
+        producer=original,
+        baseline_start=baseline["runtime"]["continuation"]["branch_start"],
+        progress=progress,
+    )
+    physical_audit.checker_isolation()
+    reproduced = {"runtime": {"continuation": previous}, "candidate_modules_unloaded": True}
+    physical_audit.check_pair(original, reproduced)
+    capture = capture_audit.compare_capture(original, reproduced)
+    prefix.require(
+        previous["probe"]["steps_completed"] == 2
+        and capture["state_sha256"] == branch["state_sha256"]
+        and capture["image_ref"] == branch["image_ref"],
+        "Actual replayed endpoint and image must match this branch's model request",
+    )
+    return previous
+
+
+def execute_live_continuation(env, terminal, observers, receipt, inputs, *, mode, output, producer=None, progress=None):
+    """Run up to eight periods on the WAM response from this branch's image."""
+    item, early = inputs["early_tabletop_live_feedback"], inputs["early_tabletop_intervention"]
+    config, physical_config = item["config"], early["config"]
+    if mode not in config["modes"]:
+        raise ValueError("A registered branch is required")
+    old, base = inputs["old"]["old"]["base"]["previous"], inputs["old"]["old"]["base"]
+    replayed = replay_and_bind_image(
+        env, terminal, observers, receipt, inputs, mode=mode, output=output, progress=progress
+    )
+    branch, captured = item["branches"][mode], replayed["next_current_image"]
+    sample, endpoint = captured["sample"], captured["endpoint"]
+    anchor = np.asarray(sample["source_pose"]) @ old["tool"]
+    targets, _openings = decode_action_targets(anchor, branch["actions"], horizon=40)
+    site_from_tcp = inverse(np.asarray(old["controller"]["source_from_site"])) @ old["tool"]
+    sensor = CurrentFingerGeometry(
+        env,
+        site_from_tcp=site_from_tcp,
+        table_pose=physical_config["table_pose"],
+        table_half_size=physical_config["table_half_size_m"],
+        table_name=physical_config["table_geom"],
+        finger_name=physical_config["finger_geom"],
+    )
+    np.testing.assert_allclose(sensor.capture()["tcp"], anchor, atol=1e-9, rtol=0)
+    interface = OSCInterface(
+        *(old["controller"]["contract"][key] for key in ("input_min", "input_max", "output_min", "output_max"))
+    )
+    expected = None if producer is None else producer["runtime"]["continuation"]["probe"]["periods"]
+    if expected is not None:
+        prefix.require(len(expected) <= 8, "The checker replays at most eight saved live-reference actions")
+    previous_command = np.asarray(replayed["probe"]["periods"][-1]["command"], dtype=float)
+    recorder = ProjectionInnerRecorder(env, sensor, mode, first_step=120, periods=8)
+    selected, below_buffer = [], False
+
+    def choose(q, limits, _jacobian, previous, offset):
+        nonlocal below_buffer
+        margin = float(np.min(np.minimum(q - limits[:, 0], limits[:, 1] - q)))
+        if expected is None and (below_buffer or margin < physical_config["joint_buffer_rad"]):
+            return {
+                "stop": {"reason": "observed_joint_buffer_loss", "minimum_current_margin_rad": margin},
+                "newly_selected": False,
+            }
+        current = sensor.capture()
+        if expected is None:
+            from s2a.research.joint_control.tracking.tabletop_projection_feedback import select_tabletop_feedback
+
+            decision = select_tabletop_feedback(
+                current["tcp"],
+                targets[offset],
+                site_from_tcp,
+                current["vertices_tcp"],
+                physical_config["table_pose"],
+                physical_config["table_half_size_m"],
+                previous,
+                interface,
+                mode=mode,
+                clearance=physical_config["clearance_m"],
+                numerical_margin=physical_config["numerical_margin_m"],
+                max_translation=physical_config["max_translation_m"],
+                command_step_limit=physical_config["command_step_limit"],
+            )
+            if "stop" in decision:
+                return decision
+            decision["decision_vertices_tcp"], decision["decision_tcp"] = current["vertices_tcp"], current["tcp"]
+        else:
+            saved = expected[offset]
+            np.testing.assert_allclose(
+                current["vertices_tcp"], saved["decision"]["decision_vertices_tcp"], atol=1e-10, rtol=0
+            )
+            np.testing.assert_allclose(current["tcp"], saved["decision"]["decision_tcp"], atol=1e-10, rtol=0)
+            decision = {
+                "command": np.asarray(saved["command"], dtype=float),
+                "newly_selected": False,
+                "selected_target_tcp": saved["decision"]["selected_target_tcp"],
+            }
+        selected.append(np.asarray(decision["selected_target_tcp"], dtype=float).copy())
+        recorder.set_context(120 + offset, selected[-1], current["vertices_tcp"])
+        return decision
+
+    def completed(actual_env, _command, offset):
+        nonlocal below_buffer
+        period = receipt["continuation_partial"]["periods"][-1]
+        below_buffer = bool(period["inner_below_buffer_samples"])
+        measured = sensor.capture()
+        error = pose_error(selected[offset], measured["tcp"])
+        return {
+            "projected_target_tcp_error": error,
+            "projected_pose_caps_satisfied": bool(
+                np.linalg.norm(error[:3]) <= 0.01 and np.linalg.norm(error[3:]) <= 0.05
+            ),
+            "current_gripper_qpos": np.asarray(actual_env.sim.data.qpos)[
+                actual_env.robots[0]._ref_gripper_joint_pos_indexes
+            ].copy(),
+        }
+
+    env.sim.step = recorder.step
+    try:
+        probe = run_continuation(
+            env,
+            {"sample": sample, "endpoint_receipt": endpoint},
+            observers,
+            receipt,
+            start_step=120,
+            previous_command=previous_command,
+            targets=targets[:8],
+            tool=old["tool"],
+            target_object=base["config"]["target_object"],
+            choose_action=choose,
+            stop_on_outside=True,
+            expected_periods=expected,
+            on_completed=completed,
+            progress=progress,
+            continuation_limit=8,
+        )
+    finally:
+        env.sim.step = recorder.original
+    prefix.require(
+        len(recorder.samples) == 25 * probe["steps_completed"] and probe["steps_completed"] <= 8,
+        "The new feedback period and inner-step budgets must hold",
+    )
+    return {
+        "mode": mode,
+        "pre_model_replay": replayed,
+        "model_image_ref": branch["image_ref"],
+        "model_state_sha256": branch["state_sha256"],
+        "model_response_ref": branch["response_ref"],
+        "original_targets": targets[:8],
+        "probe": probe,
+        "inner_samples": recorder.samples,
+        "automatic_retry": False,
+    }
