@@ -36,3 +36,6 @@ step88 参考尚未驱动机器人；这不是完整 WAM 闭环或 18/12/24 最�
 | 修复后 CPU 专项 | `50afb57d5c6c644b969ac9835ea4846e3686eb7de6898ae964aee55256d08ad9` |
 | 独立审计 CPU 专项 | `9e73a1b17be77576d51f8978879810aee0dbe88740d5a90bf32c9ee7e2420fef` |
 | 合并前 64 路 CPU 专项 | `d6e41ed056056020102e7fc0b5cc06c4434960ae3b5558fd783a1417e28345bd` |
+
+后续更新：第二参考已在[两窗口物理反馈](../joint_control/causal_wam_two_window_feedback_20261111.md)
+中执行并独立重放；上文“尚未驱动”描述的是本模型生成阶段结束时的状态。
