@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.saved-wam-feedback-metrics.v1",
+  "output": "outputs/saved_wam_feedback_metrics_20261111",
+  "producer": "outputs/saved_wam_feedback_20261111/producer/result.json",
+  "producer_sha256": "27d25911a6aca0eb6fd2c8bee2d52ef3d6e35dad6e872a0fdeb555f42979cea6",
+  "producer_branch": "outputs/saved_wam_feedback_20261111/producer/case_08_saved_wam/result.json",
+  "producer_branch_sha256": "3f06ce408fff298dc8e5fd5f780812f6c5f79b9a90534a14c14cf0b11de9db2e",
+  "checker": "outputs/saved_wam_feedback_20261111/checker/result.json",
+  "checker_sha256": "9ad00b2308446bb474edf3d846d96c8607bead1bf58924b6f96e4157513d7031",
+  "checker_branch": "outputs/saved_wam_feedback_20261111/checker/case_08_saved_wam/result.json",
+  "checker_branch_sha256": "c5178f3b172c29581e197191e89a4d4da53c5058ee77992f4b08219dbfe22a9f",
+  "correct_checker": "outputs/ordered_correct_stream_feedback_20261111/checker/result.json",
+  "correct_checker_sha256": "c9000c2253f25d3dc1e7ba1146c79d1aab55647a1db86015a08094f2dc919b9d",
+  "steps": 8,
+  "new_physics_steps": 0,
+  "new_model_requests": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

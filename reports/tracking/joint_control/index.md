@@ -208,5 +208,6 @@
 | [080 有限原生命令规划器：实现与独立最优性检查通过，物理未执行](velocity_model_inverse_control_20261025.md) | `reports/velocity_model_inverse_control_20261025.md` |
 | [016：按实测跟踪误差重观测的完整 WAM 结果](wam_tracking_replan_20261021.md) | `reports/wam_tracking_replan_20261021.md` |
 | [016：因果跟踪误差重观测的执行资格](wam_tracking_replan_qualification_20261021.md) | `reports/wam_tracking_replan_qualification_20261021.md` |
+| [已保存 WAM 参考的八周期实际反馈](saved_wam_feedback_20261111.md) | 新增报告 |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。
