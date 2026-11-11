@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 双点模型余量对照：相同四个预停止开发决策中，terminal058 step80有
+0.0005 m / 0.003 rad模型余量的双点候选并通过独立审核；task2 raw和其余两决策
+未找到。静态种子不等于在线细化种子，尚无新物理反馈；详见[对照报告](../reports/tracking/joint_control/margin_two_step_search_20261111.md)。
+
 2026-11-11 terminal058 step85首点搜索：两种因果初值各耗尽320模型响应，均无
 首点候选；最近安全尝试约0.010790 m / 0.057714 rad。原首点外界仍不确定，
 有限搜索失败不证明不可达，详见[首点搜索报告](../reports/tracking/joint_control/task2_terminal85_first_search_20261111.md)。

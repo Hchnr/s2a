@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[双点模型余量的预停止对照](margin_two_step_search_20261111.md)
+
 最新：[terminal058 step85的首点优先搜索](task2_terminal85_first_search_20261111.md)
 
 最新：[因果回退停止状态的首点位姿外界](task2_fallback_stop_pose_bound_20261111.md)
