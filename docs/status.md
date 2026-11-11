@@ -2,6 +2,9 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 组合停止处后移计划：raw首点仍超原门，terminal058首点及完整模型
+安全通过，但第二点超门；尚未派发或验证实际反馈。详见[资格报告](../reports/tracking/joint_control/task2_shared_shift_qualification_20261111.md)。
+
 2026-11-11 共享预算组合实际反馈：raw恢复1周期1/1，terminal058保持余量分支
 4周期4/4；独立重放5条动作及125内环样本一致，未完成任务或8周期。详见
 [反馈报告](../reports/tracking/joint_control/task2_margin_guarded_feedback_20261111.md)。
