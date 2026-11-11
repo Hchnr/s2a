@@ -1,0 +1,31 @@
+{
+  "schema": "s2a.cached-calibration-gripper-feedback.v1",
+  "case_indices": [2, 6, 10],
+  "branches": ["raw", "calibrated"],
+  "seed": 43,
+  "continuation_steps": 8,
+  "control_dt_s": 0.05,
+  "inner_dt_s": 0.002,
+  "joint_buffer_rad": 0.05,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "arm_rate_limit": 0.25,
+  "braking_time_s": 0.1,
+  "quality_response_budget": 320,
+  "max_control_steps_per_phase": 176,
+  "max_native_steps_per_phase": 4400,
+  "max_new_commands_per_phase": 48,
+  "max_workers": 6,
+  "worker_timeout_seconds": 1800,
+  "candidate_ref": {
+    "path": "outputs/cached_endpoint_calibration_20261111/candidate.json",
+    "sha256": "729187cabc5d67146f914a749b2ad29bf1526d2307c92081efa65e10fd63238e"
+  },
+  "shadow_ref": {
+    "path": "outputs/cached_endpoint_shadow_20261111/result.json",
+    "sha256": "0019e2dc95a97aa06c9ac04bb1453f0588f83b5af27b338c94f43ad83523768e"
+  },
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
