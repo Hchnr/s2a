@@ -6,6 +6,7 @@
   "prefix_steps": 16,
   "reference_chunk_index": 2,
   "reference_cursor": 0,
+  "capture_final_prefix_inner": true,
   "continuation_steps": 8,
   "control_dt_s": 0.05,
   "inner_dt_s": 0.002,
