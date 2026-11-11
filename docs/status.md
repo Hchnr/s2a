@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 共享预算三级反馈：raw实际1/1，terminal058由组合双点4/4延长至
+5/5；新增一周期只通过首点审核，第二模型点超门。6条动作及150内环样本独立重放
+一致，未完成任务或8周期，详见[反馈报告](../reports/tracking/joint_control/task2_shared_shift_feedback_20261111.md)。
+
 2026-11-11 组合停止处后移计划：raw首点仍超原门，terminal058首点及完整模型
 安全通过，但第二点超门；尚未派发或验证实际反馈。详见[资格报告](../reports/tracking/joint_control/task2_shared_shift_qualification_20261111.md)。
 
