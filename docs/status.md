@@ -2,6 +2,35 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 terminal058 step85首点搜索：两种因果初值各耗尽320模型响应，均无
+首点候选；最近安全尝试约0.010790 m / 0.057714 rad。原首点外界仍不确定，
+有限搜索失败不证明不可达，详见[首点搜索报告](../reports/tracking/joint_control/task2_terminal85_first_search_20261111.md)。
+
+2026-11-11 回退停止首点外界：raw step33在冻结模型首动作box/变化率放宽域的
+联合下界为1.008605，排除原首点双阈值但余量很小；terminal058 step85的最强
+下界为0.887498，尚不能判定。均不证明物理可达性，详见[外界报告](../reports/tracking/joint_control/task2_fallback_stop_pose_bound_20261111.md)。
+
+2026-11-11 停止状态缓存审查：raw step33及terminal058 step85各用两个因果初值
+重建双点搜索，291响应中的9个线性安全计划均无首点双阈值候选；未增加响应或新
+物理。有限缓存结果不证明全局不可达，详见[审查报告](../reports/tracking/joint_control/task2_cached_first_pose_20261111.md)。
+
+2026-11-11 因果后移回退：相同task2开发起点，raw仍1周期1/1后停止；terminal058
+由原双点分支4周期4/4延长至5周期5/5，新增周期为独立审核的首点回退，第二模型点
+超双阈值。6条动作及150内步独立重放一致，未完成任务或8周期，详见[反馈报告](../reports/tracking/joint_control/task2_causal_shift_fallback_20261111.md)。
+
+2026-11-11 停止状态双种子搜索：raw step33和terminal058 step84各以已保存LP初值
+及后移计划初值搜索，共346模型响应、0双点候选。terminal后移初值的最近安全尝试
+第二点约0.010735 m / 0.054484 rad；不证明全局不可达，详见[搜索报告](../reports/tracking/joint_control/task2_shifted_seed_search_20261111.md)。
+
+2026-11-11 停止状态后移计划：raw step33及terminal058 step84的后移计划均通过
+冻结模型安全复核，但没有双点质量候选；terminal首点通过而第二点为0.013043 m /
+0.066521 rad，raw前两点均超限。未重新优化或派发，详见[资格报告](../reports/tracking/joint_control/task2_shifted_seed_qualification_20261111.md)。
+
+2026-11-11 双点计划模型偏差：重放过的5个开发周期显示，raw首周期后原下一动作
+重锚预测为0.010372 m / 0.052042 rad，超原双阈值；terminal058最后周期后同一
+原计划下一点为0.009502 m / 0.046570 rad，但再下一点尚未审核。关节位置/速度、
+状态重锚和模型更新各有偏差；无新物理，详见[诊断报告](../reports/tracking/joint_control/task2_guarded_model_drift_20261111.md)。
+
 2026-11-11 数值余量双点反馈：task2 raw由首动作前停止改善为实际1周期双阈值1/1，
 随后无witness；terminal058仍为4周期4/4后停止，均未完成8周期或任务成功。
 5条动作及125内步独立重放一致，104项CPU专项通过，详见[反馈报告](../reports/tracking/joint_control/task2_guarded_two_step_feedback_20261111.md)。
