@@ -43,4 +43,4 @@ GPU或最终留出样本。`complete/passed`只表示外界分析与证书复核
 | `outputs/task2_fallback_stop_pose_bound_20261111/workers.json` | `dd56a824f709ada1eb5720127fa469f8eceecb418764201ed65dcfc3290240f8` |
 | `outputs/task2_fallback_stop_pose_bound_dry_20261111/result.json` | `3f42da08638bc4183c6464554369f75cb61191f85607211d625e9492aaf61b98` |
 | `outputs/qa/task2_fallback_stop_pose_bound_20261111/result.json` | `a3b2f907f5f125581648e9455aaf7f2a5d1ef5142a98e47fe16faa60586ec99e` |
-| `outputs/task2_fallback_stop_pose_bound_supervisor_20261111/owner_exit.json` | `ea773eaf619e005328a2589c0c53af2feaa98f118e81c4cb31b596a7900da1a` |
+| `outputs/task2_fallback_stop_pose_bound_supervisor_20261111/owner_exit.json` | `ea773eaf619e005328a2589c0c53af2feaa98ef118e81c4cb31b596a7900da1a` |
