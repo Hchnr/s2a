@@ -1,0 +1,51 @@
+{
+  "schema": "s2a.wam-feedback-reobserve.v2",
+  "output": "outputs/wam_feedback_reobserve_v2_20261111",
+  "capture_summary": "outputs/wam_feedback_current_observation_v2_20261111/producer/result.json",
+  "capture_summary_sha256": "6a6dd806da9bb5e8cbb8e8212c8c110ec51b20fa654948ce9a8d954446ad1b27",
+  "capture_branch": "outputs/wam_feedback_current_observation_v2_20261111/producer/case_08_capture/result.json",
+  "capture_branch_sha256": "058bbef1015318f9f28503271839af97dd06abce1c8635782c7a989eb9251584",
+  "capture_qa": "outputs/qa/wam_feedback_current_observation_v2_20261111/result.json",
+  "capture_qa_sha256": "a575603b5f25757fb9d52afc12dd40352b73464c3576831750398962f00c2445",
+  "feedback_branch": "outputs/saved_wam_feedback_20261111/producer/case_08_saved_wam/result.json",
+  "feedback_branch_sha256": "3f06ce408fff298dc8e5fd5f780812f6c5f79b9a90534a14c14cf0b11de9db2e",
+  "feedback_checker": "outputs/saved_wam_feedback_20261111/checker/result.json",
+  "feedback_checker_sha256": "9ad00b2308446bb474edf3d846d96c8607bead1bf58924b6f96e4157513d7031",
+  "previous_response": "outputs/ordered_feedback_wam_observation_v2_20261111/inference/model_run/step80/response.json",
+  "previous_response_sha256": "cac3f20d77266668e0df2ef9e6be07a00408a7222cf8a6b1c32e39ed85b2e51d",
+  "partial_audit": "outputs/ordered_feedback_wam_observation_v2_20261111/inference_audit/result.json",
+  "partial_audit_sha256": "e45704d7ff25dd6e1c26bb8c6390ac43b4408731f7a120037a12e335a3453217",
+  "images": [
+    {
+      "step": 80,
+      "path": "outputs/wam_feedback_current_observation_v2_20261111/producer/case_08_capture/runtime/anchor0080/current.png",
+      "sha256": "09986f11e165682c8eab81978b1f49c7f37ecbcae5ec1da1c74111ffbcbd1e5d"
+    },
+    {
+      "step": 88,
+      "path": "outputs/wam_feedback_current_observation_v2_20261111/producer/case_08_capture/runtime/anchor0088/current.png",
+      "sha256": "93919e6dbba418d01d66a96f80cad05220add68c4405dff5e4a516c4284ba8fc"
+    }
+  ],
+  "task": "put the cream cheese in the bowl",
+  "gpu_uuid": "GPU-c0b598ba-0a6e-73af-bbcc-97bc89379bdf",
+  "seed": 42,
+  "horizon": 40,
+  "denoise_steps_per_request": 35,
+  "model_initializations": 1,
+  "model_requests": 2,
+  "denoise_calls": 70,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "fits": 0,
+  "automatic_retry": false,
+  "previous_failed": "outputs/wam_feedback_reobserve_20261111/model_run/failed.json",
+  "previous_failed_sha256": "cfce5e1c14f58110b11533979fb96e4b404403b97b29915699639b6160590dd2",
+  "previous_owner": "outputs/wam_feedback_reobserve_20261111/owner/result.json",
+  "previous_owner_sha256": "b7335ad3c74409141e5ab00dfd1cea90167a6807784f17169260277be8f1626b",
+  "previous_attempt_response": "outputs/wam_feedback_reobserve_20261111/model_run/step80/response.json",
+  "previous_attempt_response_sha256": "580c73505dd1663574eff49c1f51d2e8215a89aba5a00903e4b1171eb54c6f1b",
+  "previous_attempt_initializations": 1,
+  "previous_attempt_requests": 1,
+  "previous_attempt_denoise_calls": 35
+}

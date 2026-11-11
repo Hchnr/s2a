@@ -1,5 +1,7 @@
 import copy
 import json
+from dataclasses import replace
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -73,6 +75,14 @@ def test_mask_evidence_tracks_each_of_two_requests():
     bad = dict(row, inactive_rms_after=0.1)
     with pytest.raises(ValueError, match="per completed request"):
         inference.validate_mask_evidence([row, bad], 2)
+
+
+def test_inference_context_keeps_outputs_in_the_repository():
+    context = inference.default_context()
+    assert inference.checked_context(context) is context
+    assert context.capture_loader is inference.capture_inputs
+    with pytest.raises(ValueError, match="repository-local"):
+        inference.checked_context(replace(context, output=Path("/tmp/external-model-output")))
 
 
 def test_offline_score_uses_integrated_tcp_pose_and_absolute_opening():
