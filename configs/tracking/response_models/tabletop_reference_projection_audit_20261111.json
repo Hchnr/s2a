@@ -1,0 +1,17 @@
+{
+  "schema": "s2a.tabletop-reference-projection-audit.v1",
+  "output": "outputs/tabletop_reference_projection_audit_20261111",
+  "owner": "outputs/tabletop_reference_projection_20261111/result.json",
+  "owner_sha256": "fdc67c5f9c0bdffe3941422fa30ca302747055e1f8f61ce80d29eeecdfb91da5",
+  "worker": "outputs/tabletop_reference_projection_20261111/worker/result.json",
+  "worker_sha256": "c6886b32040c75f3591599ec3ed3ae44a2f6d0be2cb32077f781ab0dc9bf122a",
+  "first_step": 80,
+  "last_step": 126,
+  "max_models": 1,
+  "max_forward_queries": 47,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 600,
+  "automatic_retry": false
+}

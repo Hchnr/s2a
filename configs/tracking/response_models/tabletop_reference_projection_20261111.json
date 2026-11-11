@@ -1,0 +1,28 @@
+{
+  "schema": "s2a.tabletop-reference-projection.v1",
+  "output": "outputs/tabletop_reference_projection_20261111",
+  "geometry_audit": "outputs/reference_table_geometry_audit_20261111/result.json",
+  "geometry_audit_sha256": "3fa3c99caad2e89f8287ec77de41bb2e507f5b2023da4a635122f5d53f0f7f74",
+  "tolerance_audit": "outputs/reference_table_tolerance_audit_20261111/result.json",
+  "tolerance_audit_sha256": "4032b944ab87955e08fe8f26448c7432605258b02a1482abdcbb7070b335a01a",
+  "case_index": 8,
+  "seed": 42,
+  "first_step": 80,
+  "last_step": 126,
+  "table_geom": "table_collision",
+  "finger_geom": "gripper0_finger2_collision",
+  "clearance_m": 0.001,
+  "numerical_margin_m": 1e-09,
+  "max_translation_m": 0.05,
+  "candidates": [
+    {"name": "nominal", "position_uncertainty_m": 0.0, "rotation_uncertainty_rad": 0.0, "shape_uncertainty_m": 0.0},
+    {"name": "pose_bounded", "position_uncertainty_m": 0.01, "rotation_uncertainty_rad": 0.05, "shape_uncertainty_m": 0.0}
+  ],
+  "max_models": 1,
+  "max_forward_queries": 188,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 600,
+  "automatic_retry": false
+}
