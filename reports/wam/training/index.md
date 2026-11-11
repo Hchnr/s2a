@@ -21,5 +21,6 @@
 | [043 CPU接续与标签运行时差异 — 2026-10-24](wam_clean_training_postcapture_20261024.md) | `reports/wam_clean_training_postcapture_20261024.md` |
 | [038有限训练实现与准备 — 2026-10-23](wam_clean_training_preparation_20261023.md) | `reports/wam_clean_training_preparation_20261023.md` |
 | [024：当前 8400 训练目标与线上 conditional 数值桥接](wam_current_training_inference_numerics_20261021.md) | `reports/wam_current_training_inference_numerics_20261021.md` |
+| [已保存参考的累积状态与开度校准](cached_endpoint_calibration_20261111.md) | 新增报告 |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。
