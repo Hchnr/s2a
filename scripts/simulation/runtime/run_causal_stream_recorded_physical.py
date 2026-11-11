@@ -164,9 +164,12 @@ def relay_worker():
         print(publish(output / "result.json", result), flush=True)
 
 
-def simulation_worker():
-    inputs, _registration = worker_inputs("producer")
-    directory = OUTPUT / "producer/simulation"
+def simulation_worker(*, output=None, loader=None, channel_timeout=90):
+    """Run the fixed physical producer under an explicitly selected owner."""
+    output = OUTPUT if output is None else Path(output)
+    loader = worker_inputs if loader is None else loader
+    inputs, _registration = loader("producer")
+    directory = output / "producer/simulation"
     old, base = inputs["old"]["old"]["base"]["previous"], inputs["old"]["old"]["base"]
     result = {"complete": False, "passed": False, "control_qualified": False, "automatic_retry": False}
     channel = None
@@ -181,7 +184,9 @@ def simulation_worker():
         from s2a.research.wam.tracking.runtime.causal_stream_reference import CausalStreamingReference
 
         channel = FramedJSONChannel(
-            socket.socket(fileno=int(os.environ["S2A_CHANNEL_FD"])), max_bytes=2 * 1024 * 1024, timeout_seconds=90
+            socket.socket(fileno=int(os.environ["S2A_CHANNEL_FD"])),
+            max_bytes=2 * 1024 * 1024,
+            timeout_seconds=channel_timeout,
         )
 
         def continuation(env, terminal, observers, receipt, *, progress=None):
@@ -260,9 +265,12 @@ def simulation_worker():
         print(publish(directory / "result.json", result), flush=True)
 
 
-def checker_worker():
-    inputs, registration = worker_inputs("checker")
-    directory = OUTPUT / "checker/simulation"
+def checker_worker(*, output=None, loader=None):
+    """Replay completed actions under an explicitly selected owner."""
+    output = OUTPUT if output is None else Path(output)
+    loader = worker_inputs if loader is None else loader
+    inputs, registration = loader("checker")
+    directory = output / "checker/simulation"
     old, base = inputs["old"]["old"]["base"]["previous"], inputs["old"]["old"]["base"]
     result = {"complete": False, "passed": False, "control_qualified": False, "automatic_retry": False}
     try:

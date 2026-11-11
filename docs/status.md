@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 已在同一次运行中使用真实 WAM 的两次当前图像推理完成 16 周期
+CPU/OSMesa 反馈及独立 checker；末尾任务连续成功 9 周期，模型处理约 13.284/11.713 s，
+仿真等待时暂停。仍未达到实时或 40 周期稳定门，见[真实模型报告](../reports/tracking/references/causal_stream_live_wam_20261111.md)。
+
 2026-11-11 新流式执行器使用两份已保存 WAM 响应完成 CPU/OSMesa 16 周期物理
 复现及独立 checker；末尾任务谓词连续 9 周期，未达 40 周期稳定门，且没有新模型
 推理。详见[物理复现报告](../reports/tracking/joint_control/causal_stream_recorded_physical_20261111.md)。

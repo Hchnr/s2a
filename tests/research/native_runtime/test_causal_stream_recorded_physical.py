@@ -1,6 +1,7 @@
 """CPU admission and transport tests; no simulator or model is launched."""
 
 import copy
+import json
 import os
 import shutil
 import socket
@@ -139,3 +140,25 @@ runner.prior.checker_isolation()
         env=dict(os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH=""),
     )
     assert child.returncode == 0, child.stdout + child.stderr
+
+
+@pytest.mark.parametrize("phase", ["producer", "checker"])
+def test_worker_owner_override_preserves_preinitialization_failures(tmp_path, monkeypatch, phase):
+    directory = tmp_path / phase / "simulation"
+    directory.mkdir(parents=True)
+    inputs = {"old": {"old": {"base": {"previous": {}}}}}
+
+    def fail(*_args, **_kwargs):
+        raise RuntimeError("synthetic preinitialization stop")
+
+    if phase == "producer":
+        monkeypatch.setattr(runner.prior, "reconstruct_gripper", fail)
+        run = runner.simulation_worker
+    else:
+        monkeypatch.setattr(runner.prior, "checker_isolation", fail)
+        run = runner.checker_worker
+    with pytest.raises(RuntimeError, match="preinitialization"):
+        run(output=tmp_path, loader=lambda requested: (inputs, {"phase": requested}))
+    result = json.loads((directory / "result.json").read_text())
+    assert result["complete"] is result["passed"] is False
+    assert "preinitialization" in result["error"]["message"]
