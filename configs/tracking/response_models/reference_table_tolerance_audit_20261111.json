@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.reference-table-tolerance-audit.v1",
+  "output": "outputs/reference_table_tolerance_audit_20261111",
+  "owner": "outputs/reference_table_tolerance_20261111/result.json",
+  "owner_sha256": "43e879f714eb5dcf0d075bf2446b0589c69bf556f04116477831c65a67fd0dea",
+  "worker": "outputs/reference_table_tolerance_20261111/worker/result.json",
+  "worker_sha256": "fc5098a857066b12f48b5c67b9e7eaae66ddf40da648f323b485f3e984527d8d",
+  "steps": [120, 121, 122, 123, 124, 125, 126],
+  "position_tolerance_m": 0.01,
+  "rotation_tolerance_rad": 0.05,
+  "certificate_margin_m": 1e-09,
+  "max_models": 1,
+  "max_forward_queries": 7,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 600,
+  "automatic_retry": false
+}
