@@ -72,7 +72,11 @@ SHA256 为 `15d674945c9e103220273fe5c6b2caccd70936d986c8fbc4cdd0335dce413763`。
 `tests/research/native_runtime/test_tabletop_projection_feedback_probe.py` 也保存了
 [历史副本](../../../docs/history/experiments/test_tabletop_projection_feedback_probe_7efaa5cf.py.txt)，
 SHA256 为 `a08823124c60bd6953736ef2ba3d3f4d757b6d620bcfb630c0b259c54292fb01`。
-其余实验来源身份与登记一致；后续汇总修正不覆盖历史来源或重新运行物理实验。
+内步记录器后来扩展了可配置起始周期，其实验时声明路径为
+`scripts/simulation/runtime/tabletop_projection_inner_recording.py`，原始 SHA256
+`d9b363d7cad431e95ef5b44ae4bed704b3733f0d77f5a90b1de1f432677f7e3d`
+的[安全副本](../../../docs/history/experiments/tabletop_projection_inner_recording_c42cdd31.py.txt)
+保留确切字节。后续修改不覆盖历史来源或重新运行物理实验。
 
 下一步应显式处理运动中的夹爪及桌面、炉具等相关几何，并在同一接口下对照
 能跟踪修正参考的反馈方法。只有先解决实际反馈和参考偏差，才值得扩展开发

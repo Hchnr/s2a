@@ -1,0 +1,34 @@
+{
+  "schema": "s2a.early-tabletop-live-wam-model.v1",
+  "output": "outputs/early_tabletop_intervention_live_wam_20261111/model",
+  "capture_owner": "outputs/early_tabletop_intervention_live_wam_20261111/phase_a/result.json",
+  "capture_owner_sha256": "f3766ae57f3fe37e10a6d2f1d18cbb2201e6e17d24ed4b7bb6a066a841374974",
+  "task": "put the cream cheese in the bowl",
+  "gpu_uuid": "GPU-c0b598ba-0a6e-73af-bbcc-97bc89379bdf",
+  "seed": 42,
+  "horizon": 40,
+  "denoise_steps_per_request": 35,
+  "model_initializations": 1,
+  "model_requests": 2,
+  "denoise_calls": 70,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "fits": 0,
+  "automatic_retry": false,
+  "images": [
+    {
+      "mode": "original",
+      "step": 120,
+      "path": "outputs/early_tabletop_intervention_live_wam_20261111/phase_a/original/producer/simulation/runtime/anchor0120/current.png",
+      "sha256": "3325714b3cf8f65c2f45d59996d3585820d95c2390cb336a1fd414200cdac45a",
+      "state_sha256": "6fbadacfadb65c073295f69e57bf2d12d87df128593b358ea1c9cc8cbb343d07"
+    },
+    {
+      "mode": "pose_bounded",
+      "step": 120,
+      "path": "outputs/early_tabletop_intervention_live_wam_20261111/phase_a/pose_bounded/producer/simulation/runtime/anchor0120/current.png",
+      "sha256": "1a2a6a58ada903a641972144bb3084fe5d6a78b94afa064026f4bee20a8cd145",
+      "state_sha256": "5e784c3b9029e5922e07dce963b42f5c3b2361048c5ad856c719bc45ee7852dc"
+    }
+  ]
+}

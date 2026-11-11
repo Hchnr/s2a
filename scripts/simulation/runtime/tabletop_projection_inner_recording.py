@@ -8,18 +8,30 @@ from scripts.tracking.response_models.replay_contact_torque import ReplayRecorde
 
 
 class ProjectionInnerRecorder:
-    """Wrap the existing read-only torque/contact recorder for seven periods."""
+    """Wrap read-only torque/contact recording for an explicit short window."""
 
-    def __init__(self, env, sensor, mode, *, base=None):
-        if mode not in ("original", "nominal", "pose_bounded"):
-            raise ValueError("A registered comparison mode is required")
+    def __init__(self, env, sensor, mode, *, first_step=120, periods=7, base=None):
+        if (
+            mode not in ("original", "nominal", "pose_bounded")
+            or type(first_step) is not int
+            or first_step < 0
+            or type(periods) is not int
+            or not 1 <= periods <= 48
+        ):
+            raise ValueError("A registered comparison mode and finite step budget are required")
         self.env, self.sensor, self.mode = env, sensor, mode
-        self.base = ReplayRecorder(env, 7) if base is None else base
+        self.first_step, self.periods = first_step, periods
+        self.base = ReplayRecorder(env, periods) if base is None else base
         self.original, self.samples = self.base.original, self.base.samples
         self.context = None
 
     def set_context(self, step, selected_tcp, vertices_tcp):
-        if type(step) is not int or step != 120 + len(self.samples) // 25 or len(self.samples) % 25:
+        if (
+            type(step) is not int
+            or step != self.first_step + len(self.samples) // 25
+            or len(self.samples) % 25
+            or len(self.samples) >= 25 * self.periods
+        ):
             raise ValueError("A fresh completed decision is required at each physical period")
         target = validate_transform(np.asarray(selected_tcp, dtype=float)).copy()
         vertices = np.asarray(vertices_tcp, dtype=float).copy()
@@ -34,7 +46,7 @@ class ProjectionInnerRecorder:
         self.context = {"step": step, "selected_tcp": target, "vertices_tcp": vertices}
 
     def step(self, *args, **kwargs):
-        if self.context is None or self.context["step"] != 120 + len(self.samples) // 25:
+        if self.context is None or self.context["step"] != self.first_step + len(self.samples) // 25:
             raise ValueError("No current decision has been registered for this inner step")
         before = self.sensor.capture()
         controller, gripper = self.env.robots[0].controller, self.env.robots[0].gripper
