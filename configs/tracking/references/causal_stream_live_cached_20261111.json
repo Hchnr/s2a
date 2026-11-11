@@ -1,0 +1,23 @@
+{
+  "schema": "s2a.causal-stream-live-cached.v1",
+  "output": "outputs/causal_stream_live_cached_20261111",
+  "prior_cache_audit": "outputs/causal_stream_endpoint_cache_fixed_audit_20261111/result.json",
+  "prior_cache_audit_sha256": "961f59575825aa04cac820abb8e39815c7da04e731aff43f9ee3310ed755c3b2",
+  "gpu_uuid": "GPU-c0b598ba-0a6e-73af-bbcc-97bc89379bdf",
+  "case_index": 8,
+  "seed": 42,
+  "task": "put the cream cheese in the bowl",
+  "prefix_steps": 80,
+  "window_steps": 8,
+  "max_windows": 6,
+  "max_model_initializations": 1,
+  "max_model_requests": 6,
+  "denoise_calls_per_request": 35,
+  "max_denoise_calls": 210,
+  "max_control_steps_per_phase": 128,
+  "max_native_steps_per_phase": 3200,
+  "fresh_cases": 0,
+  "fits": 0,
+  "worker_timeout_seconds": 2400,
+  "automatic_retry": false
+}
