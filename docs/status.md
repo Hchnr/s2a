@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 双点余量实际反馈：相同task2开发起点，raw首动作前停止，terminal058
+实际4周期4/4达原误差门后停止；两者均未完成任务。独立重放一致，严格余量不宜
+统一默认，详见[反馈报告](../reports/tracking/joint_control/task2_margin_two_step_feedback_20261111.md)。
+
 2026-11-11 双点模型余量对照：相同四个预停止开发决策中，terminal058 step80有
 0.0005 m / 0.003 rad模型余量的双点候选并通过独立审核；task2 raw和其余两决策
 未找到。静态种子不等于在线细化种子，尚无新物理反馈；详见[对照报告](../reports/tracking/joint_control/margin_two_step_search_20261111.md)。
