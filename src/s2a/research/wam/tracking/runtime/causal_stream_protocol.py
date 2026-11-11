@@ -280,6 +280,11 @@ class CausalStreamLedger:
         self.phase = "failed"
         raise error
 
+    def abort(self):
+        """Prevent further requests after an external execution or transport failure."""
+        self._pending = None
+        self.phase = "failed"
+
     def issue(self, *, before_render, after_render, image):
         try:
             if self.phase != "ready" or self.issued_requests >= self.max_requests:

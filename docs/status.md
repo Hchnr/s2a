@@ -2,6 +2,9 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 连续执行适配和独立命令重放已在 CPU 假环境验证，64 路相关回归
+114 项通过；真实 WAM、OSMesa 连续执行及留出验收未完成，见[执行报告](../reports/tracking/joint_control/causal_stream_execution_20261111.md)。
+
 2026-11-11 连续 WAM 流完成 CPU 协议与双子进程模拟：64 路相关专项 89 项
 通过；真实模型、物理 runtime 和独立 checker 尚未接入，见[协议报告](../reports/tracking/joint_control/causal_stream_protocol_20261111.md)。
 
