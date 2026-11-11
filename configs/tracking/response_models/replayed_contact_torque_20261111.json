@@ -1,0 +1,38 @@
+{
+  "schema": "s2a.replayed-contact-torque.v1",
+  "output": "outputs/replayed_contact_torque_20261111",
+  "runs": [
+    {
+      "name": "historical",
+      "producer": "outputs/quality_rate_repair_recorded_feedback_20261111/producer/simulation/result.json",
+      "producer_sha256": "e936271d98ba46fc975c2eea3e2808930f6d7d895c0c4e18db254e08b1be154d",
+      "owner": "outputs/quality_rate_repair_recorded_feedback_20261111/producer/result.json",
+      "owner_sha256": "2c3ab4ea6601fa38bc3db010dc26d3376d7a87ce90fd6098be1f685df512596a",
+      "audit": "outputs/quality_rate_repair_recorded_feedback_audit_20261111/result.json",
+      "audit_sha256": "bd33ed32be8e4bb4a9ef0c3fb753a8d0883e7cb6bd3ef22fedd9729807b4c802",
+      "continuation_periods": 46,
+      "max_control_periods": 126,
+      "max_native_steps": 3150
+    },
+    {
+      "name": "innovation",
+      "producer": "outputs/early_causal_innovation_physical_20261111/producer/simulation/result.json",
+      "producer_sha256": "bd5a83ab94e8727bef15249b05fcf33d960df664a4f456959123f0408a670372",
+      "owner": "outputs/early_causal_innovation_physical_20261111/producer/result.json",
+      "owner_sha256": "d8da5c619ec6ba2eddfa6ab4defad1f277f3883d68fe4e20650777dac02c896b",
+      "audit": "outputs/early_causal_innovation_physical_audit_20261111/result.json",
+      "audit_sha256": "3745490d142435203f76f7257e2e75319a6075ac94ee78a229de9c69ed4b1fee",
+      "continuation_periods": 43,
+      "max_control_periods": 123,
+      "max_native_steps": 3075
+    }
+  ],
+  "max_native_models": 6,
+  "max_software_contexts": 6,
+  "new_model_initializations": 0,
+  "new_model_requests": 0,
+  "new_denoise_calls": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 2400,
+  "automatic_retry": false
+}
