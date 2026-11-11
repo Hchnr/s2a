@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[原质量门外的模型安全有界跟踪回退](model_safe_tracking_fallback_20261111.md)
+
 近期：[有限释放保持后的连续衔接反馈](bounded_release_bridge_feedback_20261111.md)
 
 近期：[有限释放保持的匹配物理反馈](bounded_release_hold_feedback_20261111.md)
