@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.supported-opening-event.v1",
+  "source_cv": "outputs/causal_opening_event_20261111/cv/result.json",
+  "source_cv_sha256": "e36a7a6c6e49b9cc00ebb6d6445139b2cac2206dc8e7475ccc3d72733a472101",
+  "source_manifest": "outputs/causal_opening_event_20261111/training_manifest.json",
+  "source_manifest_sha256": "3edfbae478a9fb9e2b41a251f35fe62ea38415a51b5ed871fd49e6236f1a2ceb",
+  "output": "outputs/supported_opening_event_20261111",
+  "support_future_steps": 16,
+  "seed": 42,
+  "training_demos": 30,
+  "training_requests": 300,
+  "thresholds": [0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.975, 0.99],
+  "new_fold_fits": 0,
+  "max_full_fits": 1,
+  "world_model_calls": 0,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
