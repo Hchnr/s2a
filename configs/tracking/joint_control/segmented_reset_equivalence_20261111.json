@@ -1,0 +1,11 @@
+{
+  "schema": "s2a.segmented-reset-equivalence.v1",
+  "case_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  "baseline_owner_sha256": "2b7fc9fa25241d938245e14bce7f485d9c887f21bb0110893dd212a128d2cc36",
+  "continuation_steps": 8,
+  "comparison_absolute_tolerance": 1e-10,
+  "comparison_relative_tolerance": 0.0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
