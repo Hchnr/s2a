@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[有限释放保持后的连续衔接反馈](bounded_release_bridge_feedback_20261111.md)
+
 最新：[有限释放保持的匹配物理反馈](bounded_release_hold_feedback_20261111.md)
 
 最新：[有限释放参考修订的全分母影子检查](bounded_release_revision_shadow_20261111.md)
