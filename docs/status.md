@@ -4,8 +4,10 @@
 
 2026-11-11 最多六窗口的真实 WAM 开发试验在第五个窗口后异常中止：实际完成
 5 次请求、175 次去噪和 40 周期反馈；下一端点观测触发物理状态一致性检查，
-未执行第六次请求或独立 checker。已记录 33 个末尾连续任务成功端点，但该部分
-结果尚未独立复核，不是 40 端点稳定资格。GPU 已释放，见[失败报告](../reports/tracking/references/causal_stream_live_48_partial_20261111.md)。
+未执行第六次请求。后续 CPU 动作重放复现异常，40 条动作及全部内环样本与原记录
+一致，末尾连续 33 个任务成功端点；不构成 40 端点稳定资格。GPU 已释放，见
+[失败报告](../reports/tracking/references/causal_stream_live_48_partial_20261111.md)和
+[诊断报告](../reports/tracking/references/causal_stream_endpoint_diagnostic_20261111.md)。
 
 2026-11-11 已在同一次运行中使用真实 WAM 的两次当前图像推理完成 16 周期
 CPU/OSMesa 反馈及独立 checker；末尾任务连续成功 9 周期，模型处理约 13.284/11.713 s，
