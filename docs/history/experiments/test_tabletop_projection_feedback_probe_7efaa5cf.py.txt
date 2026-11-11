@@ -1,0 +1,24 @@
+"""Independent physical replay must detect changed forces or contact identity."""
+
+import copy
+
+import pytest
+
+from scripts.simulation.runtime.run_tabletop_projection_feedback_probe import assert_observations_match
+
+
+def test_independent_sample_comparison_rejects_contact_or_torque_changes():
+    original = {
+        "time_before": 6.0,
+        "controller_raw_torque_nm": [1.0, -2.0],
+        "contacts": [{"geom1": "table_collision", "geom2": "finger", "distance_m": -0.001, "active_constraint": True}],
+    }
+    same = copy.deepcopy(original)
+    assert_observations_match(original, same)
+    same["controller_raw_torque_nm"][0] += 0.01
+    with pytest.raises(AssertionError):
+        assert_observations_match(original, same)
+    same = copy.deepcopy(original)
+    same["contacts"][0]["geom1"] = "another_geom"
+    with pytest.raises(ValueError):
+        assert_observations_match(original, same)
