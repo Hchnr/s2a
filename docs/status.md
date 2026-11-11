@@ -672,3 +672,8 @@ PyArrow/NumPy导入错误与4项已复现数值失败不改容差、不伪装通
 相对旧实测轨迹的误差增大，6条开发轨迹前8点没有新增低开度chunk，其中task1
 seed43的75个完整窗口仍无低开度预测。这不是新物理或任务结果，见
 [影子报告](../reports/wam/training/cached_endpoint_shadow_20261111.md)。
+
+同日三任务6分支实际夹爪短窗已完成并独立重放：校正组在task0相对原WAM参考仅
+3/8端点达位姿门，task1派发0步，task2的2步中1步达标；20个新周期无grasp或任务
+成功。原checker曾在物理前因策略导入隔离失败，独立修复重放通过，原失败保留。
+该候选未获统一控制资格，见[物理反馈报告](../reports/tracking/joint_control/cached_calibration_gripper_feedback_20261111.md)。
