@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[有限释放保持后的连续衔接反馈](bounded_release_bridge_feedback_20261111.md)
+
 近期：[有限释放保持的匹配物理反馈](bounded_release_hold_feedback_20261111.md)
 
 近期：[冲突释放参考的有限保持与衔接](bounded_release_revision_20261111.md)
