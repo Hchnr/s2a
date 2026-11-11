@@ -35,5 +35,6 @@
 | [072 当前电机状态条件逆模型：单次拟合完成，离线资格失败](state_conditioned_gripper_inverse_20261025.md) | `reports/state_conditioned_gripper_inverse_20261025.md` |
 | [保存WAM参考的夹爪执行诊断 — 2026-10-20](wam_gripper_replay_20261020.md) | `reports/wam_gripper_replay_20261020.md` |
 | [保存WAM参考的夹爪执行诊断 — 2026-10-20](wam_wine_gripper_replay_20261020.md) | `reports/wam_wine_gripper_replay_20261020.md` |
+| [即将释放时暂缓额外闭合：历史影子结果](defer_close_release_shadow_20261111.md) | 新增报告 |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。
