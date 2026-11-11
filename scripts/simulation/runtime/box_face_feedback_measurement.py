@@ -147,10 +147,10 @@ def slide_sample_conditions(reference, current, selected_tcp, joint_range):
 class BoxFaceInnerRecorder:
     """Record geometry before integration and contact/torque after the solver."""
 
-    def __init__(self, env, sensor, *, periods=6, base=None):
-        if type(periods) is not int or not 1 <= periods <= 8:
-            raise ValueError("A bounded feedback period count is required")
-        self.env, self.sensor, self.periods = env, sensor, periods
+    def __init__(self, env, sensor, *, first_step=120, periods=6, base=None):
+        if type(first_step) is not int or first_step < 0 or type(periods) is not int or not 1 <= periods <= 8:
+            raise ValueError("A nonnegative start and bounded feedback period count are required")
+        self.env, self.sensor, self.first_step, self.periods = env, sensor, first_step, periods
         self.base = ReplayRecorder(env, periods) if base is None else base
         self.original, self.samples = self.base.original, self.base.samples
         self.context = None
@@ -158,7 +158,7 @@ class BoxFaceInnerRecorder:
     def set_context(self, step, selected_tcp, current):
         if (
             type(step) is not int
-            or step != 120 + len(self.samples) // 25
+            or step != self.first_step + len(self.samples) // 25
             or len(self.samples) % 25
             or len(self.samples) >= 25 * self.periods
         ):
@@ -166,7 +166,7 @@ class BoxFaceInnerRecorder:
         self.context = {"step": step, "selected_tcp": np.asarray(selected_tcp, dtype=float).copy(), "current": current}
 
     def step(self, *args, **kwargs):
-        if self.context is None or self.context["step"] != 120 + len(self.samples) // 25:
+        if self.context is None or self.context["step"] != self.first_step + len(self.samples) // 25:
             raise ValueError("No current decision has been registered")
         before = self.sensor.capture()
         controller, gripper = self.env.robots[0].controller, self.env.robots[0].gripper
