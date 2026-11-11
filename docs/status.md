@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 terminal058 step85首点搜索：两种因果初值各耗尽320模型响应，均无
+首点候选；最近安全尝试约0.010790 m / 0.057714 rad。原首点外界仍不确定，
+有限搜索失败不证明不可达，详见[首点搜索报告](../reports/tracking/joint_control/task2_terminal85_first_search_20261111.md)。
+
 2026-11-11 回退停止首点外界：raw step33在冻结模型首动作box/变化率放宽域的
 联合下界为1.008605，排除原首点双阈值但余量很小；terminal058 step85的最强
 下界为0.887498，尚不能判定。均不证明物理可达性，详见[外界报告](../reports/tracking/joint_control/task2_fallback_stop_pose_bound_20261111.md)。
