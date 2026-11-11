@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.causal-stream-endpoint-cache-replay.v1",
+  "output": "outputs/causal_stream_endpoint_cache_replay_20261111",
+  "diagnostic_audit": "outputs/causal_stream_endpoint_audit_20261111/result.json",
+  "diagnostic_audit_sha256": "3e425606d17ef7023a4c5203a348c1cfa1047ef71a94b1e9a9a98e3db17758fa",
+  "case_index": 8,
+  "seed": 42,
+  "prefix_steps": 80,
+  "replayed_steps": 40,
+  "max_native_steps": 3000,
+  "capture_step": 120,
+  "new_model_initializations": 0,
+  "new_model_requests": 0,
+  "new_denoise_calls": 0,
+  "newly_selected_commands": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 1200,
+  "automatic_retry": false
+}
