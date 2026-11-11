@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.cached-live-stop125-constraint-audit.v1",
+  "output": "outputs/cached_live_stop125_constraint_audit_20261111",
+  "prior_result": "outputs/cached_live_stop125_feasibility_20261111/worker/result.json",
+  "prior_result_sha256": "33ca81bddb311de56a1d46f7d37eef564e217e880c149b996052af0aa0fabdb1",
+  "case_index": 8,
+  "branch": "quality_past",
+  "max_models": 1,
+  "max_forward_queries": 1,
+  "max_optimizer_calls": 1,
+  "max_optimizer_responses": 160,
+  "extra_model_responses": 0,
+  "independent_witness_checks": 0,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 600,
+  "automatic_retry": false
+}
