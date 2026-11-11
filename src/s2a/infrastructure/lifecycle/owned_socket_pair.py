@@ -13,6 +13,14 @@ from s2a.infrastructure.repository_paths import repo_path, repository_root
 _NAMES = ("simulation", "model")
 
 
+class OwnedSocketPairInterrupted(KeyboardInterrupt):
+    """An interrupted owner that has reaped its children and retained receipts."""
+
+    def __init__(self, result):
+        super().__init__("Owned socket-pair supervision was interrupted")
+        self.result = result
+
+
 def run_owned_socket_pair(specs, *, timeout_seconds):
     """Run exactly two explicitly configured children and wait for each one.
 
@@ -58,6 +66,7 @@ def run_owned_socket_pair(specs, *, timeout_seconds):
     endpoints = []
     launch_error = None
     timed_out = False
+    interruption = None
 
     def interrupted(signum, _frame):
         raise KeyboardInterrupt(f"Owner received signal {signum}")
@@ -114,6 +123,8 @@ def run_owned_socket_pair(specs, *, timeout_seconds):
                 timed_out = True
                 break
             time.sleep(min(0.02, max(0.0, deadline - time.monotonic())))
+    except KeyboardInterrupt as error:
+        interruption = error
     finally:
         for endpoint in endpoints:
             endpoint.close()
@@ -148,14 +159,19 @@ def run_owned_socket_pair(specs, *, timeout_seconds):
         }
         for item in workers
     ]
-    return {
+    result = {
         "launch_error": launch_error,
         "timed_out": timed_out,
+        "interrupted": interruption is not None,
         "workers": records,
         "passed": (
             launch_error is None
             and not timed_out
+            and interruption is None
             and len(records) == 2
             and all(item["reaped"] and not item["signal_sent"] and item["returncode"] == 0 for item in records)
         ),
     }
+    if interruption is not None:
+        raise OwnedSocketPairInterrupted(result) from interruption
+    return result

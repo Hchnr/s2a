@@ -2,7 +2,11 @@
 
 import hashlib
 import json
+import os
+import signal
+import subprocess
 import sys
+import time
 
 import pytest
 
@@ -131,3 +135,41 @@ def test_simulation_cannot_inherit_a_gpu_mask(tmp_path):
     workers["simulation"]["env"]["CUDA_VISIBLE_DEVICES"] = "0"
     with pytest.raises(ValueError):
         run_owned_socket_pair(workers, timeout_seconds=5)
+
+
+def test_interrupted_owner_reaps_both_children_and_preserves_lifecycle(tmp_path):
+    command = [sys.executable, "-c", "import time; print('ready', flush=True); time.sleep(30)"]
+    workers = specs(tmp_path, command, command)
+    code = """
+import json, sys
+from s2a.infrastructure.lifecycle.owned_socket_pair import OwnedSocketPairInterrupted, run_owned_socket_pair
+try:
+    run_owned_socket_pair(json.loads(sys.argv[1]), timeout_seconds=25)
+except OwnedSocketPairInterrupted as error:
+    print(json.dumps(error.result), flush=True)
+"""
+    owner = subprocess.Popen(
+        [sys.executable, "-c", code, json.dumps(workers)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        env=dict(os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH=""),
+    )
+    try:
+        deadline = time.monotonic() + 12
+        paths = [tmp_path / "simulation.log", tmp_path / "model.log"]
+        while not all(path.exists() and "ready" in path.read_text() for path in paths):
+            if owner.poll() is not None or time.monotonic() >= deadline:
+                raise AssertionError("Both owned children did not become ready")
+            time.sleep(0.02)
+        os.kill(owner.pid, signal.SIGTERM)
+        stdout, stderr = owner.communicate(timeout=15)
+        assert owner.returncode == 0, stderr
+        result = json.loads(stdout)
+        assert result["interrupted"] and not result["passed"]
+        assert len(result["workers"]) == 2
+        assert all(worker["actual_wait"] and worker["reaped"] and worker["signal_sent"] for worker in result["workers"])
+    finally:
+        if owner.poll() is None:
+            owner.terminate()
+        owner.communicate(timeout=15)

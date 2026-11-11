@@ -204,6 +204,18 @@ class CausalModelAdmission:
             raise
 
     def complete(self, *, request_id, denoise_calls):
+        """Close one live model call after its actual denoise count is measured."""
+        self._complete(request_id=request_id, denoise_calls=denoise_calls)
+
+    def complete_recorded(self, *, request_id, historical_denoise_calls):
+        """Close a saved-response relay; the caller must verify its historical ledger.
+
+        This method does not perform, count or certify any new model denoising.
+        The caller must report historical and newly executed work separately.
+        """
+        self._complete(request_id=request_id, denoise_calls=historical_denoise_calls)
+
+    def _complete(self, *, request_id, denoise_calls):
         try:
             if (
                 self.phase != "pending"
@@ -212,7 +224,7 @@ class CausalModelAdmission:
                 or type(denoise_calls) is not int
                 or denoise_calls != self.denoise_steps
             ):
-                raise ValueError("Actual completion must match the pending request and denoise budget")
+                raise ValueError("Completion must match the pending request and registered denoise count")
             self.phase = "done" if self.admitted_requests == self.max_requests else "ready"
         except Exception:
             self.phase = "failed"

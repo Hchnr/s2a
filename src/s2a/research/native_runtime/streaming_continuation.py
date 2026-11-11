@@ -94,6 +94,7 @@ def run_streaming_continuation(
     tool,
     target_object,
     open_segment,
+    completed_guard=None,
     state_reader=None,
     task_observer=None,
     progress=None,
@@ -102,6 +103,8 @@ def run_streaming_continuation(
 
     ``open_segment`` gets only the current measured pose/opening and snapshot,
     plus the previous segment, and must issue/accept exactly one ledger request.
+    An optional trusted completed-period guard runs only after dispatch and may
+    withhold the next action; it must not be used as a model input.
     It is trusted runtime code, not a model input or independent safety checker.
     The parent runtime must independently admit the total physical budget.
     """
@@ -113,6 +116,7 @@ def run_streaming_continuation(
         or not 1 <= max_windows <= 6
         or max_windows != ledger.max_requests
         or not callable(open_segment)
+        or (completed_guard is not None and not callable(completed_guard))
     ):
         raise ValueError("One fresh ledger and explicit bounded development budget are required")
     state_reader = current_joint_site_state if state_reader is None else state_reader
@@ -242,6 +246,8 @@ def run_streaming_continuation(
                     or state_sha256(period["actual_state"]) != after_period["state_sha256"]
                 ):
                     raise ValueError("The completed endpoint must match the actual current state")
+                if completed_guard is not None and completed_guard(copy.deepcopy(period)) is not True:
+                    raise ValueError("The registered completed-period guard rejected the observed action")
                 feedback = segment.complete(actual_env, command.copy(), offset, copy.deepcopy(period["actual_inner"]))
                 if measured_snapshot(actual_env, after_period["step"]) != after_period:
                     raise ValueError("Feedback commit changed the physical state")

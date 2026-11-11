@@ -2,6 +2,10 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 新流式执行器使用两份已保存 WAM 响应完成 CPU/OSMesa 16 周期物理
+复现及独立 checker；末尾任务谓词连续 9 周期，未达 40 周期稳定门，且没有新模型
+推理。详见[物理复现报告](../reports/tracking/joint_control/causal_stream_recorded_physical_20261111.md)。
+
 2026-11-11 连续执行适配和独立命令重放已在 CPU 假环境验证，64 路相关回归
 114 项通过；真实 WAM、OSMesa 连续执行及留出验收未完成，见[执行报告](../reports/tracking/joint_control/causal_stream_execution_20261111.md)。
 
