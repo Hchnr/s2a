@@ -139,7 +139,16 @@ def response_for(request):
     }
 
 
-def execute(case, *, stop_at=None, change_wait=False, change_select=False, change_feedback=False, bad_response=False):
+def execute(
+    case,
+    *,
+    stop_at=None,
+    change_wait=False,
+    change_select=False,
+    change_feedback=False,
+    bad_response=False,
+    completed_guard=None,
+):
     def open_segment(observation, previous):
         assert set(observation) == {"snapshot", "source_pose", "opening"}
         assert not observation["source_pose"].flags.writeable
@@ -194,6 +203,7 @@ def execute(case, *, stop_at=None, change_wait=False, change_select=False, chang
         tool=np.eye(4),
         target_object="target",
         open_segment=open_segment,
+        completed_guard=completed_guard,
         state_reader=case.state_reader,
         task_observer=case.task_observer,
     )
@@ -282,3 +292,14 @@ def test_mid_period_failure_retains_dispatched_command_and_partial_inner_samples
     assert inflight["step"] == 80 and inflight["command"][0] == 0.01
     assert inflight["inner_attempted"] == inflight["inner_completed"] == len(inflight["actual_inner"]) == 3
     assert case.ledger.phase == "failed"
+
+
+def test_completed_period_guard_stops_after_observed_mismatch_without_hiding_the_action(tmp_path):
+    case = fake_case(tmp_path)
+    with pytest.raises(ValueError, match="completed-period guard"):
+        execute(case, completed_guard=lambda period: period["step"] != 81)
+    partial = case.receipt["streaming_partial"]
+    assert partial["control_steps_attempted"] == partial["control_steps_completed"] == 2
+    assert partial["feedback_periods_committed"] == 1
+    assert partial["segments"][0]["inflight"]["inner_completed"] == 25
+    assert case.sim.inner == 50 and case.ledger.phase == "failed"

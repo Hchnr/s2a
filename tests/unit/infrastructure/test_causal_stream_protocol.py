@@ -213,6 +213,20 @@ def test_service_rejects_duplicated_and_future_requests(registration):
     assert service.phase == "failed"
 
 
+def test_recorded_response_completion_uses_the_historical_sampling_count(registration):
+    config, image = registration
+    request = issue(CausalStreamLedger(**config), image)
+    service = CausalModelAdmission(**config)
+    service.admit(request)
+    service.complete_recorded(request_id=0, historical_denoise_calls=35)
+    assert service.phase == "ready" and service.admitted_requests == 1
+    other = CausalModelAdmission(**config)
+    other.admit(request)
+    with pytest.raises(ValueError):
+        other.complete_recorded(request_id=0, historical_denoise_calls=34)
+    assert other.phase == "failed"
+
+
 def test_service_rejects_unregistered_fields_and_changed_image(registration, tmp_path):
     config, image = registration
     request = issue(CausalStreamLedger(**config), image)
