@@ -1,5 +1,19 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[terminal058 step85的首点优先搜索](task2_terminal85_first_search_20261111.md)
+
+最新：[因果回退停止状态的首点位姿外界](task2_fallback_stop_pose_bound_20261111.md)
+
+最新：[已评估双点搜索中的首点候选](task2_cached_first_pose_20261111.md)
+
+最新：[双点优先、已完成计划后移的因果反馈](task2_causal_shift_fallback_20261111.md)
+
+最新：[同一停止状态的双种子双点搜索](task2_shifted_seed_search_20261111.md)
+
+最新：[停止状态后移计划的双点资格](task2_shifted_seed_qualification_20261111.md)
+
+最新：[已完成双点计划的状态与模型偏差](task2_guarded_model_drift_20261111.md)
+
 最新：[数值余量双点搜索的实际反馈](task2_guarded_two_step_feedback_20261111.md)
 
 最新：[双点可行性搜索的数值尺度对照](guarded_two_step_search_20261111.md)
