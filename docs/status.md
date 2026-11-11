@@ -736,5 +736,8 @@ WAM 参考的位置 RMSE 为 0.002405 m，相对正确参考为 0.013118 m；前
 [当前观测报告](../reports/tracking/references/wam_feedback_current_observation_20261111.md)。
 随后在同 step80 图像上重新生成并逐元素匹配已实际执行的参考，才以 WAM 反馈
 到达状态的 step88 图像生成第二参考；完整模型及独立审计已通过，首次执行器
-上下文失败保留。第二参考尚未驱动机器人，见
+上下文失败保留。见
 [重观测报告](../reports/tracking/references/wam_feedback_reobserve_20261111.md)。
+随后已执行并独立重放两段因果绑定参考的 16 周期反馈，两个窗口均 8/8 满足相对
+WAM 位姿门，末尾连续 9 个端点满足任务谓词，尚未达到 40 端点稳定门；前 80 周期
+仍为正确参考历史。见[两窗口报告](../reports/tracking/joint_control/causal_wam_two_window_feedback_20261111.md)。
