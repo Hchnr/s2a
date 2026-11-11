@@ -402,6 +402,8 @@ def main(args):
             xfail_count=sum(row.get("wasxfail") is not None and row["outcome"] == "skipped" for row in terminals),
             xpass_count=sum(row.get("wasxfail") is not None and row["outcome"] == "passed" for row in terminals),
             all_tests_passed=not args.collect_only
+            and collection["returncode"] == 0
+            and bool(nodes)
             and len(terminals) == len(nodes)
             and all(row["outcome"] == "passed" for row in terminals)
             and not collection["collection_errors"],
