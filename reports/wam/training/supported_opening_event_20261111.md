@@ -42,3 +42,39 @@ WAM、物理、GPU或fresh。下一阶段才按登记拟合一次并对48条既�
 
 离线开度门不证明抓取、位置/姿态跟踪或控制安全；统一候选仍须正确参考、实际
 物理、完整WAM开发和最终留出，18/12/24及稳定成功门槛均不变。
+
+## 一次最终拟合与保存响应的离线评分
+
+按固定阈值0.7，在全部30条训练demo上拟合一次；独立计算的最大梯度
+`8.37e-8`、有限差分误差`1.57e-11`。48条此前已查看的validation raw响应
+评分**未通过**原事件门：H8/H16开度MAE分别变差8.36%/6.76%，超过原5%保护；
+仅task1有H8/H16新增真实闭合，未满足至少两个任务受益的条件。
+
+| 前缀 | opening MAE raw → 候选 | 新增真实闭合 / 误闭合 | 修改开度端点 |
+| --- | --- | --- | ---: |
+| H8 | 0.063151 → 0.068429 | 8 / 1 | 9 |
+| H16 | 0.046795 → 0.049957 | 10 / 1 | 11 |
+| H40 | 0.097898 → 0.099779 | 21 / 1 | 22 |
+
+H8的8个新增真实闭合均来自task1的同一validation demo、seed42；task0有1个
+新增误闭合，task2无修改。低于0.35只表示二值事件，对连续opening误差仍可能
+有害；这些相关端点不是8个独立任务。候选最大opening修改0.300，位置/姿态
+参考未修改。这是对已保存响应的离线评分，不是实际闭环、抓取或新WAM结果，
+也未执行原054状态门或授予物理开发资格。
+
+拟合和评分子进程均由监督器实际wait/reap、exit0、未发信号；评分内部独立重算
+特征的最大差`4.45e-16`，支持mask与分组事件指标独立重算差0。监督器随后错误
+读取`validate.json`而非实际的`validation.json`，自身退出1；失败未被改写或重跑。
+将另行独立核查已保存结果、输入和子进程收据，不改变候选或阈值。
+
+| 仓库内证据 | SHA256 |
+| --- | --- |
+| `outputs/supported_opening_event_final_20261111/candidate.json` | `0f629cfb1a7a4aaaf9c611bc5b172257fd5cdeeb6039745ee04a33c238a49ed2` |
+| `outputs/supported_opening_event_final_20261111/fit.json` | `21b333902b121d6c92ce3fe25e09afa850e9680654f89aab4c48446f28329d2e` |
+| `outputs/supported_opening_event_final_20261111/validation.json` | `da7a495e3a385ac6e692efc16a559fda71afa2b687f4014d40675abeb9bdb18d` |
+| `outputs/supported_opening_event_final_supervisor_20261111/fit_workers.json` | `551171ff77993a60d5dbcc03773ff6743683cf25d77d467a587d860c26a428aa` |
+| `outputs/supported_opening_event_final_supervisor_20261111/validate_workers.json` | `b9d287d72f98067ebc34f1b126443d59676126b062de90b2ec163f9f502f45b0` |
+| `outputs/qa/supported_opening_event_validation_20261111/result.json` | `d5f09335454135a3d325f056fc1b6a55b6390c3c0736a92118d8499b3e895a71` |
+
+本阶段32进程CPU专项24项通过、0跳过，全仓Ruff和格式检查通过；没有新WAM、
+物理、GPU或fresh。上述原监督器失败仍待独立收据和评分复核。
