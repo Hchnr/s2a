@@ -667,3 +667,8 @@ PyArrow/NumPy导入错误与4项已复现数值失败不改容差、不伪装通
 联合分数改善11.31%/13.81%，位置小幅退化仍在原保护内。独立数值重算通过；没有
 新WAM、物理、GPU或fresh，尚未证明机器人跟踪、抓取或任务成功。见
 [校准报告](../reports/wam/training/cached_endpoint_calibration_20261111.md)。
+
+同日对18条正确参考和6条raw开发轨迹完成固定历史影子检查：校正使正确参考
+相对旧实测轨迹的误差增大，6条开发轨迹前8点没有新增低开度chunk，其中task1
+seed43的75个完整窗口仍无低开度预测。这不是新物理或任务结果，见
+[影子报告](../reports/wam/training/cached_endpoint_shadow_20261111.md)。
