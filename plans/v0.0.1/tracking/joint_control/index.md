@@ -1,6 +1,6 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
-近期：[三任务夹爪物理反馈](cached_calibration_gripper_feedback_20261111.md) · [原质量门外的模型安全有界跟踪回退](model_safe_tracking_fallback_20261111.md)
+近期：[三任务夹爪反馈独立重放修复](cached_calibration_replay_repair_20261111.md) · [三任务夹爪物理反馈](cached_calibration_gripper_feedback_20261111.md) · [原质量门外的模型安全有界跟踪回退](model_safe_tracking_fallback_20261111.md)
 
 近期：[有限释放保持后的连续衔接反馈](bounded_release_bridge_feedback_20261111.md)
 

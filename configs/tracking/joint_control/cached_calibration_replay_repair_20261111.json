@@ -1,0 +1,17 @@
+{
+  "schema": "s2a.cached-calibration-replay-repair.v1",
+  "producer": "outputs/cached_calibration_gripper_feedback_20261111/producer/result.json",
+  "producer_sha256": "da29aa0fade42b572c427cedad831f2dcc8a3f3de54da900af9b983fa874f55b",
+  "failed_checker": "outputs/cached_calibration_gripper_feedback_20261111/checker/result.json",
+  "failed_checker_sha256": "2d62c48d37634dc659b0ad71ba655851c6484c0c72e49e8a11a5bc5cd869fcf3",
+  "output": "outputs/cached_calibration_gripper_replay_20261111",
+  "seed": 43,
+  "control_steps": 148,
+  "native_steps": 3700,
+  "new_commands": 0,
+  "workers": 6,
+  "worker_timeout_seconds": 1800,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
