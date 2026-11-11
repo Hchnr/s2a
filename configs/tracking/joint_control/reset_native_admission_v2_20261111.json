@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.reset-native-admission.v2",
+  "case_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  "task_ids": [8, 9, 6],
+  "sampling_seeds": [42, 43],
+  "variants": ["raw", "terminal058"],
+  "max_workers": 12,
+  "max_models": 36,
+  "max_contexts": 36,
+  "max_control_steps": 0,
+  "max_native_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 1200,
+  "automatic_retry": false,
+  "canvas_torch_threads": 2,
+  "canvas_thread_audit_sha256": "e433f00f1b22970f6720116fdf736e691de98073efb69907c0e0c72759581268",
+  "original_failure_sha256": "96e3732026a52470348b51a4aeabe001e01adc9261a8ab728f18564c945310a0"
+}
