@@ -1,0 +1,23 @@
+{
+  "schema": "s2a.reference-table-tolerance.v1",
+  "output": "outputs/reference_table_tolerance_20261111",
+  "geometry_audit": "outputs/reference_table_geometry_audit_20261111/result.json",
+  "geometry_audit_sha256": "3fa3c99caad2e89f8287ec77de41bb2e507f5b2023da4a635122f5d53f0f7f74",
+  "geometry_worker": "outputs/reference_table_geometry_20261111/worker/result.json",
+  "geometry_worker_sha256": "9990c8b29679d0ecbabd9dfeb8cecbe6a8f5e6e3303d1c1f41a80b6aad8fddc9",
+  "case_index": 8,
+  "seed": 42,
+  "steps": [120, 121, 122, 123, 124, 125, 126],
+  "table_geom": "table_collision",
+  "finger_geom": "gripper0_finger2_collision",
+  "position_tolerance_m": 0.01,
+  "rotation_tolerance_rad": 0.05,
+  "certificate_margin_m": 1e-09,
+  "max_models": 1,
+  "max_forward_queries": 14,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 600,
+  "automatic_retry": false
+}
