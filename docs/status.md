@@ -2,6 +2,22 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
+2026-11-11 用户已允许并鼓励恢复GPU，并确认当前容器可见的四张卡均可用；
+当前UUID和首个推理检验登记见[计划](../plans/v0.0.1/tracking/references/gpu_resume_repro_20261111.md)。
+H100 上一次 35 步 WAM 推理的两套 action 数组与历史开发样本逐元素一致，进程
+退出后显存已释放；详情见[报告](../reports/tracking/references/gpu_resume_repro_20261111.md)。
+已停止的旧任务和部分产物保留，不自动重跑。
+记录通知时曾改动迁移清单固定的根文件，已恢复原字节；首次影子CPU准入在测试
+收集前失败并保留收据，详见[修复记录](../plans/v0.0.1/tracking/gripper/defer_close_normal_shadow_qa_repair_20261111.md)。
+
+原夹爪控制器18条正确参考的4907周期影子只在correct_08 step85触发；该case
+两版原基线的动作、状态和夹爪决策一致，实际候选完整反馈仍未验证。机械臂合同
+与task1质量反馈不同，见[影子报告](../reports/tracking/gripper/defer_close_normal_correct_shadow_20261111.md)。
+该case原夹爪前80周期的完整因果历史已逐项重建，最大差为0，见[记录](../plans/v0.0.1/tracking/gripper/ordered_correct_history_rebuild_20261111.md)。
+同一时刻机械臂两套响应历史与上一命令也已重建，最大差为0，见[记录](../plans/v0.0.1/tracking/joint_control/ordered_correct_arm_rebuild_20261111.md)。
+统一质量机械臂与暂缓夹爪已在该正确参考上连续执行并独立重放16周期，位姿
+16/16达门，但夹爪误差仍大，任务仅末周期成功；见[报告](../reports/tracking/joint_control/ordered_correct_stream_feedback_20261111.md)。
+
 2026-11-11 模型安全有界回退：三个开发停止点由1、1、5周期延长至3、4、6周期，
 但新增6周期均未达原位姿门、无抓取或任务成功；21条动作及525个内环样本独立
 重放一致。详见[回退报告](../reports/tracking/joint_control/model_safe_tracking_fallback_20261111.md)。
@@ -693,3 +709,18 @@ seed43的75个完整窗口仍无低开度预测。这不是新物理或任务结
 12条开发轨迹7200周期触发10次，六条raw无触发；已研究task1短窗另触发1次。
 正确参考触发处原基线已有物体grasp，必须先做受载物理对照；影子不能证明候选
 抓取或跟踪，见[暂缓闭合影子报告](../reports/tracking/gripper/defer_close_release_shadow_20261111.md)。
+
+correct_08受载点成对CPU物理对照及独立重放已完成：step85唯一夹爪命令由+1改0，
+后三端点平均绝对opening误差0.006419→0.005026，两组8端点均有grasp、无任务
+成功；最大TCP位置/旋转误差小幅增加。反事实后两条命令固定为历史动作，不是
+在线反馈或18条正控资格，见[受载点报告](../reports/tracking/gripper/defer_close_correct_feedback_20261111.md)。
+
+已研究task1释放短窗的实际反馈及独立重放已完成：原WAM opening RMSE由0.280611
+降至0.204035，最后误差仍为−0.296015，两组均无目标grasp或任务成功。该窗口是
+假设来源而非独立新初态；见[反馈报告](../reports/tracking/gripper/defer_close_task1_feedback_20261111.md)。
+
+同日 correct_08 两个连续参考窗口的统一反馈及独立物理重放已完成：16/16 个端点
+达到所登记位置和旋转门，任务成功仅最后 1 步，不构成稳定成功；见
+[连续反馈报告](../reports/tracking/joint_control/ordered_correct_stream_feedback_20261111.md)。
+独立重放后已捕获 step80/88 的当前双相机图像，保留首次路径错误和重放预算；
+后续 WAM 两图诊断尚未完成，见[观测报告](../reports/tracking/references/ordered_feedback_wam_capture_20261111.md)。

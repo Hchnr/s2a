@@ -44,5 +44,9 @@
 | [明确张开参考才释放：独立物理对照](gripper_release_floor_20261028.md) | `plans/v0.0.1/gripper_release_floor_20261028.md` |
 | [即将释放时暂缓额外闭合：历史影子检查](defer_close_release_shadow_20261111.md) | 新登记 |
 | [正确参考受载点的暂缓闭合物理对照](defer_close_correct_feedback_20261111.md) | 新登记 |
+| [正确参考前缀的逐内步守护补充](defer_close_prefix_guard_20261111.md) | 运行前补充 |
+| [已研究task1释放片段的暂缓闭合反馈](defer_close_task1_feedback_20261111.md) | 新登记 |
+| [原夹爪控制器正确参考矩阵的暂缓闭合影子核查](defer_close_normal_correct_shadow_20261111.md) | 新登记 |
+| [原夹爪影子准入的根文件指纹修复](defer_close_normal_shadow_qa_repair_20261111.md) | 失败记录与修复 |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。

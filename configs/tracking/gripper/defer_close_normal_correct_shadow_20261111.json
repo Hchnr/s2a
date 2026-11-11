@@ -1,0 +1,18 @@
+{
+  "schema": "s2a.defer-close-normal-correct-shadow.v1",
+  "output": "outputs/defer_close_normal_correct_shadow_20261111",
+  "ordered_qualification": "outputs/tracking_ordered_matrix_closed_20261027/verified.json",
+  "ordered_qualification_sha256": "d547e318d22cf494e2ea013a16d3f96a20847b4544834e85b989022b1407b1c6",
+  "prepared": "outputs/tracking_correct_reference_20261027/prepared.json",
+  "prepared_sha256": "583df68d367da8561e1b12b74011b44e54979f9a745af73dfe10f4b4ac2887d7",
+  "prior_release_floor_shadow": "outputs/defer_close_release_shadow_20261111/result.json",
+  "prior_release_floor_shadow_sha256": "bd905defd15d378242efdce2aa736611dfa79c26d63d357afd63076769b7d3f1",
+  "correct_cases": 18,
+  "correct_steps": 4907,
+  "max_workers": 18,
+  "worker_timeout_seconds": 600,
+  "world_model_calls": 0,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
