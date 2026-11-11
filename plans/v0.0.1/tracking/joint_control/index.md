@@ -1,5 +1,17 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[共享预算双点优先及已完成计划首点回退](task2_shared_shift_feedback_20261111.md)
+
+近期：[组合反馈停止处的已完成计划资格](task2_shared_shift_qualification_20261111.md)
+
+近期：[共享预算余量优先的实际反馈](task2_margin_guarded_feedback_20261111.md)
+
+近期：[共享预算的余量优先与原双点回退](margin_guarded_fallback_20261111.md)
+
+近期：[双点模型余量的实际反馈对照](task2_margin_two_step_feedback_20261111.md)
+
+近期：[双点模型余量的预停止对照](margin_two_step_search_20261111.md)
+
 近期：[terminal058 step85的首点优先搜索](task2_terminal85_first_search_20261111.md)
 
 近期：[因果回退停止状态的首点位姿外界](task2_fallback_stop_pose_bound_20261111.md)
