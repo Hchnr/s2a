@@ -1,0 +1,48 @@
+{
+  "schema": "s2a.reset-multitask-live-48.v1",
+  "output": "outputs/reset_multitask_live_48_20261111",
+  "cases": [
+    {
+      "case_index": 0,
+      "case_id": "task0_init0_s42_raw",
+      "task": "put the bowl on the plate",
+      "target": "akita_black_bowl_1",
+      "gpu_uuid": "GPU-45f7c2db-5c3a-91f8-a299-e21c0681a71b"
+    },
+    {
+      "case_index": 4,
+      "case_id": "task1_init0_s42_raw",
+      "task": "put the wine bottle on the rack",
+      "target": "wine_bottle_1",
+      "gpu_uuid": "GPU-c0b598ba-0a6e-73af-bbcc-97bc89379bdf"
+    },
+    {
+      "case_index": 8,
+      "case_id": "task2_init0_s42_raw",
+      "task": "put the cream cheese in the bowl",
+      "target": "cream_cheese_1",
+      "gpu_uuid": "GPU-5f5f2b7d-a87b-28e2-0bcc-ee85f2889db4"
+    }
+  ],
+  "max_parallel_cases": 3,
+  "seed": 42,
+  "first_window_steps": 8,
+  "live_window_steps": 8,
+  "max_model_initializations_per_case": 1,
+  "max_model_requests_per_case": 5,
+  "denoise_steps": 35,
+  "max_control_steps_per_case_per_phase": 48,
+  "max_native_steps_per_case_per_phase": 1200,
+  "max_models_per_case_per_phase": 3,
+  "max_contexts_per_case_per_phase": 3,
+  "max_quality_responses_per_period": 320,
+  "max_baseline_responses_per_period": 480,
+  "max_gripper_sequences_per_period": 6561,
+  "max_audit_endpoint_queries_per_case": 9600,
+  "max_audit_transition_steps_per_case": 124800,
+  "model_sha256": "48138bb8c95ce8cc1ca0b70f925e57c8f16bfb21be0a243495b391a06cf5b8ec",
+  "worker_timeout_seconds": 3600,
+  "fresh_cases": 0,
+  "fits": 0,
+  "automatic_retry": false
+}
