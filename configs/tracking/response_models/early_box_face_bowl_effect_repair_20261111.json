@@ -1,0 +1,17 @@
+{
+  "schema": "s2a.early-box-face-bowl-effect-repair.v1",
+  "output": "outputs/early_box_face_bowl_effect_repair_20261111",
+  "failed_result": "outputs/early_box_face_bowl_effect_20261111/result.json",
+  "failed_result_sha256": "5df15e2b5cc9be5dd5772f736f201748d7039dc4f8a9378f839619cdf6d61997",
+  "quaternion_atol": 1e-12,
+  "prior_models": 1,
+  "prior_forward_queries": 9,
+  "repair_max_models": 1,
+  "repair_max_forward_queries": 13,
+  "total_max_models": 2,
+  "total_max_forward_queries": 22,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

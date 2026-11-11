@@ -1,0 +1,411 @@
+"""Audit saved bowl and cheese motion around a short contact episode."""
+
+import argparse
+import hashlib
+from pathlib import Path
+
+import numpy as np
+from scipy.spatial.transform import Rotation
+
+from s2a.geometry import transform
+from s2a.infrastructure.native_environment import restore_cv2_environment
+from s2a.infrastructure.publication import publish_result as publish
+from s2a.research.joint_control.tracking.task_object_motion import task_object_motion
+from s2a.research.wam.training.native.native_training import state_sha256
+from scripts.maintenance.run_cpu_tests import snapshot
+from scripts.simulation.runtime import prepare_early_box_face_feedback as previous
+from scripts.simulation.runtime import replay_multicase_development_prefix as prefix
+from scripts.verification.response_models import audit_early_box_face_feedback as physical_audit
+
+ROOT = prefix.REPO
+CONFIG = ROOT / "configs/tracking/response_models/early_box_face_bowl_effect_20261111.json"
+CONFIG_SHA = "b096e2a32485acacd80d85aaf1bda35bfd8c56e9fc3f92f609c782882582c841"
+PLAN = ROOT / "plans/v0.0.1/tracking/response_models/early_box_face_bowl_effect_20261111.md"
+OUTPUT = ROOT / "outputs/early_box_face_bowl_effect_20261111"
+DRY = ROOT / "outputs/early_box_face_bowl_effect_dry_20261111/result.json"
+QA = ROOT / "outputs/qa/early_box_face_bowl_effect_20261111/result.json"
+
+
+def source_refs():
+    return [
+        prefix.reference(path)
+        for path in (
+            CONFIG,
+            PLAN,
+            Path(__file__).resolve(),
+            ROOT / "src/s2a/research/joint_control/tracking/task_object_motion.py",
+            ROOT / "scripts/verification/response_models/audit_early_box_face_feedback.py",
+            ROOT / "tests/research/joint_control/tracking/test_task_object_motion.py",
+            ROOT / "tests/research/response_models/test_early_box_face_bowl_effect.py",
+        )
+    ]
+
+
+def validate_config(config):
+    prefix.require(
+        config["schema"] == "s2a.early-box-face-bowl-effect.v1"
+        and config["output"] == str(OUTPUT.relative_to(ROOT))
+        and (config["case_index"], config["seed"], config["first_step"], config["matched_periods"]) == (8, 42, 118, 6)
+        and config["modes"] == ["original", "box_face"]
+        and (config["bowl_joint"], config["bowl_body"], config["cheese_joint"], config["cheese_body"])
+        == ("akita_black_bowl_1_joint0", "akita_black_bowl_1_main", "cream_cheese_1_joint0", "cream_cheese_1_main")
+        and (config["finger_geom"], config["bowl_geom"], config["native_dt_s"])
+        == ("gripper0_finger1_collision", "akita_black_bowl_1_g34", 0.002)
+        and (config["max_native_models"], config["max_forward_queries"]) == (1, 13)
+        and config["physics_steps"] == config["world_model_calls"] == config["fresh_cases"] == 0
+        and config["automatic_retry"] is False,
+        "The exact audited states, object identities and static budget are required",
+    )
+
+
+def load_inputs():
+    base = previous.load_inputs()
+    consumed = dict(base["early_box_face_feedback"]["source_sha256"])
+    config_ref = {"path": str(CONFIG), "sha256": CONFIG_SHA}
+    config = prefix.read(config_ref, consumed)
+    validate_config(config)
+    refs = {
+        key: {"path": str(ROOT / config[key]), "sha256": config[key + "_sha256"]}
+        for key in ("physical_owner", "physical_audit")
+    }
+    owner, audit = (prefix.read(refs[key], consumed) for key in ("physical_owner", "physical_audit"))
+    prefix.require(
+        owner["complete"] is owner["passed"] is owner["sources_unchanged"] is True
+        and audit["complete"] is audit["passed"] is audit["common_start_and_reference"] is True
+        and owner["control_qualified"] is audit["control_qualified"] is False
+        and audit["owner_ref"] == refs["physical_owner"]
+        and owner["matched_periods"] == config["matched_periods"],
+        "The closed same-reference physical run and independent audit are required",
+    )
+    producers, checkers = {}, {}
+    for mode in config["modes"]:
+        producers[mode] = prefix.read(owner["producer_refs"][mode], consumed)
+        checkers[mode] = prefix.read(owner["checker_refs"][mode], consumed)
+        physical_audit.audit_replay(producers[mode], checkers[mode])
+    start = np.asarray(base["reference_table_geometry"]["states"][38], dtype=float)
+    prefix.require(state_sha256(start) == config["branch_state_sha256"], "The exact shared step118 state is required")
+    for mode in config["modes"]:
+        c = producers[mode]["runtime"]["continuation"]
+        prefix.require(
+            c["branch_start"]["state_sha256"] == config["branch_state_sha256"]
+            and len(c["probe"]["periods"]) >= 6
+            and len(c["inner_samples"]) >= 150,
+            "All matched states and samples are required",
+        )
+    physical_audit.compare_common_reference(*(producers[mode]["runtime"]["continuation"] for mode in config["modes"]))
+    old = base["old"]["old"]["base"]["previous"]
+    xml_sha = hashlib.sha256(old["record_xml"].encode()).hexdigest()
+    prefix.require(
+        all(producers[mode]["runtime"]["model_records"][-1]["xml_sha256"] == xml_sha for mode in config["modes"]),
+        "The original mapped model must match both runs",
+    )
+    return {
+        "config": config,
+        "config_ref": config_ref,
+        "refs": refs,
+        "base": base,
+        "producers": producers,
+        "checkers": checkers,
+        "initial_state": start,
+        "source_sha256": consumed,
+    }
+
+
+def input_receipt(inputs):
+    return {
+        "config_ref": inputs["config_ref"],
+        "refs": inputs["refs"],
+        "prior": previous.input_receipt(inputs["base"]),
+        "source_sha256": inputs["source_sha256"],
+    }
+
+
+def normal_force_summary(samples, pair):
+    """Summarize recorded normal-force components; never count points as samples."""
+    if len(pair) != 2:
+        raise ValueError("Two distinct contact geometries are required")
+    active_sums, single = [], []
+    for sample in samples:
+        normals = []
+        for contact in sample["contacts"]:
+            if contact["active_constraint"] and {contact["geom1"], contact["geom2"]} == pair:
+                wrench = np.asarray(contact["wrench_contact_frame"], dtype=float)
+                if wrench.shape != (6,) or not np.isfinite(wrench).all() or wrench[0] < 0:
+                    raise ValueError("Finite nonnegative recorded normal components are required")
+                normals.append(float(wrench[0]))
+        if normals:
+            active_sums.append(sum(normals))
+            single.extend(normals)
+    return {
+        "active_inner_samples": len(active_sums),
+        "active_contact_records": len(single),
+        "maximum_single_contact_normal_n": max(single, default=None),
+        "maximum_sum_normal_n_per_sample": max(active_sums, default=None),
+        "mean_sum_normal_n_per_active_sample": float(np.mean(active_sums)) if active_sums else None,
+        "scope": "recorded simulated contact-frame normal components; not net force or a real-robot measurement",
+    }
+
+
+def check_forward_qpos(model, before, after, *, free_type, ball_type, atol=1e-12):
+    """Permit only bounded, orientation-preserving quaternion normalization."""
+    before, after = np.asarray(before, dtype=float), np.asarray(after, dtype=float)
+    if (
+        before.shape != (model.nq,)
+        or after.shape != before.shape
+        or not np.isfinite(before).all()
+        or not np.isfinite(after).all()
+        or atol != 1e-12
+    ):
+        raise ValueError("Finite native qpos and the registered quaternion tolerance are required")
+    quaternion_mask = np.zeros(model.nq, dtype=bool)
+    changed = 0
+    for joint in range(model.njnt):
+        kind, address = int(model.jnt_type[joint]), int(model.jnt_qposadr[joint])
+        if kind not in (free_type, ball_type):
+            continue
+        start = address + 3 if kind == free_type else address
+        if start < 0 or start + 4 > model.nq or np.any(quaternion_mask[start : start + 4]):
+            raise ValueError("Native quaternion qpos addresses must be distinct and in range")
+        quaternion_mask[start : start + 4] = True
+        original, actual = before[start : start + 4], after[start : start + 4]
+        length = float(np.linalg.norm(original))
+        if length == 0:
+            raise ValueError("A saved quaternion must have nonzero norm")
+        np.testing.assert_allclose(actual, original / length, atol=atol, rtol=0)
+        original_rotation = Rotation.from_quat(original[[1, 2, 3, 0]]).as_matrix()
+        actual_rotation = Rotation.from_quat(actual[[1, 2, 3, 0]]).as_matrix()
+        np.testing.assert_allclose(original_rotation, actual_rotation, atol=atol, rtol=0)
+        changed += int(not np.array_equal(original, actual))
+    np.testing.assert_array_equal(before[~quaternion_mask], after[~quaternion_mask])
+    return {"changed_quaternions": changed, "maximum_qpos_change": float(np.max(np.abs(after - before), initial=0.0))}
+
+
+def dry_run():
+    inputs = load_inputs()
+    print(
+        publish(
+            DRY,
+            dict(
+                complete=True,
+                passed=True,
+                inputs=input_receipt(inputs),
+                source_refs=source_refs(),
+                native_models=0,
+                forward_queries=0,
+                physics_steps=0,
+                world_model_calls=0,
+                fresh_cases=0,
+                automatic_retry=False,
+            ),
+        ),
+        flush=True,
+    )
+
+
+def analyze(inputs, stats):
+    old = inputs["base"]["old"]["old"]["base"]["previous"]
+    cv2 = old["cv2_admission"]
+    restore_cv2_environment(cv2["cv2_probe_ref"], cv2["cv2_runtime_source_refs"])
+    import mujoco
+
+    originals = {name: getattr(mujoco, name) for name in ("mj_step", "mj_step1", "mj_step2", "mj_forward")}
+
+    def forbidden(*_args, **_kwargs):
+        stats["physics_steps_attempted"] += 1
+        raise RuntimeError("Saved object-state analysis cannot integrate physics")
+
+    def forward(*args, **kwargs):
+        stats["forward_queries_attempted"] += 1
+        prefix.require(stats["forward_queries_attempted"] <= 13, "The registered forward budget is exhausted")
+        value = originals["mj_forward"](*args, **kwargs)
+        stats["forward_queries_completed"] += 1
+        return value
+
+    try:
+        for name in ("mj_step", "mj_step1", "mj_step2"):
+            setattr(mujoco, name, forbidden)
+        mujoco.mj_forward = forward
+        stats["models_attempted"] += 1
+        model = mujoco.MjModel.from_xml_string(old["record_xml"])
+        stats["models_completed"] += 1
+        data, config = mujoco.MjData(model), inputs["config"]
+        objects = {}
+        for name in ("bowl", "cheese"):
+            joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, config[name + "_joint"])
+            body = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, config[name + "_body"])
+            prefix.require(
+                min(joint, body) >= 0
+                and model.jnt_type[joint] == mujoco.mjtJoint.mjJNT_FREE
+                and int(model.jnt_bodyid[joint]) == body
+                and int(model.body_parentid[body]) == 0
+                and int(model.body_jntnum[body]) == 1
+                and np.array_equal(model.jnt_pos[joint], np.zeros(3)),
+                "Each named task object must have one free joint directly under world",
+            )
+            objects[name] = {
+                "joint_id": int(joint),
+                "body_id": int(body),
+                "qpos_address": int(model.jnt_qposadr[joint]),
+            }
+
+        normalization_checks = []
+
+        def read_state(state):
+            state = np.asarray(state, dtype=float)
+            prefix.require(
+                state.shape == (1 + model.nq + model.nv + model.na,) and np.isfinite(state).all(),
+                "A full finite saved native state is required",
+            )
+            data.time = state[0]
+            data.qpos[:] = state[1 : 1 + model.nq]
+            data.qvel[:] = state[1 + model.nq : 1 + model.nq + model.nv]
+            if model.na:
+                data.act[:] = state[-model.na :]
+            before_q, before_v, before_time = data.qpos.copy(), data.qvel.copy(), float(data.time)
+            mujoco.mj_forward(model, data)
+            normalization_checks.append(
+                check_forward_qpos(
+                    model,
+                    before_q,
+                    data.qpos,
+                    free_type=int(mujoco.mjtJoint.mjJNT_FREE),
+                    ball_type=int(mujoco.mjtJoint.mjJNT_BALL),
+                )
+            )
+            np.testing.assert_array_equal(data.qvel, before_v)
+            prefix.require(float(data.time) == before_time, "A static forward must not advance time")
+            poses = {}
+            for name, item in objects.items():
+                body, address = item["body_id"], item["qpos_address"]
+                pose = transform(data.xpos[body].copy(), data.xmat[body].reshape(3, 3).copy())
+                np.testing.assert_allclose(pose[:3, 3], data.qpos[address : address + 3], atol=1e-10, rtol=0)
+                quaternion = data.qpos[address + 3 : address + 7]
+                np.testing.assert_allclose(
+                    pose[:3, :3], Rotation.from_quat(quaternion[[1, 2, 3, 0]]).as_matrix(), atol=1e-10, rtol=0
+                )
+                poses[name] = pose
+            return poses
+
+        start = read_state(inputs["initial_state"])
+        rows, by_mode = {}, {}
+        for mode in config["modes"]:
+            continuation = inputs["producers"][mode]["runtime"]["continuation"]
+            periods = continuation["probe"]["periods"][: config["matched_periods"]]
+            rows[mode], by_mode[mode] = [], []
+            for index, period in enumerate(periods):
+                prefix.require(period["step"] == config["first_step"] + index, "Matched periods must be consecutive")
+                state = np.asarray(period["actual_state"], dtype=float)
+                prefix.require(
+                    state_sha256(state) == period["endpoint_receipt"]["sim_state_sha256"],
+                    "Each saved endpoint SHA must match",
+                )
+                poses = read_state(state)
+                by_mode[mode].append(poses)
+                rows[mode].append(
+                    {
+                        "step": period["step"] + 1,
+                        "state_sha256": state_sha256(state),
+                        "bowl_pose": poses["bowl"],
+                        "cheese_pose": poses["cheese"],
+                        "motion_from_start": task_object_motion(
+                            start["bowl"], start["cheese"], poses["bowl"], poses["cheese"]
+                        ),
+                        "task_success": period["task_success"],
+                        "target_grasp": period["target_grasp"],
+                    }
+                )
+        comparisons = [
+            task_object_motion(a["bowl"], a["cheese"], b["bowl"], b["cheese"])
+            for a, b in zip(by_mode["original"], by_mode["box_face"], strict=True)
+        ]
+        pair = {config["finger_geom"], config["bowl_geom"]}
+        forces = {
+            mode: normal_force_summary(
+                inputs["producers"][mode]["runtime"]["continuation"]["inner_samples"][:150], pair
+            )
+            for mode in config["modes"]
+        }
+        return {
+            "object_bindings": objects,
+            "initial_poses": start,
+            "rows": rows,
+            "same_endpoint_branch_differences": comparisons,
+            "finger_bowl_contact_forces": forces,
+            "quaternion_normalization_checks": normalization_checks,
+        }
+    finally:
+        for name, original in originals.items():
+            setattr(mujoco, name, original)
+
+
+def execute():
+    inputs = load_inputs()
+    before = snapshot(ROOT)["sources"]
+    qa, dry = prefix.read(prefix.reference(QA)), prefix.read(prefix.reference(DRY))
+    prefix.require(
+        qa["complete"] is qa["passed"] is qa["all_tests_passed"] is qa["source_unchanged"] is True
+        and qa["actual_wait"] is qa["reaped"] is True
+        and qa["signal_sent"] is False
+        and qa["configured_parallelism"] == 32
+        and qa["skipped_count"] == qa["xfail_count"] == qa["xpass_count"] == 0
+        and not qa["collection"]["collection_errors"]
+        and prefix.read(qa["source_before_ref"])["sources"] == before
+        and dry["complete"] is dry["passed"] is True
+        and dry["inputs"] == input_receipt(inputs)
+        and dry["source_refs"] == source_refs()
+        and dry["native_models"] == dry["forward_queries"] == dry["physics_steps"] == 0,
+        "Source-matched 32-worker QA and zero-native dry are required",
+    )
+    OUTPUT.mkdir(exist_ok=False)
+    stats = dict(
+        models_attempted=0,
+        models_completed=0,
+        forward_queries_attempted=0,
+        forward_queries_completed=0,
+        physics_steps_attempted=0,
+    )
+    result = dict(
+        complete=False,
+        passed=False,
+        control_qualified=False,
+        automatic_retry=False,
+        world_model_calls=0,
+        fresh_cases=0,
+        inputs=input_receipt(inputs),
+        source_refs=source_refs(),
+        qa_ref=prefix.reference(QA),
+        dry_ref=prefix.reference(DRY),
+        stats=stats,
+    )
+    try:
+        result["analysis"] = analyze(inputs, stats)
+        prefix.require(
+            stats
+            == dict(
+                models_attempted=1,
+                models_completed=1,
+                forward_queries_attempted=13,
+                forward_queries_completed=13,
+                physics_steps_attempted=0,
+            ),
+            "Only the registered static budget may execute",
+        )
+        result["sources_unchanged"] = snapshot(ROOT)["sources"] == before
+        prefix.require(result["sources_unchanged"], "Sources changed during object-state analysis")
+        result.update(complete=True, passed=True)
+    except BaseException as error:
+        result["error"] = {"type": type(error).__name__, "message": str(error)}
+        raise
+    finally:
+        print(publish(OUTPUT / "result.json", result), flush=True)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dry", action="store_true")
+    args = parser.parse_args()
+    dry_run() if args.dry else execute()
+
+
+if __name__ == "__main__":
+    main()
