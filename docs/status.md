@@ -727,3 +727,7 @@ correct_08受载点成对CPU物理对照及独立重放已完成：step85唯一�
 两次 WAM 请求已产生响应，但原工作者在结果汇总时因单请求掩码检查错误 exit1，
 逐请求初始噪声 ledger 未保留；独立 CPU 旁证仅报告参考差异、不改写原失败，见
 [模型旁证](../reports/tracking/references/ordered_feedback_wam_partial_audit_20261111.md)。
+同前缀 step80 已保存 WAM 参考的八周期实际反馈及独立重放完成：实际状态相对
+WAM 参考的位置 RMSE 为 0.002405 m，相对正确参考为 0.013118 m；前 80 周期是
+正确参考历史且原模型收尾失败，不构成完整 WAM 闭环。见
+[短窗报告](../reports/tracking/joint_control/saved_wam_feedback_20261111.md)。
