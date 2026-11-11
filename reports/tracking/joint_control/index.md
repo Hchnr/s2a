@@ -138,6 +138,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [正确参考受载点的双窗连续反馈](ordered_correct_stream_feedback_20261111.md) | 新增报告 |
 | [四步预览连续历史回放与仿真入口准备](coupled_pose_preview_continuous_chain_20261026.md) | `reports/coupled_pose_preview_continuous_chain_20261026.md` |
 | [四步预览提案的原生解码与独立历史提交](coupled_pose_preview_native_commits_20261026.md) | `reports/coupled_pose_preview_native_commits_20261026.md` |
 | [四步预览的动态生成参考记录核验](coupled_pose_preview_records_20261026.md) | `reports/coupled_pose_preview_records_20261026.md` |

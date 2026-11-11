@@ -23,7 +23,7 @@ from scripts.verification.reference_ports.check_defer_close_release import indep
 REPO = prefix.REPO
 ROOT = REPO / "outputs/defer_close_correct_feedback_20261111"
 DRY = REPO / "outputs/defer_close_correct_feedback_dry_20261111/result.json"
-QA = REPO / "outputs/qa/defer_close_correct_feedback_20261111/result.json"
+QA = REPO / "outputs/qa/defer_close_correct_guarded_20261111/result.json"
 BRANCHES = ((8, "baseline"), (8, "deferred"))
 CANDIDATE_MODULE = "s2a.research.gripper.defer_close_release"
 
@@ -38,9 +38,12 @@ def source_refs():
             REPO / "src/s2a/research/gripper/gripper_reference_preview.py",
             REPO / "src/s2a/research/gripper/gripper_tracking.py",
             REPO / "src/s2a/research/native_runtime/development_continuation.py",
+            REPO / "src/s2a/research/native_runtime/guarded_correct_prefix.py",
+            REPO / "plans/v0.0.1/tracking/gripper/defer_close_prefix_guard_20261111.md",
             REPO / "scripts/verification/reference_ports/check_defer_close_release.py",
             REPO / "scripts/wam/tracking/preview/shadow_defer_close_release.py",
             REPO / "tests/research/native_runtime/test_defer_close_correct_feedback.py",
+            REPO / "tests/research/native_runtime/test_guarded_correct_prefix.py",
         )
     ]
 
@@ -173,11 +176,16 @@ def worker(phase, index, branch):
         cv2 = inputs["cv2_admission"]
         result["cv2_admission"] = restore_cv2_environment(cv2["cv2_probe_ref"], cv2["cv2_runtime_source_refs"])
         from s2a.research.native_runtime.development_prefix_runtime import PrefixReplayFailure
-        from s2a.research.native_runtime.task2_seed42_correct_prefix import CorrectTask2Seed42PrefixRuntime
+        from s2a.research.native_runtime.guarded_correct_prefix import GuardedCorrectTask2Seed42PrefixRuntime
 
         def continuation(env, terminal, observers, receipt, *, progress=None):
             if phase == "checker":
                 checker_isolation()
+                actual_prefix = receipt["prefix_inner_periods"]
+                recorded_prefix = original["runtime"]["prefix_inner_periods"]
+                prefix.require(len(actual_prefix) == len(recorded_prefix) == 80, "All prefix periods must be replayed")
+                for actual_period, recorded_period in zip(actual_prefix, recorded_prefix, strict=True):
+                    common.check_prefix_inner(actual_period, recorded_period)
                 common.check_prefix_inner(receipt["final_prefix_inner"], original["runtime"]["final_prefix_inner"])
             prefix_inner_loss = receipt["final_prefix_inner"]["below_buffer_samples"] > 0
 
@@ -251,7 +259,7 @@ def worker(phase, index, branch):
             return outcome
 
         try:
-            runtime = CorrectTask2Seed42PrefixRuntime().run(
+            runtime = GuardedCorrectTask2Seed42PrefixRuntime().run(
                 inputs["runtime_config"],
                 inputs["record"],
                 inputs["record_xml"],
@@ -288,6 +296,17 @@ def summarize_phase(branches, phase, config):
         "two completed diagnostic branches",
     )
     runtimes = [branch["runtime"] for branch in branches]
+    for branch in branches:
+        runtime = branch["runtime"]
+        periods = runtime["continuation"]["periods"]
+        selected = [index for index, period in enumerate(periods) if period["decision"]["newly_selected"]]
+        expected = [5] if phase == "producer" and branch["branch"] == "deferred" and len(periods) > 5 else []
+        prefix.require(selected == expected, "Only the registered diagnostic command may be newly selected")
+        prefix.require(
+            len(runtime["prefix_inner_periods"]) == 80
+            and all(len(period["samples"]) == 25 for period in runtime["prefix_inner_periods"]),
+            "All 80 prefix periods require their complete inner samples",
+        )
     counts = dict(
         control_steps=sum(r["control_steps_completed"] for r in runtimes),
         native_steps=sum(r["counters"]["mj_step"]["completed"] for r in runtimes),
@@ -295,6 +314,9 @@ def summarize_phase(branches, phase, config):
         model_initializations=sum(r["counters"]["model_construct"]["completed"] for r in runtimes),
         contexts=sum(r["counters"]["context"]["completed"] for r in runtimes),
         continuation_steps=[len(r["continuation"]["periods"]) for r in runtimes],
+        prefix_inner_samples=sum(len(p["samples"]) for r in runtimes for p in r["prefix_inner_periods"]),
+        prefix_minimum_margin_rad=min(p["minimum_margin_rad"] for r in runtimes for p in r["prefix_inner_periods"]),
+        prefix_below_buffer_samples=sum(p["below_buffer_samples"] for r in runtimes for p in r["prefix_inner_periods"]),
     )
     prefix.require(
         counts["control_steps"] <= config["max_control_steps_per_phase"]

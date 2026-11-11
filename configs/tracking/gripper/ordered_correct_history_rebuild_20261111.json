@@ -1,0 +1,18 @@
+{
+  "schema": "s2a.ordered-correct-gripper-rebuild.v1",
+  "output": "outputs/ordered_correct_history_rebuild_20261111",
+  "prepared": "outputs/tracking_correct_reference_20261027/prepared.json",
+  "prepared_sha256": "583df68d367da8561e1b12b74011b44e54979f9a745af73dfe10f4b4ac2887d7",
+  "rows": "outputs/tracking_correct_reference_ordered_20261027/case08_candidate/steps.json",
+  "rows_sha256": "393f198d687a42dea0cd50dcc4d6965b54c534d1c66bb1ed963af19ca3d94229",
+  "chunks": "outputs/tracking_correct_reference_ordered_20261027/case08_candidate/chunks.json",
+  "chunks_sha256": "6f150a644c0cb0d063f29e7119c6084385f0c6a5d6cdc9633f01b367f1ada3ef",
+  "case_index": 8,
+  "seed": 42,
+  "prefix_steps": 80,
+  "comparison_atol": 1e-10,
+  "model_calls": 0,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
