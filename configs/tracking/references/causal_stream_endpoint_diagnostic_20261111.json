@@ -1,0 +1,23 @@
+{
+  "schema": "s2a.causal-stream-endpoint-diagnostic.v1",
+  "output": "outputs/causal_stream_endpoint_diagnostic_20261111",
+  "failed_owner": "outputs/causal_stream_live_48_20261111/producer/result.json",
+  "failed_owner_sha256": "21f23c5160d81e0cb15aa7671fdfa2d5f092f24504b108d27c5b97c3e88bfab7",
+  "failed_branch": "outputs/causal_stream_live_48_20261111/producer/simulation/result.json",
+  "failed_branch_sha256": "39cdfc3c409b8f4d010548b8695182ee53c81490843234a4cf1e1ba04fb188bb",
+  "failed_model": "outputs/causal_stream_live_48_20261111/producer/model/result.json",
+  "failed_model_sha256": "86b3604649a4189e7a5bc34e83c1a5efc0025bdcfc12849c0d475d72d2b8bab9",
+  "case_index": 8,
+  "seed": 42,
+  "prefix_steps": 80,
+  "replayed_steps": 40,
+  "max_native_steps": 3000,
+  "endpoint_step": 120,
+  "new_model_initializations": 0,
+  "new_model_requests": 0,
+  "new_denoise_calls": 0,
+  "newly_selected_commands": 0,
+  "fresh_cases": 0,
+  "worker_timeout_seconds": 1200,
+  "automatic_retry": false
+}

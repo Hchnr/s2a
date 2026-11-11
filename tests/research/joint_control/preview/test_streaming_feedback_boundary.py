@@ -93,6 +93,24 @@ def test_two_boundaries_retain_completed_control_histories():
     assert third.inner_history.snapshot()["inner_position_error_rad"][24, 0] == pytest.approx(0.3)
 
 
+def test_six_windows_retain_history_across_five_reference_boundaries():
+    policy, owner, poses = fixture()
+    coupled, tracking, gripper = policy.arm_policy.coupled, policy.arm_policy.tracking, policy.gripper
+    for index in range(6):
+        complete_eight(policy, 0.1 + index / 100)
+        assert owner.total_snapshot()["completed_periods"] == 8 * (index + 1)
+        assert gripper.latch == 8 * (index + 1)
+        if index < 5:
+            previous = policy
+            policy = advance_feedback(
+                policy, owner, poses, np.ones(40), np.eye(4), generated_step=108 + 8 * index, receipt={}
+            )
+            assert policy.arm_policy.coupled is coupled and policy.arm_policy.tracking is tracking
+            assert policy.gripper is gripper and policy.inner_history.snapshot()["completed_periods"] == 0
+            with pytest.raises(ValueError, match="expired"):
+                previous.inner_history.snapshot()
+
+
 @pytest.mark.parametrize(
     "corruption", ["time", "anchor", "gripper", "pending", "loss", "count", "opening", "inner_pending", "buffer"]
 )
