@@ -1,0 +1,52 @@
+{
+  "schema": "s2a.cross-trajectory-tcp-innovation.v1",
+  "output": "outputs/cross_trajectory_tcp_innovation_20261111/result.json",
+  "sources": [
+    {
+      "name": "early_quality",
+      "producer": "outputs/early_quality_feedback_20261110/producer/result.json",
+      "producer_sha256": "0fb0e65e4dab9cfa2ce3e94001b2edea8ebf29fb8a5b23e473213e1c0e8a87c1",
+      "checker": "outputs/early_quality_feedback_20261110/checker/result.json",
+      "checker_sha256": "2c64fd0e409a27318b719a0cc35b72eca52b31a4c209977cf14b3d482b1e5cb7",
+      "branches": ["case_02_quality", "case_06_quality"]
+    },
+    {
+      "name": "fixed_reference_long",
+      "producer": "outputs/combined_warning_long_feedback_20261110/producer/result.json",
+      "producer_sha256": "b995903ab4b46d0897cff61bfe001da114e6e64d2281bb0a29fbf42e5a085127",
+      "checker": "outputs/combined_warning_long_feedback_20261110/checker/result.json",
+      "checker_sha256": "2166f517817c637db1a2e40bf7095678add714222b441e4604ea889e54846216",
+      "branches": ["case_02_quality", "case_06_quality"]
+    },
+    {
+      "name": "replanned_reference",
+      "producer": "outputs/replan_quality_feedback_20261110/producer/result.json",
+      "producer_sha256": "d6541e22dece07ca214b02f4df7b5b81ce613a632802116d933df8032deee63f",
+      "checker": "outputs/replan_quality_feedback_20261110/checker/result.json",
+      "checker_sha256": "0fca5c925a4477efa213f9578d2802eb4fd3d6724b35ea4d6123bd7916eb16f2",
+      "branches": ["case_02_quality_new", "case_06_quality_new"]
+    },
+    {
+      "name": "task2_early",
+      "producer": "outputs/task2_earlier_preview_feedback_20261111/producer/result.json",
+      "producer_sha256": "b48288924dc24d2f6dee61b4a27d8491dced865dac1c311c07cb4336d9440206",
+      "checker": "outputs/task2_earlier_preview_feedback_20261111/checker/result.json",
+      "checker_sha256": "f61a9360e7d16f5599b1be49dbe5f068fed74e87f1b3a71c31893dac766e8f38",
+      "branches": ["case_10_first_quality", "case_11_first_quality"]
+    }
+  ],
+  "wam_audit": "outputs/quality_rate_repair_recorded_feedback_audit_20261111/result.json",
+  "wam_audit_sha256": "bd33ed32be8e4bb4a9ef0c3fb753a8d0883e7cb6bd3ef22fedd9729807b4c802",
+  "wam_producer": "outputs/quality_rate_repair_recorded_feedback_20261111/producer/result.json",
+  "wam_producer_sha256": "2c3ab4ea6601fa38bc3db010dc26d3376d7a87ce90fd6098be1f685df512596a",
+  "wam_checker": "outputs/quality_rate_repair_recorded_feedback_20261111/checker/result.json",
+  "wam_checker_sha256": "bef1e291dd5c8735c61656c475ea15fb0287aeb91c6509b913a409e8541f55fa",
+  "changed_action_audit": "outputs/early_causal_innovation_physical_audit_20261111/result.json",
+  "changed_action_audit_sha256": "3745490d142435203f76f7257e2e75319a6075ac94ee78a229de9c69ed4b1fee",
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "model_calls": 0,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
