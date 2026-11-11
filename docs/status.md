@@ -2,9 +2,11 @@
 
 本页维护当前事实，按日期的完整研究记录由索引定位。目录整理不改变研究目标。
 
-2026-11-11 首次物理位姿失准的 step122 前，固定 step121 完成历史的静态对照中，
-因果偏差质量分支通过原门及补偿门的独立模型审核，但补偿位置仅在数值容差内
-达门；尚未物理执行。详见[早期对照](../reports/tracking/joint_control/early_causal_innovation_quality_20261111.md)。
+2026-11-11 首次物理位姿失准的 step122，使用本次 step121 已完成偏差重新求解
+并实际执行一周期；位置误差从历史同起点 0.013933 m 降至 0.012952 m，仍超
+0.01 m 门，旋转误差为 0.025869 rad。独立重放一致，step123 为预登记预算停止，
+不是证明无解。没有新 WAM 推理，详见[物理对照](../reports/tracking/joint_control/early_causal_innovation_physical_20261111.md)
+与先前[静态对照](../reports/tracking/joint_control/early_causal_innovation_quality_20261111.md)。
 
 2026-11-11 在 step125 冻结状态加入 step124 已完成 TCP 偏差后的质量约束，
 69 次模型响应未找到同时满足原门和补偿门的候选；线搜索失败不证明全局不可行。
