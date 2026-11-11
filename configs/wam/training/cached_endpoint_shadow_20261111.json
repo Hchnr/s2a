@@ -1,0 +1,21 @@
+{
+  "schema": "s2a.cached-endpoint-shadow.v1",
+  "output": "outputs/cached_endpoint_shadow_20261111",
+  "candidate": "outputs/cached_endpoint_calibration_20261111/candidate.json",
+  "candidate_sha256": "729187cabc5d67146f914a749b2ad29bf1526d2307c92081efa65e10fd63238e",
+  "independent": "outputs/cached_endpoint_calibration_20261111/independent.json",
+  "independent_sha256": "8b412a16651f115305a28817f06a623445247f0a61b84959ac18c63688ac9b97",
+  "seed": 42,
+  "correct_cases": 18,
+  "correct_steps": 4907,
+  "raw_case_indices": [18, 20, 22, 24, 26, 28],
+  "raw_steps_per_case": 600,
+  "raw_chunks_per_case": 75,
+  "workers": 32,
+  "worker_timeout_seconds": 600,
+  "max_independent_difference": 1e-10,
+  "world_model_calls": 0,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
