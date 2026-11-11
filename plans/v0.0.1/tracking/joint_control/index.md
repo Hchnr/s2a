@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[双点模型余量的实际反馈对照](task2_margin_two_step_feedback_20261111.md)
+
 近期：[双点模型余量的预停止对照](margin_two_step_search_20261111.md)
 
 近期：[terminal058 step85的首点优先搜索](task2_terminal85_first_search_20261111.md)
