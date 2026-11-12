@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [固定 H40 后的当前图像模型参考](reset_bowl_h40_reobserve_model_20261112.md) | 新增计划 |
 | [固定 H40 后的当前观测与后续闭环](reset_bowl_h40_reobserve_20261112.md) | 新增计划 |
 | [碗任务保存状态几何诊断的归一化检查](reset_bowl_saved_geometry_recovery_20261112.md) | 新增计划 |
 | [碗任务两条已执行短窗的保存状态几何诊断](reset_bowl_saved_geometry_20261112.md) | 新增计划 |
