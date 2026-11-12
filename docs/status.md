@@ -10,6 +10,9 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 中断处理与物理开销区间组件已通过真实信号和 32 并发回归；新仿真
+worker 尚未接入，见[阶段报告](../reports/tracking/references/interrupted_physical_costs_20261112.md)。
+
 2026-11-12 已以实际模型 Python 无 GPU 地复核旧失败注册和完整来源；独立准入
 组件及专项回归通过，新执行器尚未接入，见[报告](../reports/tracking/references/registered_model_bundle_20261112.md)。
 
