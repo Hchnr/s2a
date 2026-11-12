@@ -6,6 +6,8 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [碗任务保存状态几何诊断的归一化检查](reset_bowl_saved_geometry_recovery_20261112.md) | 新增计划 |
+| [碗任务两条已执行短窗的保存状态几何诊断](reset_bowl_saved_geometry_20261112.md) | 新增计划 |
 | [同一复位与首条 WAM 参考的固定 H40 对照](reset_bowl_fixed_h40_probe_20261112.md) | 新增计划 |
 | [三任务已生成参考的夹爪闭合意图只读诊断](reset_multitask_gripper_intent_audit_20261112.md) | 新增计划 |
 | [三任务当前图像试验的计数器修复与恢复](reset_multitask_live_recovery_20261111.md) | 新增计划 |
