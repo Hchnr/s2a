@@ -15,6 +15,10 @@
 （SHA-256 `c2a93340652f5edc3e9a6f0520b2bbec7ef8c10c530e39add93c9b3345a43090`）。
 现已恢复清单登记的根文件字节，后续使用独占的新检查目录。
 
+2026-11-12 对碗任务 step108 的已重放停止状态单独运行首点优先求解：320 次
+模型响应、66 个线性安全尝试中没有首点双阈值候选；未派发动作或独立审核候选，
+详见[对照报告](../reports/tracking/joint_control/replayed_first_pose_search_20261112.md)。
+
 2026-11-12 对碗任务 step104、106、107、108 的已重放状态计算冻结模型首点
 外界；所选投影均未排除原首点双阈值，不能据此判定可行或物理不可达。首轮软件
 库登记失败及零模型开销保留，修复后的独立复核见[结果](../reports/tracking/joint_control/replayed_reference_pose_bounds_20261112.md)。

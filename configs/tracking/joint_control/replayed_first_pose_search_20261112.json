@@ -1,0 +1,21 @@
+{
+  "schema": "s2a.replayed-first-pose-search.v1",
+  "case_id": "task0_init0_s42_raw",
+  "seed": 42,
+  "reference_start_step": 88,
+  "decision_step": 108,
+  "solver": "staged_first_feasibility",
+  "max_static_models": 1,
+  "max_forward_queries": 1,
+  "max_reconstruction_rollouts": 1,
+  "max_solver_responses": 320,
+  "max_initializer_lps": 2,
+  "max_first_iterations": 40,
+  "max_total_iterations": 120,
+  "max_audit_endpoint_queries": 200,
+  "max_audit_transition_steps": 2600,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
