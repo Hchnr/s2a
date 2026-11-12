@@ -10,6 +10,9 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 连续因果重规划的变长段协议及 32 并发专项检查已完成；尚未接入实际
+运行器或真实模型，见[阶段报告](../reports/tracking/references/bounded_replan_protocol_20261112.md)。
+
 2026-11-12 一次并行专项检查在启动前因误改根 `AGENTS.md` 的固定字节而停止，
 未启动测试 worker；失败收据保留在 `outputs/qa/replayed_reference_pose_bounds_20261112/`
 （SHA-256 `c2a93340652f5edc3e9a6f0520b2bbec7ef8c10c530e39add93c9b3345a43090`）。
