@@ -39,6 +39,8 @@ CUDA_VISIBLE_DEVICES='' LD_LIBRARY_PATH='' .venv/bin/python -m pytest
 
 完成可验证的小阶段后及时本地提交，避免多个阶段长期堆积。提交前运行对应检查，提交说明如实标注尚未完成的验证。
 
+合适的阶段通过 PR 以 squash 方式合入 `main`。合并提交标题保留 `(#PR号)`，并核对远端提交与 PR 的关联；不得直接向 `main` 推送提交。
+
 ## CPU 并发偏好
 
 CPU 回归默认使用 32 个并发进程，最终全量检查按可用资源使用 64 个并发进程。每进程设置 OPENBLAS_NUM_THREADS、OMP_NUM_THREADS、MKL_NUM_THREADS、NUMEXPR_NUM_THREADS 和 LP_NUM_THREADS 为 1，CUDA_VISIBLE_DEVICES 和 LD_LIBRARY_PATH 为空；各 worker 使用独占 outputs 临时目录，全部子进程实际 wait/reap 后登记结果。优先使用 `python -m scripts.maintenance.run_cpu_tests` 统一入口；不要以并发或目录迁移更改原测试、来源身份、实验预算或资格门槛。
