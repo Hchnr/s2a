@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [同一复位与首条 WAM 参考的固定 H40 对照](reset_bowl_fixed_h40_probe_20261112.md) | 新增计划 |
 | [三任务已生成参考的夹爪闭合意图只读诊断](reset_multitask_gripper_intent_audit_20261112.md) | 新增计划 |
 | [三任务当前图像试验的计数器修复与恢复](reset_multitask_live_recovery_20261111.md) | 新增计划 |
 | [三任务从复位起步的 48 周期当前图像试验](reset_multitask_live_48_20261111.md) | 新增计划 |

@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [碗任务固定 H40 与重复重观测短窗对照（2026-11-12）](reset_bowl_fixed_h40_probe_20261112.md) | 新增报告 |
 | [三任务当前图像参考的夹爪闭合意图（2026-11-12）](reset_multitask_gripper_intent_audit_20261112.md) | 新增报告 |
 | [三任务当前图像恢复试验与独立重放（2026-11-12）](reset_multitask_live_recovery_20261111.md) | 新增报告 |
 | [三任务试验的计数器失败与实际消耗（2026-11-11）](reset_multitask_live_failure_20261111.md) | 新增报告 |
