@@ -10,6 +10,10 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 40 周期长窗生产至第 147 周期；第 129 端点任务成功为假，末尾连续
+18 周期成功。checker 完成动作后额外端点读取失败，已保存部分独立审计，见
+[实际报告](../reports/tracking/references/adaptive_live_bowl_long_partial_20261112.md)。
+
 2026-11-12 40 周期长窗运行入口和跨解释器登记已通过 32 并发回归；最终回归、
 预检与真实执行待完成，见[阶段报告](../reports/tracking/references/adaptive_live_bowl_long_owner_20261112.md)。
 
