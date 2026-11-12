@@ -15,6 +15,9 @@
 （SHA-256 `c2a93340652f5edc3e9a6f0520b2bbec7ef8c10c530e39add93c9b3345a43090`）。
 现已恢复清单登记的根文件字节，后续使用独占的新检查目录。
 
+2026-11-12 已实现保持完成历史的部分窗口因果换段；对碗任务同一旧开发轨迹
+只读影子检查首次在 step107 触发，尚未接入当前图像或物理动作。见[阶段报告](../reports/tracking/references/causal_partial_replan_20261112.md)。
+
 2026-11-12 对碗任务 step108 的已重放停止状态单独运行首点优先求解：320 次
 模型响应、66 个线性安全尝试中没有首点双阈值候选；未派发动作或独立审核候选，
 详见[对照报告](../reports/tracking/joint_control/replayed_first_pose_search_20261112.md)。
