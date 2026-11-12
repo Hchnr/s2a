@@ -6,6 +6,10 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
+2026-11-12 碗任务从同一 reset 和 step8 WAM 响应固定消费完整 H40：实际开度最低
+约 0.7669，仍无目标 grasp/任务成功；与重观测分支的前 16 周期及独立重放均一致。
+这是一个旧初态短窗的协议对照，见[固定 H40 报告](../reports/tracking/references/reset_bowl_fixed_h40_probe_20261112.md)。
+
 2026-11-12 对三任务恢复试验的 12 条真实 WAM 响应做只读检查：90 个实际消费的
 夹爪参考均没有明显闭合；5 个相对当前开度下降至少 0.2 的端点仅出现在碗任务的
 未消费输出末尾。关联分析不证明唯一原因，见[夹爪意图诊断](../reports/tracking/references/reset_multitask_gripper_intent_audit_20261112.md)。
