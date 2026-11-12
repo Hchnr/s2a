@@ -6,6 +6,13 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
+2026-11-12 修复并独立复核指垫快照：固定 H40 和开度提前分支第 48 周期末，
+右 pad 与碗 box 沿夹爪轴分别分离约 1.62 cm / 1.80 cm；提前分支在周期 47、48
+仅左 pad 接触。该离线结果不提供在线物体真值，见[几何恢复报告](../reports/tracking/gripper/bowl_pad_alignment_recovery_20261112.md)。
+
+2026-11-12 指垫几何诊断的事后审核发现快照数组被后续 forward 覆盖，首批结果
+不具备几何结论资格，失败记录和实际成本已保留；见[快照失败报告](../reports/tracking/gripper/bowl_pad_alignment_snapshot_failure_20261112.md)。
+
 2026-11-12 碗任务固定 H40 将 opening 提前 4 周期的开发对照，两组各 48 周期
 均无目标 grasp 或任务成功；候选相对原 WAM opening 的 RMSE 从 0.024659 增至
 0.099420，不提升为默认策略。独立重放一致，见[开度对照](../reports/tracking/gripper/bowl_h40_opening_lead_20261112.md)。
