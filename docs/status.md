@@ -6,6 +6,10 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
+2026-11-12 碗任务固定 H40 将 opening 提前 4 周期的开发对照，两组各 48 周期
+均无目标 grasp 或任务成功；候选相对原 WAM opening 的 RMSE 从 0.024659 增至
+0.099420，不提升为默认策略。独立重放一致，见[开度对照](../reports/tracking/gripper/bowl_h40_opening_lead_20261112.md)。
+
 2026-11-12 对两条碗任务轨迹的 96 个已保存端点重建接触：任一指垫与碗
 均无接触对，固定 H40 后段出现碗与手指其他部位及手掌接触对；重建双侧接触
 与原 grasp 标签一致。仅覆盖端点、不证明内步或接触力，见[接触诊断](../reports/tracking/references/reset_bowl_saved_contacts_20261112.md)。
