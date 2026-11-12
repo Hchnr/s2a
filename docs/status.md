@@ -15,6 +15,9 @@
 （SHA-256 `c2a93340652f5edc3e9a6f0520b2bbec7ef8c10c530e39add93c9b3345a43090`）。
 现已恢复清单登记的根文件字节，后续使用独占的新检查目录。
 
+2026-11-12 因果提前重规划在同一旧开发初态执行至 step113，新参考完成 6/40
+目标后质量停止；113 周期独立重放逐值一致，新窗口成功不连续，见[实际执行报告](../reports/tracking/references/causal_replan_step107_execution_20261112.md)。
+
 2026-11-12 已对核验的 step107 当前图像完成一次真实 WAM 请求，响应与图像、
 状态绑定且 GPU 已释放；新参考尚未执行。见[模型报告](../reports/tracking/references/causal_replan_step107_model_20261112.md)。
 
