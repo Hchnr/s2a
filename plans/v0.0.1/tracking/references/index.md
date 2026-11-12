@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [连续重规划：独立恢复试验](adaptive_live_bowl_recovery_20261112.md) | 新增计划 |
 | [连续重规划：来源修复后的恢复设计](adaptive_live_bowl_recovery_design_20261112.md) | 新增计划 |
 | [碗任务连续因果重规划：有限真实模型对照](adaptive_live_bowl_20261112.md) | 新增计划 |
 | [有预算上限的连续因果重规划设计](bounded_repeated_replan_20261112.md) | 新增计划 |

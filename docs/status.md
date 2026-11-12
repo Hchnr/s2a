@@ -10,6 +10,18 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 独立恢复试验监督已通过跨解释器检查和 32 并发回归；最终回归、
+预检及真实试验仍待完成，见[阶段报告](../reports/tracking/references/adaptive_live_bowl_recovery_owner_20261112.md)。
+
+2026-11-12 恢复试验的独立物理审核及累计区间已通过历史收据和篡改检查；
+新进程监督与实际试验待完成，见[审核报告](../reports/tracking/references/adaptive_live_bowl_recovery_audit_20261112.md)。
+
+2026-11-12 独立恢复试验的配置、旧失败范围和来源准入已通过 32 并发回归；
+进程监督及真实运行仍待完成，见[准入报告](../reports/tracking/references/adaptive_live_bowl_recovery_admission_20261112.md)。
+
+2026-11-12 已为来源修复后的单开发案例登记独立试验及累计资源区间；执行器、
+最终回归和真实试验仍待完成，见[计划](../plans/v0.0.1/tracking/references/adaptive_live_bowl_recovery_20261112.md)。
+
 2026-11-12 已将无绑定历史输入与旧失败收据、未知开销区间合并准入；新试验
 配置和监督仍待接线，见[报告](../reports/tracking/references/adaptive_recovery_inputs_20261112.md)。
 

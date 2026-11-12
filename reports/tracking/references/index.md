@@ -6,6 +6,9 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [连续重规划：独立恢复试验监督](adaptive_live_bowl_recovery_owner_20261112.md) | 新增报告 |
+| [连续重规划：恢复试验的物理收据审核](adaptive_live_bowl_recovery_audit_20261112.md) | 新增报告 |
+| [连续重规划：独立恢复试验准入](adaptive_live_bowl_recovery_admission_20261112.md) | 新增报告 |
 | [连续重规划：恢复输入与失败开销准入](adaptive_recovery_inputs_20261112.md) | 新增报告 |
 | [连续重规划：无全局绑定的历史模型输入](step107_model_inputs_20261112.md) | 新增报告 |
 | [连续重规划：可中断仿真 worker 接线](managed_adaptive_simulation_20261112.md) | 新增报告 |
