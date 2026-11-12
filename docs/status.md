@@ -6,6 +6,18 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
+2026-11-12 碗任务加强闭合探针在 45 周期后因质量无 witness 停止，目标 grasp /
+任务成功均为 0；最后两端点位置超 1 cm，端点 45 一根手指略超模型标称范围。
+独立重放一致，不提升为默认策略，见[闭合探针报告](../reports/tracking/gripper/bowl_h40_closing_intent_20261112.md)。
+
+2026-11-12 双 pad 静态闭合恢复枚举在两条旧开发轨迹的末端各发现 8 个满足原
+1 cm TCP 位置门的几何 witness，但对应 opening 约 0.047–0.151，与原模型 0.706
+差异明显；未验证物理抓取。见[闭合恢复报告](../reports/tracking/gripper/bowl_static_close_feasibility_recovery_20261112.md)。
+
+2026-11-12 固定姿态双 pad 闭合枚举在第 11 个 LP 的残差检查停止；单组合复现显示
+默认求解容差与 `1e-8 m` 本地检查不匹配，显式 `1e-9` 后该组合通过残差检查。
+首批枚举未完成；后续恢复结果见上文，[LP 诊断](../reports/tracking/gripper/bowl_static_close_lp_diagnostic_20261112.md)保留原因。
+
 2026-11-12 对两条碗任务轨迹所选八个保存构型，离线测试 site 负 x 方向 2 cm
 固定平移：无一形成双侧 pad 与碗 box 严格重叠；1,280 个 box 对经独立线性规划
 复核。仅为单案例静态检查，见[偏移几何报告](../reports/tracking/gripper/bowl_static_site_offset_20261112.md)。
