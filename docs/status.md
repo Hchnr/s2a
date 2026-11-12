@@ -15,6 +15,9 @@
 （SHA-256 `c2a93340652f5edc3e9a6f0520b2bbec7ef8c10c530e39add93c9b3345a43090`）。
 现已恢复清单登记的根文件字节，后续使用独占的新检查目录。
 
+2026-11-12 已从 reset 独立重放 107 周期并采集因果重规划边界的当前图像；与
+原轨迹的命令、状态和内步逐值一致，尚未生成或执行新参考。见[采图报告](../reports/tracking/references/causal_replan_step107_capture_20261112.md)。
+
 2026-11-12 已实现保持完成历史的部分窗口因果换段；对碗任务同一旧开发轨迹
 只读影子检查首次在 step107 触发，尚未接入当前图像或物理动作。见[阶段报告](../reports/tracking/references/causal_partial_replan_20261112.md)。
 
