@@ -6,6 +6,9 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [三任务当前图像恢复试验与独立重放（2026-11-12）](reset_multitask_live_recovery_20261111.md) | 新增报告 |
+| [三任务试验的计数器失败与实际消耗（2026-11-11）](reset_multitask_live_failure_20261111.md) | 新增报告 |
+| [从复位到第二个当前图像窗口（2026-11-11）](reset_live_second_window_20261111.md) | 新增报告 |
 | [实际保持反馈与恢复推进（2026-10-28，CPU）](reference_recovery_native_20261028.md) | `reports/reference_recovery_native_20261028.md` |
 | [023：WAM 生成参考的 44 参数局部校正](wam_generated_reference_calibration_20261021.md) | `reports/wam_generated_reference_calibration_20261021.md` |
 | [有限轨迹阶段保留候选：实现与离线可行性](wam_reference_commitment_candidate_20261024.md) | `reports/wam_reference_commitment_candidate_20261024.md` |
