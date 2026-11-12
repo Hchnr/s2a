@@ -6,6 +6,10 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
+2026-11-12 对两条碗任务轨迹所选八个保存构型，离线测试 site 负 x 方向 2 cm
+固定平移：无一形成双侧 pad 与碗 box 严格重叠；1,280 个 box 对经独立线性规划
+复核。仅为单案例静态检查，见[偏移几何报告](../reports/tracking/gripper/bowl_static_site_offset_20261112.md)。
+
 2026-11-12 修复并独立复核指垫快照：固定 H40 和开度提前分支第 48 周期末，
 右 pad 与碗 box 沿夹爪轴分别分离约 1.62 cm / 1.80 cm；提前分支在周期 47、48
 仅左 pad 接触。该离线结果不提供在线物体真值，见[几何恢复报告](../reports/tracking/gripper/bowl_pad_alignment_recovery_20261112.md)。

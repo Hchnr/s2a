@@ -1,0 +1,17 @@
+{
+  "schema": "s2a.bowl-static-site-offset.v1",
+  "output": "outputs/bowl_static_site_offset_20261112/result.json",
+  "seed": 42,
+  "branches": ["fixed", "lead"],
+  "endpoint_steps": [40, 43, 46, 48],
+  "site_translation_m": [-0.02, 0.0, 0.0],
+  "classification_tolerance_m": 1e-08,
+  "source_audit_sha256": "6fb6ad52ce9a81f0e241215578f151b368235813db480e4a892819c8a9175447",
+  "new_models": 0,
+  "new_forwards": 0,
+  "new_physics_steps": 0,
+  "new_contexts": 0,
+  "new_model_requests": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
