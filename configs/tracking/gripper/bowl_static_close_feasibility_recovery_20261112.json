@@ -1,0 +1,30 @@
+{
+  "schema": "s2a.bowl-static-close-feasibility-recovery.v1",
+  "output": "outputs/bowl_static_close_feasibility_recovery_20261112/result.json",
+  "seed": 42,
+  "branches": [
+    "fixed",
+    "lead"
+  ],
+  "endpoint_step": 48,
+  "position_gate_m": 0.01,
+  "strict_overlap_margin_m": 1e-05,
+  "feasibility_tolerance_m": 1e-08,
+  "max_lp_per_branch": 1600,
+  "max_refinements_per_branch": 1600,
+  "geometry_audit_sha256": "6fb6ad52ce9a81f0e241215578f151b368235813db480e4a892819c8a9175447",
+  "fixed_physical_audit_sha256": "df5e3d2a7ff15fb432f22aad566e4b35c5ea092e1568b3552c05f52484442e8b",
+  "lead_physical_audit_sha256": "005cb8a5e91c8625f2bb7befee71cd9978d0d1fb1276b75629769ec4d67b8577",
+  "new_models": 0,
+  "new_forwards": 0,
+  "new_physics_steps": 0,
+  "new_contexts": 0,
+  "new_model_requests": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false,
+  "solver_primal_tolerance": 1e-09,
+  "solver_dual_tolerance": 1e-09,
+  "prior_lp_attempts": 13,
+  "previous_failure_sha256": "cba6b1b59e6b7d2c237705281ad0ca9863d09729080a843815262fb74214cdd2",
+  "tolerance_diagnostic_sha256": "e294dfd3f5bc63ea7adbadcd9259ea6b0d11751a8805a54ef4eacde6fe6e7655"
+}

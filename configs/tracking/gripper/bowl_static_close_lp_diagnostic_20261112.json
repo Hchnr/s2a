@@ -1,0 +1,23 @@
+{
+  "schema": "s2a.bowl-static-close-lp-diagnostic.v1",
+  "output": "outputs/bowl_static_close_lp_diagnostic_20261112/result.json",
+  "seed": 42,
+  "branch": "fixed",
+  "endpoint_step": 48,
+  "left_target": "akita_black_bowl_1_g1",
+  "right_target": "akita_black_bowl_1_g11",
+  "strict_overlap_margin_m": 1e-05,
+  "solver_tolerances": ["default", 1e-09],
+  "max_new_lp": 2,
+  "previous_lp_attempts": 11,
+  "failure_sha256": "cba6b1b59e6b7d2c237705281ad0ca9863d09729080a843815262fb74214cdd2",
+  "geometry_audit_sha256": "6fb6ad52ce9a81f0e241215578f151b368235813db480e4a892819c8a9175447",
+  "fixed_physical_audit_sha256": "df5e3d2a7ff15fb432f22aad566e4b35c5ea092e1568b3552c05f52484442e8b",
+  "new_models": 0,
+  "new_forwards": 0,
+  "new_physics_steps": 0,
+  "new_contexts": 0,
+  "new_model_requests": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

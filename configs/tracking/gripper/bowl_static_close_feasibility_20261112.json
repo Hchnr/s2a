@@ -1,0 +1,22 @@
+{
+  "schema": "s2a.bowl-static-close-feasibility.v1",
+  "output": "outputs/bowl_static_close_feasibility_20261112/result.json",
+  "seed": 42,
+  "branches": ["fixed", "lead"],
+  "endpoint_step": 48,
+  "position_gate_m": 0.01,
+  "strict_overlap_margin_m": 1e-05,
+  "feasibility_tolerance_m": 1e-08,
+  "max_lp_per_branch": 1600,
+  "max_refinements_per_branch": 1600,
+  "geometry_audit_sha256": "6fb6ad52ce9a81f0e241215578f151b368235813db480e4a892819c8a9175447",
+  "fixed_physical_audit_sha256": "df5e3d2a7ff15fb432f22aad566e4b35c5ea092e1568b3552c05f52484442e8b",
+  "lead_physical_audit_sha256": "005cb8a5e91c8625f2bb7befee71cd9978d0d1fb1276b75629769ec4d67b8577",
+  "new_models": 0,
+  "new_forwards": 0,
+  "new_physics_steps": 0,
+  "new_contexts": 0,
+  "new_model_requests": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
