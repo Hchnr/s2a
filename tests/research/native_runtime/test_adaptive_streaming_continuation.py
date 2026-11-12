@@ -169,6 +169,15 @@ def test_quality_stop_and_joint_buffer_loss_prevent_another_request(tmp_path):
     assert case.sim.inner == 50 and case.ledger.phase == "failed"
 
 
+def test_joint_buffer_loss_takes_priority_when_period_budget_also_ends(tmp_path):
+    case = make_case(tmp_path, max_periods=2, buffer_at=26)
+    result = execute(case)
+    assert result["stop"]["reason"] == "observed_joint_buffer_loss"
+    assert not result["complete"] and result["control_steps_completed"] == 2
+    assert result["segments"][0]["continuation"]["periods"][-1]["inner_below_buffer_samples"] > 0
+    assert case.sim.inner == 50 and case.ledger.phase == "failed"
+
+
 def test_mid_period_failure_preserves_partial_dispatch_and_never_replans(tmp_path):
     case = make_case(tmp_path, fail_at=3)
     original_method = case.env.step

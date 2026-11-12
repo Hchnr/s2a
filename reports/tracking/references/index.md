@@ -6,6 +6,8 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [连续因果重规划：独立变长重放阶段](bounded_replan_replay_20261112.md) | 新增报告 |
+| [连续因果重规划：预算边界的安全停止优先级](bounded_replan_safety_priority_20261112.md) | 新增报告 |
 | [连续因果重规划：模型请求循环与通道联调](bounded_replan_model_loop_20261112.md) | 新增报告 |
 | [连续因果重规划：当前图像与反馈绑定阶段](bounded_replan_reference_20261112.md) | 新增报告 |
 | [连续因果重规划：变长控制执行器阶段](bounded_replan_runtime_20261112.md) | 新增报告 |

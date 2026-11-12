@@ -10,6 +10,12 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 连续重规划的独立变长 checker 已通过合成重放和来源边界检查；实际模型
+及仿真进程所有者尚未接入，见[阶段报告](../reports/tracking/references/bounded_replan_replay_20261112.md)。
+
+2026-11-12 修正连续重规划在预算结束与关节缓冲不足同时出现时的停止原因优先级，
+见[阶段报告](../reports/tracking/references/bounded_replan_safety_priority_20261112.md)。
+
 2026-11-12 连续重规划的模型请求循环与控制通道已用合成推理联调；实际模型
 进程所有者和独立 checker 尚未接入，见[阶段报告](../reports/tracking/references/bounded_replan_model_loop_20261112.md)。
 

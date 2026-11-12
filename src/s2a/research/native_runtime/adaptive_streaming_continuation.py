@@ -172,11 +172,11 @@ def run_adaptive_streaming_continuation(
                 current = ledger.current
                 if measured_snapshot(env, current["step"]) != current:
                     raise ValueError("State changed before action selection")
-                if ledger.phase == "done":
-                    return {"stop": {"reason": "period_budget_exhausted"}}
                 past = receipt["continuation_partial"]["periods"]
                 if past and past[-1]["inner_below_buffer_samples"]:
                     return {"stop": {"reason": "observed_joint_buffer_loss"}}
+                if ledger.phase == "done":
+                    return {"stop": {"reason": "period_budget_exhausted"}}
                 if past:
                     signal = refresh_signal(quality_trigger_view(past[-1]), current_step=current["step"])
                     if (
