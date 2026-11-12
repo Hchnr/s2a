@@ -6,8 +6,9 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
-2026-11-12 在独立重放相同 88 周期后已采集 step88 双相机当前图像，状态和采图
-前后时钟一致；尚未由该图生成新参考，见[采图报告](../reports/tracking/references/reset_bowl_step88_capture_20261112.md)。
+2026-11-12 在独立重放相同 88 周期后已采集当前图像，并生成下一条真实 WAM 参考；
+该参考尚未执行，见[模型报告](../reports/tracking/references/reset_bowl_step88_model_20261112.md)
+和[采图报告](../reports/tracking/references/reset_bowl_step88_capture_20261112.md)。
 
 2026-11-12 已用通用尾段组件连续执行并独立重放碗任务同一开发 reset 的 88 周期：
 第二条 WAM 参考 40 个目标全部执行，端点 64–88 的原生目标 grasp 标签均为真，
