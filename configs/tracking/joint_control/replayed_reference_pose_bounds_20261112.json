@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.replayed-reference-pose-bounds.v1",
+  "case_id": "task0_init0_s42_raw",
+  "seed": 42,
+  "reference_start_step": 88,
+  "decision_steps": [104, 106, 107, 108],
+  "position_weights": [0.0, 0.25, 0.5, 0.75, 1.0],
+  "normalized_numerical_allowance": 1e-7,
+  "max_static_models": 1,
+  "max_forward_queries": 4,
+  "max_seed_rollouts": 4,
+  "max_support_lp_calls": 40,
+  "max_independent_first_responses": 4,
+  "max_independent_transition_steps": 100,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

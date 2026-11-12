@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[碗任务已重放参考的首点位姿外界](replayed_reference_pose_bounds_20261112.md)
+
 最新：[参考校正的三任务夹爪物理反馈](cached_calibration_gripper_feedback_20261111.md) · [原质量门外的模型安全有界跟踪回退](model_safe_tracking_fallback_20261111.md)
 
 最新：[有限释放保持后的连续衔接反馈](bounded_release_bridge_feedback_20261111.md)
