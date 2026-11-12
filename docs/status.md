@@ -6,6 +6,10 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
+2026-11-12 已新增显式预算上限为 600 周期的 reset 运行器；旧 48 周期实现保持
+不变。此阶段仅完成合成测试，长于 48 周期的物理连续执行尚未验证，见
+[长轨迹设计](../plans/v0.0.1/tracking/references/long_horizon_reset_20261112.md)。
+
 2026-11-12 碗任务固定 H40 的 48 周期经独立重放后，已采集当前双相机图像并据此
 生成真实 WAM H40 参考；新参考前 8 个开度目标从约 0.80 降到 0.40，尚未物理执行。
 此前轨迹的 grasp / 任务成功仍为 0，见[模型报告](../reports/tracking/references/reset_bowl_h40_reobserve_model_20261112.md)
