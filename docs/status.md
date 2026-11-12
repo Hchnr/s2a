@@ -6,6 +6,9 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
+2026-11-12 已实现有限 H40 参考尾段的通用分段和独立重放组件，并完成合成回归；
+第二参考剩余 32 个目标尚未物理执行，见[尾段计划](../plans/v0.0.1/tracking/references/finite_reference_tail_20261112.md)。
+
 2026-11-12 已新增显式预算上限为 600 周期的 reset 运行器，旧 48 周期实现保持
 不变；同一开发 reset 已连续执行并独立重放 56 周期。第二 WAM 参考前 8 周期
 位姿 8/8 达标、目标 grasp / 任务成功均 0，见[物理短窗报告](../reports/tracking/references/reset_bowl_h40_second_window_20261112.md)
