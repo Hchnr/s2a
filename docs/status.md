@@ -6,6 +6,11 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
+2026-11-12 依据两条保存状态重建碗任务几何：第 48 周期末 TCP 到碗刚体原点的
+距离，固定 H40 与重观测分支分别约 0.0726 m 和 0.2248 m，均无已记录 grasp。
+原点距离不等于表面接触距离；前一几何诊断的状态逐位检查失败和两次开销均保留，
+见[保存状态几何报告](../reports/tracking/references/reset_bowl_saved_geometry_recovery_20261112.md)。
+
 2026-11-12 碗任务从同一 reset 和 step8 WAM 响应固定消费完整 H40：实际开度最低
 约 0.7669，仍无目标 grasp/任务成功；与重观测分支的前 16 周期及独立重放均一致。
 这是一个旧初态短窗的协议对照，见[固定 H40 报告](../reports/tracking/references/reset_bowl_fixed_h40_probe_20261112.md)。

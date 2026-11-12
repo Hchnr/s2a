@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.reset-bowl-saved-geometry.v1",
+  "output": "outputs/reset_bowl_saved_geometry_20261112",
+  "case_id": "task0_init0_s42_raw",
+  "site_name": "gripper0_grip_site",
+  "body_name": "akita_black_bowl_1_main",
+  "coordinate_frame": "MuJoCo world",
+  "position_unit": "m",
+  "anchor_absolute_tolerance_m": 1e-09,
+  "max_models": 1,
+  "max_data": 1,
+  "max_forwards": 97,
+  "physics_steps": 0,
+  "contexts": 0,
+  "model_requests": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false,
+  "worker_timeout_seconds": 900
+}
