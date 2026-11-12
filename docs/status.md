@@ -10,6 +10,15 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 连续重规划的模型请求循环与控制通道已用合成推理联调；实际模型
+进程所有者和独立 checker 尚未接入，见[阶段报告](../reports/tracking/references/bounded_replan_model_loop_20261112.md)。
+
+2026-11-12 连续重规划的当前图像与部分段反馈绑定通过合成回归；真实长期模型
+服务和独立 checker 尚未接入，见[阶段报告](../reports/tracking/references/bounded_replan_reference_20261112.md)。
+
+2026-11-12 连续因果重规划的变长控制执行器通过合成时序及故障检查；真实模型、
+实际分段策略和独立重放尚未接入，见[阶段报告](../reports/tracking/references/bounded_replan_runtime_20261112.md)。
+
 2026-11-12 连续因果重规划的变长段协议及 32 并发专项检查已完成；尚未接入实际
 运行器或真实模型，见[阶段报告](../reports/tracking/references/bounded_replan_protocol_20261112.md)。
 

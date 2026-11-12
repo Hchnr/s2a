@@ -6,6 +6,9 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [连续因果重规划：模型请求循环与通道联调](bounded_replan_model_loop_20261112.md) | 新增报告 |
+| [连续因果重规划：当前图像与反馈绑定阶段](bounded_replan_reference_20261112.md) | 新增报告 |
+| [连续因果重规划：变长控制执行器阶段](bounded_replan_runtime_20261112.md) | 新增报告 |
 | [连续因果重规划：变长段协议阶段](bounded_replan_protocol_20261112.md) | 新增报告 |
 | [因果提前重规划的实际执行与独立重放（2026-11-12）](causal_replan_step107_execution_20261112.md) | 新增报告 |
 | [因果重规划边界的 step107 模型参考（2026-11-12）](causal_replan_step107_model_20261112.md) | 新增报告 |
