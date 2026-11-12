@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [已完成周期上的因果提前重规划](causal_partial_replan_20261112.md) | 新增计划 |
 | [碗任务 step88 新参考的连续物理执行](reset_bowl_step88_reference_20261112.md) | 新增计划 |
 | [碗任务 step88 当前图像的下一条模型参考](reset_bowl_step88_model_20261112.md) | 新增计划 |
 | [碗任务第二参考结束后的当前观测](reset_bowl_step88_reobserve_20261112.md) | 新增计划 |
