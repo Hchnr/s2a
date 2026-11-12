@@ -10,6 +10,21 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 40 周期长窗运行入口和跨解释器登记已通过 32 并发回归；最终回归、
+预检与真实执行待完成，见[阶段报告](../reports/tracking/references/adaptive_live_bowl_long_owner_20261112.md)。
+
+2026-11-12 可配置生产者/checker 监督及中断成本保留已通过 32 并发回归；
+长窗试验接线和真实执行待完成，见[阶段报告](../reports/tracking/references/registered_adaptive_execution_20261112.md)。
+
+2026-11-12 可配置预检和 40 周期因果账本边界已通过 32 并发回归；进程监督及
+真实长窗仍待完成，见[阶段报告](../reports/tracking/references/registered_adaptive_preflight_20261112.md)。
+
+2026-11-12 长窗试验准入已复核前次独立重放和累计区间，通过 32 并发回归；
+监督及真实执行待完成，见[准入报告](../reports/tracking/references/adaptive_live_bowl_long_admission_20261112.md)。
+
+2026-11-12 已预登记同一开发初态的 40 周期连续重规划试验；新登记、监督和
+真实执行仍待完成，见[计划](../plans/v0.0.1/tracking/references/adaptive_live_bowl_long_20261112.md)。
+
 2026-11-12 独立恢复试验在一个旧开发初态完成 115 周期，末尾 14 周期原生任务
 成功；独立重放逐值一致。末尾 40 周期、24 条留出及实时资格仍未达到，见
 [实际结果](../reports/tracking/references/adaptive_live_bowl_recovery_20261112.md)。
