@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [连续重规划：独立恢复试验与重放](adaptive_live_bowl_recovery_20261112.md) | 新增报告 |
 | [连续重规划：独立恢复试验监督](adaptive_live_bowl_recovery_owner_20261112.md) | 新增报告 |
 | [连续重规划：恢复试验的物理收据审核](adaptive_live_bowl_recovery_audit_20261112.md) | 新增报告 |
 | [连续重规划：独立恢复试验准入](adaptive_live_bowl_recovery_admission_20261112.md) | 新增报告 |

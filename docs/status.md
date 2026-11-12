@@ -10,6 +10,10 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 独立恢复试验在一个旧开发初态完成 115 周期，末尾 14 周期原生任务
+成功；独立重放逐值一致。末尾 40 周期、24 条留出及实时资格仍未达到，见
+[实际结果](../reports/tracking/references/adaptive_live_bowl_recovery_20261112.md)。
+
 2026-11-12 独立恢复试验监督已通过跨解释器检查和 32 并发回归；最终回归、
 预检及真实试验仍待完成，见[阶段报告](../reports/tracking/references/adaptive_live_bowl_recovery_owner_20261112.md)。
 
