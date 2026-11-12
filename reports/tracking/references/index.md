@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [固定 H40 后的当前图像采集（2026-11-12）](reset_bowl_h40_reobserve_capture_20261112.md) | 新增报告 |
 | [碗任务保存状态的 TCP–目标原点几何诊断（2026-11-12）](reset_bowl_saved_geometry_recovery_20261112.md) | 新增报告 |
 | [保存状态几何诊断的逐位检查失败（2026-11-12）](reset_bowl_saved_geometry_failure_20261112.md) | 新增报告 |
 | [碗任务固定 H40 与重复重观测短窗对照（2026-11-12）](reset_bowl_fixed_h40_probe_20261112.md) | 新增报告 |
