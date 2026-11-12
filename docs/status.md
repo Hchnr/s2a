@@ -10,6 +10,12 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 已以合成服务接通 reset 到连续重规划及独立重放；真实进程所有者和
+预检尚未完成，见[阶段报告](../reports/tracking/references/adaptive_live_bowl_bridge_20261112.md)。
+
+2026-11-12 已登记最多两次模型请求的连续重规划开发试验，并实现任意已完成周期
+的内步边界；真实试验尚未执行，见[计划](../plans/v0.0.1/tracking/references/adaptive_live_bowl_20261112.md)。
+
 2026-11-12 连续重规划的独立变长 checker 已通过合成重放和来源边界检查；实际模型
 及仿真进程所有者尚未接入，见[阶段报告](../reports/tracking/references/bounded_replan_replay_20261112.md)。
 

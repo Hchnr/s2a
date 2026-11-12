@@ -6,6 +6,8 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [连续重规划：reset 历史与模型通道接线](adaptive_live_bowl_bridge_20261112.md) | 新增报告 |
+| [连续重规划：任意已完成周期的运行边界](adaptive_live_boundary_20261112.md) | 新增报告 |
 | [连续因果重规划：独立变长重放阶段](bounded_replan_replay_20261112.md) | 新增报告 |
 | [连续因果重规划：预算边界的安全停止优先级](bounded_replan_safety_priority_20261112.md) | 新增报告 |
 | [连续因果重规划：模型请求循环与通道联调](bounded_replan_model_loop_20261112.md) | 新增报告 |
