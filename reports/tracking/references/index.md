@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [连续重规划：长窗生产与未闭合的独立重放](adaptive_live_bowl_long_partial_20261112.md) | 新增报告 |
 | [连续重规划：40 周期运行入口](adaptive_live_bowl_long_owner_20261112.md) | 新增报告 |
 | [连续重规划：可配置进程监督](registered_adaptive_execution_20261112.md) | 新增报告 |
 | [连续重规划：可配置预检与长周期边界](registered_adaptive_preflight_20261112.md) | 新增报告 |
