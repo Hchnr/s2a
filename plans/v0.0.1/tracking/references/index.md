@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [碗任务 step88 新参考的连续物理执行](reset_bowl_step88_reference_20261112.md) | 新增计划 |
 | [碗任务 step88 当前图像的下一条模型参考](reset_bowl_step88_model_20261112.md) | 新增计划 |
 | [碗任务第二参考结束后的当前观测](reset_bowl_step88_reobserve_20261112.md) | 新增计划 |
 | [有限参考尾段通用分段与碗任务后续窗口](finite_reference_tail_20261112.md) | 新增计划 |
