@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [碗任务第二参考结束后的当前观测](reset_bowl_step88_reobserve_20261112.md) | 新增计划 |
 | [有限参考尾段通用分段与碗任务后续窗口](finite_reference_tail_20261112.md) | 新增计划 |
 | [固定 H40 后的第二参考物理短窗](reset_bowl_h40_second_window_20261112.md) | 新增计划 |
 | [从固定 H40 延续到完整轨迹：运行器设计](long_horizon_reset_20261112.md) | 新增计划 |
