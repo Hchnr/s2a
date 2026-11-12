@@ -6,9 +6,10 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
-2026-11-12 碗任务固定 H40 的 48 周期经独立重放后，已在真实当前 step48 状态采集
-双相机图像，渲染未推进物理；新 WAM 参考和后续动作尚未执行。目标 grasp / 任务
-成功仍为 0，见[当前图像报告](../reports/tracking/references/reset_bowl_h40_reobserve_capture_20261112.md)。
+2026-11-12 碗任务固定 H40 的 48 周期经独立重放后，已采集当前双相机图像并据此
+生成真实 WAM H40 参考；新参考前 8 个开度目标从约 0.80 降到 0.40，尚未物理执行。
+此前轨迹的 grasp / 任务成功仍为 0，见[模型报告](../reports/tracking/references/reset_bowl_h40_reobserve_model_20261112.md)
+及[图像报告](../reports/tracking/references/reset_bowl_h40_reobserve_capture_20261112.md)。
 
 2026-11-12 碗任务加强闭合探针在 45 周期后因质量无 witness 停止，目标 grasp /
 任务成功均为 0；最后两端点位置超 1 cm，端点 45 一根手指略超模型标称范围。

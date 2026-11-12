@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.reset-bowl-h40-reobserve-model.v1",
+  "output": "outputs/reset_bowl_h40_reobserve_model_20261112",
+  "case_id": "task0_init0_s42_raw",
+  "task": "put the bowl on the plate",
+  "seed": 42,
+  "capture_step": 48,
+  "image_sha256": "241a42e2930fc5865864668f8cc40d6222c3359e59e83008c7bc96bc662d592a",
+  "state_sha256": "fe7dab2dbc8fc55aed2f4bf9d4d9c18604a400989782bbca091b79494f485937",
+  "gpu_uuid": "GPU-c0b598ba-0a6e-73af-bbcc-97bc89379bdf",
+  "model_sha256": "48138bb8c95ce8cc1ca0b70f925e57c8f16bfb21be0a243495b391a06cf5b8ec",
+  "max_model_initializations": 1,
+  "max_model_requests": 1,
+  "denoise_steps": 35,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false,
+  "worker_timeout_seconds": 2400
+}
