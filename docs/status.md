@@ -10,6 +10,21 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 连续重规划监督入口已完成 CPU 专项回归，并保留失败时的未知模型
+开销；最终并发回归、预检和真实试验仍待完成，见[阶段报告](../reports/tracking/references/adaptive_live_bowl_supervisor_20261112.md)。
+
+2026-11-12 连续重规划的实际收据审核已用历史独立物理记录和篡改测试验证；新
+试验仍未启动，见[审核报告](../reports/tracking/references/adaptive_live_bowl_audit_20261112.md)。
+
+2026-11-12 连续重规划的独立仿真 worker 已通过 CPU 准入和来源检查；外层监督器
+与真实试验仍待完成，见[阶段报告](../reports/tracking/references/adaptive_live_bowl_worker_20261112.md)。
+
+2026-11-12 连续重规划已核对历史输入和累计开销，修正仿真与模型并发启动时的
+目录时序；真实试验仍未启动，见[准入报告](../reports/tracking/references/adaptive_live_bowl_admission_20261112.md)。
+
+2026-11-12 连续重规划真实模型 worker 的设备与预算准入已通过 CPU 检查；进程
+所有者、预检及真实试验仍待完成，见[阶段报告](../reports/tracking/references/adaptive_model_worker_20261112.md)。
+
 2026-11-12 已以合成服务接通 reset 到连续重规划及独立重放；真实进程所有者和
 预检尚未完成，见[阶段报告](../reports/tracking/references/adaptive_live_bowl_bridge_20261112.md)。
 
