@@ -10,6 +10,12 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 可中断自适应仿真 worker 已完成合成接线与 32 并发回归；新试验的
+配置和进程监督仍待接入，见[报告](../reports/tracking/references/managed_adaptive_simulation_20261112.md)。
+
+2026-11-12 已将可处理中断和部分物理计数接入独立 worker 封装，并通过 32 并发
+回归；新试验运行器尚未接线，见[阶段报告](../reports/tracking/references/managed_physical_worker_20261112.md)。
+
 2026-11-12 中断处理与物理开销区间组件已通过真实信号和 32 并发回归；新仿真
 worker 尚未接入，见[阶段报告](../reports/tracking/references/interrupted_physical_costs_20261112.md)。
 
