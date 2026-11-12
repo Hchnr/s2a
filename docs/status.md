@@ -6,6 +6,11 @@
 绑定，CPU/OSMesa 仍使用空 CUDA/LD。根 README 为迁移时固定字节，其旧禁用说明
 应按当时的限制理解，最新用户许可覆盖该历史描述。
 
+2026-11-12 碗任务同一开发 reset 依据实际当前图像 WAM 参考连续执行至 step108，
+端点 102–108 的原生任务成功标签均为真；端点 108 位置误差 10.73 mm，随后下一
+动作前因质量无 witness 停止。108 周期独立重放一致，仍未满足留出 600 周期及末尾
+40 周期成功要求；见[物理报告](../reports/tracking/references/reset_bowl_step88_reference_20261112.md)。
+
 2026-11-12 在独立重放相同 88 周期后已采集当前图像，并生成下一条真实 WAM 参考；
 该参考尚未执行，见[模型报告](../reports/tracking/references/reset_bowl_step88_model_20261112.md)
 和[采图报告](../reports/tracking/references/reset_bowl_step88_capture_20261112.md)。
