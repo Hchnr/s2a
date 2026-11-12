@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [固定 H40 后的第二参考物理短窗（2026-11-12）](reset_bowl_h40_second_window_20261112.md) | 新增报告 |
 | [固定 H40 后的当前图像模型参考（2026-11-12）](reset_bowl_h40_reobserve_model_20261112.md) | 新增报告 |
 | [固定 H40 后的当前图像采集（2026-11-12）](reset_bowl_h40_reobserve_capture_20261112.md) | 新增报告 |
 | [碗任务保存状态的 TCP–目标原点几何诊断（2026-11-12）](reset_bowl_saved_geometry_recovery_20261112.md) | 新增报告 |

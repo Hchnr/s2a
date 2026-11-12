@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [固定 H40 后的第二参考物理短窗](reset_bowl_h40_second_window_20261112.md) | 新增计划 |
 | [从固定 H40 延续到完整轨迹：运行器设计](long_horizon_reset_20261112.md) | 新增计划 |
 | [固定 H40 后的当前图像模型参考](reset_bowl_h40_reobserve_model_20261112.md) | 新增计划 |
 | [固定 H40 后的当前观测与后续闭环](reset_bowl_h40_reobserve_20261112.md) | 新增计划 |
