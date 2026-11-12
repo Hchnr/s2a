@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [连续重规划：模型来源准入失败](adaptive_live_bowl_admission_failure_20261112.md) | 新增报告 |
 | [连续重规划：试验监督与失败收据](adaptive_live_bowl_supervisor_20261112.md) | 新增报告 |
 | [连续重规划：实际收据审核](adaptive_live_bowl_audit_20261112.md) | 新增报告 |
 | [连续重规划：隔离仿真 worker](adaptive_live_bowl_worker_20261112.md) | 新增报告 |
