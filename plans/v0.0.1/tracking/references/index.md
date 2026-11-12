@@ -6,6 +6,9 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [三任务当前图像试验的计数器修复与恢复](reset_multitask_live_recovery_20261111.md) | 新增计划 |
+| [三任务从复位起步的 48 周期当前图像试验](reset_multitask_live_48_20261111.md) | 新增计划 |
+| [从复位到第二个当前图像窗口](reset_live_second_window_20261111.md) | 新增计划 |
 | [三参数参考校正的开发可行性诊断 — 2026-10-21（Asia/Shanghai）](008_reference_gain_diagnostic_20261021.md) | `plans/v0.0.1/008_reference_gain_diagnostic_20261021.md` |
 | [三参数世界坐标角漂移校正的缓存诊断 — 2026-10-21](018_rotation_drift_diagnostic_20261021.md) | `plans/v0.0.1/018_rotation_drift_diagnostic_20261021.md` |
 | [020：同一物理端点的因果参考集成](020_causal_temporal_ensemble_20261021.md) | `plans/v0.0.1/020_causal_temporal_ensemble_20261021.md` |
