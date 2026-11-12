@@ -10,6 +10,12 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-12 已将无绑定历史输入与旧失败收据、未知开销区间合并准入；新试验
+配置和监督仍待接线，见[报告](../reports/tracking/references/adaptive_recovery_inputs_20261112.md)。
+
+2026-11-12 已实现无全局绑定的 step107 模型输入加载，并与历史加载结果独立
+对照；新试验监督器尚未接入，见[报告](../reports/tracking/references/step107_model_inputs_20261112.md)。
+
 2026-11-12 可中断自适应仿真 worker 已完成合成接线与 32 并发回归；新试验的
 配置和进程监督仍待接入，见[报告](../reports/tracking/references/managed_adaptive_simulation_20261112.md)。
 

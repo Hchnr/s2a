@@ -6,6 +6,8 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [连续重规划：恢复输入与失败开销准入](adaptive_recovery_inputs_20261112.md) | 新增报告 |
+| [连续重规划：无全局绑定的历史模型输入](step107_model_inputs_20261112.md) | 新增报告 |
 | [连续重规划：可中断仿真 worker 接线](managed_adaptive_simulation_20261112.md) | 新增报告 |
 | [连续重规划：可中断的物理 worker 封装](managed_physical_worker_20261112.md) | 新增报告 |
 | [连续重规划：中断收据与物理开销区间](interrupted_physical_costs_20261112.md) | 新增报告 |
