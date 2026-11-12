@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [因果重规划的 step107 当前图像模型参考](causal_replan_step107_model_20261112.md) | 新增计划 |
 | [因果提前重规划的 step107 当前图像](causal_replan_step107_capture_20261112.md) | 新增计划 |
 | [已完成周期上的因果提前重规划](causal_partial_replan_20261112.md) | 新增计划 |
 | [碗任务 step88 新参考的连续物理执行](reset_bowl_step88_reference_20261112.md) | 新增计划 |

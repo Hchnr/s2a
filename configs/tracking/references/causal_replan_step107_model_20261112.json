@@ -1,0 +1,19 @@
+{
+  "schema": "s2a.causal-replan-step107-model.v1",
+  "output": "outputs/causal_replan_step107_model_20261112",
+  "case_id": "task0_init0_s42_raw",
+  "task": "put the bowl on the plate",
+  "seed": 42,
+  "capture_step": 107,
+  "image_sha256": "f7cc70d689471bbc96865f825dc44bc9e1c2607bf63bfa56b6114780ec2129a3",
+  "state_sha256": "04b8eea4cd6e611302b68ff036594129808fec0bb88cab97f4e55106ee4c148d",
+  "gpu_uuid": "GPU-c0b598ba-0a6e-73af-bbcc-97bc89379bdf",
+  "model_sha256": "48138bb8c95ce8cc1ca0b70f925e57c8f16bfb21be0a243495b391a06cf5b8ec",
+  "max_model_initializations": 1,
+  "max_model_requests": 1,
+  "denoise_steps": 35,
+  "physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false,
+  "worker_timeout_seconds": 2400
+}
