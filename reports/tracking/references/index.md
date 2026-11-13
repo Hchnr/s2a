@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [碗任务第 129 端点的原生谓词诊断](bowl_native_predicate_probe_20261113.md) | 新增报告 |
 | [碗任务原生谓词静态诊断准备](bowl_native_predicate_probe_preparation_20261113.md) | 新增报告 |
 | [长窗：最终端点缓存的独立重放](adaptive_long_final_endpoint_replay_20261113.md) | 新增报告 |
 | [最终端点 checker 的单次监督](adaptive_long_final_endpoint_owner_20261113.md) | 新增报告 |
