@@ -10,6 +10,9 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 保存状态静态重建与 40 个原生标签一致；第 129 端点位置条件成立
+但无碗盘接触。原盘位置向量记录缺陷已只读纠正，见[诊断报告](../reports/tracking/references/bowl_native_predicate_probe_20261113.md)。
+
 2026-11-13 碗任务诊断 QA 中两次合成 MuJoCo 测试各创建一个小模型并 forward；
 此前零模型表述已更正，真实状态查询未执行，见[计划修订](../plans/v0.0.1/tracking/references/bowl_native_predicate_probe_20261113.md)。
 
