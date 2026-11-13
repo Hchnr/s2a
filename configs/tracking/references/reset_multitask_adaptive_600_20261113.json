@@ -1,0 +1,29 @@
+{
+  "schema": "s2a.reset-multitask-adaptive-development.v1",
+  "output": "outputs/reset_multitask_adaptive_600_20261113",
+  "case_indices": [0, 2, 4, 6, 8, 10],
+  "cases": [
+    {"case_index": 0, "case_id": "task0_init0_s42_raw", "sampling_seed": 42, "gpu_uuid": "GPU-ed712b30-c0c0-c699-4cb1-2ee0e33fbe8d"},
+    {"case_index": 2, "case_id": "task0_init0_s43_raw", "sampling_seed": 43, "gpu_uuid": "GPU-45f7c2db-5c3a-91f8-a299-e21c0681a71b"},
+    {"case_index": 4, "case_id": "task1_init0_s42_raw", "sampling_seed": 42, "gpu_uuid": "GPU-c0b598ba-0a6e-73af-bbcc-97bc89379bdf"},
+    {"case_index": 6, "case_id": "task1_init0_s43_raw", "sampling_seed": 43, "gpu_uuid": "GPU-5f5f2b7d-a87b-28e2-0bcc-ee85f2889db4"},
+    {"case_index": 8, "case_id": "task2_init0_s42_raw", "sampling_seed": 42, "gpu_uuid": "GPU-ed712b30-c0c0-c699-4cb1-2ee0e33fbe8d"},
+    {"case_index": 10, "case_id": "task2_init0_s43_raw", "sampling_seed": 43, "gpu_uuid": "GPU-45f7c2db-5c3a-91f8-a299-e21c0681a71b"}
+  ],
+  "max_parallel_cases": 4,
+  "prefix_steps": 8,
+  "max_adaptive_periods": 592,
+  "max_control_steps_per_phase": 600,
+  "max_native_steps_per_phase": 15000,
+  "max_models_per_phase": 3,
+  "max_contexts_per_phase": 3,
+  "max_model_initializations": 1,
+  "max_model_requests": 75,
+  "denoise_calls_per_request": 35,
+  "max_denoise_calls": 2625,
+  "worker_timeout_seconds": 10800,
+  "model_sha256": "48138bb8c95ce8cc1ca0b70f925e57c8f16bfb21be0a243495b391a06cf5b8ec",
+  "fresh_cases": 0,
+  "fits": 0,
+  "automatic_retry": false
+}
