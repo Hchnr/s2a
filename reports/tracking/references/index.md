@@ -6,6 +6,12 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [seed 43 复位闭环接线的阶段检查](reset_seed43_wiring_checks_20261113.md) | 新增报告 |
+| [seed 43 复位反馈与独立重放 worker 接线](reset_seed43_simulation_worker_20261113.md) | 新增报告 |
+| [seed 43 复位闭环的预检接线](reset_seed43_trial_20261113.md) | 新增报告 |
+| [seed 43 当前图像模型 worker](reset_seed43_model_worker_20261113.md) | 新增报告 |
+| [seed 43 当前图像单请求服务](reset_seed43_live_request_20261113.md) | 新增报告 |
+| [seed 43 当前图像第二窗口的输入准入](reset_seed43_live_admission_20261113.md) | 新增报告 |
 | [新 seed 43 参考与历史首窗物理证据的关联](seed43_historical_control_20261113.md) | 新增报告 |
 | [保存开发图像上的真实 seed 43 模型重放](adaptive_multiseed_real43_20261113.md) | 新增报告 |
 | [真实 seed 43 重放的进程监督准备](adaptive_multiseed_real43_owner_20261113.md) | 新增报告 |
