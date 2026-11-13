@@ -6,6 +6,9 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [长窗缓存 checker 的运行监督](adaptive_long_cached_checker_owner_20261113.md) | 新增报告 |
+| [长窗缓存 checker 的重放接线](adaptive_long_cached_checker_worker_20261112.md) | 新增报告 |
+| [长窗失败后的缓存 checker 准入](adaptive_long_cached_checker_admission_20261112.md) | 新增报告 |
 | [连续重规划：长窗生产与未闭合的独立重放](adaptive_live_bowl_long_partial_20261112.md) | 新增报告 |
 | [连续重规划：40 周期运行入口](adaptive_live_bowl_long_owner_20261112.md) | 新增报告 |
 | [连续重规划：可配置进程监督](registered_adaptive_execution_20261112.md) | 新增报告 |

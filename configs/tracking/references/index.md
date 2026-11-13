@@ -9,6 +9,7 @@
 | [adaptive_live_bowl_20261112.json](adaptive_live_bowl_20261112.json) | 新增配置 |
 | [adaptive_live_bowl_long_20261112.json](adaptive_live_bowl_long_20261112.json) | 新增配置 |
 | [adaptive_live_bowl_recovery_20261112.json](adaptive_live_bowl_recovery_20261112.json) | 新增配置 |
+| [adaptive_long_cached_checker_20261112.json](adaptive_long_cached_checker_20261112.json) | 新增配置 |
 | [reference_gain_diagnostic_20261021.json](reference_gain_diagnostic_20261021.json) | `configs/reference_gain_diagnostic_20261021.json` |
 | [reference_recovery_qualification_20261021.json](reference_recovery_qualification_20261021.json) | `configs/reference_recovery_qualification_20261021.json` |
 | [rotation_drift_diagnostic_20261021.json](rotation_drift_diagnostic_20261021.json) | `configs/rotation_drift_diagnostic_20261021.json` |
