@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [长窗重放：仅在最终端点缓存](adaptive_long_final_endpoint_checker_20261113.md) | 新增计划 |
 | [长窗失败后的独立缓存 checker 验证](adaptive_long_cached_checker_20261112.md) | 新增计划 |
 | [连续重规划：40 周期开发试验](adaptive_live_bowl_long_20261112.md) | 新增计划 |
 | [连续重规划：独立恢复试验](adaptive_live_bowl_recovery_20261112.md) | 新增计划 |

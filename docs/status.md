@@ -10,6 +10,24 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 最终端点 checker 的首次 64 并发回归中 2 项因获取当前目录失败；
+单项复验通过但原因未确定，完整回归待独立重验，见[计划修订](../plans/v0.0.1/tracking/references/adaptive_long_final_endpoint_checker_20261113.md)。
+
+2026-11-13 最终端点 checker 的监督和失败记账已通过 32 并发回归；真实重放
+尚未执行，见[监督报告](../reports/tracking/references/adaptive_long_final_endpoint_owner_20261113.md)。
+
+2026-11-13 最终端点 checker 已通过接线回归，较早观察保持原路径；真实重放
+尚未执行，见[接线报告](../reports/tracking/references/adaptive_long_final_endpoint_worker_20261113.md)。
+
+2026-11-13 最终端点缓存重放的历史准入已通过 32 并发回归，真实重放尚未
+执行，见[准入报告](../reports/tracking/references/adaptive_long_final_endpoint_admission_20261113.md)。
+
+2026-11-13 已登记仅在第 147 端点启用严格缓存的独立 CPU 重放；尚未实现或
+执行，见[计划](../plans/v0.0.1/tracking/references/adaptive_long_final_endpoint_checker_20261113.md)。
+
+2026-11-13 长窗缓存 checker 完成 119 周期后在状态哈希核对处失败；第三组
+图像字节一致，原失败和本次成本均保留，见[事件报告](../reports/tracking/references/adaptive_long_cached_checker_incident_20261113.md)。
+
 2026-11-13 长窗缓存 checker 的单次 CPU 监督和失败成本记录已通过 32 并发
 相关回归；真实重放尚未执行，见[监督报告](../reports/tracking/references/adaptive_long_cached_checker_owner_20261113.md)。
 
