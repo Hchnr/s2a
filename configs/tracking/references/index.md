@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [自适应世界模型服务的双 seed 接口](adaptive_multiseed_interface_20261113.json) | 新增配置 |
 | [碗任务原生成功谓词的保存状态诊断](bowl_native_predicate_probe_20261113.json) | 新增配置 |
 | [长窗重放：仅在最终端点缓存](adaptive_long_final_endpoint_checker_20261113.json) | 新增配置 |
 | [adaptive_live_bowl_20261112.json](adaptive_live_bowl_20261112.json) | 新增配置 |
