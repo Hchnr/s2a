@@ -76,7 +76,7 @@ def fixture():
     return args, original, rollout
 
 
-def run_with_cache(monkeypatch, args, original, rollout, plan, translation, *, count=1):
+def run_with_cache(monkeypatch, args, original, rollout, plan, translation, *, count=1, rotation=None, **options):
     cache = {}
     for index in range(count):
         row = plan.copy()
@@ -87,8 +87,9 @@ def run_with_cache(monkeypatch, args, original, rollout, plan, translation, *, c
     return solver.solve_interior_plan(
         *args,
         translation_innovation=translation,
-        rotation_discrepancy=np.eye(3),
+        rotation_discrepancy=np.eye(3) if rotation is None else rotation,
         past_inner_error_rad=np.zeros((25, 7)),
+        **options,
     )
 
 
@@ -107,6 +108,51 @@ def test_a_candidate_passing_both_original_and_innovation_gates_is_returned(monk
     assert result["status"] == "innovation_model_witness"
     assert result["requires_independent_audit"] is True
     assert result["future_innovation_guarantee"] is False
+
+
+def test_stricter_corrected_cap_rejects_a_witness_inside_the_original_limit(monkeypatch):
+    args, original, rollout = fixture()
+    plan, translation = np.zeros((8, 6)), np.array([0.009, 0, 0])
+    original_result = run_with_cache(monkeypatch, args, original, rollout, plan, translation)
+    stricter_result = run_with_cache(
+        monkeypatch, args, original, rollout, plan, translation, corrected_position_cap_m=0.007
+    )
+    assert original_result["witness_found"] is True
+    assert stricter_result["witness_found"] is False
+    assert stricter_result["corrected_position_cap_m"] == 0.007
+
+
+def test_stricter_rotation_cap_rejects_a_witness_inside_the_original_limit(monkeypatch):
+    args, original, rollout = fixture()
+    rotation = Rotation.from_rotvec([0, 0, 0.045]).as_matrix()
+    result = run_with_cache(
+        monkeypatch,
+        args,
+        original,
+        rollout,
+        np.zeros((8, 6)),
+        np.zeros(3),
+        rotation=rotation,
+        corrected_rotation_cap_rad=0.04,
+    )
+    assert result["witness_found"] is False
+    assert result["corrected_rotation_cap_rad"] == 0.04
+
+
+@pytest.mark.parametrize(
+    "position, rotation", [(0, 0.05), (0.011, 0.05), (0.01, 0.051), (float("nan"), 0.05), (True, 0.05)]
+)
+def test_corrected_caps_cannot_weaken_or_invalidate_original_limits(position, rotation):
+    args, _original, _rollout = fixture()
+    with pytest.raises(ValueError, match="no larger than the original caps"):
+        solver.solve_interior_plan(
+            *args,
+            translation_innovation=np.zeros(3),
+            rotation_discrepancy=np.eye(3),
+            past_inner_error_rad=np.zeros((25, 7)),
+            corrected_position_cap_m=position,
+            corrected_rotation_cap_rad=rotation,
+        )
 
 
 def test_near_rate_candidate_requires_one_rechecked_model_response(monkeypatch):

@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[因果 TCP 补偿余量的固定状态搜索](causal_innovation_margin_20261113.md)
+
 最新：[已重放停止状态的首点优先求解](replayed_first_pose_search_20261112.md)
 
 最新：[碗任务已重放参考的首点位姿外界](replayed_reference_pose_bounds_20261112.md)
