@@ -14,6 +14,20 @@ from s2a.research.trajectory_search import quality_rate_repair_solver as origina
 from s2a.research.trajectory_search.rate_boundary_repair import repair_nearby_rate_plan
 
 
+def validated_corrected_caps(position, rotation):
+    """Keep additional corrected-error caps within the original pose limits."""
+    caps = (position, rotation)
+    if any(
+        isinstance(value, (bool, np.bool_))
+        or not isinstance(value, Real)
+        or not np.isfinite(value)
+        or not 0 < value <= maximum
+        for value, maximum in zip(caps, (0.01, 0.05), strict=True)
+    ):
+        raise ValueError("Corrected pose caps must be finite, positive, and no larger than the original caps")
+    return tuple(float(value) for value in caps)
+
+
 def corrected_error(raw, translation_innovation, rotation_discrepancy):
     """Compose one previous world-frame discrepancy with the current SO(3) error."""
     raw = finite(raw, (6,))
@@ -138,16 +152,7 @@ def solve_interior_plan(
     Optional stricter corrected-error caps provide a model margin without
     changing the original position and rotation acceptance limits.
     """
-    caps = (corrected_position_cap_m, corrected_rotation_cap_rad)
-    if any(
-        isinstance(value, (bool, np.bool_))
-        or not isinstance(value, Real)
-        or not np.isfinite(value)
-        or not 0 < value <= maximum
-        for value, maximum in zip(caps, (0.01, 0.05), strict=True)
-    ):
-        raise ValueError("Corrected pose caps must be finite, positive, and no larger than the original caps")
-    caps = tuple(float(value) for value in caps)
+    caps = validated_corrected_caps(corrected_position_cap_m, corrected_rotation_cap_rad)
     translation, rotation = finite(translation_innovation, (3,)), finite(rotation_discrepancy, (3, 3))
     corrected_error(np.zeros(6), translation, rotation)
     args = (model, velocity, seed, previous, interface, site, tool, targets, twists, lower, upper)

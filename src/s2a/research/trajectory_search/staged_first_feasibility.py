@@ -39,12 +39,18 @@ def solve_staged_first_feasibility(
     braking_time_s=0.1,
     feasibility_restoration=True,
     enforce_braking=True,
+    first_pose_constraint=None,
 ):
     """Share one finite response cache across first-feasibility and future optimization."""
     if initial_guess is not None or feasibility_restoration is not True or enforce_braking is not True:
         raise ValueError("Only registered restoration with an internally chosen start is supported")
     if not np.isclose(braking_time_s, 0.1, atol=0, rtol=0):
         raise ValueError("The original 0.1 s braking constraint is required")
+    if first_pose_constraint is not None and any(
+        not callable(getattr(first_pose_constraint, name, None))
+        for name in ("evaluate", "satisfied", "correction", "describe")
+    ):
+        raise ValueError("An evaluable first-pose constraint with explicit acceptance is required")
     seed, previous, velocity = finite(seed, (8, 6)), finite(previous, (6,)), finite(velocity, (7,))
     lower, upper = finite(lower, (7,)), finite(upper, (7,))
     error = np.zeros((25, 7)) if past_inner_error_rad is None else finite(past_inner_error_rad, (25, 7))
@@ -93,6 +99,8 @@ def solve_staged_first_feasibility(
         initial_margin_rad=initial_margin,
         scope="staged frozen-model first-pose candidate; future gap is not a full-horizon witness",
     )
+    if first_pose_constraint is not None:
+        base["additional_first_pose_constraint"] = first_pose_constraint.describe()
     if initial_margin < 0.05 - 1e-12:
         info = dict(
             seed_linear_safe=False,
@@ -127,7 +135,15 @@ def solve_staged_first_feasibility(
     evaluate(start.ravel())
 
     def pose(x):
-        return pose_quality_constraints(evaluate(x)["score"], 8, scale)
+        item = evaluate(x)
+        values, jacobian, errors = pose_quality_constraints(item["score"], 8, scale)
+        if first_pose_constraint is not None:
+            extra, extra_jac = first_pose_constraint.evaluate(item["score"], item["rollout"], errors[0], scale)
+            extra, extra_jac = finite(extra, (2,)), finite(extra_jac, (2, 48))
+            stricter = extra < values[:2]
+            values[:2] = np.minimum(values[:2], extra)
+            jacobian[:2] = np.where(stricter[:, None], extra_jac, jacobian[:2])
+        return values, jacobian, errors
 
     def first_objective(x):
         values, jacobian, _ = pose(x)
@@ -148,15 +164,22 @@ def solve_staged_first_feasibility(
             x = np.asarray(key)
             if not domain_check(x.reshape(8, 6), domain, interface)["accepted"]:
                 continue
-            values, _, errors = pose_quality_constraints(item["score"], 8, scale)
+            values, _, errors = pose(x)
             first_position, first_rotation = float(np.linalg.norm(errors[0, :3])), float(np.linalg.norm(errors[0, 3:]))
             violation = max(0.0, first_position / 0.01 - 1, first_rotation / 0.05 - 1)
+            if first_pose_constraint is not None:
+                violation = max(violation, float(-np.min(values[:2])))
             future = max(0.0, float(-np.min(values[2:])))
-            row = (x, item, errors, future, max(0.0, float(-np.min(values))), violation)
+            original_values, _, _ = pose_quality_constraints(item["score"], 8, scale)
+            row = (x, item, errors, future, max(0.0, float(-np.min(original_values))), violation)
             safe.append(row)
             if closest is None or violation < closest[5]:
                 closest = row
-            if first_position <= 0.01 + 1e-10 and first_rotation <= 0.05 + 1e-10:
+            if (
+                first_position <= 0.01 + 1e-10
+                and first_rotation <= 0.05 + 1e-10
+                and (first_pose_constraint is None or first_pose_constraint.satisfied(errors[0]))
+            ):
                 first_safe.append(row)
         return safe, first_safe, closest
 
@@ -280,4 +303,7 @@ def solve_staged_first_feasibility(
         first_pose_optimized_hard=item["first_seen"] == "future_quality",
         first_pose_selection_hard=True,
     )
+    if first_pose_constraint is not None:
+        base["best_joint_safe"]["additional_first_pose_constraint"] = first_pose_constraint.describe()
+        base["best_joint_safe"]["innovation_corrected_first_tcp_error"] = first_pose_constraint.correction(errors[0])
     return dict(**base, status="staged_first_restoration_candidate")

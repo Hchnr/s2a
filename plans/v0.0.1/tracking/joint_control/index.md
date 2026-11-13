@@ -1,5 +1,9 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[因果补偿位置的冻结模型外界](causal_position_reachability_20261113.md)
+
+近期：[因果补偿首点可行性优先搜索](causal_first_pose_search_20261113.md)
+
 近期：[因果 TCP 补偿余量对照](causal_innovation_margin_20261113.md)
 
 近期：[已重放停止状态的首点优先求解](replayed_first_pose_search_20261112.md)
