@@ -6,6 +6,9 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [双 seed 自适应模型 worker](adaptive_multiseed_worker_20261113.md) | 新增报告 |
+| [双 seed 自适应请求循环](adaptive_multiseed_requests_20261113.md) | 新增报告 |
+| [双 seed 模型请求合同](adaptive_multiseed_contract_20261113.md) | 新增报告 |
 | [碗任务第 129 端点的原生谓词诊断](bowl_native_predicate_probe_20261113.md) | 新增报告 |
 | [碗任务原生谓词静态诊断准备](bowl_native_predicate_probe_preparation_20261113.md) | 新增报告 |
 | [长窗：最终端点缓存的独立重放](adaptive_long_final_endpoint_replay_20261113.md) | 新增报告 |

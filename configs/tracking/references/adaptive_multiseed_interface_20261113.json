@@ -1,0 +1,26 @@
+{
+  "schema": "s2a.adaptive-multiseed-interface.v1",
+  "allowed_seeds": [42, 43],
+  "tasks": [
+    "put the bowl on the plate",
+    "put the wine bottle on the rack",
+    "put the cream cheese in the bowl"
+  ],
+  "denoise_steps": 35,
+  "action_chunk_size": 40,
+  "action_fps": 20,
+  "max_control_periods": 600,
+  "max_model_requests": 75,
+  "seed_policy": "reset_registered_seed_for_every_request",
+  "legacy_worker_sha256": "8ac17c7bfa26df5f2dfef9d5628b5917628b867d480e473d3901b63af143133b",
+  "legacy_stream_sha256": "675e991b4ec4c1a02607bd7b28be427af6ab5bd367c15cccd1b52f7f01f82eb6",
+  "legacy_request_builder_sha256": "2a2436de0184ee5fe081b5278396d66e69d9792e9d2eda10386dcbf3af5e5371",
+  "legacy_response_validator_sha256": "0dd082cc23ff1bac5efd95af01ee5a6b6a1a902fd08e73e261b5d5ed480af587",
+  "adaptive_protocol_sha256": "3adf9cae2b0d90f249953476ca3d5939757f31e6977c9d54568b2e3fe89641c7",
+  "new_model_initializations": 0,
+  "new_model_requests": 0,
+  "new_denoise_calls": 0,
+  "new_physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

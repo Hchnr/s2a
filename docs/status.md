@@ -10,6 +10,15 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 双 seed 自适应请求循环与模型 worker 已完成 CPU 合成接线和回归；
+真实模型采样和物理执行尚未进行，见[worker 报告](../reports/tracking/references/adaptive_multiseed_worker_20261113.md)。
+
+2026-11-13 双 seed 模型请求与响应身份合同已通过 32 并发回归；服务循环和
+真实采样尚未接入，见[合同报告](../reports/tracking/references/adaptive_multiseed_contract_20261113.md)。
+
+2026-11-13 已登记双 seed 自适应模型接口，解决现有服务固定 seed 42 的验收
+缺口；实现与真实 seed 43 验证尚未完成，见[计划](../plans/v0.0.1/tracking/references/adaptive_multiseed_interface_20261113.md)。
+
 2026-11-13 保存状态静态重建与 40 个原生标签一致；第 129 端点位置条件成立
 但无碗盘接触。原盘位置向量记录缺陷已只读纠正，见[诊断报告](../reports/tracking/references/bowl_native_predicate_probe_20261113.md)。
 
