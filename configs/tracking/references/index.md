@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [seed 43 复位至当前图像第二窗口](reset_seed43_live_second_window_20261113.json) | 新增配置 |
 | [双 seed worker 真实 seed 43 单次推理](adaptive_multiseed_real43_20261113.json) | 新增配置 |
 | [自适应世界模型服务的双 seed 接口](adaptive_multiseed_interface_20261113.json) | 新增配置 |
 | [碗任务原生成功谓词的保存状态诊断](bowl_native_predicate_probe_20261113.json) | 新增配置 |

@@ -10,6 +10,24 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 seed 43 复位闭环接线的 64 并发相关回归通过；真实执行前仍需
+进程监督及预检，见[阶段检查](../reports/tracking/references/reset_seed43_wiring_checks_20261113.md)。
+
+2026-11-13 seed 43 producer 与独立 checker 的仿真接线已通过 CPU 合成回归；
+现场进程监督与实际执行待完成，见[仿真接线报告](../reports/tracking/references/reset_seed43_simulation_worker_20261113.md)。
+
+2026-11-13 seed 43 预检接线已绑定仿真实际图像目录并通过 CPU 回归；现场
+进程监督及真实复位闭环待完成，见[预检接线报告](../reports/tracking/references/reset_seed43_trial_20261113.md)。
+
+2026-11-13 seed 43 当前图像模型 worker 已通过 socket 合成测试与 CPU 回归；
+实际模型与仿真仍待接入，见[worker 报告](../reports/tracking/references/reset_seed43_model_worker_20261113.md)。
+
+2026-11-13 seed 43 当前图像单请求服务已完成 CPU 合成测试；模型进程接线、
+实际推理和仿真待完成，见[服务报告](../reports/tracking/references/reset_seed43_live_request_20261113.md)。
+
+2026-11-13 seed 43 复位至当前图像第二窗口的历史输入准入已通过 CPU 回归；
+现场接线与实际试验待完成，见[准入报告](../reports/tracking/references/reset_seed43_live_admission_20261113.md)。
+
 2026-11-13 新 seed 43 输出与历史同图参考逐元素一致；对应历史首 8 周期
 位姿 8/8 达门但任务成功 0/8，该关联不是新在线闭环，见[只读审计](../reports/tracking/references/seed43_historical_control_20261113.md)。
 
