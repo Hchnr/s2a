@@ -10,6 +10,9 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 最终端点缓存 checker 完整重放 147 周期且数值差为 0；第 129 端点
+任务失败、末尾连续 18 周期成功，见[独立重放报告](../reports/tracking/references/adaptive_long_final_endpoint_replay_20261113.md)。
+
 2026-11-13 最终端点 checker 的首次 64 并发回归中 2 项因获取当前目录失败；
 单项复验通过但原因未确定，完整回归待独立重验，见[计划修订](../plans/v0.0.1/tracking/references/adaptive_long_final_endpoint_checker_20261113.md)。
 
