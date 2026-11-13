@@ -6,6 +6,10 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [最终端点 checker 的单次监督](adaptive_long_final_endpoint_owner_20261113.md) | 新增报告 |
+| [最终端点缓存的 checker 接线](adaptive_long_final_endpoint_worker_20261113.md) | 新增报告 |
+| [最终端点 checker 的历史准入](adaptive_long_final_endpoint_admission_20261113.md) | 新增报告 |
+| [长窗缓存 checker 的部分失败](adaptive_long_cached_checker_incident_20261113.md) | 新增报告 |
 | [长窗缓存 checker 的运行监督](adaptive_long_cached_checker_owner_20261113.md) | 新增报告 |
 | [长窗缓存 checker 的重放接线](adaptive_long_cached_checker_worker_20261112.md) | 新增报告 |
 | [长窗失败后的缓存 checker 准入](adaptive_long_cached_checker_admission_20261112.md) | 新增报告 |

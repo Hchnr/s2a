@@ -1,0 +1,37 @@
+{
+  "schema": "s2a.adaptive-long-final-endpoint-checker.v1",
+  "output": "outputs/adaptive_long_final_endpoint_checker_20261113",
+  "qa": "outputs/qa/adaptive_long_final_endpoint_checker_revalidated_20261113/result.json",
+  "dry": "outputs/adaptive_long_final_endpoint_checker_dry_revalidated_20261113/result.json",
+  "case_id": "task0_init0_s42_raw",
+  "seed": 42,
+  "session": "adaptive_live_bowl_long_s42_20261112",
+  "prior_producer_sha256": "afc31cfb643b013c584a95940dba7c4b7fa427273ed53d84362da020d2e204c5",
+  "original_failed_checker_sha256": "39e80cb7b0861f2fcf8d6c8b350152e2c554d0cff3002e7ada006631c5addd8b",
+  "cached_failed_checker_sha256": "83375f747c6e910d5f8d9d9c3c82b48652f8dcceaa7b825876fabd97002ab171",
+  "cached_incident_audit_sha256": "9aad9b9be9bb8cedb2a4c61295b4ff524cb52e689b3e39708651812e039c1f39",
+  "cache_step": 147,
+  "max_control_steps": 147,
+  "max_native_steps": 3675,
+  "max_models": 3,
+  "max_contexts": 3,
+  "previous_physical_bounds": {
+    "control_steps": {"lower": 2174, "upper": 2289},
+    "native_steps": {"lower": 54350, "upper": 57225},
+    "models": {"lower": 93, "upper": 96},
+    "contexts": {"lower": 93, "upper": 96}
+  },
+  "previous_static_models": 2,
+  "previous_model_bounds": {
+    "initializations_completed": {"lower": 11, "upper": 11},
+    "requests_attempted": {"lower": 30, "upper": 30},
+    "requests_completed": {"lower": 27, "upper": 27},
+    "denoise_calls_completed": {"lower": 945, "upper": 945}
+  },
+  "new_model_initializations": 0,
+  "new_model_requests": 0,
+  "new_denoise_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false,
+  "worker_timeout_seconds": 3600
+}

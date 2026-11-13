@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [长窗重放：仅在最终端点缓存](adaptive_long_final_endpoint_checker_20261113.json) | 新增配置 |
 | [adaptive_live_bowl_20261112.json](adaptive_live_bowl_20261112.json) | 新增配置 |
 | [adaptive_live_bowl_long_20261112.json](adaptive_live_bowl_long_20261112.json) | 新增配置 |
 | [adaptive_live_bowl_recovery_20261112.json](adaptive_live_bowl_recovery_20261112.json) | 新增配置 |
