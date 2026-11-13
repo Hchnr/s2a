@@ -14,7 +14,8 @@
 成功，一条在 462 步耗尽请求预算且记录 346 个 grasp，另有 16 次 pose 超限的
 案例；原审核失败保留。固定 H40 六案例短窗同为 0/6 抓取和成功，有 5 个 pose
 超限端点。结果见[自适应矩阵](../reports/tracking/references/reset_multitask_adaptive_complete_20261113.md)
-及[固定 H40 对照](../reports/tracking/references/reset_multitask_fixed_h40_complete_20261113.md)。
+及[固定 H40 对照](../reports/tracking/references/reset_multitask_fixed_h40_complete_20261113.md)；
+修复后的正式目录 64 并发相关回归 250 项通过，首次失败及复验已记录。
 
 2026-11-13 统一固定 H40 对照的首四案例已完成 producer 及独立重放；三条走完
 48 周期，一条在 36 周期质量停止，四条均未抓取或成功，停止案例有两个端点超

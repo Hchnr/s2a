@@ -38,7 +38,13 @@ cream/seed42 在 462 个端点中有 346 个目标 grasp、没有任务成功；
 内步；两相位各使用 18 个仿真模型与 18 个 OSMesa context。producer 实际初始化
 WAM 6 次，完成 213 次新请求 / 7,455 次 denoise；所有子进程已 wait/reap，模型
 进程退出且四张 GPU 显存释放。修复前和隔离工作区的失败回归均按事件报告保留；
-修复后的正式源码匹配全量相关回归另行记录。
+修复后的正式工作目录 64 并发相关回归为 250 项通过，0 skip、xfail、xpass 或
+收集错误，源码前后一致，64 个 worker 均实际 wait/reap。
+
+首次正式 64 并发回归为 249 项通过、1 项失败：共同收集的另一测试模块提前导入
+候选模块，而模拟路由测试没有隔离这两个已加载模块，导致其 checker 隔离断言失败。
+修正测试自身的模块隔离后，按原失败分片复验 4 项通过，再执行上述完整 250 项。
+真实 checker 的隔离检查没有改变；首次失败及分片复验收据均保留。
 
 | 收据 | SHA-256 |
 | --- | --- |
@@ -47,6 +53,9 @@ WAM 6 次，完成 213 次新请求 / 7,455 次 denoise；所有子进程已 wai
 | `outputs/reset_multitask_adaptive_preliminary_remaining_20261113/result.json` | `c26a8659bb309e30fad4fa8e3ae79b6557c398426091e14c6a881f56aaea704c` |
 | `outputs/reset_multitask_postflight_replay_20261113/wave_remaining.json` | `a37cbc0df8e559e48b413e6507912d5dd6662323dbbdd466c72f51835fae7fda` |
 | `outputs/reset_multitask_adaptive_complete_audit_20261113/result.json` | `7fe0f7d17ddea1913ffab2f5a4243c5b8e4b6a5def9633269ebec95efc82f8fe` |
+| `outputs/qa/reset_multitask_final_20261113/result.json` | `138c9bad90cb4608090bc9359651d4dce1a18e5096a963bce82b1e205f23d400` |
+| `outputs/qa/reset_multitask_failed_shard_recheck_20261113/result.json` | `06dd83f96523b7794b26337f3276598ecb7d317223d819dac407a2d0c6edcb47` |
+| `outputs/qa/reset_multitask_final_v2_20261113/result.json` | `893789237315f15a36d18db8c7c6bcec53b7b39cbd90b1b6d0b5c7f447404f6a` |
 
 当前候选的完整正确参考正控、12 条 WAM 开发资格、24 条新初态最终验收，以及
 实时和真机仍未完成；这些开发结果不能替代原门槛。

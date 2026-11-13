@@ -105,6 +105,15 @@ def test_worker_routes_registered_case_and_600_period_budget(tmp_path, monkeypat
     monkeypatch.setattr(worker.original, "require_no_simulator_import", lambda: None)
     monkeypatch.setattr(worker.isolation, "checker_isolation", lambda: None)
     monkeypatch.setattr(worker.isolation, "FORBIDDEN", ("synthetic.candidate",))
+    if phase == "checker":
+        # Other co-collected tests import these real candidate modules at module
+        # scope. This routing test uses a synthetic stream; the clean-process
+        # isolation test above exercises the real checker import boundary.
+        for name in (
+            "s2a.research.joint_control.preview.causal_reference_replan",
+            "s2a.research.wam.tracking.runtime.adaptive_stream_reference",
+        ):
+            monkeypatch.delitem(sys.modules, name, raising=False)
     monkeypatch.setattr(worker.audit, "verify_model_exchange", lambda *_args: {})
     monkeypatch.setattr(worker.historical, "load_recorded_responses", lambda *_args: ["actual-response"])
     calls = []
