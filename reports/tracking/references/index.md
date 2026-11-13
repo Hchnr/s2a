@@ -6,6 +6,9 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [三任务双 seed 自适应开发矩阵：完整记录](reset_multitask_adaptive_complete_20261113.md) | 新增报告 |
+| [三任务固定 H40 复位对照：完整记录](reset_multitask_fixed_h40_complete_20261113.md) | 新增报告 |
+| [三任务共同固定 H40 对照：前四案例](reset_multitask_fixed_h40_first_wave_20261113.md) | 新增报告 |
 | [六案例首批停止帧事件与独立重放](reset_multitask_postflight_replay_20261113.md) | 新增报告 |
 | [六案例自适应开发矩阵准备](reset_multitask_adaptive_preparation_20261113.md) | 新增报告 |
 | [seed 43 复位到当前图像的双窗口闭环与重放](reset_seed43_live_second_window_20261113.md) | 新增报告 |

@@ -10,6 +10,16 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 三任务双 seed 自适应矩阵的六条实际轨迹均已独立重放：0/6 任务
+成功，一条在 462 步耗尽请求预算且记录 346 个 grasp，另有 16 次 pose 超限的
+案例；原审核失败保留。固定 H40 六案例短窗同为 0/6 抓取和成功，有 5 个 pose
+超限端点。结果见[自适应矩阵](../reports/tracking/references/reset_multitask_adaptive_complete_20261113.md)
+及[固定 H40 对照](../reports/tracking/references/reset_multitask_fixed_h40_complete_20261113.md)。
+
+2026-11-13 统一固定 H40 对照的首四案例已完成 producer 及独立重放；三条走完
+48 周期，一条在 36 周期质量停止，四条均未抓取或成功，停止案例有两个端点超
+pose 限值。六案例尚未全部完成，见[首批结果](../reports/tracking/references/reset_multitask_fixed_h40_first_wave_20261113.md)。
+
 2026-11-13 六案例首批四条在质量停止后因结束帧审核错误导致原 owner 失败；
 修正后已从 reset 独立重放全部 359 周期，数值差为 0，四条均无目标 grasp 或
 任务成功，wine/seed42 有 1 周期超 pose 限值。剩余两条仍在运行；正式目录完整

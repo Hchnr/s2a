@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [多任务剩余两条停止帧事件的独立重放](reset_multitask_postflight_remaining_20261113.md) | 新增计划 |
 | [三任务共同固定 H40 的复位开发对照](reset_multitask_fixed_h40_20261113.md) | 新增计划 |
 | [多任务停止帧事件后的独立重放](reset_multitask_postflight_replay_20261113.md) | 新增计划 |
 | [seed 43 复位至当前图像第二窗口](reset_seed43_live_second_window_20261113.md) | 新增计划 |
