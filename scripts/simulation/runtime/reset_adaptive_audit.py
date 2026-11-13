@@ -187,7 +187,7 @@ def verify_model_exchange(branch, model, bundle):
     if len(responses) < registration["max_requests"]:
         prefix.require(
             model["model_sequence_complete"] is False
-            and model["model_sequence_stop"] == {"frame": frame["frame"]}
+            and model["model_sequence_stop"] == frame["frame"]
             and frame["sent"] is True,
             "The model must receive the producer's exact bounded stop",
         )

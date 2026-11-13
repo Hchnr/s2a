@@ -4,6 +4,7 @@ import copy
 
 import pytest
 
+from s2a.research.wam.tracking.runtime.causal_stream_control import make_stop
 from scripts.simulation.runtime import replay_multicase_development_prefix as prefix
 from scripts.simulation.runtime import reset_adaptive_audit as audit
 
@@ -24,7 +25,7 @@ def saved_receipts():
     runtime["continuation"] = {"first_window": original["first_window"], "adaptive": original["stream"]}
     runtime["adaptive_captures"] = runtime["streaming_captures"]
     runtime["adaptive_model_exchanges"] = runtime["streaming_model_exchanges"]
-    frame = {"version": 1, "kind": "stop", "session": bundle["model_registration"]["session"], "next_step": 16}
+    frame = make_stop(session=bundle["model_registration"]["session"], next_step=16)
     runtime["adaptive_stop_frame"] = {"required": True, "send_attempted": True, "sent": True, "frame": frame}
     replay["continuation"] = {
         "first_window": checked["first_window"],
@@ -40,7 +41,7 @@ def saved_receipts():
     replay["adaptive_checker_captures"] = [replay["checker_stream_capture"]]
     bundle["model_registration"]["max_requests"] = 2
     model["model_sequence_complete"] = False
-    model["model_sequence_stop"] = {"frame": frame}
+    model["model_sequence_stop"] = copy.deepcopy(frame)
     config = dict(
         case_id=producer["case"]["case_id"],
         session=frame["session"],
@@ -69,6 +70,34 @@ def test_saved_real_periods_images_and_model_response_reconcile(recorded):
     assert not made["stable_last40"] and made["task_success_periods"] == 0
     assert all(value == 0 for value in audit.compare_branches(producer, checker).values())
     assert audit.verify_model_exchange(producer, model, bundle) == {"requests": 1, "denoise_calls": 35}
+
+
+def test_real_adaptive_early_stop_and_model_exchanges_reconcile():
+    directory = prefix.REPO / "outputs/reset_multitask_adaptive_600_20261113/case_02/producer"
+    refs = (
+        ("simulation/result.json", "9c1c825b1774743cc70c287c8dd668adea9cdf049058261cf4a4b4d2825d0154"),
+        ("model/result.json", "c3cdf3114b5f58d691c70508881d88d3472db4d8cf046493d1a1681b415dcb0e"),
+        ("model/registered_inputs.json", "1ed06ce21b3388ef323b7fe6821684575ec7625a4e49f4e0d227ebc42824fcd5"),
+    )
+    producer, model, bundle = [prefix.read({"path": str(directory / name), "sha256": sha}) for name, sha in refs]
+    assert audit.verify_model_exchange(producer, model, bundle) == {"requests": 5, "denoise_calls": 175}
+
+
+@pytest.mark.parametrize("change", ["step", "session", "wrapped", "not_sent", "sequence_complete"])
+def test_model_exchange_requires_the_exact_dispatched_stop(recorded, change):
+    producer, _checker, model, bundle, _config = copy.deepcopy(recorded)
+    if change == "step":
+        model["model_sequence_stop"]["next_step"] += 1
+    elif change == "session":
+        model["model_sequence_stop"]["session"] = "other-session"
+    elif change == "wrapped":
+        model["model_sequence_stop"] = {"frame": model["model_sequence_stop"]}
+    elif change == "not_sent":
+        producer["runtime"]["adaptive_stop_frame"]["sent"] = False
+    else:
+        model["model_sequence_complete"] = True
+    with pytest.raises(ValueError, match="exact bounded stop"):
+        audit.verify_model_exchange(producer, model, bundle)
 
 
 @pytest.mark.parametrize("change", ["stop", "seed", "image", "commands"])
