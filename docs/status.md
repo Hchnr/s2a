@@ -10,6 +10,30 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 三任务双 seed 自适应矩阵的六条实际轨迹均已独立重放：0/6 任务
+成功，一条在 462 步耗尽请求预算且记录 346 个 grasp，另有 16 次 pose 超限的
+案例；原审核失败保留。固定 H40 六案例短窗同为 0/6 抓取和成功，有 5 个 pose
+超限端点。结果见[自适应矩阵](../reports/tracking/references/reset_multitask_adaptive_complete_20261113.md)
+及[固定 H40 对照](../reports/tracking/references/reset_multitask_fixed_h40_complete_20261113.md)；
+修复后的正式目录 64 并发相关回归 250 项通过，首次失败及复验已记录。
+
+2026-11-13 统一固定 H40 对照的首四案例已完成 producer 及独立重放；三条走完
+48 周期，一条在 36 周期质量停止，四条均未抓取或成功，停止案例有两个端点超
+pose 限值。六案例尚未全部完成，见[首批结果](../reports/tracking/references/reset_multitask_fixed_h40_first_wave_20261113.md)。
+
+2026-11-13 六案例首批四条在质量停止后因结束帧审核错误导致原 owner 失败；
+修正后已从 reset 独立重放全部 359 周期，数值差为 0，四条均无目标 grasp 或
+任务成功，wine/seed42 有 1 周期超 pose 限值。剩余两条仍在运行；正式目录完整
+回归待做，见[事件与重放报告](../reports/tracking/references/reset_multitask_postflight_replay_20261113.md)。
+
+2026-11-13 三任务 × 两 seed 的 600 周期统一开发入口已完成案例准入、模型和
+仿真 worker、独立重放、四卡分批监督及 32 并发相关回归；最终准入和实际执行
+尚未进行，见[准备报告](../reports/tracking/references/reset_multitask_adaptive_preparation_20261113.md)。
+
+2026-11-13 已固定三任务 × 两 seed、每条最多 600 周期的统一开发协议；复位到
+自适应流和独立重放的 32 并发相关回归 37 项通过。多案例现场执行尚未开始，见
+[开发计划](../plans/v0.0.1/tracking/references/reset_multitask_adaptive_600_20261113.md)。
+
 2026-11-13 seed 43 旧开发初态从 reset 实际执行 16 周期，其中后 8 周期使用本次
 第 8 步图像生成的真实 WAM 参考；独立重放的动作、状态及内步数值差为 0。位姿
 限值 16/16，目标 grasp 与任务成功均为 0；这不替代多任务和最终验收。后续优先
