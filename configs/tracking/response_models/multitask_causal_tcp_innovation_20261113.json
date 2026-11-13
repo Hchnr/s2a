@@ -1,0 +1,20 @@
+{
+  "schema": "s2a.multitask-causal-tcp-innovation.v1",
+  "output": "outputs/multitask_causal_tcp_innovation_20261113/result.json",
+  "adaptive_audit": "outputs/reset_multitask_adaptive_complete_audit_20261113/result.json",
+  "adaptive_audit_sha256": "7fe0f7d17ddea1913ffab2f5a4243c5b8e4b6a5def9633269ebec95efc82f8fe",
+  "fixed_audit": "outputs/reset_multitask_fixed_h40_20261113/summary_complete.json",
+  "fixed_audit_sha256": "419adb96938ca40ca072cb8712bb5088486449b8b18cb7255a35fd81511f009b",
+  "case_indices": [0, 2, 4, 6, 8, 10],
+  "sampling_seeds": [42, 43, 42, 43, 42, 43],
+  "expected_adaptive_periods": 1025,
+  "expected_fixed_periods": 270,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "candidates": ["raw", "previous_innovation", "past_maximum_bound"],
+  "new_model_requests": 0,
+  "new_physics_steps": 0,
+  "fresh_cases": 0,
+  "fits": 0,
+  "automatic_retry": false
+}

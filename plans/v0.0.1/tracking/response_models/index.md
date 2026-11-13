@@ -16,6 +16,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [三任务因果 TCP 偏差回顾](multitask_causal_tcp_innovation_20261113.md) | 新增计划 |
 | [038：有限真实 clean 残差训练与开发任务验证 — 2026-10-23](038_clean_residual_training_20261023.md) | `plans/v0.0.1/038_clean_residual_training_20261023.md` |
 | [073 当前motor保持先验的单次残差对照](073_residual_motor_prior_20261025.md) | `plans/v0.0.1/073_residual_motor_prior_20261025.md` |
 | [074 统一残差夹爪逆模型的正确参考物理资格](074_residual_motor_physical_qualification_20261025.md) | `plans/v0.0.1/074_residual_motor_physical_qualification_20261025.md` |

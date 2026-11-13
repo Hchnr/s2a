@@ -16,6 +16,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [三任务因果 TCP 预测偏差：已执行轨迹回顾](multitask_causal_tcp_innovation_20261113.md) | 新布局创建 |
 | [117 条件覆盖前后局部响应误差归因](condition_span_error_attribution_20261025.md) | `reports/condition_span_error_attribution_20261025.md` |
 | [116 固定模型的条件方向覆盖对照准备](condition_span_forward_20261025.md) | `reports/condition_span_forward_20261025.md` |
 | [115 完整条件方向覆盖干预准备](condition_span_interventions_20261025.md) | `reports/condition_span_interventions_20261025.md` |
