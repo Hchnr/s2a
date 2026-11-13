@@ -10,6 +10,18 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 长窗缓存 checker 的单次 CPU 监督和失败成本记录已通过 32 并发
+相关回归；真实重放尚未执行，见[监督报告](../reports/tracking/references/adaptive_long_cached_checker_owner_20261113.md)。
+
+2026-11-13 长窗缓存 checker 的独立重放接线已通过 32 并发相关回归；真实
+重放尚未执行，见[接线报告](../reports/tracking/references/adaptive_long_cached_checker_worker_20261112.md)。
+
+2026-11-12 长窗缓存 checker 已通过真实历史及部分审计准入的 32 并发回归；
+缓存接线和独立重放待完成，见[准入报告](../reports/tracking/references/adaptive_long_cached_checker_admission_20261112.md)。
+
+2026-11-12 已登记长窗失败后的独立缓存 checker 验证；实现和真实重放尚未执行，
+见[计划](../plans/v0.0.1/tracking/references/adaptive_long_cached_checker_20261112.md)。
+
 2026-11-12 40 周期长窗生产至第 147 周期；第 129 端点任务成功为假，末尾连续
 18 周期成功。checker 完成动作后额外端点读取失败，已保存部分独立审计，见
 [实际报告](../reports/tracking/references/adaptive_live_bowl_long_partial_20261112.md)。
