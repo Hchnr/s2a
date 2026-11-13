@@ -10,6 +10,15 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 碗任务诊断 QA 中两次合成 MuJoCo 测试各创建一个小模型并 forward；
+此前零模型表述已更正，真实状态查询未执行，见[计划修订](../plans/v0.0.1/tracking/references/bowl_native_predicate_probe_20261113.md)。
+
+2026-11-13 碗任务谓词的静态诊断入口已通过 32 并发回归；实际查询尚未执行，
+见[准备报告](../reports/tracking/references/bowl_native_predicate_probe_preparation_20261113.md)。
+
+2026-11-13 已登记基于 40 个保存状态的原生任务谓词静态诊断；尚未执行，见
+[诊断计划](../plans/v0.0.1/tracking/references/bowl_native_predicate_probe_20261113.md)。
+
 2026-11-13 最终端点缓存 checker 完整重放 147 周期且数值差为 0；第 129 端点
 任务失败、末尾连续 18 周期成功，见[独立重放报告](../reports/tracking/references/adaptive_long_final_endpoint_replay_20261113.md)。
 
