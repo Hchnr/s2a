@@ -1,6 +1,7 @@
 """Frozen-model quality search with an extra completed TCP-innovation gate."""
 
 import inspect
+from numbers import Real
 from types import FunctionType
 
 import numpy as np
@@ -37,20 +38,33 @@ def corrected_error_jacobian(raw, raw_jacobian, rotation_jacobian, translation_i
 
 
 def _assess(
-    rollout, commands, previous, interface, lower, upper, past, normals, braking, target, tool, translation, rotation
+    rollout,
+    commands,
+    previous,
+    interface,
+    lower,
+    upper,
+    past,
+    normals,
+    braking,
+    target,
+    tool,
+    translation,
+    rotation,
+    caps,
 ):
     failed, raw = original_checks._checks(
         rollout, commands, previous, interface, lower, upper, past, normals, braking, target, tool
     )
     corrected = corrected_error(raw, translation, rotation)
-    if np.linalg.norm(corrected[:3]) > 0.01 + 1e-10:
+    if np.linalg.norm(corrected[:3]) > caps[0] + 1e-10:
         failed.append("innovation_position")
-    if np.linalg.norm(corrected[3:]) > 0.05 + 1e-10:
+    if np.linalg.norm(corrected[3:]) > caps[1] + 1e-10:
         failed.append("innovation_rotation")
     return failed, raw, corrected
 
 
-def _search_with_innovation(args, options, translation, rotation):
+def _search_with_innovation(args, options, translation, rotation, caps):
     original = quality.solve_interior_plan
     namespace = original.__globals__.copy()
     minimize = namespace["minimize"]
@@ -73,7 +87,7 @@ def _search_with_innovation(args, options, translation, rotation):
             error = corrected_error(raw, translation, rotation)
             jac = corrected_error_jacobian(raw, raw_jac, rotation_jac, translation, rotation)
             values, derivatives = [], []
-            for start, end, cap in ((0, 3, 0.01), (3, 6, 0.05)):
+            for start, end, cap in ((0, 3, caps[0]), (3, 6, caps[1])):
                 norm = np.linalg.norm(error[start:end])
                 direction = error[start:end] / norm if norm > 1e-15 else np.zeros(3)
                 values.append(1 - norm / cap)
@@ -114,17 +128,31 @@ def solve_interior_plan(
     rotation_discrepancy,
     past_inner_error_rad,
     braking_time_s=0.1,
+    corrected_position_cap_m=0.01,
+    corrected_rotation_cap_rad=0.05,
 ):
     """Find a candidate passing both original and causal-innovation model gates.
 
     The candidate requires independent physical-model audit before any dispatch.
     A completed past innovation is empirical and is not a future safety bound.
+    Optional stricter corrected-error caps provide a model margin without
+    changing the original position and rotation acceptance limits.
     """
+    caps = (corrected_position_cap_m, corrected_rotation_cap_rad)
+    if any(
+        isinstance(value, (bool, np.bool_))
+        or not isinstance(value, Real)
+        or not np.isfinite(value)
+        or not 0 < value <= maximum
+        for value, maximum in zip(caps, (0.01, 0.05), strict=True)
+    ):
+        raise ValueError("Corrected pose caps must be finite, positive, and no larger than the original caps")
+    caps = tuple(float(value) for value in caps)
     translation, rotation = finite(translation_innovation, (3,)), finite(rotation_discrepancy, (3, 3))
     corrected_error(np.zeros(6), translation, rotation)
     args = (model, velocity, seed, previous, interface, site, tool, targets, twists, lower, upper)
     options = {"past_inner_error_rad": past_inner_error_rad, "braking_time_s": braking_time_s}
-    original, captured = _search_with_innovation(args, options, translation, rotation)
+    original, captured = _search_with_innovation(args, options, translation, rotation, caps)
     used = int(original["response_evaluations"])
     candidate_fields = {
         "rollout",
@@ -140,6 +168,8 @@ def solve_interior_plan(
         witness_found=False,
         requires_independent_audit=True,
         future_innovation_guarantee=False,
+        corrected_position_cap_m=caps[0],
+        corrected_rotation_cap_rad=caps[1],
     )
     cache = captured.get("cache", {})
     if not cache:
@@ -166,6 +196,7 @@ def solve_interior_plan(
             tool,
             translation,
             rotation,
+            caps,
         )
         objective = float(item["score"]["objective"])
         if not failed:
@@ -209,6 +240,7 @@ def solve_interior_plan(
                 tool,
                 translation,
                 rotation,
+                caps,
             )
             result["repair"] = {
                 "attempted": True,

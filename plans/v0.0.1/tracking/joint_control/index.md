@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[因果 TCP 补偿余量对照](causal_innovation_margin_20261113.md)
+
 近期：[已重放停止状态的首点优先求解](replayed_first_pose_search_20261112.md)
 
 近期：[已重放参考的首点位姿外界](replayed_reference_pose_bounds_20261112.md) · [软件库来源绑定修复](replayed_reference_pose_bounds_recovery_20261112.md)
