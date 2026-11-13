@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [六案例首批停止帧事件与独立重放](reset_multitask_postflight_replay_20261113.md) | 新增报告 |
 | [六案例自适应开发矩阵准备](reset_multitask_adaptive_preparation_20261113.md) | 新增报告 |
 | [seed 43 复位到当前图像的双窗口闭环与重放](reset_seed43_live_second_window_20261113.md) | 新增报告 |
 | [seed 43 复位闭环进程监督](reset_seed43_execution_20261113.md) | 新增报告 |

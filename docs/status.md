@@ -10,6 +10,11 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 六案例首批四条在质量停止后因结束帧审核错误导致原 owner 失败；
+修正后已从 reset 独立重放全部 359 周期，数值差为 0，四条均无目标 grasp 或
+任务成功，wine/seed42 有 1 周期超 pose 限值。剩余两条仍在运行；正式目录完整
+回归待做，见[事件与重放报告](../reports/tracking/references/reset_multitask_postflight_replay_20261113.md)。
+
 2026-11-13 三任务 × 两 seed 的 600 周期统一开发入口已完成案例准入、模型和
 仿真 worker、独立重放、四卡分批监督及 32 并发相关回归；最终准入和实际执行
 尚未进行，见[准备报告](../reports/tracking/references/reset_multitask_adaptive_preparation_20261113.md)。
