@@ -10,6 +10,28 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 seed 43 旧开发初态从 reset 实际执行 16 周期，其中后 8 周期使用本次
+第 8 步图像生成的真实 WAM 参考；独立重放的动作、状态及内步数值差为 0。位姿
+限值 16/16，目标 grasp 与任务成功均为 0；这不替代多任务和最终验收。后续优先
+推进统一候选的多任务长时程对照，见[实际结果](../reports/tracking/references/reset_seed43_live_second_window_20261113.md)。
+
+以下条目保留各阶段当时的状态，较早记录中的“尚未执行”以较新的结果为准。
+
+2026-11-13 seed 43 两窗口的 producer、模型与独立 checker 已接入进程监督，
+32 并发相关回归通过；最终准入和现场执行待完成，见[接线报告](../reports/tracking/references/reset_seed43_execution_20261113.md)。
+
+2026-11-13 独立 checker 的 producer 来源、进程、GPU 与成本前置核验已通过
+CPU 回归；父进程监督待完成，见[监督报告](../reports/tracking/references/reset_seed43_supervision_20261113.md)。
+
+2026-11-13 当前图像模型交换审计已用历史真实响应及篡改测试验证；新 seed 43
+现场运行待完成，见[模型交换审计](../reports/tracking/references/reset_seed43_model_exchange_audit_20261113.md)。
+
+2026-11-13 seed 43 双窗口已接入有界中断成本记账并通过 CPU 回归；进程监督
+和现场执行待完成，见[成本报告](../reports/tracking/references/reset_seed43_costs_20261113.md)。
+
+2026-11-13 双窗口物理与独立重放审计已用历史收据及篡改测试验证；seed 43
+新闭环尚未执行，见[审计报告](../reports/tracking/references/reset_seed43_feedback_audit_20261113.md)。
+
 2026-11-13 seed 43 复位闭环接线的 64 并发相关回归通过；真实执行前仍需
 进程监督及预检，见[阶段检查](../reports/tracking/references/reset_seed43_wiring_checks_20261113.md)。
 

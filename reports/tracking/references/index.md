@@ -6,6 +6,12 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [seed 43 复位到当前图像的双窗口闭环与重放](reset_seed43_live_second_window_20261113.md) | 新增报告 |
+| [seed 43 复位闭环进程监督](reset_seed43_execution_20261113.md) | 新增报告 |
+| [独立 checker 的 producer 前置核验](reset_seed43_supervision_20261113.md) | 新增报告 |
+| [当前图像模型交换的独立核验](reset_seed43_model_exchange_audit_20261113.md) | 新增报告 |
+| [seed 43 双窗口的中断成本记账](reset_seed43_costs_20261113.md) | 新增报告 |
+| [复位双窗口物理与独立重放审计](reset_seed43_feedback_audit_20261113.md) | 新增报告 |
 | [seed 43 复位闭环接线的阶段检查](reset_seed43_wiring_checks_20261113.md) | 新增报告 |
 | [seed 43 复位反馈与独立重放 worker 接线](reset_seed43_simulation_worker_20261113.md) | 新增报告 |
 | [seed 43 复位闭环的预检接线](reset_seed43_trial_20261113.md) | 新增报告 |
