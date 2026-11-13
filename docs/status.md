@@ -10,6 +10,9 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-13 新 seed 43 输出与历史同图参考逐元素一致；对应历史首 8 周期
+位姿 8/8 达门但任务成功 0/8，该关联不是新在线闭环，见[只读审计](../reports/tracking/references/seed43_historical_control_20261113.md)。
+
 2026-11-13 双 seed worker 已在旧开发图像上完成一次真实 seed 43 模型请求：
 35 次去噪、进程退出和 GPU 释放均核对通过；没有物理闭环，见[重放报告](../reports/tracking/references/adaptive_multiseed_real43_20261113.md)。
 
