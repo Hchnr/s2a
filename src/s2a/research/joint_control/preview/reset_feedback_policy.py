@@ -51,14 +51,18 @@ def policy_inputs(case, terminal):
     )
 
 
-def build_reset_policy(env, inputs, receipt):
+def build_reset_policy(env, inputs, receipt, *, adapter_factory=None):
     """Create independent arm/gripper histories without access to past or future truth."""
     _q, _limits, jacobian = current_joint_site_state(env)
     _mass, velocity, site = current_robot_dynamics(env, jacobian)
     twist = jacobian @ velocity
     site_from_tcp = inverse(inputs["source_from_site"]) @ inputs["tool"]
     np.testing.assert_allclose(site @ site_from_tcp, inputs["anchor"], atol=1e-9, rtol=0)
-    adapter = SharedShiftFallbackAudit(receipt)
+    if adapter_factory is not None and not callable(adapter_factory):
+        raise ValueError("The optional audited adapter factory must be callable")
+    adapter = SharedShiftFallbackAudit(receipt) if adapter_factory is None else adapter_factory(receipt)
+    if not isinstance(adapter, SharedShiftFallbackAudit):
+        raise ValueError("The reset policy requires the original audited shared-shift adapter")
 
     def refiner_factory(history):
         return QualityFeedbackRefiner(

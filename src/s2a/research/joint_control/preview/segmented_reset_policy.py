@@ -10,14 +10,14 @@ from s2a.research.joint_control.preview.segmented_reset_history import segment_e
 from s2a.research.joint_control.preview.streaming_feedback_boundary import advance_feedback
 
 
-def build_segmented_reset_policy(env, inputs, runtime_receipt):
+def build_segmented_reset_policy(env, inputs, runtime_receipt, *, adapter_factory=None):
     """Convert a freshly built reset policy before any prediction or action."""
     if type(runtime_receipt) is not dict or any(
         key in runtime_receipt for key in ("reset_history", "segment_receipts", "segment_trace_starts")
     ):
         raise ValueError("A fresh runtime receipt is required")
     segment_receipt = {}
-    policy, previous = build_reset_policy(env, inputs, segment_receipt)
+    policy, previous = build_reset_policy(env, inputs, segment_receipt, adapter_factory=adapter_factory)
     arm, inner = policy.arm_policy, policy.inner_history
     refiner = arm.tracking._refiner
     if (

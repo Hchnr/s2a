@@ -141,9 +141,24 @@ def bounded_minimize(original_minimize, primary_first, primary_total, receipt):
 
 
 def solve_margin_guarded_fallback(
-    model, velocity, seed, previous, interface, site, tool, targets, twists, lower, upper, **kwargs
+    model,
+    velocity,
+    seed,
+    previous,
+    interface,
+    site,
+    tool,
+    targets,
+    twists,
+    lower,
+    upper,
+    *,
+    prefer_refresh=False,
+    **kwargs,
 ):
     """Use margin candidates first; guarded fallback shares all decision budgets."""
+    if type(prefer_refresh) is not bool:
+        raise ValueError("The experimental refresh preference must be an explicit boolean")
     seed = finite(seed, (8, 6)).copy()
     targets = finite(targets, (8, 4, 4)).copy()
     callback = kwargs.pop("on_response", None)
@@ -163,6 +178,9 @@ def solve_margin_guarded_fallback(
             callback(event)
 
     capture = {}
+    primary_options = dict(kwargs)
+    if prefer_refresh:
+        primary_options["prefer_refresh"] = True
     primary = isolated_margin_solver(capture)(
         model,
         velocity,
@@ -176,7 +194,7 @@ def solve_margin_guarded_fallback(
         lower,
         upper,
         on_response=response,
-        **kwargs,
+        **primary_options,
     )
     primary_count = counts["completed"]
     if counts["attempted"] != primary_count or primary["response_evaluations"] != primary_count:
@@ -204,6 +222,8 @@ def solve_margin_guarded_fallback(
         start_lp_budget=2,
         optimizer_calls=[],
     )
+    if prefer_refresh:
+        trace["refresh_preference"] = copy.deepcopy(primary.get("margin_search", {}).get("refresh_preference"))
     selected = primary.get("best_joint_safe")
     fallback = None
     if selected is not None:

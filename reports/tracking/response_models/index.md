@@ -4,6 +4,8 @@
 
 [当前状态](../../../docs/status.md) · [研究索引](../../../docs/research_index.md) · [路径与身份](../../../docs/migrations/repository_layout_20261029.json)
 
+[开发轨迹的质量刷新边界](refresh_margin_events_20261115.md)
+
 | 领域 | 文件数 |
 | --- | ---: |
 | [causal](causal/index.md) | 9 |

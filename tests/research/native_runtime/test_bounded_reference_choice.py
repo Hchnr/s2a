@@ -70,3 +70,24 @@ def test_interrupted_progress_keeps_attempted_and_completed_separate():
     assert receipt["counters"]["mj_step"]["completed"] == 96
     with pytest.raises(ValueError, match="registered phase"):
         runner.progress_event("producer", "unknown", receipt)
+
+
+def test_checker_rejects_candidate_policy_activation_before_simulation():
+    with pytest.raises(ValueError, match="Only a producer"):
+        comparison.run_comparison(
+            None,
+            None,
+            None,
+            {},
+            phase="checker",
+            mode="new",
+            case={},
+            history=[{}] * 16,
+            original_captures=[{}, {}],
+            exchanges=[{}, {}],
+            responses=[{}, {}],
+            runtime_output=None,
+            producer={},
+            policy_factory=lambda *_args: None,
+            after_history=lambda *_args: None,
+        )

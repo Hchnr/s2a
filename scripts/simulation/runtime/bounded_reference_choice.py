@@ -61,6 +61,8 @@ def run_comparison(
     runtime_output,
     producer=None,
     progress=None,
+    policy_factory=None,
+    after_history=None,
 ):
     """Execute one branch or replay its actions, without future model requests."""
     if phase not in ("producer", "checker") or mode not in ("old", "new"):
@@ -69,6 +71,11 @@ def run_comparison(
         raise ValueError("Exactly the completed prefix and its two generated references are required")
     if (phase == "checker") != (producer is not None):
         raise ValueError("Only the independent checker may receive a completed producer")
+    if (policy_factory is None) != (after_history is None) or (
+        policy_factory is not None
+        and (phase != "producer" or not callable(policy_factory) or not callable(after_history))
+    ):
+        raise ValueError("Only a producer may use an explicit paired policy factory and activation hook")
     if phase == "producer":
         from s2a.research.joint_control.preview.causal_reference_replan import completed_quality_margin
         from s2a.research.joint_control.preview.reset_feedback_policy import policy_inputs
@@ -77,7 +84,10 @@ def run_comparison(
             build_segmented_reset_policy,
         )
 
-        policy, owner, previous = build_segmented_reset_policy(env, policy_inputs(case, terminal), receipt)
+        if policy_factory is None:
+            policy, owner, previous = build_segmented_reset_policy(env, policy_inputs(case, terminal), receipt)
+        else:
+            policy, owner, previous = policy_factory(env, case, terminal, receipt)
     else:
         policy = owner = None
         previous = np.zeros(7)
@@ -153,6 +163,15 @@ def run_comparison(
     second = history_window(8, current, old_poses[:8], old_openings[:8], history[8:16])
     current = capture_at(16)
     new_poses, new_openings = saved_reference(observed[1], exchanges[1], responses[1], case["tool"], 16)
+    if after_history is not None:
+        before = measured_snapshot(env, 16)
+        prefix.require(
+            receipt["control_steps_completed"] == 16, "The full physical history is required before activation"
+        )
+        after_history(policy, owner, receipt)
+        prefix.require(
+            measured_snapshot(env, 16) == before, "Activating the candidate cannot change the physical state"
+        )
     last = [second["periods"][-1]]
     reference_poses, reference_openings, start, consumed = (
         (old_poses, old_openings, 8, 8) if mode == "old" else (new_poses, new_openings, 16, 0)
