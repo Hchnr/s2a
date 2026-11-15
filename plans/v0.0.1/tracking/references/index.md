@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [刷新余量候选的同状态物理试验](refresh_margin_physical_20261115.md) | 新增计划 |
 | [刷新余量候选的未来质量约束](refresh_margin_preference_addendum_20261115.md) | 新增计划 |
 | [优先保留刷新余量的因果候选](refresh_margin_preference_20261115.md) | 新增计划 |
 | [三任务开发轨迹中的参考切换](multitask_reference_handoffs_20261113.md) | 新增计划 |
