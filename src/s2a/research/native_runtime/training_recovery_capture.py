@@ -67,7 +67,11 @@ class TrainingRecoveryCapture:
         return observed
 
     def arrays(self):
-        """Return only captured values; a reset-only stop has no fabricated label."""
+        """Return captured values; Action128 opening is next measured aperture.
+
+        That observed state is distinct from the seven-dimensional command
+        recorded by the execution owner. A reset-only stop has no action label.
+        """
         if not self.samples:
             raise ValueError("The actual reset endpoint is required")
         keys = set(self.samples[0])
