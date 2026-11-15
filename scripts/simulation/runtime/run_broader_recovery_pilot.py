@@ -1,15 +1,19 @@
 """Run the registered training-only recovery controls with independent replay."""
 
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
 
 from s2a.infrastructure.native_environment import restore_cv2_environment
+from s2a.infrastructure.owned_processes import run_owned_workers
+from s2a.infrastructure.publication import publish_result
 from s2a.research.native_runtime.correct_reference_continuation import run_correct_reference_continuation
 from s2a.research.native_runtime.correct_reference_reset import CorrectReferenceResetRuntime
 from s2a.research.wam.training.native_observations import render_anchor, save_arrays
+from scripts.maintenance.run_cpu_tests import snapshot
 from scripts.simulation.runtime import managed_physical_worker as managed
 from scripts.simulation.runtime import prepare_broader_recovery_pilot as pilot
 from scripts.simulation.runtime import prepare_reset_correct_reference_cohort as preparation
@@ -205,3 +209,165 @@ def worker(phase, index):
     managed.run_managed_physical_worker(
         phase="checker" if phase == "probe" else phase, result_path=directory / "result.json", execute=execute
     )
+
+
+def dry_run():
+    """Publish the frozen zero-physics roster, leaving the simulator unloaded."""
+    original.require_no_simulator_import()
+    config, identity = pilot.load_inputs()
+    recovery.checker_isolation()
+    return publish_result(
+        OUTPUT / "dry.json",
+        dict(
+            complete=True,
+            passed=True,
+            inputs=identity,
+            source_refs=source_refs(),
+            physics_steps=0,
+            world_model_calls=config["world_model_calls"],
+            gpu_calls=0,
+            fresh_cases=0,
+            training_authorized=False,
+        ),
+    )
+
+
+def preflight():
+    """Require an unchanged 64-worker regression and matching no-physics dry run."""
+    prefix.environment()
+    qa_ref, dry_ref = prefix.reference(QA), prefix.reference(OUTPUT / "dry.json")
+    qa, dry = prefix.read(qa_ref), prefix.read(dry_ref)
+    before, sources = snapshot(ROOT)["sources"], source_refs()
+    prefix.require(
+        qa["complete"] is qa["passed"] is qa["all_tests_passed"] is qa["source_unchanged"] is True
+        and qa["actual_wait"] is qa["reaped"] is True
+        and qa["configured_parallelism"] == 64
+        and qa["skipped_count"] == 0
+        and not qa["collection"]["collection_errors"]
+        and before == prefix.read(qa["source_before_ref"])["sources"]
+        and dry["complete"] is dry["passed"] is True
+        and dry["physics_steps"] == dry["world_model_calls"] == dry["gpu_calls"] == dry["fresh_cases"] == 0
+        and dry["training_authorized"] is False,
+        "A complete source-matched CPU regression and zero-physics preflight are required",
+    )
+    config, identity = pilot.load_inputs()
+    prefix.require(
+        dry["inputs"] == identity and dry["source_refs"] == sources, "Dry identity and source hashes must match"
+    )
+    return config, identity, before, sources, qa_ref, dry_ref
+
+
+def verify_probe_admission(probe, identity, sources, qa_ref, dry_ref):
+    """Recheck actual reset, image, source identity and child lifecycle."""
+    prefix.require(
+        probe["complete"] is probe["passed"] is probe["owner_closed"] is probe["sources_unchanged"] is True
+        and probe["inputs"] == identity
+        and probe["source_refs"] == sources
+        and probe["qa_ref"] == qa_ref
+        and probe["dry_ref"] == dry_ref,
+        "A complete source-matched no-action probe is required",
+    )
+    lifecycle = prefix.read(probe["lifecycle_ref"])
+    prefix.require(
+        lifecycle["launch_error"] is None
+        and len(lifecycle["workers"]) == 1
+        and lifecycle["workers"][0]["key"] == "0"
+        and lifecycle["workers"][0]["returncode"] == 0
+        and lifecycle["workers"][0]["actual_wait"] is lifecycle["workers"][0]["reaped"] is True
+        and lifecycle["workers"][0]["signal_sent"] is False,
+        "The no-action probe worker must be actually reaped",
+    )
+    prefix.checked(lifecycle["workers"][0]["log_ref"])
+    registration = prefix.read(probe["registration_ref"])
+    prefix.require(
+        registration["phase"] == "probe"
+        and registration["eligible_cases"] == [0]
+        and registration["inputs"] == identity
+        and registration["source_refs"] == sources
+        and registration["qa_ref"] == qa_ref
+        and registration["dry_ref"] == dry_ref
+        and registration["producer_branch_refs"] == {}
+        and registration["automatic_retry"] is False,
+        "The probe must use the registered training reset and source identities",
+    )
+    branch = prefix.read(probe["branch_ref"])
+    prefix.require(branch["case"] == identity["cases"][0], "The probe must use the original case 0")
+    shared = preparation.shared_inputs()
+    case, timeline = bind_case(identity["cases"][0], shared)
+    checked = recovery.verify_probe_branch(branch, case, timeline)
+    prefix.require(checked == probe["capture_check"], "The independent probe image check must remain reproducible")
+
+
+def probe_run():
+    """Execute one reset and current-image capture with zero control steps."""
+    config, identity, before, sources, qa_ref, dry_ref = preflight()
+    directory = OUTPUT / "probe"
+    directory.mkdir(parents=True, exist_ok=False)
+    registration_ref = publish_result(
+        directory / "registration.json",
+        dict(
+            phase="probe",
+            inputs=identity,
+            source_refs=sources,
+            qa_ref=qa_ref,
+            dry_ref=dry_ref,
+            eligible_cases=[0],
+            producer_branch_refs={},
+            automatic_retry=False,
+        ),
+    )
+    result = dict(
+        complete=False,
+        passed=False,
+        owner_closed=False,
+        sources_unchanged=False,
+        inputs=identity,
+        source_refs=sources,
+        qa_ref=qa_ref,
+        dry_ref=dry_ref,
+        registration_ref=registration_ref,
+        world_model_calls=0,
+        fresh_cases=0,
+        automatic_retry=False,
+    )
+    try:
+        lifecycle = run_owned_workers(
+            [
+                dict(
+                    key="0",
+                    argv=[sys.executable, "-m", MODULE, "--worker", "probe", "0"],
+                    log=directory / "case00/worker.log",
+                )
+            ],
+            cwd=ROOT,
+            timeout_seconds=config["worker_timeout_seconds"],
+        )
+        for item in lifecycle["workers"]:
+            item["log_ref"] = prefix.reference(item.pop("log"))
+        result["lifecycle_ref"] = publish_result(directory / "workers.json", lifecycle)
+        child = lifecycle["workers"][0] if len(lifecycle["workers"]) == 1 else {}
+        result["owner_closed"] = child.get("actual_wait") is child.get("reaped") is True
+        prefix.require(
+            lifecycle["launch_error"] is None
+            and result["owner_closed"]
+            and child["returncode"] == 0
+            and child["signal_sent"] is False,
+            "The no-action probe worker must close successfully",
+        )
+        result["branch_ref"] = prefix.reference(directory / "case00/worker/result.json")
+        branch = prefix.read(result["branch_ref"])
+        prefix.require(branch["case"] == identity["cases"][0], "Probe case identity must match")
+        shared = preparation.shared_inputs()
+        case, timeline = bind_case(identity["cases"][0], shared)
+        result["capture_check"] = recovery.verify_probe_branch(branch, case, timeline)
+        _config, after = pilot.load_inputs()
+        result["sources_unchanged"] = (
+            snapshot(ROOT)["sources"] == before and source_refs() == sources and after == identity
+        )
+        result["complete"] = result["passed"] = result["owner_closed"] and result["sources_unchanged"]
+        verify_probe_admission(result, identity, sources, qa_ref, dry_ref)
+    except Exception as error:
+        result.update(complete=False, passed=False, error=dict(type=type(error).__name__, message=str(error)))
+    print(publish_result(directory / "result.json", result), flush=True)
+    if not result["passed"]:
+        raise SystemExit("The registered no-action probe did not pass")
