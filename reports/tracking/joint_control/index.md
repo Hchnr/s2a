@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[缓存 seed 排序的 18 条正确参考对照：16/18](cached_seed_preference_cohort_20261116.md)
+
 最新：[首次动作分歧的缓存审计与候选排序](cached_seed_first_divergence_20261116.md)
 
 最新：[同状态机械臂动作短窗对照](correct_reference_same_state_arm_20261116.md)
