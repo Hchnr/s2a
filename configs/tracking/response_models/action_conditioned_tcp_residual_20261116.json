@@ -1,0 +1,42 @@
+{
+  "schema": "s2a.action-conditioned-tcp-residual.v1",
+  "output": "outputs/action_conditioned_tcp_residual_20261116",
+  "adaptive_audit": {
+    "path": "outputs/reset_multitask_adaptive_complete_audit_20261113/result.json",
+    "sha256": "7fe0f7d17ddea1913ffab2f5a4243c5b8e4b6a5def9633269ebec95efc82f8fe"
+  },
+  "fixed_audit": {
+    "path": "outputs/reset_multitask_fixed_h40_20261113/summary_complete.json",
+    "sha256": "419adb96938ca40ca072cb8712bb5088486449b8b18cb7255a35fd81511f009b"
+  },
+  "correct_reference_audit": {
+    "path": "outputs/cached_seed_preference_20261116/audit.json",
+    "sha256": "ae8358fc25a9675d208f91cd8e7c52f4d20f120e9c314ee18755b97472744525"
+  },
+  "wine_candidate_producer": {
+    "path": "outputs/wine_cached_nominal_candidate_20261116/producer/result.json",
+    "sha256": "dee615df0d4bf496bd4aa76c1bd6c1f24f4028ccfaf30c43bf929a6342bb1c42"
+  },
+  "wine_candidate_checker": {
+    "path": "outputs/wine_cached_nominal_candidate_20261116/checker/result.json",
+    "sha256": "eec38ff3bab25b791ccdb302b395b44552bcab25a9f1751670ef13dfa9957fa0"
+  },
+  "adaptive_case_indices": [0, 2, 4, 6, 8, 10],
+  "fixed_case_indices": [0, 2, 4, 6, 8, 10],
+  "correct_reference_cases": 18,
+  "expected_adaptive_periods": 1025,
+  "expected_fixed_periods": 270,
+  "expected_correct_reference_periods": 4778,
+  "expected_wine_candidate_periods": 144,
+  "history_window": 20,
+  "ridge": 1.0,
+  "arm_action_dimensions": 6,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "max_workers": 31,
+  "worker_timeout_seconds": 1800,
+  "new_world_model_calls": 0,
+  "new_physics_steps": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
