@@ -1,0 +1,36 @@
+{
+  "schema": "s2a.correct-reference-same-state-arm.v1",
+  "output": "outputs/correct_reference_same_state_arm_20261116",
+  "case_index": 3,
+  "task_id": 8,
+  "seed": 42,
+  "target_object": "akita_black_bowl_1",
+  "prefix_periods": 40,
+  "intervention_periods": 16,
+  "branches": ["candidate_actions", "original_arm"],
+  "max_workers_per_phase": 2,
+  "max_models_per_phase": 6,
+  "max_contexts_per_phase": 6,
+  "max_control_periods_per_phase": 112,
+  "max_inner_steps_per_phase": 2800,
+  "control_dt_s": 0.05,
+  "inner_dt_s": 0.002,
+  "arm_rate_limit": 0.25,
+  "joint_buffer_rad": 0.05,
+  "worker_timeout_seconds": 1800,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false,
+  "cohort_audit": {
+    "path": "outputs/reset_correct_reference_cohort_20261116/audit.json",
+    "sha256": "dbe7d296758cc7cb9c9f66168ed140b13ed2967dbb84e5879044c3e849ec704a"
+  },
+  "cohort_dry": {
+    "path": "outputs/reset_correct_reference_cohort_dry_20261116.json",
+    "sha256": "b1fa5eadf94aa475386d0fc1762da32b2df0152d4da8c5e75ee44b5099874cd5"
+  },
+  "divergence_audit": {
+    "path": "outputs/correct_reference_failure_diagnosis_20261116/result.json",
+    "sha256": "fb37341ecfae367a5e8b7c3ace7c6b64b1d82541311675b857f159767945d897"
+  }
+}
