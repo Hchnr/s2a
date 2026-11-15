@@ -10,6 +10,9 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 同一状态的单次线性化余量搜索在 `±0.1` 动作变化范围内由 HiGHS
+报告不可行；仅属局部模型和数值求解结果，不证明全局不可行。见[结果](../reports/tracking/references/refresh_margin_linear_search_20261116.md)。
+
 2026-11-16 在同一已重放状态定向搜索刷新余量，额外 320 次局部模型响应后未
 找到合格候选，不证明全局不可行。回归另发现旧实验源码身份校验失败，未改写
 历史；见[静态结果与失败记录](../reports/tracking/references/refresh_margin_targeted_search_20261116.md)。
