@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[从复位执行完整正确参考的单案例正控](reset_correct_reference_20261116.md)
+
 最新：[提前预览的因果反馈物理对照](anticipatory_causal_physical_20261113.md) · [相同状态静态预览](anticipatory_causal_pose_20261113.md)
 
 最新：[因果补偿位置在冻结模型中的外界](causal_position_reachability_20261113.md)

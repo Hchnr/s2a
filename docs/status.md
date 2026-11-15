@@ -10,6 +10,11 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 统一候选从 reset 执行一条完整正确参考，182/182 周期完成且最后
+40 周期任务成功；独立重放数值差为 0。机械臂部分选择耗时 182/182 次超过
+50 ms，尚不能实时运行；这不代替 18 条正确参考、12 条 WAM 开发或 24 条留出
+验收。见[单案例正控报告](../reports/tracking/joint_control/reset_correct_reference_20261116.md)。
+
 2026-11-16 历史源码身份读取已用明确的 Git blob / 当前 SHA 桥接恢复；原失败
 测试、下游反馈和 checker 的所选 75 项回归通过，旧登记与失败收据保留。见
 [来源修复报告](../reports/development/provenance/historical_source_bridge_20261116.md)。
