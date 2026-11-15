@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/references
 
+近期：[一次 WAM 余量刷新后的当前状态重算](deferred_margin_recheck_20261116.md)
+
 本页导航原始文件；正文、配置值和历史身份保持。目录迁移不改变实验或控制资格。
 
 [当前状态](../../../../docs/status.md) · [研究索引](../../../../docs/research_index.md) · [路径与身份](../../../../docs/migrations/repository_layout_20261029.json)

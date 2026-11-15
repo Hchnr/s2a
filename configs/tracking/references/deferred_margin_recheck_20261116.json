@@ -1,0 +1,20 @@
+{
+  "schema": "s2a.deferred-margin-recheck.v1",
+  "output": "outputs/deferred_margin_recheck_20261116",
+  "case_index": 2,
+  "sampling_seed": 43,
+  "reference_step": 16,
+  "deferred_trigger_step": 17,
+  "allowed_trigger_reason": "quality_margin_consumed",
+  "max_deferred_triggers": 1,
+  "max_control_steps_per_phase": 48,
+  "max_native_steps_per_phase": 1200,
+  "max_models_per_phase": 3,
+  "max_contexts_per_phase": 3,
+  "max_quality_responses_per_period": 320,
+  "max_baseline_responses_per_period": 480,
+  "worker_timeout_seconds": 3600,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
