@@ -1,0 +1,71 @@
+{
+  "schema": "s2a.broader-recovery-pilot.v1",
+  "output": "outputs/broader_recovery_pilot_20261116",
+  "training_preparation": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "correct_reference_cohort": {
+    "path": "configs/tracking/joint_control/reset_correct_reference_cohort_20261116.json",
+    "sha256": "b4f9da8ff26a3e972b9cd996a36a0aff0285050a71e71eb4e16cf27d6a812312"
+  },
+  "current_controller_audit": {
+    "path": "outputs/cached_seed_preference_20261116/audit.json",
+    "sha256": "ae8358fc25a9675d208f91cd8e7c52f4d20f120e9c314ee18755b97472744525"
+  },
+  "coverage_audit": {
+    "path": "outputs/wam_recovery_state_coverage_20261116/result.json",
+    "sha256": "b1fe1a46929d4733677cf79e50cdb13b88e7d713ee24bdaf9aedc30c646f3846"
+  },
+  "coverage_independent": {
+    "path": "outputs/wam_recovery_state_coverage_20261116/independent.json",
+    "sha256": "43a779cc0d68bdd76713c8c6df0eb402ebb9b473ebd399cb32072cf396b4def3"
+  },
+  "previous_recovery_audit": {
+    "path": "outputs/current_controller_recovery_repair_20261116/audit.json",
+    "sha256": "a10dc09801d90efd92933e536d04a1e71ea1da75b724105dc384205c4d61c7f6"
+  },
+  "sources": [
+    {"cohort_index": 3, "task_index": 0, "demo": "demo_40", "sign": 1, "native_periods": 170},
+    {"cohort_index": 4, "task_index": 0, "demo": "demo_48", "sign": -1, "native_periods": 170},
+    {"cohort_index": 5, "task_index": 1, "demo": "demo_39", "sign": 1, "native_periods": 244},
+    {"cohort_index": 6, "task_index": 1, "demo": "demo_46", "sign": -1, "native_periods": 334},
+    {"cohort_index": 8, "task_index": 2, "demo": "demo_49", "sign": 1, "native_periods": 182},
+    {"cohort_index": 13, "task_index": 2, "demo": "demo_5", "sign": -1, "native_periods": 172}
+  ],
+  "variant_order": ["zero", "base_x", "base_y", "base_yaw"],
+  "translation_magnitude_m": 0.06,
+  "base_yaw_magnitude_rad": 0.5,
+  "perturb_steps": 16,
+  "return_steps": 40,
+  "anchors": [0, 16, 56],
+  "future_window_steps": 40,
+  "seed": 42,
+  "control_dt_s": 0.05,
+  "inner_dt_s": 0.002,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "joint_buffer_rad": 0.05,
+  "arm_rate_limit": 0.25,
+  "max_baseline_responses_per_period": 480,
+  "max_quality_responses_per_period": 320,
+  "max_gripper_sequences_per_period": 6561,
+  "registered_cases": 24,
+  "probe_cases": [0],
+  "max_probe_control_periods": 0,
+  "max_probe_inner_steps": 0,
+  "max_probe_models": 3,
+  "max_probe_contexts": 3,
+  "max_workers_per_phase": 24,
+  "max_periods_per_phase": 6432,
+  "max_inner_steps_per_phase": 160800,
+  "max_models_per_phase": 72,
+  "max_contexts_per_phase": 72,
+  "worker_timeout_seconds": 3600,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "fits": 0,
+  "fresh_cases": 0,
+  "training_authorized": false,
+  "automatic_retry": false
+}
