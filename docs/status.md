@@ -10,6 +10,10 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 对 18 条正确参考做事后物体轨迹对照：case 03 的夹爪命令相同、
+TCP 轨迹最大差 2.476 mm，物体位置最大差 154.573 mm，任务结果不同；这不是
+因果证明，也不能由单一物体偏差阈值判定成功。见[诊断](../reports/tracking/joint_control/correct_reference_failure_diagnosis_20261116.md)。
+
 2026-11-16 统一候选在原 18 条正确参考正控中通过 14/18：两条质量停止、
 两条完整执行但末段不稳定；全部已执行动作经独立重放。完整正控资格尚未达到，
 见[矩阵报告](../reports/tracking/joint_control/reset_correct_reference_cohort_20261116.md)。
