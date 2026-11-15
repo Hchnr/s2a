@@ -25,16 +25,21 @@ class OracleTimeline:
                 raise ValueError("Correct-reference windows must start at consecutive eight-step boundaries")
             target = validate_transform(np.asarray(row["effective_targets_tcp"], dtype=float)).copy()
             opening = np.asarray(row["openings"], dtype=float).copy()
+            minimum = min(HORIZON, periods - index * STRIDE)
             if (
-                target.shape != (HORIZON, 4, 4)
-                or opening.shape != (HORIZON,)
+                target.ndim != 3
+                or not minimum <= len(target) <= HORIZON
+                or opening.shape != (len(target),)
                 or not np.isfinite(opening).all()
                 or np.any((opening < 0) | (opening > 1))
             ):
-                raise ValueError("Each correct reference must contain 40 finite poses and openings")
+                raise ValueError("Each correct reference must cover its remaining finite poses and openings")
             if prior is not None:
-                difference = float(np.max(np.abs(prior[0][STRIDE:] - target[:-STRIDE])))
-                if difference > ALIGNMENT_ATOL or not np.array_equal(prior[1][STRIDE:], opening[:-STRIDE]):
+                overlap = min(len(prior[0]) - STRIDE, len(target))
+                difference = float(np.max(np.abs(prior[0][STRIDE : STRIDE + overlap] - target[:overlap])))
+                if difference > ALIGNMENT_ATOL or not np.array_equal(
+                    prior[1][STRIDE : STRIDE + overlap], opening[:overlap]
+                ):
                     raise ValueError("Overlapping correct references must describe the same future endpoints")
                 maximum_pose_difference = max(maximum_pose_difference, difference)
             poses.append(target[:STRIDE])

@@ -55,3 +55,20 @@ def test_timeline_rejects_cursor_outside_recorded_periods():
     for cursor in (-1, 19, 1.0):
         with pytest.raises(ValueError):
             timeline.window(cursor)
+
+
+def test_timeline_accepts_short_final_windows_and_rejects_missing_endpoints():
+    source = windows(51)
+    for row in source:
+        count = min(40, 51 - row["step"])
+        row["effective_targets_tcp"] = row["effective_targets_tcp"][:count]
+        row["openings"] = row["openings"][:count]
+    timeline = OracleTimeline(source, periods=51)
+    poses, _, metadata = timeline.window(48)
+    np.testing.assert_allclose(poses[:3, 0, 3], np.arange(48, 51) * 0.001)
+    np.testing.assert_array_equal(poses[3:], np.repeat(poses[2:3], 37, axis=0))
+    assert metadata["terminal_hold_endpoints"] == 37
+    source[-1]["effective_targets_tcp"] = source[-1]["effective_targets_tcp"][:-1]
+    source[-1]["openings"] = source[-1]["openings"][:-1]
+    with pytest.raises(ValueError, match="cover its remaining"):
+        OracleTimeline(source, periods=51)
