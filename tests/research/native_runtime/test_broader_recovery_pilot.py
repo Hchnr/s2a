@@ -1,6 +1,7 @@
 """The registered physical worker admits only its own immutable case."""
 
 import copy
+import json
 
 import numpy as np
 import pytest
@@ -258,3 +259,79 @@ def test_recovery_metrics_use_tcp_pivot_and_real_reached_endpoints():
     assert metrics["return"]["rotation_error_rad"] == pytest.approx(0.0)
     partial = run.recovery_metrics(dict(source_pose=measured[:16]), tool, timeline)
     assert partial == {"perturbation": None, "return": None}
+
+
+def test_phase_preserves_partial_failures_and_unknown_resource_costs(tmp_path, monkeypatch):
+    identity = dict(cases=[dict(index=index, periods=10) for index in range(4)])
+    config = dict(
+        registered_cases=4,
+        worker_timeout_seconds=30,
+        max_periods_per_phase=40,
+        max_inner_steps_per_phase=1000,
+        max_models_per_phase=12,
+        max_contexts_per_phase=12,
+    )
+    sources, before, published = ["source"], {"source": "digest"}, {}
+    monkeypatch.setattr(run, "OUTPUT", tmp_path)
+    monkeypatch.setattr(run, "preflight", lambda: (config, identity, before, sources, "qa", "dry"))
+    monkeypatch.setattr(run, "verify_probe_admission", lambda *_args: None)
+    monkeypatch.setattr(run, "source_refs", lambda: sources)
+    monkeypatch.setattr(run, "snapshot", lambda _root: dict(sources=before))
+    monkeypatch.setattr(run.pilot, "load_inputs", lambda: (config, identity))
+    monkeypatch.setattr(run.prefix, "reference", lambda path: str(path))
+
+    def publish(path, value):
+        ref = str(path)
+        published[ref] = copy.deepcopy(value)
+        return ref
+
+    def read(ref):
+        if ref.endswith("probe/result.json"):
+            return {}
+        return published[ref] if ref in published else json.loads(run.Path(ref).read_text())
+
+    def launch(specs, *, cwd, timeout_seconds):
+        assert len(specs) == 4 and timeout_seconds == 30
+        workers = []
+        for index, spec in enumerate(specs):
+            if index < 3:
+                result_path = tmp_path / "producer" / f"case{index:02d}" / "worker/result.json"
+                result_path.parent.mkdir(parents=True)
+                counters = {
+                    key: dict(attempted=count, completed=count)
+                    for key, count in (("mj_step", 50), ("mj_step2", 0), ("model_construct", 3), ("context", 3))
+                }
+                runtime = dict(
+                    control_steps_attempted=2,
+                    control_steps_completed=2,
+                    counters=counters,
+                    cleanup_complete=True,
+                )
+                result_path.write_text(json.dumps(dict(case=identity["cases"][index], runtime=runtime)))
+            workers.append(
+                dict(
+                    key=str(index),
+                    returncode=0 if index < 2 else 1,
+                    actual_wait=True,
+                    reaped=True,
+                    signal_sent=False,
+                    log=str(spec["log"]),
+                )
+            )
+        return dict(workers=workers, launch_error=None)
+
+    monkeypatch.setattr(run, "publish_result", publish)
+    monkeypatch.setattr(run.prefix, "read", read)
+    monkeypatch.setattr(run, "run_owned_workers", launch)
+    monkeypatch.setattr(run.cohort, "validate_branch", lambda *_args: dict(control_steps=2, native_steps=50))
+    with pytest.raises(SystemExit, match="did not close all"):
+        run.phase_run("producer")
+    result = published[str(tmp_path / "producer/result.json")]
+    assert result["owner_closed"] is result["sources_unchanged"] is result["complete"] is True
+    assert result["passed"] is result["resource_counts_complete"] is False
+    assert [result["cases"][str(index)]["status"] for index in range(4)] == ["closed", "closed", "failed", "failed"]
+    assert result["cases"]["2"]["observed_resources"]["control_steps_completed"] == 2
+    assert result["cases"]["3"]["observed_resources"] is None
+    assert result["observed_resource_totals"]["control_steps_completed"] == 6
+    eligible, _ = run.checker_eligible(result, identity)
+    assert eligible == [0, 1]
