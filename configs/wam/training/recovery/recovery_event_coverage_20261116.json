@@ -1,0 +1,42 @@
+{
+  "schema": "s2a.recovery-event-coverage.v1",
+  "output": "outputs/recovery_event_coverage_20261116",
+  "h40_audit": {
+    "path": "outputs/recovery_h40_contract_20261116/result.json",
+    "sha256": "0753c4c30f432e6b09e103152238cb4f6f47dffa30ce76e60636e59f2329dcec"
+  },
+  "recovery_audit": {
+    "path": "outputs/current_controller_recovery_repair_20261116/audit.json",
+    "sha256": "a10dc09801d90efd92933e536d04a1e71ea1da75b724105dc384205c4d61c7f6"
+  },
+  "training_preparation": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "validation_preflight": {
+    "path": "outputs/synchronous_validation_preparation_20261024/source_identity_preflight.json",
+    "sha256": "c435cd2c9da5521caea2a0916033312a17a0f9e53351814c16e6759e5a7b0d3d"
+  },
+  "validation_prepared": {
+    "path": "outputs/synchronous_validation_20261024/prepared.json",
+    "sha256": "ba343c86753e56d20364e20f776d7983d6d475494753dbdfbead7cf9e75f23ad"
+  },
+  "validation_verified": {
+    "path": "outputs/synchronous_validation_20261024/verified.json",
+    "sha256": "abe0a9982fa54c6a8425c90933d60c19fa667d129ee87a2707e6ddf1bf50a6d8"
+  },
+  "case_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  "existing_anchors": [0, 16, 56],
+  "opening_below": 0.35,
+  "event_lead_periods": 8,
+  "horizon": 40,
+  "seed": 42,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "physical_steps": 0,
+  "fits": 0,
+  "fresh_cases": 0,
+  "new_current_images": 0,
+  "training_authorized": false,
+  "automatic_retry": false
+}
