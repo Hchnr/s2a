@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [wine step104 身份字段诊断](wine_capture_identity_recovery_20261116.md) | 新增报告 |
 | [wine step104 身份诊断的输出路径失败](wine_capture_identity_incident_20261116.md) | 新增报告 |
 | [三任务首次 WAM 刷新点的当前状态重算](multitask_margin_recheck_20261116.md) | 新增报告 |
 | [一次 WAM 余量刷新后的当前状态重算](deferred_margin_recheck_20261116.md) | 新增报告 |
