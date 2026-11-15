@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [刷新余量的单次局部线性化搜索](refresh_margin_linear_search_20261116.md) | 新增计划 |
 | [已执行基线上的刷新余量定向搜索](refresh_margin_targeted_search_20261116.md) | 新增计划 |
 | [刷新余量候选的同状态物理试验](refresh_margin_physical_20261115.md) | 新增计划 |
 | [刷新余量候选的未来质量约束](refresh_margin_preference_addendum_20261115.md) | 新增计划 |
