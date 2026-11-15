@@ -254,6 +254,15 @@ def dry_run():
     )
 
 
+def capture_reset(runtime_directory, tool, env, terminal, renderer):
+    """Create capture storage inside the active runtime and record its reset."""
+    capture_dir = Path(runtime_directory) / "capture"
+    capture_dir.mkdir()
+    capture = TrainingRecoveryCapture(tool, capture_dir, renderer)
+    capture.append(env, terminal["sample"], terminal["endpoint_receipt"])
+    return capture
+
+
 def worker(phase, index):
     prefix.require(
         phase in ("producer", "checker") and type(index) is int and 0 <= index < 9, "One case and phase required"
@@ -300,8 +309,8 @@ def worker(phase, index):
             anchor=reset["anchor"],
             opening=reset["opening"],
         )
-        capture_dir = directory / "capture"
-        capture_dir.mkdir()
+        runtime_directory = directory / "runtime"
+        capture_dir = runtime_directory / "capture"
         captures = []
         factory = None
         if phase == "producer":
@@ -315,8 +324,7 @@ def worker(phase, index):
                 )
 
         def continuation(env, terminal, observers, receipt, *, progress=None):
-            capture = TrainingRecoveryCapture(case["tool"], capture_dir, render_anchor)
-            capture.append(env, terminal["sample"], terminal["endpoint_receipt"])
+            capture = capture_reset(runtime_directory, case["tool"], env, terminal, render_anchor)
             captures.append(capture)
             wrapped = SimpleNamespace(
                 endpoint=capture.wrap_endpoint(observers.endpoint),
@@ -346,7 +354,7 @@ def worker(phase, index):
             inputs["runtime_config"],
             inputs["record"],
             inputs["record_xml"],
-            directory / "runtime",
+            runtime_directory,
             shared["asset_refs"],
             registered_seed=42,
             continuation=continuation,

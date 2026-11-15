@@ -8,6 +8,7 @@ import pytest
 
 from s2a.geometry import pose_error
 from s2a.references.training_recovery_timeline import training_recovery_timeline
+from s2a.research.native_runtime import bootstrap
 from s2a.research.native_runtime.training_recovery_capture import TrainingRecoveryCapture
 from scripts.simulation.runtime import run_current_controller_recovery as run
 from tests.research.native_runtime.test_training_recovery_capture import image, sample
@@ -27,6 +28,29 @@ def test_fixed_config_and_training_roster_keep_excluded_initial_states_closed():
     assert len(identity["cases"]) == 9
     assert [case["periods"] for case in identity["cases"]] == [220] * 3 + [310] * 3 + [239] * 3
     assert [case["offset_m"] for case in identity["cases"]] == [0.0, 0.02, -0.02] * 3
+
+
+def test_reset_capture_writes_within_runtime_root_after_runtime_creation(tmp_path):
+    runtime_dir = tmp_path / "worker" / "runtime"
+    runtime_dir.mkdir(parents=True)
+    initial, receipt = sample(0)
+
+    def guarded_image(env, frame, current, endpoint_receipt, directory):
+        destination = directory / f"anchor{frame:04d}"
+        bootstrap._safe_path(destination, (runtime_dir,), exists=False)
+        destination.mkdir()
+        return image(env, frame, current, endpoint_receipt, directory)
+
+    with pytest.raises(ValueError, match="outside approved roots"):
+        bootstrap._safe_path(runtime_dir.parent / "capture" / "anchor0000", (runtime_dir,), exists=False)
+    capture = run.capture_reset(
+        runtime_dir, np.eye(4), None, dict(sample=initial, endpoint_receipt=receipt), guarded_image
+    )
+    assert capture.directory == runtime_dir / "capture"
+    assert (capture.directory / "anchor0000").is_dir()
+    assert capture.receipts == [receipt]
+    with pytest.raises(FileExistsError):
+        run.capture_reset(runtime_dir, np.eye(4), None, dict(sample=initial, endpoint_receipt=receipt), guarded_image)
 
 
 def test_independent_capture_check_rejects_changed_state_and_motor(tmp_path, monkeypatch):
