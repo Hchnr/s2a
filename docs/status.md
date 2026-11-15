@@ -10,6 +10,10 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 历史源码身份读取已用明确的 Git blob / 当前 SHA 桥接恢复；原失败
+测试、下游反馈和 checker 的所选 75 项回归通过，旧登记与失败收据保留。见
+[来源修复报告](../reports/development/provenance/historical_source_bridge_20261116.md)。
+
 2026-11-16 同一状态的单次线性化余量搜索在 `±0.1` 动作变化范围内由 HiGHS
 报告不可行；仅属局部模型和数值求解结果，不证明全局不可行。见[结果](../reports/tracking/references/refresh_margin_linear_search_20261116.md)。
 
