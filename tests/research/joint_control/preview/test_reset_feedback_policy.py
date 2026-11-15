@@ -75,3 +75,24 @@ def test_fresh_policy_has_no_plan_and_stops_on_initial_joint_buffer_loss(monkeyp
     decision = policy.select(q, limits, jac, previous, 0)
     assert decision["stop"]["reason"] == "observed_joint_buffer_loss"
     assert receipt["gripper_proposals"]["attempted"] == 0 and policy.pending is None
+
+
+def test_reset_accepts_only_an_explicit_audited_adapter_factory(monkeypatch):
+    case, terminal = source()
+    inputs = policy_module.policy_inputs(case, terminal)
+    jac = np.c_[np.eye(6), np.zeros(6)]
+    limits = np.tile([-1.0, 1.0], (7, 1))
+    monkeypatch.setattr(policy_module, "current_joint_site_state", lambda _env: (np.zeros(7), limits, jac))
+    monkeypatch.setattr(policy_module, "current_robot_dynamics", lambda _env, _jac: (np.eye(7), np.zeros(7), np.eye(4)))
+    env = SimpleNamespace(robots=[SimpleNamespace(controller=SimpleNamespace())])
+    created = []
+
+    def factory(receipt):
+        adapter = policy_module.SharedShiftFallbackAudit(receipt)
+        created.append(adapter)
+        return adapter
+
+    policy, _previous = policy_module.build_reset_policy(env, inputs, {}, adapter_factory=factory)
+    assert policy.arm_policy.tracking._refiner.solver.__self__ is created[0]
+    with pytest.raises(ValueError, match="original audited"):
+        policy_module.build_reset_policy(env, inputs, {}, adapter_factory=lambda _receipt: object())
