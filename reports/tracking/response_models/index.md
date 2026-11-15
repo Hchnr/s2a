@@ -6,6 +6,8 @@
 
 [开发轨迹的质量刷新边界](refresh_margin_events_20261115.md)
 
+[动作条件 TCP 残差的已执行轨迹回顾](action_conditioned_tcp_residual_20261116.md)
+
 | 领域 | 文件数 |
 | --- | ---: |
 | [causal](causal/index.md) | 9 |
