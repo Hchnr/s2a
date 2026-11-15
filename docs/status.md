@@ -10,6 +10,10 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 将 seed 的预测未来 slack 增量限制为 0.3 后，原 18 条正确参考为
+15/18；相对无上限候选 2 条改善、3 条回退，另记录 5 个 pose 超限端点。全部
+执行动作均独立重放，见[有界对照](../reports/tracking/joint_control/bounded_seed_preference_cohort_20261116.md)。
+
 2026-11-16 默认关闭的 seed 优先排序在原 18 条正确参考中通过 16/18，较旧
 候选的 14/18 净增两条，同时新增一条质量停止；全部动作独立重放。完整正控
 资格尚未达到，见[对照报告](../reports/tracking/joint_control/cached_seed_preference_cohort_20261116.md)。
