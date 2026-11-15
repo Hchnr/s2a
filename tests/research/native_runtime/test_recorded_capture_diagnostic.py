@@ -76,13 +76,17 @@ def test_checker_stops_after_capture_without_loading_a_future_reference(monkeypa
     events = []
 
     class Cache:
-        def __init__(self, _endpoint):
-            pass
+        def __init__(self, endpoint):
+            self.endpoint = endpoint
+            self.values = {}
+            self.events = []
 
-        def __call__(self, _env, step):
-            return dict(source_pose=np.eye(4)), dict(endpoint_step=step)
+        def __call__(self, env, step):
+            if step not in self.values:
+                self.values[step] = self.endpoint(env, step)
+            return self.values[step]
 
-    def run_continuation(_env, _current, _observers, receipt, *, start_step, expected_periods, **kwargs):
+    def run_continuation(_env, _current, active_observers, receipt, *, start_step, expected_periods, **kwargs):
         events.append(("execute", start_step))
         periods = []
         receipt["continuation_partial"] = dict(periods=periods)
@@ -91,6 +95,7 @@ def test_checker_stops_after_capture_without_loading_a_future_reference(monkeypa
             np.testing.assert_array_equal(selected["command"], expected["command"])
             period = dict(step=start_step + offset, command=selected["command"], actual_inner=[dict(q=[0] * 7)])
             periods.append(period)
+            _sample, period["endpoint_receipt"] = active_observers.endpoint(_env, start_step + offset + 1)
             period["completed_feedback"] = kwargs["on_completed"](None, selected["command"], offset)
         return dict(periods=periods, steps_completed=len(periods), stop=None)
 
@@ -110,10 +115,16 @@ def test_checker_stops_after_capture_without_loading_a_future_reference(monkeypa
         events.append(("capture", step))
         return dict(frame_index=step)
 
+    endpoint_reads = []
+
+    def endpoint(_env, step):
+        endpoint_reads.append(step)
+        return dict(source_pose=np.eye(4)), dict(endpoint_step=step)
+
     result = diagnostic.replay_until_capture(
         object(),
         dict(endpoint_receipt=dict(endpoint_step=0)),
-        SimpleNamespace(endpoint=None),
+        SimpleNamespace(endpoint=endpoint, current=None, render_anchor=None, render_cameras=None),
         {},
         phase="checker",
         case=case,
@@ -126,5 +137,6 @@ def test_checker_stops_after_capture_without_loading_a_future_reference(monkeypa
         compare_score=lambda actual, prior: np.testing.assert_equal(actual, prior),
     )
     assert events == [("execute", 0), ("load", 8), ("execute", 8), ("capture", 16)]
+    assert endpoint_reads == list(range(1, 17))
     assert result["next_action_dispatched"] is False
     assert result["capture"]["frame_index"] == 16

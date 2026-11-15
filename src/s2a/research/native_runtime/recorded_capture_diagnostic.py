@@ -1,6 +1,7 @@
 """Compare a recorded current-image capture after a bounded causal prefix."""
 
 import copy
+from types import SimpleNamespace
 
 import numpy as np
 
@@ -132,6 +133,13 @@ def replay_until_capture(
         previous = np.zeros(7)
 
     cache = SameStateEndpointCache(observers.endpoint)
+    receipt["endpoint_cache_events"] = cache.events
+    wrapped = SimpleNamespace(
+        endpoint=cache,
+        current=observers.current,
+        render_anchor=observers.render_anchor,
+        render_cameras=observers.render_cameras,
+    )
 
     def execute_window(start, current, targets, openings, expected):
         nonlocal previous
@@ -163,7 +171,7 @@ def replay_until_capture(
         outcome = run_continuation(
             env,
             current,
-            observers,
+            wrapped,
             receipt,
             start_step=start,
             previous_command=previous,
