@@ -6,6 +6,8 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [刷新余量定向搜索的静态结果](refresh_margin_targeted_search_20261116.md) | 新增报告 |
+| [刷新余量缓存候选的同状态对照](refresh_margin_physical_20261116.md) | 新增报告 |
 | [同一复位状态下的新旧参考对照](bounded_reference_choice_recovery_20261115.md) | 新增报告 |
 | [参考选择物理对照的中断记录](bounded_reference_choice_interruption_20261115.md) | 新增报告 |
 | [三任务参考交接与未消费开度的回顾](multitask_reference_handoffs_20261113.md) | 新增报告 |
