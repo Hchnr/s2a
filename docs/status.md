@@ -10,6 +10,10 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 首次动作分歧的冻结状态审计中，18/18 个历史计划在合格缓存中；
+默认关闭的新排序尚未完成原 18 条物理对照，不能视为控制收益。见
+[缓存审计](../reports/tracking/joint_control/cached_seed_first_divergence_20261116.md)。
+
 2026-11-16 在 case 03 的同一已重放状态比较 16 周期固定机械臂动作：两支
 碗位置最大差 38.501 mm，换入原正控动作也未复现其同期轨迹；短窗尚不能判断
 完整任务。见[同状态对照](../reports/tracking/joint_control/correct_reference_same_state_arm_20261116.md)。
