@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [优先保留刷新余量的因果候选](refresh_margin_preference_20261115.md) | 新增计划 |
 | [三任务开发轨迹中的参考切换](multitask_reference_handoffs_20261113.md) | 新增计划 |
 | [多任务剩余两条停止帧事件的独立重放](reset_multitask_postflight_remaining_20261113.md) | 新增计划 |
 | [三任务共同固定 H40 的复位开发对照](reset_multitask_fixed_h40_20261113.md) | 新增计划 |
