@@ -1,5 +1,11 @@
 # 研究计划：plans/v0.0.1/tracking/references
 
+近期：[wine 首次刷新对照的端点缓存修复验证](wine_margin_cache_recovery_20261116.md)
+
+近期：[wine step104 身份诊断的受控目录修复验证](wine_capture_identity_recovery_20261116.md)
+
+近期：[wine step104 图像身份诊断](wine_capture_identity_diagnostic_20261116.md)
+
 近期：[三任务双 seed 首次 WAM 刷新重算](multitask_margin_recheck_20261116.md)
 
 近期：[一次 WAM 余量刷新后的当前状态重算](deferred_margin_recheck_20261116.md)

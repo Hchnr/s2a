@@ -1,6 +1,7 @@
 """Rebuild a recorded reference prefix and probe one current-state action."""
 
 import copy
+from types import SimpleNamespace
 
 import numpy as np
 
@@ -105,6 +106,13 @@ def run_matched_reference_probe(
         previous = np.zeros(7)
 
     cache = SameStateEndpointCache(observers.endpoint)
+    receipt["endpoint_cache_events"] = cache.events
+    wrapped = SimpleNamespace(
+        endpoint=cache,
+        current=observers.current,
+        render_anchor=observers.render_anchor,
+        render_cameras=observers.render_cameras,
+    )
     completed_windows = []
 
     def run_recorded_window(start, current, targets, openings, expected):
@@ -137,7 +145,7 @@ def run_matched_reference_probe(
         outcome = run_continuation(
             env,
             current,
-            observers,
+            wrapped,
             receipt,
             start_step=start,
             previous_command=previous,
@@ -250,7 +258,7 @@ def run_matched_reference_probe(
     outcome = run_continuation(
         env,
         current,
-        observers,
+        wrapped,
         receipt,
         start_step=expected_step,
         previous_command=previous,

@@ -10,6 +10,13 @@ CPU/OSMesa 使用空 CUDA/LD。此前用户曾允许当前容器可见的四张�
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 wine / seed42 的 step104 身份诊断重现：完成动作端点与原记录一致，
+再次读取端点后状态哈希不同；修复周期内端点缓存后到达 step143，因未找到
+合格 witness 停止，143 个已执行周期独立重放一致。见[缓存修复结果](../reports/tracking/references/wine_margin_cache_recovery_20261116.md)。
+此前诊断输出目录错误及其 208 周期开销保留，见
+[字段诊断](../reports/tracking/references/wine_capture_identity_recovery_20261116.md)
+与[事件报告](../reports/tracking/references/wine_capture_identity_incident_20261116.md)。
+
 2026-11-16 对三任务双 seed 的首次 WAM 刷新点做单步重算：六例中五例独立
 重放一致，其中四例各执行一个额外周期；一例在预定探针前身份校验失败，整体
 审计未通过，具体差异字段待查。见[六例对照](../reports/tracking/references/multitask_margin_recheck_20261116.md)。
