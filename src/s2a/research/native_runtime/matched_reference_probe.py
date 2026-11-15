@@ -68,6 +68,8 @@ def run_matched_reference_probe(
     compare_score,
     recorded_probe=None,
     progress=None,
+    adapter_factory=None,
+    activate_probe=None,
 ):
     """Recompute or replay one prefix, then dispatch at most one new action.
 
@@ -86,6 +88,9 @@ def run_matched_reference_probe(
         or not callable(load_window)
         or not callable(score_gripper)
         or not callable(compare_score)
+        or (adapter_factory is None) != (activate_probe is None)
+        or (adapter_factory is not None and (not callable(adapter_factory) or not callable(activate_probe)))
+        or (phase == "checker" and adapter_factory is not None)
     ):
         raise ValueError("One fixed recorded prefix and one producer/checker mode are required")
     expected_step = expected_trigger.get("current_step")
@@ -99,7 +104,12 @@ def run_matched_reference_probe(
         )
         from s2a.research.native_runtime.deferred_margin_recheck import DeferredMarginRecheck
 
-        policy, owner, previous = build_segmented_reset_policy(env, policy_inputs(case, terminal), receipt)
+        if adapter_factory is None:
+            policy, owner, previous = build_segmented_reset_policy(env, policy_inputs(case, terminal), receipt)
+        else:
+            policy, owner, previous = build_segmented_reset_policy(
+                env, policy_inputs(case, terminal), receipt, adapter_factory=adapter_factory
+            )
         gate = DeferredMarginRecheck(target_step=expected_step)
     else:
         policy = owner = gate = None
@@ -215,6 +225,11 @@ def run_matched_reference_probe(
             or original_stop["stop"]["trigger"]["current_step"] != expected_step
         ):
             raise ValueError("The recomputed trigger must match the recorded completed-state signal")
+        if activate_probe is not None:
+            before = measured_snapshot(env, expected_step)
+            activate_probe(policy, owner, receipt, expected_step)
+            if measured_snapshot(env, expected_step) != before:
+                raise ValueError("Probe activation cannot advance or change the physical state")
 
     def choose_probe(q, limits, jacobian, prior, offset):
         before = measured_snapshot(env, expected_step + offset)
