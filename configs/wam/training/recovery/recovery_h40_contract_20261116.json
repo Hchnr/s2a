@@ -1,0 +1,32 @@
+{
+  "schema": "s2a.recovery-h40-contract-audit.v1",
+  "output": "outputs/recovery_h40_contract_20261116",
+  "recovery_audit": {
+    "path": "outputs/current_controller_recovery_repair_20261116/audit.json",
+    "sha256": "a10dc09801d90efd92933e536d04a1e71ea1da75b724105dc384205c4d61c7f6"
+  },
+  "training_preparation": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "normalization": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/capture/D0/normalization.json",
+    "sha256": "9eb7fb8b9885958d8b947fd20727ae301813df068ec3dcaf1c3d8865180fedd9"
+  },
+  "case_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  "sources": [[0, "demo_8"], [1, "demo_1"], [2, "demo_2"]],
+  "offsets_m": [0.0, 0.02, -0.02],
+  "anchor_steps": [0, 16, 56],
+  "horizon": 40,
+  "seed": 42,
+  "control_dt_s": 0.05,
+  "max_cases": 9,
+  "max_windows": 27,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "physical_steps": 0,
+  "fits": 0,
+  "fresh_cases": 0,
+  "training_authorized": false,
+  "automatic_retry": false
+}

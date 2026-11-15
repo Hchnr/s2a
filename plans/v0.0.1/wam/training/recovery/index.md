@@ -1,6 +1,6 @@
 # 研究计划：plans/v0.0.1/wam/training/recovery
 
-近期：[路径修复后的独立登记](current_controller_recovery_repair_20261116.md) · [当前控制器的训练划分扰动恢复资格](current_controller_recovery_20261116.md)
+近期：[恢复 H40 数据合同审计](recovery_h40_contract_20261116.md) · [路径修复后的独立登记](current_controller_recovery_repair_20261116.md) · [当前控制器的训练划分扰动恢复资格](current_controller_recovery_20261116.md)
 
 本页导航原始文件；正文、配置值和历史身份保持。目录迁移不改变实验或控制资格。
 
