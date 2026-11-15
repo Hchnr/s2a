@@ -2,6 +2,10 @@
 
 import copy
 import json
+import os
+import subprocess
+import sys
+import tempfile
 
 import numpy as np
 import pytest
@@ -47,11 +51,62 @@ def test_target_metadata_is_saved_before_original_guard(monkeypatch):
 
     monkeypatch.setattr(runner, "publish_result", publish)
     monkeypatch.setattr(runner.captures, "compare_capture", original_guard)
-    result = runner.persist_target_capture("capture.json", expected, actual)
+    result = runner.persist_target_capture("runtime", expected, actual)
     assert result["original_guard_passed"] is False
     assert result["fields"]["differing_paths"] == ["current_endpoint.sim_state_sha256"]
     assert result["original_guard_error"]["message"] == "original capture guard failed"
     assert events[0][2]["actual"]["current_endpoint"]["sim_state_sha256"] == "different"
+    assert str(events[0][1]) == "runtime/capture104.json"
+    with pytest.raises(ValueError, match="controlled runtime"):
+        runner.persist_target_capture("worker", expected, actual)
+
+
+def test_capture_persists_inside_runtime_with_write_audit_hook():
+    script = r"""
+import os, sys
+from pathlib import Path
+from scripts.simulation.runtime import diagnose_wine_capture_identity as runner
+
+runtime = Path(sys.argv[1]).resolve()
+runtime.mkdir()
+binding = dict(sim_time=5.0, sim_state_sha256='state')
+capture = dict(frame_index=104, current_endpoint=dict(endpoint_step=104, **binding),
+    render_before=dict(binding), render_after=dict(binding), future_rgb_frames=0,
+    camera_keys=['left', 'right'], canvas_shape=[960, 640, 3], canvas_dtype='uint8',
+    canvas_rgb_sha256='rgb', canvas_png=dict(sha256='png'),
+    current_source_pose=[[1.,0.,0.,0.],[0.,1.,0.,0.],[0.,0.,1.,0.],[0.,0.,0.,1.]],
+    current_opening=0.5)
+
+def guard(event, args):
+    path = None
+    if event == 'os.mkdir':
+        path = args[0]
+    elif event == 'open':
+        value, mode, flags = args
+        if not isinstance(value, int) and ((mode and any(x in mode for x in 'wax+')) or
+                flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT)):
+            path = value
+    if path is not None and not Path(os.fsdecode(path)).resolve().is_relative_to(runtime):
+        raise ValueError('write outside controlled runtime')
+
+sys.addaudithook(guard)
+receipt = runner.persist_target_capture(runtime, capture, capture)
+assert receipt['original_guard_passed'] is True
+assert Path(receipt['capture_ref']['path']) == runtime / 'capture104.json'
+assert (runtime / 'capture104.json').is_file()
+"""
+    with tempfile.TemporaryDirectory(prefix="capture-audit-", dir=runner.ROOT / "outputs") as temporary:
+        command = [sys.executable, "-c", script, str(os.path.join(temporary, "runtime"))]
+        result = subprocess.run(
+            command,
+            cwd=runner.ROOT,
+            env=dict(os.environ, CUDA_VISIBLE_DEVICES="", LD_LIBRARY_PATH="", PYTHONDONTWRITEBYTECODE="1"),
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
 
 
 def test_prepare_exposes_no_post_capture_reference_to_runtime(monkeypatch):

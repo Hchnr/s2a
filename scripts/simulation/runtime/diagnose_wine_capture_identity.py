@@ -166,9 +166,11 @@ def dry_run():
     )
 
 
-def persist_target_capture(path, expected, actual):
+def persist_target_capture(runtime_output, expected, actual):
     """Persist both captures before invoking any comparison that may fail."""
-    capture_ref = publish_result(path, dict(expected=expected, actual=actual))
+    runtime_output = Path(runtime_output)
+    prefix.require(runtime_output.name == "runtime", "Capture receipts must stay inside the controlled runtime")
+    capture_ref = publish_result(runtime_output / "capture104.json", dict(expected=expected, actual=actual))
     fields = capture_differences(expected, actual)
     error = None
     try:
@@ -244,7 +246,7 @@ def worker(phase):
             def capture_final(actual_env, current, step):
                 prefix.require(step == config["capture_step"], "Only the fixed target capture is allowed")
                 actual = render(actual_env, current, step)
-                return persist_target_capture(directory / "capture104.json", data["captures"][-1], actual)
+                return persist_target_capture(directory / "runtime", data["captures"][-1], actual)
 
             return replay_until_capture(
                 env,
