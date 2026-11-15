@@ -13,6 +13,10 @@
     "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/capture/D0/normalization.json",
     "sha256": "9eb7fb8b9885958d8b947fd20727ae301813df068ec3dcaf1c3d8865180fedd9"
   },
+  "d0_capture": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/capture/D0/result.json",
+    "sha256": "d23b31eb9e40f9f3e8f22571399d164d8980ba3f4d75b10876d740edd52b7dae"
+  },
   "case_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8],
   "sources": [[0, "demo_8"], [1, "demo_1"], [2, "demo_2"]],
   "offsets_m": [0.0, 0.02, -0.02],
