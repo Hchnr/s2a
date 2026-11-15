@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [wine 已计算名义两点候选的同状态结果](wine_cached_nominal_candidate_20261116.md) | 新增报告 |
 | [wine 首次刷新对照的端点缓存修复结果](wine_margin_cache_recovery_20261116.md) | 新增报告 |
 | [wine step104 身份字段诊断](wine_capture_identity_recovery_20261116.md) | 新增报告 |
 | [wine step104 身份诊断的输出路径失败](wine_capture_identity_incident_20261116.md) | 新增报告 |
