@@ -2,8 +2,11 @@
 
 import copy
 
+import numpy as np
 import pytest
+from scipy.spatial.transform import Rotation
 
+from s2a.references.broader_recovery_timeline import broader_recovery_timeline
 from scripts.simulation.runtime import run_broader_recovery_pilot as run
 
 
@@ -193,3 +196,65 @@ def test_missing_or_partial_worker_costs_are_never_treated_as_zero():
     assert observed["cleanup_complete"] is True
     del counters["context"]["attempted"]
     assert run.observed_resources(branch) is None
+
+
+def test_independent_owner_verification_checks_actual_child_lifecycle(monkeypatch):
+    identity = dict(cases=[dict(index=0), dict(index=1)])
+    sources, qa_ref, dry_ref, probe_ref = ["source"], "qa", "dry", "probe"
+    registration = dict(
+        phase="producer",
+        inputs=identity,
+        source_refs=sources,
+        qa_ref=qa_ref,
+        dry_ref=dry_ref,
+        probe_ref=probe_ref,
+        eligible_cases=[0, 1],
+        automatic_retry=False,
+    )
+    workers = [
+        dict(key="0", actual_wait=True, reaped=True, returncode=0, signal_sent=False, log_ref="log0"),
+        dict(key="1", actual_wait=True, reaped=True, returncode=1, signal_sent=False, log_ref="log1"),
+    ]
+    owner = dict(
+        phase="producer",
+        owner_closed=True,
+        sources_unchanged=True,
+        automatic_retry=False,
+        registration_ref="registration",
+        lifecycle_ref="lifecycle",
+        cases={
+            "0": dict(status="closed", branch_ref="branch0", available_branch_ref="branch0"),
+            "1": dict(status="failed"),
+        },
+    )
+    objects = {"registration": registration, "lifecycle": dict(launch_error=None, workers=workers)}
+    monkeypatch.setattr(run.prefix, "read", lambda ref: objects[ref])
+    monkeypatch.setattr(run.prefix, "checked", lambda ref: ref)
+    assert run.verify_owner(owner, "producer", identity, sources, qa_ref, dry_ref, probe_ref) == registration
+    workers[1]["reaped"] = False
+    with pytest.raises(ValueError, match="reaped worker"):
+        run.verify_owner(owner, "producer", identity, sources, qa_ref, dry_ref, probe_ref)
+    workers[1]["reaped"] = True
+    workers[0]["signal_sent"] = True
+    with pytest.raises(ValueError, match="successful reaped worker"):
+        run.verify_owner(owner, "producer", identity, sources, qa_ref, dry_ref, probe_ref)
+
+
+def test_recovery_metrics_use_tcp_pivot_and_real_reached_endpoints():
+    native = np.repeat(np.eye(4)[None], 41, axis=0)
+    tool = np.eye(4)
+    tool[:3, 3] = [0.1, 0.0, 0.2]
+    timeline, _ = broader_recovery_timeline(native, np.ones(41), tool, variant="base_yaw", sign=1)
+    measured = np.repeat(np.eye(4)[None], 57, axis=0)
+    measured[16, :3, :3] = Rotation.from_euler("z", 0.2).as_matrix()
+    measured[16, 0, 3] = 0.03
+    metrics = run.recovery_metrics(dict(source_pose=measured), tool, timeline)
+    displacement = np.array([0.03 + 0.1 * (np.cos(0.2) - 1), 0.1 * np.sin(0.2), 0.0])
+    np.testing.assert_allclose(metrics["perturbation"]["measured_tcp_displacement_m"], displacement, atol=1e-12)
+    np.testing.assert_allclose(metrics["perturbation"]["measured_base_rotation_vector_rad"], [0, 0, 0.2], atol=1e-12)
+    assert metrics["perturbation"]["position_error_m"] == pytest.approx(np.linalg.norm(displacement))
+    assert metrics["perturbation"]["rotation_error_rad"] == pytest.approx(0.3)
+    assert metrics["return"]["position_error_m"] == pytest.approx(0.0)
+    assert metrics["return"]["rotation_error_rad"] == pytest.approx(0.0)
+    partial = run.recovery_metrics(dict(source_pose=measured[:16]), tool, timeline)
+    assert partial == {"perturbation": None, "return": None}

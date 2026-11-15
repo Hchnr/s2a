@@ -1,5 +1,6 @@
 """Run the registered training-only recovery controls with independent replay."""
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -7,6 +8,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
+from s2a.geometry import pose_error
 from s2a.infrastructure.native_environment import restore_cv2_environment
 from s2a.infrastructure.owned_processes import run_owned_workers
 from s2a.infrastructure.publication import publish_result
@@ -572,3 +574,208 @@ def phase_run(phase):
     print(publish_result(directory / "result.json", result), flush=True)
     if not result["passed"]:
         raise SystemExit("The physical phase did not close all registered cases")
+
+
+def verify_owner(owner, phase, identity, sources, qa_ref, dry_ref, probe_ref):
+    """Independently check the registered roster and actual worker reaping."""
+    registration = prefix.read(owner["registration_ref"])
+    lifecycle = prefix.read(owner["lifecycle_ref"])
+    expected = {str(row["index"]) for row in identity["cases"]}
+    eligible = registration["eligible_cases"]
+    workers = {row["key"]: row for row in lifecycle["workers"]}
+    prefix.require(
+        owner["phase"] == registration["phase"] == phase
+        and owner["owner_closed"] is owner["sources_unchanged"] is True
+        and owner["automatic_retry"] is registration["automatic_retry"] is False
+        and set(owner["cases"]) == expected
+        and registration["inputs"] == identity
+        and registration["source_refs"] == sources
+        and registration["qa_ref"] == qa_ref
+        and registration["dry_ref"] == dry_ref
+        and registration["probe_ref"] == probe_ref
+        and lifecycle["launch_error"] is None
+        and len(lifecycle["workers"]) == len(eligible)
+        and set(workers) == {str(index) for index in eligible}
+        and all(row["actual_wait"] is row["reaped"] is True for row in lifecycle["workers"]),
+        "The complete phase roster, source identities and reaped worker lifecycle must match",
+    )
+    for row in lifecycle["workers"]:
+        prefix.checked(row["log_ref"])
+    for index, entry in owner["cases"].items():
+        if entry["status"] == "closed":
+            child = workers.get(index)
+            prefix.require(
+                child is not None
+                and child["returncode"] == 0
+                and child["signal_sent"] is False
+                and entry["branch_ref"] == entry["available_branch_ref"],
+                "A closed branch must bind its successful reaped worker",
+            )
+            prefix.checked(entry["branch_ref"])
+        elif entry["status"] == "not_run":
+            prefix.require(phase == "checker" and int(index) not in eligible, "Only ineligible replays may be omitted")
+        else:
+            prefix.require(
+                entry["status"] == "failed" and int(index) in eligible, "A failed worker must remain recorded"
+            )
+    return registration
+
+
+def recovery_metrics(data, tool, timeline):
+    """Measure perturbation and return at actual TCP endpoints, not desired labels."""
+    poses = np.asarray(data["source_pose"], dtype=float)
+    tool = np.asarray(tool, dtype=float)
+    prefix.require(
+        poses.ndim == 3 and poses.shape[1:] == (4, 4) and len(poses) >= 1, "Actual source endpoints required"
+    )
+    initial = poses[0] @ tool
+    result = {}
+    for step, name in ((16, "perturbation"), (56, "return")):
+        if len(poses) <= step:
+            result[name] = None
+            continue
+        measured = poses[step] @ tool
+        desired = timeline.window(step - 1)[0][0]
+        error = pose_error(desired, measured)
+        result[name] = dict(
+            measured_tcp_displacement_m=(measured[:3, 3] - initial[:3, 3]).tolist(),
+            measured_base_rotation_vector_rad=pose_error(measured, initial)[3:].tolist(),
+            position_error_m=float(np.linalg.norm(error[:3])),
+            rotation_error_rad=float(np.linalg.norm(error[3:])),
+        )
+    return result
+
+
+def audit():
+    """Audit every case, including partial and failed producer/checker outcomes."""
+    config, identity, before, sources, qa_ref, dry_ref = preflight()
+    probe_ref = prefix.reference(OUTPUT / "probe/result.json")
+    verify_probe_admission(prefix.read(probe_ref), identity, sources, qa_ref, dry_ref)
+    producer_ref, checker_ref = (prefix.reference(OUTPUT / phase / "result.json") for phase in ("producer", "checker"))
+    producer, checker = prefix.read(producer_ref), prefix.read(checker_ref)
+    registrations = [
+        verify_owner(owner, phase, identity, sources, qa_ref, dry_ref, probe_ref)
+        for owner, phase in ((producer, "producer"), (checker, "checker"))
+    ]
+    expected_eligible, expected_refs = checker_eligible(producer, identity)
+    prefix.require(
+        registrations[0]["eligible_cases"] == list(range(config["registered_cases"]))
+        and registrations[0]["producer_branch_refs"] == {}
+        and registrations[1]["eligible_cases"] == expected_eligible
+        and registrations[1]["producer_branch_refs"] == expected_refs,
+        "The checker must replay exactly the closed registered producers",
+    )
+    shared, cases = preparation.shared_inputs(), []
+    for spec in identity["cases"]:
+        index = spec["index"]
+        p, c = producer["cases"][str(index)], checker["cases"][str(index)]
+        entry = dict(
+            case=spec,
+            producer_status=p["status"],
+            checker_status=c["status"],
+            replayed=False,
+            evidence_complete=False,
+            qualified=False,
+        )
+        if p["status"] == c["status"] == "closed":
+            try:
+                left, right = prefix.read(p["branch_ref"]), prefix.read(c["branch_ref"])
+                prefix.require(left["case"] == right["case"] == spec, "Independent case identities must match")
+                cohort.validate_branch(left, "producer", spec["periods"])
+                cohort.validate_branch(right, "checker", spec["periods"])
+                differences = comparison.compare_periods(previous.periods(left), previous.periods(right))
+                prefix.require(differences == c["counts"]["replay_max_difference"], "Replay differences must match")
+                case, timeline = bind_case(spec, shared)
+                left_check, left_data = recovery.verify_capture(left, spec["periods"], case["case"]["tool"], timeline)
+                right_check, right_data = recovery.verify_capture(
+                    right, spec["periods"], case["case"]["tool"], timeline
+                )
+                prefix.require(set(left_data) == set(right_data), "Both captured array schemas must match")
+                for key in left_data:
+                    np.testing.assert_allclose(left_data[key], right_data[key], atol=1e-10, rtol=0)
+                prefix.require(
+                    left["endpoint_receipts"] == right["endpoint_receipts"]
+                    and [row["canvas_rgb_sha256"] for row in left["images"]]
+                    == [row["canvas_rgb_sha256"] for row in right["images"]]
+                    and left["runtime"]["continuation"]["stop"] == right["runtime"]["continuation"]["stop"],
+                    "Independent endpoint, image and reported stop identities must agree",
+                )
+                summary = left["runtime"]["continuation"]["summary"]
+                valid = cohort.qualifies(summary, True, config)
+                entry.update(
+                    replayed=True,
+                    evidence_complete=True,
+                    qualified=valid,
+                    summary=summary,
+                    stop=left["runtime"]["continuation"]["stop"],
+                    replay_max_difference=differences,
+                    producer_ref=p["branch_ref"],
+                    checker_ref=c["branch_ref"],
+                    capture=left_check,
+                    checker_capture=right_check,
+                    tcp_recovery_metrics=recovery_metrics(left_data, case["case"]["tool"], timeline),
+                    observed_h40_anchors=[row["step"] for row in left_check["anchor_windows"] if row["full_h40"]],
+                    control_qualified_h40_anchors=[
+                        row["step"] for row in left_check["anchor_windows"] if row["full_h40"] and valid
+                    ],
+                )
+            except Exception as error:
+                entry["error"] = dict(type=type(error).__name__, message=str(error))
+        cases.append(entry)
+    _config, after_identity = pilot.load_inputs()
+    unchanged = snapshot(ROOT)["sources"] == before and source_refs() == sources and after_identity == identity
+    evidence_count = sum(item["evidence_complete"] for item in cases)
+    complete = unchanged and len(cases) == config["registered_cases"]
+    zero = [item for item in cases if item["case"]["variant"] == "zero"]
+    nonzero = [item for item in cases if item["case"]["variant"] != "zero"]
+    result = dict(
+        complete=complete,
+        passed=complete and evidence_count == config["registered_cases"],
+        sources_unchanged=unchanged,
+        registered_cases=config["registered_cases"],
+        evidence_complete_cases=evidence_count,
+        zero_qualified=sum(item["qualified"] for item in zero),
+        nonzero_qualified=sum(item["qualified"] for item in nonzero),
+        cases=cases,
+        training_authorized=False,
+        producer_ref=producer_ref,
+        checker_ref=checker_ref,
+        producer_resources=producer.get("observed_resource_totals"),
+        checker_resources=checker.get("observed_resource_totals"),
+        resource_counts_complete=producer.get("resource_counts_complete")
+        is checker.get("resource_counts_complete")
+        is True,
+        physics_steps=0,
+        world_model_calls=0,
+        fits=0,
+        fresh_cases=0,
+    )
+    print(publish_result(OUTPUT / "audit.json", result), flush=True)
+    if not result["passed"]:
+        raise SystemExit("One or more recovery cases failed independent evidence checks")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--dry", action="store_true")
+    group.add_argument("--probe", action="store_true")
+    group.add_argument("--phase", choices=("producer", "checker"))
+    group.add_argument("--worker", nargs=2, metavar=("PHASE", "CASE"))
+    group.add_argument("--audit", action="store_true")
+    args = parser.parse_args()
+    prefix.environment()
+    if args.dry:
+        print(dry_run(), flush=True)
+    elif args.probe:
+        probe_run()
+    elif args.phase:
+        phase_run(args.phase)
+    elif args.worker:
+        worker(args.worker[0], int(args.worker[1]))
+    else:
+        audit()
+
+
+if __name__ == "__main__":
+    main()
