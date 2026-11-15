@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/references
 
+近期：[已计算名义两点候选的 wine 同状态对照](wine_cached_nominal_candidate_20261116.md)
+
 近期：[wine 首次刷新对照的端点缓存修复验证](wine_margin_cache_recovery_20261116.md)
 
 近期：[wine step104 身份诊断的受控目录修复验证](wine_capture_identity_recovery_20261116.md)

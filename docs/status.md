@@ -10,6 +10,10 @@ CPU/OSMesa 使用空 CUDA/LD。此前用户曾允许当前容器可见的四张�
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 wine / seed42 的 step143 复用已计算名义双点候选，模型独立审核
+通过，但实际额外周期位置误差 `10.711 mm` 超过 `10 mm` 门限并停止；独立
+重放一致，候选未采纳。见[同状态结果](../reports/tracking/references/wine_cached_nominal_candidate_20261116.md)。
+
 2026-11-16 wine / seed42 的 step104 身份诊断重现：完成动作端点与原记录一致，
 再次读取端点后状态哈希不同；修复周期内端点缓存后到达 step143，因未找到
 合格 witness 停止，143 个已执行周期独立重放一致。见[缓存修复结果](../reports/tracking/references/wine_margin_cache_recovery_20261116.md)。

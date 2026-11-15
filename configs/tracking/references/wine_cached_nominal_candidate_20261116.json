@@ -1,0 +1,29 @@
+{
+  "schema": "s2a.wine-cached-nominal-candidate.v1",
+  "output": "outputs/wine_cached_nominal_candidate_20261116",
+  "baseline_producer": {
+    "path": "outputs/wine_margin_cache_recovery_20261116/producer/result.json",
+    "sha256": "e58773c78b5c0845cd802ce944473d0f14f176c360f51715c2042f8fde97c82e"
+  },
+  "baseline_checker": {
+    "path": "outputs/wine_margin_cache_recovery_20261116/checker/result.json",
+    "sha256": "725ef6af636221a70003aa712c2ea819676ec9bdac3b64d09ec961c7baa9cfe8"
+  },
+  "case_index": 4,
+  "sampling_seed": 42,
+  "activation_step": 143,
+  "expected_trigger": "quality_margin_consumed",
+  "max_deferred_triggers": 1,
+  "max_extra_periods": 1,
+  "max_control_steps_per_phase": 144,
+  "max_native_steps_per_phase": 3600,
+  "max_models_per_phase": 3,
+  "max_contexts_per_phase": 3,
+  "max_workers_per_phase": 1,
+  "max_quality_responses_per_period": 320,
+  "max_baseline_responses_per_period": 480,
+  "worker_timeout_seconds": 3600,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
