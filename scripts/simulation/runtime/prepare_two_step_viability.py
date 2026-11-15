@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
+from s2a.infrastructure import historical_source_bridge as bridge
 from scripts.simulation.runtime import prepare_stopped_pose_safety_bound as stopped
 from scripts.simulation.runtime import replay_multicase_development_prefix as prefix
 
@@ -142,9 +143,15 @@ def load_inputs():
     )
     registration = prefix.read(prior["registration_ref"], refs)
     prefix.require(
-        registration["inputs"] == previous_receipt and registration["source_refs"] == stopped.source_refs(),
+        registration["inputs"] == previous_receipt,
         "The same replayed stop inputs and source identities",
     )
+    source_bridges = old["historical_source_bridges"] + [
+        dict(
+            phase="stopped",
+            **bridge.verify(registration["source_refs"], stopped.source_refs(), require_extensions=True),
+        )
+    ]
     prior_cases = {}
     for ref in prior["case_refs"]:
         item = prefix.read(ref, refs)
@@ -169,7 +176,14 @@ def load_inputs():
         )
         case.update(decision_spec=spec, decision_inputs=current)
         cases.append(case)
-    return dict(config_ref=config_ref, config=config, cases=cases, asset_refs=old["asset_refs"], source_sha256=refs)
+    return dict(
+        config_ref=config_ref,
+        config=config,
+        cases=cases,
+        asset_refs=old["asset_refs"],
+        source_sha256=refs,
+        historical_source_bridges=source_bridges,
+    )
 
 
 def input_receipt(inputs):

@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [历史求解器源码身份的显式桥接](historical_source_bridge_20261116.md) | 新增计划 |
 | [025 资源释放观测接续](025_release_observation_addendum_20261021.md) | `plans/v0.0.1/025_release_observation_addendum_20261021.md` |
 | [029 运行前源码修订与隔离准备](029_source_revision_addendum_20261021.md) | `plans/v0.0.1/029_source_revision_addendum_20261021.md` |
 | [030运行环境接续：保留10条，补剩余20条](030_environment_continuation_20261021.md) | `plans/v0.0.1/030_environment_continuation_20261021.md` |

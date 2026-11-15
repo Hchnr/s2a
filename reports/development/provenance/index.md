@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [历史源码身份校验修复](historical_source_bridge_20261116.md) | 新增报告 |
 | [工作区迁移与恢复 — 2026-10-22](workspace_relocation_20261022.md) | `reports/workspace_relocation_20261022.md` |
 
 历史正文中的相对链接按原声明目录解释；不要改写原文或把旧运行登记当作新布局运行资格。

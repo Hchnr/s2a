@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from types import FunctionType, SimpleNamespace
 
+from s2a.infrastructure import historical_source_bridge as bridge
 from s2a.infrastructure.publication import publish_result as publish
 from scripts.simulation.runtime import build_causal_quality_feedback as builder
 from scripts.simulation.runtime import prepare_task2_earlier_preview as original_binding
@@ -144,8 +145,7 @@ def load_inputs():
     recorded = registration["inputs"]
     prior_static = recorded["previous"]
     prefix.require(
-        registration["source_refs"] == static_source_refs()
-        and recorded["guard_config_ref"] == prefix.reference(GUARD_CONFIG)
+        recorded["guard_config_ref"] == prefix.reference(GUARD_CONFIG)
         and recorded["prior_ref"] == previous.STATIC
         and all(prior_static[key] == value for key, value in expected_static.items() if key != "source_sha256")
         and all(
@@ -153,6 +153,12 @@ def load_inputs():
             for path, digest in expected_static["source_sha256"].items()
         ),
         "Guarded static provenance and common inputs are fixed",
+    )
+    inputs["historical_source_bridges"].append(
+        dict(
+            phase="static_guarded",
+            **bridge.verify(registration["source_refs"], static_source_refs(), require_extensions=True),
+        )
     )
     for path, digest in recorded["source_sha256"].items():
         prefix.checked({"path": path, "sha256": digest}, refs)
@@ -170,10 +176,14 @@ def load_inputs():
     for phase, result in (("producer", producer), ("checker", checker)):
         registration = prefix.read(result["registration_ref"], refs)
         prefix.require(
-            result["phase"] == phase
-            and registration["inputs"] == old_feedback
-            and registration["source_refs"] == previous.source_refs(),
+            result["phase"] == phase and registration["inputs"] == old_feedback,
             "Same prior two-step feedback inputs and sources",
+        )
+        inputs["historical_source_bridges"].append(
+            dict(
+                phase=f"two_step_{phase}",
+                **bridge.verify(registration["source_refs"], previous.source_refs(), require_extensions=True),
+            )
         )
         for identity, ref in zip(previous.BRANCHES, result["branch_refs"], strict=True):
             item = prefix.read(ref, refs)

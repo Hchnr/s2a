@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
+from s2a.infrastructure import historical_source_bridge as bridge
 from scripts.simulation.runtime import prepare_multitask_feasibility_first as multitask
 from scripts.simulation.runtime import replay_multicase_development_prefix as prefix
 from scripts.simulation.runtime import run_task2_staged_first_feasibility as staged
@@ -50,6 +51,7 @@ def source_refs():
                 REPO / "tests/research/native_runtime/test_stopped_pose_safety_bound_check.py",
             )
         ]
+        + bridge.source_refs()
     )
 
 
@@ -171,14 +173,18 @@ def load_inputs():
         item = prefix.read(ref, refs)
         prefix.require(item["complete"] is item["passed"] is True, "Closed earlier static result")
         prior_cases[item["case"]["case_index"]] = item["data"]
-    branches = {}
+    branches, source_bridges = {}, []
     for phase, result in (("producer", producer), ("checker", checker)):
         registration = prefix.read(result["registration_ref"], refs)
         prefix.require(
-            result["phase"] == phase
-            and registration["inputs"] == old_stage_receipt
-            and registration["source_refs"] == staged.source_refs(),
+            result["phase"] == phase and registration["inputs"] == old_stage_receipt,
             "Staged feedback retains its exact causal inputs and source identity",
+        )
+        source_bridges.append(
+            dict(
+                phase=phase,
+                **bridge.verify(registration["source_refs"], staged.source_refs(), require_extensions=False),
+            )
         )
         for ref in result["branch_refs"]:
             item = prefix.read(ref, refs)
@@ -232,7 +238,14 @@ def load_inputs():
         )
         case["bound_spec"] = spec
         cases.append(case)
-    return dict(config_ref=config_ref, config=config, cases=cases, asset_refs=old["asset_refs"], source_sha256=refs)
+    return dict(
+        config_ref=config_ref,
+        config=config,
+        cases=cases,
+        asset_refs=old["asset_refs"],
+        source_sha256=refs,
+        historical_source_bridges=source_bridges,
+    )
 
 
 def input_receipt(inputs):

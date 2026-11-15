@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from types import FunctionType, SimpleNamespace
 
+from s2a.infrastructure import historical_source_bridge as bridge
 from s2a.infrastructure.publication import publish_result as publish
 from scripts.simulation.runtime import build_causal_quality_feedback as builder
 from scripts.simulation.runtime import prepare_task2_earlier_preview as original_binding
@@ -149,8 +150,7 @@ def load_inputs():
     recorded = registration["inputs"]
     prior_static = recorded["guarded"]["previous"]
     prefix.require(
-        registration["source_refs"] == static_source_refs()
-        and recorded["margin_config_ref"]
+        recorded["margin_config_ref"]
         == prefix.reference(REPO / "configs/tracking/joint_control/margin_two_step_search_20261111.json")
         and recorded["prior_ref"] == previous.STATIC
         and all(prior_static[key] == value for key, value in static_receipt.items() if key != "source_sha256")
@@ -159,6 +159,12 @@ def load_inputs():
             for path, digest in static_receipt["source_sha256"].items()
         ),
         "Margin static provenance and common causal inputs are fixed",
+    )
+    inputs["historical_source_bridges"].append(
+        dict(
+            phase="static_margin",
+            **bridge.verify(registration["source_refs"], static_source_refs(), require_extensions=True),
+        )
     )
     for path, digest in recorded["source_sha256"].items():
         prefix.checked({"path": path, "sha256": digest}, refs)
@@ -178,10 +184,14 @@ def load_inputs():
     for phase, result in (("producer", producer), ("checker", checker)):
         registration = prefix.read(result["registration_ref"], refs)
         prefix.require(
-            result["phase"] == phase
-            and registration["inputs"] == feedback_receipt
-            and registration["source_refs"] == previous.source_refs(),
+            result["phase"] == phase and registration["inputs"] == feedback_receipt,
             "Original guarded feedback is bound to these inputs and sources",
+        )
+        inputs["historical_source_bridges"].append(
+            dict(
+                phase=f"guarded_{phase}",
+                **bridge.verify(registration["source_refs"], previous.source_refs(), require_extensions=True),
+            )
         )
         for identity, ref in zip(previous.BRANCHES, result["branch_refs"], strict=True):
             item = prefix.read(ref, refs)
@@ -198,9 +208,14 @@ def load_inputs():
             result["phase"] == phase
             and recorded_fallback["previous"] == feedback_receipt
             and recorded_fallback["prior_producer_ref"] == PRIOR_PRODUCER
-            and recorded_fallback["prior_checker_ref"] == PRIOR_CHECKER
-            and registration["source_refs"] == fallback.source_refs(),
+            and recorded_fallback["prior_checker_ref"] == PRIOR_CHECKER,
             "Shifted-plan fallback uses the same guarded-feedback inputs",
+        )
+        inputs["historical_source_bridges"].append(
+            dict(
+                phase=f"fallback_{phase}",
+                **bridge.verify(registration["source_refs"], fallback.source_refs(), require_extensions=True),
+            )
         )
         for identity, ref in zip(fallback.BRANCHES, result["branch_refs"], strict=True):
             item = prefix.read(ref, refs)
