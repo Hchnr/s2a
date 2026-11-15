@@ -85,3 +85,47 @@ def test_margin_search_rejects_invalid_horizon_before_a_response():
     with pytest.raises(ValueError):
         margin.solve_margin_two_step(*changed, on_response=events.append)
     assert not events
+
+
+def test_refresh_preference_uses_only_interior_candidates_with_bounded_future_cost():
+    def candidate(identifier, future, position, rotation):
+        errors = np.zeros((8, 6))
+        errors[1, 0], errors[1, 3] = position, rotation
+        commands = np.full((8, 6), identifier)
+        return (future, float(identifier), (identifier,), commands, None, errors, 0.0)
+
+    baseline = candidate(0, 0.05, 0.0095, 0.03)
+    interior = candidate(1, 0.065, 0.009, 0.04)
+    too_costly = candidate(2, 0.071, 0.008, 0.03)
+    selected, info = margin.select_evaluated_margin_candidate([too_costly, baseline, interior], prefer_refresh=True)
+    assert selected is interior and info["eligible_candidates"] == 1 and info["selected_changed"] is True
+    assert info["selected_future_slack"] - info["baseline_future_slack"] <= 0.02
+    selected, info = margin.select_evaluated_margin_candidate([baseline, too_costly], prefer_refresh=True)
+    assert selected is baseline and info["eligible_candidates"] == 0 and info["selected_changed"] is False
+    selected, info = margin.select_evaluated_margin_candidate([baseline, interior], prefer_refresh=False)
+    assert selected is baseline and info is None
+
+
+def test_refresh_preference_keeps_original_response_budget_and_independent_pose_audit():
+    args, audit_args, targets = solve_and_audit_inputs()
+    targets[-1, 0, 3] += 0.2
+    baseline_events, preference_events = [], []
+    baseline = margin.solve_margin_two_step(*args, on_response=baseline_events.append)
+    selected = margin.solve_margin_two_step(*args, prefer_refresh=True, on_response=preference_events.append)
+    assert selected["status"] == baseline["status"] == "two_step_margin_candidate"
+    assert selected["response_evaluations"] == baseline["response_evaluations"] <= 320
+    assert baseline_events == preference_events
+    assert selected["margin_search"]["refresh_preference"]["extra_model_responses"] == 0
+    assert margin.margin_prefix_satisfied(selected["best_joint_safe"]["tcp_errors"])
+    audit_args = list(audit_args)
+    audit_args[11] = targets
+    checked = audit_two_step_witness(selected["best_joint_safe"], *audit_args, past_inner_error_rad=np.zeros((25, 7)))
+    assert checked["passed"] and checked["prefix_pose_caps_satisfied"] and checked["braking_constraint_satisfied"]
+
+
+def test_refresh_preference_rejects_nonboolean_before_any_model_response():
+    args, _audit_args, _targets = solve_and_audit_inputs()
+    events = []
+    with pytest.raises(ValueError, match="explicit boolean"):
+        margin.solve_margin_two_step(*args, prefer_refresh=1, on_response=events.append)
+    assert not events

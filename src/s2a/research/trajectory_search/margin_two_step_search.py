@@ -12,6 +12,9 @@ POSITION_MARGIN_M = 0.0005
 ROTATION_MARGIN_RAD = 0.003
 SELECTION_TOLERANCE = 1e-10
 NORMALIZED_MARGIN = np.array([POSITION_MARGIN_M / POSITION_CAP_M, ROTATION_MARGIN_RAD / ROTATION_CAP_RAD] * 2)
+REFRESH_POSITION_LIMIT_M = 0.00925
+REFRESH_ROTATION_LIMIT_RAD = 0.0455
+MAX_FUTURE_SLACK_INCREASE = 0.02
 
 
 def margin_prefix_objective(values, jacobian):
@@ -45,8 +48,59 @@ def margin_prefix_satisfied(errors):
     )
 
 
+def select_evaluated_margin_candidate(candidates, *, prefer_refresh=False):
+    """Prefer a cached interior second pose without changing either hard gate."""
+    if type(prefer_refresh) is not bool or not candidates:
+        raise ValueError("A nonempty evaluated candidate set and explicit boolean preference are required")
+
+    def original_key(row):
+        return row[0], row[1], row[2]
+
+    baseline = min(candidates, key=original_key)
+    if not prefer_refresh:
+        return baseline, None
+    eligible = []
+    for row in candidates:
+        errors = finite(row[5], (8, 6))
+        if (
+            float(np.linalg.norm(errors[1, :3])) <= REFRESH_POSITION_LIMIT_M
+            and float(np.linalg.norm(errors[1, 3:])) <= REFRESH_ROTATION_LIMIT_RAD
+            and row[0] <= baseline[0] + MAX_FUTURE_SLACK_INCREASE
+        ):
+            eligible.append(row)
+    selected = min(eligible, key=original_key) if eligible else baseline
+    info = dict(
+        enabled=True,
+        position_limit_m=REFRESH_POSITION_LIMIT_M,
+        rotation_limit_rad=REFRESH_ROTATION_LIMIT_RAD,
+        max_future_slack_increase=MAX_FUTURE_SLACK_INCREASE,
+        evaluated_candidates=len(candidates),
+        eligible_candidates=len(eligible),
+        baseline_future_slack=baseline[0],
+        selected_future_slack=selected[0],
+        baseline_second_tcp_error=baseline[5][1].copy(),
+        selected_second_tcp_error=selected[5][1].copy(),
+        selected_changed=not np.array_equal(selected[3], baseline[3]),
+        extra_model_responses=0,
+    )
+    return selected, info
+
+
 def solve_margin_two_step(
-    model, velocity, seed, previous, interface, site, tool, targets, twists, lower, upper, **kwargs
+    model,
+    velocity,
+    seed,
+    previous,
+    interface,
+    site,
+    tool,
+    targets,
+    twists,
+    lower,
+    upper,
+    *,
+    prefer_refresh=False,
+    **kwargs,
 ):
     """Select only evaluated, joint-safe plans that satisfy both fixed margins.
 
@@ -54,6 +108,8 @@ def solve_margin_two_step(
     cache and budget. Instrumentation reads those already-computed responses;
     it does not issue new model calls or change the original solver globals.
     """
+    if type(prefer_refresh) is not bool:
+        raise ValueError("The experimental refresh preference must be an explicit boolean")
     targets = finite(targets, (8, 4, 4))
     solver = guarded.isolated_solver()
     namespace = solver.__globals__
@@ -138,9 +194,10 @@ def solve_margin_two_step(
         extra_model_responses=0,
     )
     if candidates:
-        future, _objective, _key, commands, rollout, errors, overall = min(
-            candidates, key=lambda row: (row[0], row[1], row[2])
-        )
+        selected, preference = select_evaluated_margin_candidate(candidates, prefer_refresh=prefer_refresh)
+        future, _objective, _key, commands, rollout, errors, overall = selected
+        if preference is not None:
+            result["margin_search"]["refresh_preference"] = preference
         result["best_joint_safe"] = dict(
             witness_found=True,
             planned_commands=commands.copy(),
