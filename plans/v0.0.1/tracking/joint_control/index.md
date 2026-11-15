@@ -135,6 +135,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [从复位执行完整正确参考的统一候选正控](reset_correct_reference_20261116.md) | 新增计划 |
 | [071 当前电机目标保持＋位姿耦合预览组合pilot](071_motor_state_coupled_preview_20261025.md) | `plans/v0.0.1/071_motor_state_coupled_preview_20261025.md` |
 | [080 079前向响应模型的有限命令逆控制资格](080_velocity_model_inverse_control_20261025.md) | `plans/v0.0.1/080_velocity_model_inverse_control_20261025.md` |
 | [082 固定平移完整逆补偿对照](082_translation_inverse_qualification_20261025.md) | `plans/v0.0.1/082_translation_inverse_qualification_20261025.md` |
