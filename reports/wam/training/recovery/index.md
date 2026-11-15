@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [当前控制器训练恢复：九例独立对照](current_controller_recovery_repair_20261116.md) | 当前目录 |
 | [当前控制器训练恢复采集：路径失败记录](current_controller_recovery_path_incident_20261116.md) | 当前目录 |
 | [063 训练划分物理扰动恢复资格：运行中](training_state_recovery_qualification_20261025.md) | `reports/training_state_recovery_qualification_20261025.md` |
 

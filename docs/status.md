@@ -10,10 +10,15 @@ CPU/OSMesa 使用空 CUDA/LD。此前用户曾允许当前容器可见的四张�
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 在训练划分的三个 reset，以固定参考先移动至 0 / ±20 mm 再返回并
+跟踪 native 轨迹：九例全部达本次控制门槛，动作均经独立重放；真实图像、
+状态与标签核验通过。参考是特权 oracle，开度槽与命令语义尚待核对，不授予
+训练或 WAM 资格；见[对照报告](../reports/wam/training/recovery/current_controller_recovery_repair_20261116.md)。
+
 2026-11-16 当前控制器训练恢复的九例首次采集在 reset 后、第一条动作前因
 图像路径超出运行时写入目录而全部失败，共 0 控制周期 / 0 物理内步；已记录
-路径修正与证据，但修正尚未经过真实仿真重验，不授予训练或控制资格。后续需
-单独登记并先完成零动作仿真图像预检，见[事件记录](../reports/wam/training/recovery/current_controller_recovery_path_incident_20261116.md)。
+路径修正与证据，后续零动作仿真图像预检已通过，见
+[事件记录](../reports/wam/training/recovery/current_controller_recovery_path_incident_20261116.md)。
 
 2026-11-16 对 18 条正确参考统一测试有界缓存中最近 seed 排序：独立重放
 完成，15/18 通过，与旧有界排序相同、低于无界排序的 16/18；两条质量停止
