@@ -1,0 +1,41 @@
+{
+  "schema": "s2a.broader-recovery-coverage.v1",
+  "output": "outputs/broader_recovery_coverage_20261116",
+  "previous_coverage": {
+    "path": "outputs/wam_recovery_state_coverage_20261116/result.json",
+    "sha256": "b1fe1a46929d4733677cf79e50cdb13b88e7d713ee24bdaf9aedc30c646f3846"
+  },
+  "previous_independent": {
+    "path": "outputs/wam_recovery_state_coverage_20261116/independent.json",
+    "sha256": "43a779cc0d68bdd76713c8c6df0eb402ebb9b473ebd399cb32072cf396b4def3"
+  },
+  "broader_recovery_audit": {
+    "path": "outputs/broader_recovery_pilot_20261116/audit.json",
+    "sha256": "16d8c1250690b540b3d7230df329ec4b00aee23770033cfa3ded0c68fcb1847f"
+  },
+  "tool_contract": {
+    "path": "outputs/clean_training_development_dependency_repair_20261024/inputs/eef_tool_contract.json",
+    "sha256": "6fcaed3fe499aacb15d03170d002b1c897091481a0022db5f2922c06320a3a0c"
+  },
+  "development_case_indices": [0, 2, 4, 6, 8, 10],
+  "expected_requests_by_case": [46, 5, 19, 9, 75, 59],
+  "request_count": 213,
+  "previous_anchor_count": 189,
+  "new_case_count": 24,
+  "anchor_steps": [0, 16, 56],
+  "new_anchor_count": 72,
+  "sensitivity_excluded_cases": [13],
+  "sensitivity_new_anchor_count": 69,
+  "distance_bins_m": [0.01, 0.02, 0.05, 0.1],
+  "joint_position_limits_m": [0.05, 0.1],
+  "joint_rotation_limit_rad": 0.5,
+  "joint_opening_limit": 0.2,
+  "seed": 42,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "physical_steps": 0,
+  "fits": 0,
+  "fresh_cases": 0,
+  "training_authorized": false,
+  "automatic_retry": false
+}
