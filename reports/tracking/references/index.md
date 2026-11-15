@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [一次 WAM 余量刷新后的当前状态重算](deferred_margin_recheck_20261116.md) | 新增报告 |
 | [刷新余量单次线性化搜索结果](refresh_margin_linear_search_20261116.md) | 新增报告 |
 | [刷新余量定向搜索的静态结果](refresh_margin_targeted_search_20261116.md) | 新增报告 |
 | [刷新余量缓存候选的同状态对照](refresh_margin_physical_20261116.md) | 新增报告 |
