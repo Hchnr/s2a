@@ -11,8 +11,9 @@ CPU/OSMesa 使用空 CUDA/LD。此前用户曾允许当前容器可见的四张�
 清单固定字节，此约定记录于当前状态文档。
 
 2026-11-16 wine / seed42 的 step104 身份诊断重现：完成动作端点与原记录一致，
-再次读取端点后状态哈希不同，图像与时钟相同；源码中发现新前缀漏用了周期内
-端点缓存，修复待实证。此前诊断输出目录错误及其 208 周期开销保留，见
+再次读取端点后状态哈希不同；修复周期内端点缓存后到达 step143，因未找到
+合格 witness 停止，143 个已执行周期独立重放一致。见[缓存修复结果](../reports/tracking/references/wine_margin_cache_recovery_20261116.md)。
+此前诊断输出目录错误及其 208 周期开销保留，见
 [字段诊断](../reports/tracking/references/wine_capture_identity_recovery_20261116.md)
 与[事件报告](../reports/tracking/references/wine_capture_identity_incident_20261116.md)。
 
