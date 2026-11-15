@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 
 from s2a.geometry import finite
+from s2a.infrastructure import historical_source_bridge as bridge
 from s2a.research.joint_control.tracking.plan_model_drift import shifted_completed_plan
 from scripts.simulation.runtime import replay_multicase_development_prefix as prefix
 from scripts.simulation.runtime import run_task2_margin_guarded_feedback as previous
@@ -146,6 +147,7 @@ def load_inputs():
     refs[config_ref["path"]] = config_ref["sha256"]
     producer, checker = (prefix.read(ref, refs) for ref in (PRODUCER, CHECKER))
     branches = {}
+    source_bridges = copy.deepcopy(old["historical_source_bridges"])
     for phase, result in (("producer", producer), ("checker", checker)):
         prefix.require(
             result["complete"] is result["passed"] is result["sources_unchanged"] is True
@@ -156,8 +158,14 @@ def load_inputs():
         )
         registration = prefix.read(result["registration_ref"], refs)
         prefix.require(
-            registration["inputs"] == previous_receipt and registration["source_refs"] == previous.source_refs(),
+            registration["inputs"] == previous_receipt,
             "Exact prior feedback inputs and source identities",
+        )
+        source_bridges.append(
+            dict(
+                phase=f"shared_previous_{phase}",
+                **bridge.verify(registration["source_refs"], previous.source_refs(), require_extensions=True),
+            )
         )
         for ref in result["branch_refs"]:
             branch = prefix.read(ref, refs)
@@ -188,6 +196,7 @@ def load_inputs():
         asset_refs=old["asset_refs"],
         previous_receipt=previous_receipt,
         source_sha256=refs,
+        historical_source_bridges=source_bridges,
     )
 
 

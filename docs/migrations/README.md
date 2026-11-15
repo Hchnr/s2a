@@ -1,6 +1,8 @@
 # 结构迁移与来源身份
 
 [全局设计](../architecture/repository_design.md)规定顺序及验收。
+[历史求解器来源桥接（2026-11-16）](historical_solver_source_bridge_20261116.md)
+记录已变更源码的原 Git blob、当前 SHA 与证据读取边界。
 [基线清单](baseline_20261029.json)只记录迁移前的3276项身份，不预判新路径；
 基线commit为`7b2712850dea54090d61e564380f88825ad8b8f6`，清单SHA256为
 `1a7d3737696e5c6cb1c4d22bc572257dd5994493a01bcd991228df9f9eb23897`。

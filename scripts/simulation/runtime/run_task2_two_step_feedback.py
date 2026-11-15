@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from types import FunctionType, SimpleNamespace
 
+from s2a.infrastructure import historical_source_bridge as bridge
 from s2a.infrastructure.publication import publish_result as publish
 from scripts.simulation.runtime import build_causal_quality_feedback as builder
 from scripts.simulation.runtime import prepare_multitask_feasibility_first as multitask
@@ -126,8 +127,15 @@ def load_inputs():
     )
     registration = prefix.read(static["registration_ref"], refs)
     prefix.require(
-        registration["inputs"] == old_static and registration["source_refs"] == static_binding.source_refs(),
+        registration["inputs"] == old_static,
         "Prior static inputs and sources remain fixed",
+    )
+    source_bridges = copy.deepcopy(static_inputs["historical_source_bridges"])
+    source_bridges.append(
+        dict(
+            phase="static_two_step",
+            **bridge.verify(registration["source_refs"], static_binding.source_refs(), require_extensions=True),
+        )
     )
     static_cases = {}
     for ref in static["case_refs"]:
@@ -144,10 +152,14 @@ def load_inputs():
     for phase, result in (("producer", producer), ("checker", checker)):
         registration = prefix.read(result["registration_ref"], refs)
         prefix.require(
-            result["phase"] == phase
-            and registration["inputs"] == old_staged
-            and registration["source_refs"] == staged.source_refs(),
+            result["phase"] == phase and registration["inputs"] == old_staged,
             "Same prior causal staged-feedback inputs and sources",
+        )
+        source_bridges.append(
+            dict(
+                phase=f"staged_{phase}",
+                **bridge.verify(registration["source_refs"], staged.source_refs(), require_extensions=False),
+            )
         )
         for identity, ref in zip(staged.BRANCHES, result["branch_refs"], strict=True):
             item = prefix.read(ref, refs)
@@ -155,7 +167,7 @@ def load_inputs():
                 (item["case"]["case_index"], item["branch"]) == identity and item["complete"] is item["passed"] is True,
                 "Both prior staged-feedback branches closed",
             )
-    inputs.update(two_step_config_ref=config_ref, two_step_config=config)
+    inputs.update(two_step_config_ref=config_ref, two_step_config=config, historical_source_bridges=source_bridges)
     return inputs
 
 

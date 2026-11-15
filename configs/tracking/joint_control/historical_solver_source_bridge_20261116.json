@@ -1,0 +1,95 @@
+{
+  "schema": "s2a.historical-solver-source-bridge.v1",
+  "bridges": [
+    {
+      "path": "src/s2a/research/trajectory_search/staged_first_feasibility.py",
+      "historical_sha256": "00cca7b088371bbd6cabe1033969f0dfab8fadb399a2f825896280d08df0dcc3",
+      "historical_commit": "1dbf7c2a56027b4a22ddcac695182cc2a5164392",
+      "current_sha256": "bb463fef17c42adb584a10efab16e9fe0e5f1c53504e7d713169a78e14e9ea8f"
+    },
+    {
+      "path": "scripts/simulation/runtime/prepare_stopped_pose_safety_bound.py",
+      "historical_sha256": "29600b112951b21a87818d3cefd4fedcf8a7f128efa7df2dd1f3dd7960c343cc",
+      "historical_commit": "5ca691fb258e934114c54b6436d14181aa19604b",
+      "current_sha256": "41a5fa8c93ee4e49008745a0caacfc42b4c04cfa515589f037fcaec81cb62174"
+    },
+    {
+      "path": "scripts/simulation/runtime/prepare_two_step_viability.py",
+      "historical_sha256": "95aec636712e51e5d5bfd29ea5cd164c78f162a36a569e73bc1fe36b2b66ef77",
+      "historical_commit": "5ca691fb258e934114c54b6436d14181aa19604b",
+      "current_sha256": "27a1ce2f5b3c15a552010980969bddb051825ca1be90a7900f98474789e40398"
+    },
+    {
+      "path": "scripts/tracking/trajectory_search/compare_guarded_two_step_search.py",
+      "historical_sha256": "3a61d3046c33a2f6d7018c444f64e40443592334db0b69ad9552bf36e2adc7bf",
+      "historical_commit": "5ca691fb258e934114c54b6436d14181aa19604b",
+      "current_sha256": "190972a6c5f497784005f319af82c54e4dd6cb8504b87a4ab0a521020daaecfc"
+    },
+    {
+      "path": "scripts/tracking/trajectory_search/compare_margin_two_step_search.py",
+      "historical_sha256": "7bc86f886398be0dd2357812e049d22c58e66693503a9d9b79dcbf0a46facc9a",
+      "historical_commit": "5ca691fb258e934114c54b6436d14181aa19604b",
+      "current_sha256": "bf8f7240ea950a6a8155e9d11c5671932da48a2f68baea90b3e8f9a34e0dde5a"
+    },
+    {
+      "path": "src/s2a/research/trajectory_search/margin_two_step_search.py",
+      "historical_sha256": "64ae9cacc6d84c5f3f8c1f5a638e0e37b99855097044abe66e8c7e9625f32f0c",
+      "historical_commit": "9110f91133a54a96deea87fb2348137f7b542afd",
+      "current_sha256": "abc1e03df5cc413806c3c532b3152c2357c859aa1255070a763d687606a8b4e0"
+    },
+    {
+      "path": "tests/research/trajectory_search/test_margin_two_step_search.py",
+      "historical_sha256": "1c0c5aea284d04b77d38998e8fe8f1f8bf46e30ea591eb257f055f927f94b24f",
+      "historical_commit": "9110f91133a54a96deea87fb2348137f7b542afd",
+      "current_sha256": "6d16c27afef52949deb08aaf2cfbb1e63a7182f3920326cd6f14243c0769779e"
+    },
+    {
+      "path": "scripts/simulation/runtime/run_task2_two_step_feedback.py",
+      "historical_sha256": "295e95979faf36e6839096329eb1404fec1a654f2e14860fd48cf3a4b0df3d1a",
+      "historical_commit": "5ca691fb258e934114c54b6436d14181aa19604b",
+      "current_sha256": "56a285aea190e9e96f3f40a401df6a75fceade1a3d1eec3c2eff2bea527581a3"
+    },
+    {
+      "path": "scripts/simulation/runtime/run_task2_guarded_two_step_feedback.py",
+      "historical_sha256": "795946c6f2aa907329e1683ee4c0c53cd3a51fa4011e2e723a63135a53056c24",
+      "historical_commit": "5ca691fb258e934114c54b6436d14181aa19604b",
+      "current_sha256": "b176f5d32de1b1f574b7cde691e7bcce5acbabaac28b70dfbc3d7186bb0192f2"
+    },
+    {
+      "path": "scripts/simulation/runtime/run_task2_margin_two_step_feedback.py",
+      "historical_sha256": "8b553e75fcdc30e9c6526b7fd7fadf02271f50d919313186b75bdfbe50305ef3",
+      "historical_commit": "5ca691fb258e934114c54b6436d14181aa19604b",
+      "current_sha256": "f2fd7ffdb62f4154debfb3ec79c654bcfa9e637579787dacb680351e494a3634"
+    },
+    {
+      "path": "scripts/tracking/trajectory_search/compare_margin_guarded_fallback.py",
+      "historical_sha256": "0b656a91ac484b53f9cfca9aeef4c8b80332645b14a5a15f36fea6aaf42480d0",
+      "historical_commit": "5ca691fb258e934114c54b6436d14181aa19604b",
+      "current_sha256": "cc0d49cc796f14046cdcc3f44c009cd3cb794233052a380ee71c4d8103d600a5"
+    },
+    {
+      "path": "src/s2a/research/trajectory_search/margin_guarded_fallback.py",
+      "historical_sha256": "9085fff43c2cf0b0038bdf7000e06cfec304c0d0b81759b2789eef6e5180624b",
+      "historical_commit": "9110f91133a54a96deea87fb2348137f7b542afd",
+      "current_sha256": "d8ceb33223864b75a592b809e2746c3a0b12f511f3c16f417bbd5c3f819ba5e1"
+    },
+    {
+      "path": "tests/research/trajectory_search/test_margin_guarded_fallback.py",
+      "historical_sha256": "c9142819b6538426820ac2b97e738a9bd5f8c0c03fa3956bd6d3ada976285470",
+      "historical_commit": "9110f91133a54a96deea87fb2348137f7b542afd",
+      "current_sha256": "e3dd01b9be3c5e7288a0b41626b6efc6cc6647a0513bfee067477ee25d2b6e26"
+    },
+    {
+      "path": "scripts/simulation/runtime/run_task2_margin_guarded_feedback.py",
+      "historical_sha256": "a384996473f6f99aa56896993e738937453a2ca4c82df33795ac0339a75453bf",
+      "historical_commit": "5ca691fb258e934114c54b6436d14181aa19604b",
+      "current_sha256": "3b3d917219333194432a32fb0905986a4b2ed8d1ddd5aba7b16da0c3929b9f8e"
+    },
+    {
+      "path": "scripts/simulation/runtime/prepare_task2_shared_shift.py",
+      "historical_sha256": "217e663f047305b412537bd48d52ad1443ad9efe14ad4be2f074f8b19969bd49",
+      "historical_commit": "5ca691fb258e934114c54b6436d14181aa19604b",
+      "current_sha256": "2c79017e6d0ccc8f5e1c3ce738233c25ff0d9bf5e84ca6b207193705af87a959"
+    }
+  ]
+}

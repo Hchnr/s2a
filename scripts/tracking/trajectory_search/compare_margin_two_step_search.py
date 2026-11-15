@@ -7,6 +7,7 @@ from types import FunctionType, SimpleNamespace
 
 import numpy as np
 
+from s2a.infrastructure import historical_source_bridge as bridge
 from s2a.infrastructure.publication import publish_result as publish
 from s2a.research.trajectory_search import margin_two_step_search as margin
 from scripts.simulation.runtime import prepare_two_step_viability as original_binding
@@ -103,8 +104,14 @@ def load_inputs():
     )
     registration = prefix.read(prior["registration_ref"], refs)
     prefix.require(
-        registration["inputs"] == guarded_receipt and registration["source_refs"] == guarded.source_refs(),
+        registration["inputs"] == guarded_receipt,
         "Exactly the guarded comparison's causal inputs and frozen sources",
+    )
+    inputs["historical_source_bridges"].append(
+        dict(
+            phase="guarded",
+            **bridge.verify(registration["source_refs"], guarded.source_refs(), require_extensions=True),
+        )
     )
     prior_cases = {}
     for ref in prior["case_refs"]:

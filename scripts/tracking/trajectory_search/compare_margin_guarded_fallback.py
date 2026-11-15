@@ -7,6 +7,7 @@ from types import FunctionType, SimpleNamespace
 
 import numpy as np
 
+from s2a.infrastructure import historical_source_bridge as bridge
 from s2a.infrastructure.publication import publish_result as publish
 from s2a.research.trajectory_search import margin_guarded_fallback as policy
 from s2a.research.trajectory_search import margin_two_step_search as margin
@@ -103,8 +104,14 @@ def load_inputs():
     )
     registration = prefix.read(prior["registration_ref"], refs)
     prefix.require(
-        registration["inputs"] == prior_receipt and registration["source_refs"] == previous.source_refs(),
+        registration["inputs"] == prior_receipt,
         "Identical margin comparison inputs and frozen sources",
+    )
+    inputs["historical_source_bridges"].append(
+        dict(
+            phase="margin",
+            **bridge.verify(registration["source_refs"], previous.source_refs(), require_extensions=True),
+        )
     )
     old_cases = {}
     for ref in prior["case_refs"]:
@@ -136,6 +143,7 @@ def input_receipt(inputs):
         shared_config_ref=inputs["shared_config_ref"],
         prior_ref=PRIOR,
         source_sha256=inputs["source_sha256"],
+        historical_source_bridges=copy.deepcopy(inputs["historical_source_bridges"]),
     )
 
 

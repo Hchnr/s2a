@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from types import FunctionType, SimpleNamespace
 
+from s2a.infrastructure import historical_source_bridge as bridge
 from s2a.infrastructure.publication import publish_result as publish
 from scripts.simulation.runtime import build_causal_quality_feedback as builder
 from scripts.simulation.runtime import prepare_task2_earlier_preview as original_binding
@@ -144,8 +145,7 @@ def load_inputs():
     recorded = registration["inputs"]
     original_static = recorded["previous"]["guarded"]["previous"]
     prefix.require(
-        registration["source_refs"] == static_source_refs()
-        and recorded["shared_config_ref"]
+        recorded["shared_config_ref"]
         == prefix.reference(REPO / "configs/tracking/joint_control/margin_guarded_fallback_20261111.json")
         and recorded["prior_ref"] == previous.STATIC
         and all(original_static[key] == value for key, value in static_receipt.items() if key != "source_sha256")
@@ -154,6 +154,12 @@ def load_inputs():
             for path, digest in static_receipt["source_sha256"].items()
         ),
         "Shared static provenance and common causal inputs are fixed",
+    )
+    inputs["historical_source_bridges"].append(
+        dict(
+            phase="static_shared",
+            **bridge.verify(registration["source_refs"], static_source_refs(), require_extensions=True),
+        )
     )
     for path, digest in recorded["source_sha256"].items():
         prefix.checked({"path": path, "sha256": digest}, refs)
@@ -173,10 +179,14 @@ def load_inputs():
     for phase, result in (("producer", producer), ("checker", checker)):
         registration = prefix.read(result["registration_ref"], refs)
         prefix.require(
-            result["phase"] == phase
-            and registration["inputs"] == prior_receipt
-            and registration["source_refs"] == previous.source_refs(),
+            result["phase"] == phase and registration["inputs"] == prior_receipt,
             "Prior margin feedback uses the same causal inputs and sources",
+        )
+        inputs["historical_source_bridges"].append(
+            dict(
+                phase=f"margin_{phase}",
+                **bridge.verify(registration["source_refs"], previous.source_refs(), require_extensions=True),
+            )
         )
         for identity, ref in zip(previous.BRANCHES, result["branch_refs"], strict=True):
             item = prefix.read(ref, refs)

@@ -7,6 +7,7 @@ from types import FunctionType, SimpleNamespace
 
 import numpy as np
 
+from s2a.infrastructure import historical_source_bridge as bridge
 from s2a.infrastructure.publication import publish_result as publish
 from s2a.research.trajectory_search.guarded_two_step_search import (
     OBJECTIVE_SCALE,
@@ -104,8 +105,14 @@ def load_inputs():
     )
     registration = prefix.read(prior["registration_ref"], refs)
     prefix.require(
-        registration["inputs"] == old_receipt and registration["source_refs"] == previous_binding.source_refs(),
+        registration["inputs"] == old_receipt,
         "Same prior inputs and frozen source identity",
+    )
+    inputs["historical_source_bridges"].append(
+        dict(
+            phase="two_step",
+            **bridge.verify(registration["source_refs"], previous_binding.source_refs(), require_extensions=True),
+        )
     )
     prior_cases = {}
     for ref in prior["case_refs"]:
