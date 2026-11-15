@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [wine 已计算名义两点候选对照](wine_cached_nominal_candidate_20261116.json) | 新增配置 |
 | [wine 首次刷新对照的端点缓存修复验证](wine_margin_cache_recovery_20261116.json) | 新增配置 |
 | [wine step104 图像身份诊断的目录修复验证](wine_capture_identity_recovery_20261116.json) | 新增配置 |
 | [wine step104 图像身份诊断](wine_capture_identity_diagnostic_20261116.json) | 新增配置 |
