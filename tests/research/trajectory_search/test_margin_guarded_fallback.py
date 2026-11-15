@@ -32,6 +32,21 @@ def test_margin_candidate_has_priority_and_preserves_original_solver_globals():
     assert verified["passed"] and margin.margin_prefix_satisfied(verified["tcp_errors"])
 
 
+def test_refresh_preference_propagates_without_extra_shared_responses():
+    args, audit_args, targets = solve_and_audit_inputs()
+    targets[-1, 0, 3] += 0.2
+    baseline = policy.solve_margin_guarded_fallback(*args)
+    preferred = policy.solve_margin_guarded_fallback(*args, prefer_refresh=True)
+    assert preferred["status"] == baseline["status"] == "margin_guarded_candidate"
+    assert preferred["response_evaluations"] == baseline["response_evaluations"] <= 320
+    assert preferred["shared_search"]["refresh_preference"]["extra_model_responses"] == 0
+    assert preferred["shared_search"]["fallback_status"] == "not_attempted"
+    audit_args = list(audit_args)
+    audit_args[11] = targets
+    verified = audit_two_step_witness(preferred["best_joint_safe"], *audit_args, past_inner_error_rad=np.zeros((25, 7)))
+    assert verified["passed"] and margin.margin_prefix_satisfied(verified["tcp_errors"])
+
+
 def test_guarded_fallback_reuses_start_and_passes_original_independent_audit(monkeypatch):
     args, audit_args, targets = solve_and_audit_inputs()
     targets[1, 0, 3] += 0.015
