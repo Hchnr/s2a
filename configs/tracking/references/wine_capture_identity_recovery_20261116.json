@@ -1,0 +1,25 @@
+{
+  "schema": "s2a.wine-capture-identity-recovery.v1",
+  "output": "outputs/wine_capture_identity_recovery_20261116",
+  "failed_worker": {
+    "path": "outputs/multitask_margin_recheck_20261116/producer/case04/worker/result.json",
+    "sha256": "66c786de10e3105988ae545e09ffff0c2e71ff07594bc387106600c50dc5676d"
+  },
+  "failed_diagnostic": {
+    "path": "outputs/wine_capture_identity_diagnostic_20261116/result.json",
+    "sha256": "09f8cb77d3379fdfb0f94758f6dfa3e3b72c24ae8a055b80a635e021b057c915"
+  },
+  "case_index": 4,
+  "sampling_seed": 42,
+  "capture_step": 104,
+  "phases": ["producer", "checker"],
+  "max_control_steps_per_phase": 104,
+  "max_native_steps_per_phase": 2600,
+  "max_models_per_phase": 3,
+  "max_contexts_per_phase": 3,
+  "max_workers": 2,
+  "worker_timeout_seconds": 3600,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
