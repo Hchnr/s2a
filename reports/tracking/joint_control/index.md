@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[首次动作分歧的缓存审计与候选排序](cached_seed_first_divergence_20261116.md)
+
 最新：[同状态机械臂动作短窗对照](correct_reference_same_state_arm_20261116.md)
 
 最新：[正确参考任务失败的轨迹差异诊断](correct_reference_failure_diagnosis_20261116.md)
