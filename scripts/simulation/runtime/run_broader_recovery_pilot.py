@@ -14,6 +14,7 @@ from s2a.research.native_runtime.correct_reference_continuation import run_corre
 from s2a.research.native_runtime.correct_reference_reset import CorrectReferenceResetRuntime
 from s2a.research.wam.training.native_observations import render_anchor, save_arrays
 from scripts.maintenance.run_cpu_tests import snapshot
+from scripts.simulation.runtime import audit_reset_multitask_live_recovery as comparison
 from scripts.simulation.runtime import managed_physical_worker as managed
 from scripts.simulation.runtime import prepare_broader_recovery_pilot as pilot
 from scripts.simulation.runtime import prepare_reset_correct_reference_cohort as preparation
@@ -371,3 +372,203 @@ def probe_run():
     print(publish_result(directory / "result.json", result), flush=True)
     if not result["passed"]:
         raise SystemExit("The registered no-action probe did not pass")
+
+
+def checker_eligible(producer, identity):
+    """Keep all 24 cases while replaying only closed producer branches."""
+    expected = {str(row["index"]) for row in identity["cases"]}
+    prefix.require(
+        producer["phase"] == "producer"
+        and producer["owner_closed"] is producer["sources_unchanged"] is True
+        and set(producer["cases"]) == expected,
+        "The full producer roster and its closed owner must be retained",
+    )
+    eligible = [row["index"] for row in identity["cases"] if producer["cases"][str(row["index"])]["status"] == "closed"]
+    refs = {str(index): producer["cases"][str(index)]["branch_ref"] for index in eligible}
+    return eligible, refs
+
+
+def observed_resources(branch):
+    """Report actual counters if retained; an absent receipt is not zero work."""
+    runtime = branch.get("runtime") if isinstance(branch, dict) else None
+    if not isinstance(runtime, dict):
+        return None
+    counters = runtime.get("counters")
+    if not isinstance(counters, dict):
+        return None
+    keys = ("mj_step", "mj_step2", "model_construct", "context")
+    if not all(isinstance(counters.get(key), dict) for key in keys):
+        return None
+    fields = ("control_steps_attempted", "control_steps_completed")
+    if not all(type(runtime.get(field)) is int and runtime[field] >= 0 for field in fields):
+        return None
+    if not all(
+        type(counters[key].get(field)) is int and counters[key][field] >= 0
+        for key in keys
+        for field in ("attempted", "completed")
+    ):
+        return None
+    return dict(
+        control_steps_attempted=runtime["control_steps_attempted"],
+        control_steps_completed=runtime["control_steps_completed"],
+        counters={key: {field: counters[key][field] for field in ("attempted", "completed")} for key in keys},
+        cleanup_complete=runtime.get("cleanup_complete") is True,
+    )
+
+
+def phase_run(phase):
+    """Own all eligible physical workers and retain partial-failure evidence."""
+    prefix.require(phase in ("producer", "checker"), "One registered physical phase is required")
+    config, identity, before, sources, qa_ref, dry_ref = preflight()
+    probe_ref = prefix.reference(OUTPUT / "probe/result.json")
+    verify_probe_admission(prefix.read(probe_ref), identity, sources, qa_ref, dry_ref)
+    producer_refs = {}
+    eligible = [item["index"] for item in identity["cases"]]
+    if phase == "checker":
+        producer = prefix.read(prefix.reference(OUTPUT / "producer/result.json"))
+        registration = prefix.read(producer["registration_ref"])
+        lifecycle = prefix.read(producer["lifecycle_ref"])
+        prefix.require(
+            registration["phase"] == "producer"
+            and registration["inputs"] == identity
+            and registration["source_refs"] == sources
+            and registration["qa_ref"] == qa_ref
+            and registration["dry_ref"] == dry_ref
+            and registration["probe_ref"] == probe_ref
+            and registration["eligible_cases"] == eligible
+            and lifecycle["launch_error"] is None
+            and len(lifecycle["workers"]) == len(eligible)
+            and {item["key"] for item in lifecycle["workers"]} == {str(index) for index in eligible}
+            and all(item["actual_wait"] is item["reaped"] is True for item in lifecycle["workers"]),
+            "The original producer registration and all reaped workers must match",
+        )
+        eligible, producer_refs = checker_eligible(producer, identity)
+        for ref in producer_refs.values():
+            prefix.checked(ref)
+    directory = OUTPUT / phase
+    directory.mkdir(parents=True, exist_ok=False)
+    registration_ref = publish_result(
+        directory / "registration.json",
+        dict(
+            phase=phase,
+            inputs=identity,
+            source_refs=sources,
+            qa_ref=qa_ref,
+            dry_ref=dry_ref,
+            probe_ref=probe_ref,
+            eligible_cases=eligible,
+            producer_branch_refs=producer_refs,
+            automatic_retry=False,
+        ),
+    )
+    specs = [
+        dict(
+            key=str(index),
+            argv=[sys.executable, "-m", MODULE, "--worker", phase, str(index)],
+            log=directory / f"case{index:02d}/worker.log",
+        )
+        for index in eligible
+    ]
+    lifecycle = (
+        run_owned_workers(specs, cwd=ROOT, timeout_seconds=config["worker_timeout_seconds"])
+        if specs
+        else dict(workers=[], launch_error=None)
+    )
+    for item in lifecycle["workers"]:
+        item["log_ref"] = prefix.reference(item.pop("log"))
+    lifecycle_ref = publish_result(directory / "workers.json", lifecycle)
+    by_index = {int(item["key"]): item for item in lifecycle["workers"]}
+    cases = {}
+    result = dict(
+        complete=False,
+        passed=False,
+        owner_closed=False,
+        sources_unchanged=False,
+        phase=phase,
+        registration_ref=registration_ref,
+        lifecycle_ref=lifecycle_ref,
+        cases=cases,
+        world_model_calls=0,
+        fresh_cases=0,
+        automatic_retry=False,
+    )
+    try:
+        for spec in identity["cases"]:
+            index = spec["index"]
+            entry = cases[str(index)] = dict(
+                status="not_run", expected_periods=spec["periods"], observed_resources=None
+            )
+            if index not in eligible:
+                entry["reason"] = "producer_not_closed"
+                continue
+            info = by_index.get(index)
+            path = directory / f"case{index:02d}/worker/result.json"
+            try:
+                branch = None
+                if path.is_file():
+                    entry["available_branch_ref"] = prefix.reference(path)
+                    branch = prefix.read(entry["available_branch_ref"])
+                    entry["observed_resources"] = observed_resources(branch)
+                prefix.require(
+                    info is not None
+                    and info["returncode"] == 0
+                    and info["actual_wait"] is info["reaped"] is True
+                    and info["signal_sent"] is False
+                    and branch is not None,
+                    "Owned worker must close",
+                )
+                prefix.require(branch["case"] == spec, "The case identity must remain fixed")
+                counts = cohort.validate_branch(branch, phase, spec["periods"])
+                if phase == "checker":
+                    produced = prefix.read(producer_refs[str(index)])
+                    counts["replay_max_difference"] = comparison.compare_periods(
+                        previous.periods(produced), previous.periods(branch)
+                    )
+                    prefix.require(
+                        produced["runtime"]["continuation"]["stop"] == branch["runtime"]["continuation"]["stop"],
+                        "The reported producer stop must be retained",
+                    )
+                entry.update(status="closed", branch_ref=entry["available_branch_ref"], counts=counts)
+            except Exception as error:
+                entry.update(status="failed", error=dict(type=type(error).__name__, message=str(error)))
+        observed = [cases[str(index)]["observed_resources"] for index in eligible]
+        known = [item for item in observed if item is not None]
+        totals = dict(
+            control_steps_attempted=sum(item["control_steps_attempted"] for item in known),
+            control_steps_completed=sum(item["control_steps_completed"] for item in known),
+            inner_steps_attempted=sum(item["counters"]["mj_step"]["attempted"] for item in known),
+            inner_steps_completed=sum(item["counters"]["mj_step"]["completed"] for item in known),
+            models_attempted=sum(item["counters"]["model_construct"]["attempted"] for item in known),
+            contexts_attempted=sum(item["counters"]["context"]["attempted"] for item in known),
+        )
+        prefix.require(
+            totals["control_steps_attempted"] <= config["max_periods_per_phase"]
+            and totals["inner_steps_attempted"] <= config["max_inner_steps_per_phase"]
+            and totals["models_attempted"] <= config["max_models_per_phase"]
+            and totals["contexts_attempted"] <= config["max_contexts_per_phase"],
+            "The observed physical resource budget cannot be exceeded",
+        )
+        owner_closed = (
+            len(lifecycle["workers"]) == len(eligible)
+            and {item["key"] for item in lifecycle["workers"]} == {str(index) for index in eligible}
+            and all(item["actual_wait"] is item["reaped"] is True for item in lifecycle["workers"])
+        )
+        _config, after = pilot.load_inputs()
+        unchanged = snapshot(ROOT)["sources"] == before and source_refs() == sources and after == identity
+        result.update(
+            observed_resource_totals=totals,
+            resource_counts_complete=len(known) == len(eligible),
+            owner_closed=owner_closed,
+            sources_unchanged=unchanged,
+            complete=owner_closed and unchanged and lifecycle["launch_error"] is None,
+            passed=owner_closed
+            and unchanged
+            and lifecycle["launch_error"] is None
+            and len(cases) == config["registered_cases"]
+            and all(item["status"] == "closed" for item in cases.values()),
+        )
+    except Exception as error:
+        result["error"] = dict(type=type(error).__name__, message=str(error))
+    print(publish_result(directory / "result.json", result), flush=True)
+    if not result["passed"]:
+        raise SystemExit("The physical phase did not close all registered cases")

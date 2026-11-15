@@ -144,3 +144,52 @@ def test_probe_admission_requires_reaped_child_and_exact_registration(monkeypatc
     registration["automatic_retry"] = True
     with pytest.raises(ValueError, match="registered training reset"):
         run.verify_probe_admission(probe, identity, sources, qa_ref, dry_ref)
+
+
+def test_checker_replays_only_closed_producers_without_losing_failed_cases():
+    identity = dict(cases=[dict(index=index) for index in range(4)])
+    producer = dict(
+        phase="producer",
+        owner_closed=True,
+        sources_unchanged=True,
+        cases={
+            "0": dict(status="closed", branch_ref="first"),
+            "1": dict(status="failed"),
+            "2": dict(status="closed", branch_ref="third"),
+            "3": dict(status="failed"),
+        },
+    )
+    eligible, refs = run.checker_eligible(producer, identity)
+    assert eligible == [0, 2] and refs == {"0": "first", "2": "third"}
+    assert len(producer["cases"]) == 4
+    producer["owner_closed"] = False
+    with pytest.raises(ValueError, match="closed owner"):
+        run.checker_eligible(producer, identity)
+    producer["owner_closed"] = True
+    del producer["cases"]["3"]
+    with pytest.raises(ValueError, match="full producer roster"):
+        run.checker_eligible(producer, identity)
+
+
+def test_missing_or_partial_worker_costs_are_never_treated_as_zero():
+    assert run.observed_resources(None) is None
+    assert run.observed_resources(dict(runtime={})) is None
+    counters = {
+        key: dict(attempted=attempted, completed=completed)
+        for key, attempted, completed in (
+            ("mj_step", 51, 50),
+            ("mj_step2", 0, 0),
+            ("model_construct", 3, 3),
+            ("context", 3, 2),
+        )
+    }
+    branch = dict(
+        runtime=dict(control_steps_attempted=3, control_steps_completed=2, counters=counters, cleanup_complete=True)
+    )
+    observed = run.observed_resources(branch)
+    assert observed["control_steps_attempted"] == 3
+    assert observed["control_steps_completed"] == 2
+    assert observed["counters"]["mj_step"] == dict(attempted=51, completed=50)
+    assert observed["cleanup_complete"] is True
+    del counters["context"]["attempted"]
+    assert run.observed_resources(branch) is None
