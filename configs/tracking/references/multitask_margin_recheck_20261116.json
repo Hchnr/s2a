@@ -1,0 +1,29 @@
+{
+  "schema": "s2a.multitask-margin-recheck.v1",
+  "output": "outputs/multitask_margin_recheck_20261116",
+  "development_review": {
+    "path": "outputs/reset_multitask_adaptive_complete_audit_20261113/result.json",
+    "sha256": "7fe0f7d17ddea1913ffab2f5a4243c5b8e4b6a5def9633269ebec95efc82f8fe"
+  },
+  "cases": [
+    {"case_index": 0, "sampling_seed": 42, "trigger_step": 26, "trigger_reason": "quality_margin_consumed"},
+    {"case_index": 2, "sampling_seed": 43, "trigger_step": 17, "trigger_reason": "quality_margin_consumed"},
+    {"case_index": 4, "sampling_seed": 42, "trigger_step": 143, "trigger_reason": "quality_margin_consumed"},
+    {"case_index": 6, "sampling_seed": 43, "trigger_step": 17, "trigger_reason": "no_audited_second_pose"},
+    {"case_index": 8, "sampling_seed": 42, "trigger_step": 17, "trigger_reason": "quality_margin_consumed"},
+    {"case_index": 10, "sampling_seed": 43, "trigger_step": 17, "trigger_reason": "quality_margin_consumed"}
+  ],
+  "max_deferred_triggers_per_case": 1,
+  "max_extra_periods_per_case": 1,
+  "max_total_control_steps_per_phase": 242,
+  "max_total_native_steps_per_phase": 6050,
+  "max_workers_per_phase": 6,
+  "max_models_per_phase": 18,
+  "max_contexts_per_phase": 18,
+  "max_quality_responses_per_period": 320,
+  "max_baseline_responses_per_period": 480,
+  "worker_timeout_seconds": 3600,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

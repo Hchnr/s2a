@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [三任务双 seed 首次 WAM 刷新重算](multitask_margin_recheck_20261116.json) | 新增配置 |
 | [一次 WAM 余量刷新后的当前状态重算](deferred_margin_recheck_20261116.json) | 新增配置 |
 | [seed 43 复位至当前图像第二窗口](reset_seed43_live_second_window_20261113.json) | 新增配置 |
 | [双 seed worker 真实 seed 43 单次推理](adaptive_multiseed_real43_20261113.json) | 新增配置 |
