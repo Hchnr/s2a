@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[同状态机械臂动作短窗对照](correct_reference_same_state_arm_20261116.md)
+
 最新：[正确参考任务失败的轨迹差异诊断](correct_reference_failure_diagnosis_20261116.md)
 
 最新：[统一候选 18 条正确参考正控：14/18 通过](reset_correct_reference_cohort_20261116.md)

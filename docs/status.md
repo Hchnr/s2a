@@ -10,6 +10,10 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 在 case 03 的同一已重放状态比较 16 周期固定机械臂动作：两支
+碗位置最大差 38.501 mm，换入原正控动作也未复现其同期轨迹；短窗尚不能判断
+完整任务。见[同状态对照](../reports/tracking/joint_control/correct_reference_same_state_arm_20261116.md)。
+
 2026-11-16 对 18 条正确参考做事后物体轨迹对照：case 03 的夹爪命令相同、
 TCP 轨迹最大差 2.476 mm，物体位置最大差 154.573 mm，任务结果不同；这不是
 因果证明，也不能由单一物体偏差阈值判定成功。见[诊断](../reports/tracking/joint_control/correct_reference_failure_diagnosis_20261116.md)。
