@@ -1,0 +1,46 @@
+{
+  "schema": "s2a.current-controller-training-recovery.v1",
+  "output": "outputs/current_controller_recovery_20261116",
+  "prior_recovery_config": {
+    "path": "configs/wam/training/recovery/training_state_recovery_qualification_20261025.json",
+    "sha256": "518e2705fad29a025105c93988c3712df357f4265628079d5c71a56666724ab5"
+  },
+  "training_preparation": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "correct_reference_cohort": {
+    "path": "configs/tracking/joint_control/reset_correct_reference_cohort_20261116.json",
+    "sha256": "b4f9da8ff26a3e972b9cd996a36a0aff0285050a71e71eb4e16cf27d6a812312"
+  },
+  "current_controller_audit": {
+    "path": "outputs/cached_seed_preference_20261116/audit.json",
+    "sha256": "ae8358fc25a9675d208f91cd8e7c52f4d20f120e9c314ee18755b97472744525"
+  },
+  "case_indices": [0, 1, 2],
+  "offsets_m": [0.0, 0.02, -0.02],
+  "perturb_steps": 16,
+  "return_steps": 40,
+  "anchors": [0, 16, 56],
+  "future_window_steps": 40,
+  "expected_periods_per_task": [220, 310, 239],
+  "registered_cases": 9,
+  "max_periods_per_phase": 2307,
+  "max_inner_steps_per_phase": 57675,
+  "max_workers_per_phase": 9,
+  "max_models_per_phase": 27,
+  "max_contexts_per_phase": 27,
+  "max_baseline_responses_per_period": 480,
+  "max_quality_responses_per_period": 320,
+  "max_gripper_sequences_per_period": 6561,
+  "control_dt_s": 0.05,
+  "inner_dt_s": 0.002,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "joint_buffer_rad": 0.05,
+  "worker_timeout_seconds": 3600,
+  "world_model_calls": 0,
+  "fits": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
