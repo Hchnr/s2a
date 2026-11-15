@@ -1,0 +1,42 @@
+{
+  "schema": "s2a.wam-recovery-state-coverage.v1",
+  "output": "outputs/wam_recovery_state_coverage_20261116",
+  "development_audit": {
+    "path": "outputs/reset_multitask_adaptive_complete_audit_20261113/result.json",
+    "sha256": "7fe0f7d17ddea1913ffab2f5a4243c5b8e4b6a5def9633269ebec95efc82f8fe"
+  },
+  "training_preparation": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "recovery_audit": {
+    "path": "outputs/current_controller_recovery_repair_20261116/audit.json",
+    "sha256": "a10dc09801d90efd92933e536d04a1e71ea1da75b724105dc384205c4d61c7f6"
+  },
+  "h40_audit": {
+    "path": "outputs/recovery_h40_contract_20261116/result.json",
+    "sha256": "0753c4c30f432e6b09e103152238cb4f6f47dffa30ce76e60636e59f2329dcec"
+  },
+  "event_image_audit": {
+    "path": "outputs/recovery_event_images_20261116/audit.json",
+    "sha256": "a9e7c77b5ddb8ebce4b86cae9d6ea9f153dfcc8e69ad1ecbab9a6600da461b8b"
+  },
+  "tool_contract": {
+    "path": "outputs/clean_training_development_dependency_repair_20261024/inputs/eef_tool_contract.json",
+    "sha256": "6fcaed3fe499aacb15d03170d002b1c897091481a0022db5f2922c06320a3a0c"
+  },
+  "development_case_indices": [0, 2, 4, 6, 8, 10],
+  "expected_requests_by_case": [46, 5, 19, 9, 75, 59],
+  "baseline_anchor_count": 150,
+  "recovery_anchor_count": 39,
+  "request_count": 213,
+  "distance_bins_m": [0.01, 0.02, 0.05, 0.1],
+  "seed": 42,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "physical_steps": 0,
+  "fits": 0,
+  "fresh_cases": 0,
+  "training_authorized": false,
+  "automatic_retry": false
+}
