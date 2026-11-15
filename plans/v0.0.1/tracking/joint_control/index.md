@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[缓存 seed 未来质量增量上限对照](bounded_seed_preference_20261116.md)
+
 近期：[优先保留已审核原计划的统一候选对照](cached_seed_preference_20261116.md)
 
 近期：[同状态机械臂动作的正确参考短窗对照](correct_reference_same_state_arm_20261116.md)
