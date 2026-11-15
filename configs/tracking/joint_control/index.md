@@ -1,5 +1,7 @@
 # 冻结配置：configs/tracking/joint_control
 
+近期：[已评价候选中靠近 seed 的有界排序](nearest_bounded_seed_20261116.json)
+
 本页导航原始文件；正文、配置值和历史身份保持。目录迁移不改变实验或控制资格。
 
 [当前状态](../../../docs/status.md) · [研究索引](../../../docs/research_index.md) · [路径与身份](../../../docs/migrations/repository_layout_20261029.json)
