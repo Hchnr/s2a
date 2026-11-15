@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+近期：[已评价候选中靠近 seed 的有界排序：正确参考对照](nearest_bounded_seed_20261116.md)
+
 最新：[有界 seed 排序的 18 条正确参考对照：15/18](bounded_seed_preference_cohort_20261116.md)
 
 最新：[缓存 seed 排序的 18 条正确参考对照：16/18](cached_seed_preference_cohort_20261116.md)

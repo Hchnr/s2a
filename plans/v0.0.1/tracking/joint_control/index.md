@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[已评价候选中靠近 seed 的有界排序](nearest_bounded_seed_20261116.md)
+
 近期：[缓存 seed 未来质量增量上限对照](bounded_seed_preference_20261116.md)
 
 近期：[优先保留已审核原计划的统一候选对照](cached_seed_preference_20261116.md)

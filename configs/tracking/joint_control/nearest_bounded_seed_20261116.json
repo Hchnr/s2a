@@ -1,0 +1,40 @@
+{
+  "schema": "s2a.nearest-bounded-seed.v1",
+  "output": "outputs/nearest_bounded_seed_20261116",
+  "original_cohort_config": {
+    "path": "configs/tracking/joint_control/reset_correct_reference_cohort_20261116.json",
+    "sha256": "b4f9da8ff26a3e972b9cd996a36a0aff0285050a71e71eb4e16cf27d6a812312"
+  },
+  "baseline_cohort_audit": {
+    "path": "outputs/reset_correct_reference_cohort_20261116/audit.json",
+    "sha256": "dbe7d296758cc7cb9c9f66168ed140b13ed2967dbb84e5879044c3e849ec704a"
+  },
+  "unbounded_preference_audit": {
+    "path": "outputs/cached_seed_preference_20261116/audit.json",
+    "sha256": "ae8358fc25a9675d208f91cd8e7c52f4d20f120e9c314ee18755b97472744525"
+  },
+  "bounded_preference_audit": {
+    "path": "outputs/bounded_seed_preference_20261116/audit.json",
+    "sha256": "efebb7ae26d844e3caaadaf33f5038ac6ff96b819fe6f018d5cf42b40954c42f"
+  },
+  "selection": "nearest_full_seed_from_evaluated_margin_cache_with_bounded_future_slack",
+  "seed_distance": "squared_euclidean_8x6_normalized_arm_commands",
+  "max_future_slack_increase": 0.3,
+  "candidate_cases": 18,
+  "registered_periods_per_phase": 4907,
+  "max_inner_steps_per_phase": 122675,
+  "max_workers_per_phase": 18,
+  "max_models_per_phase": 54,
+  "max_contexts_per_phase": 54,
+  "max_quality_responses_per_period": 320,
+  "max_baseline_responses_per_period": 480,
+  "max_gripper_sequences_per_period": 6561,
+  "position_cap_m": 0.01,
+  "rotation_cap_rad": 0.05,
+  "joint_buffer_rad": 0.05,
+  "arm_rate_limit": 0.25,
+  "worker_timeout_seconds": 3600,
+  "world_model_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
