@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [六个训练初态上的较大平移与姿态恢复正控](broader_recovery_pilot_20261116.md) | 当前目录 |
 | [WAM 开发请求与恢复训练状态的几何覆盖](wam_recovery_state_coverage_20261116.md) | 当前目录 |
 | [训练恢复事件前的真实当前图像](recovery_event_images_20261116.md) | 当前目录 |
 | [训练恢复低开度覆盖与同步验证身份](recovery_event_coverage_20261116.md) | 当前目录 |
