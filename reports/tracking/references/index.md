@@ -6,6 +6,9 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [同一复位状态下的新旧参考对照](bounded_reference_choice_recovery_20261115.md) | 新增报告 |
+| [参考选择物理对照的中断记录](bounded_reference_choice_interruption_20261115.md) | 新增报告 |
+| [三任务参考交接与未消费开度的回顾](multitask_reference_handoffs_20261113.md) | 新增报告 |
 | [三任务双 seed 自适应开发矩阵：完整记录](reset_multitask_adaptive_complete_20261113.md) | 新增报告 |
 | [三任务固定 H40 复位对照：完整记录](reset_multitask_fixed_h40_complete_20261113.md) | 新增报告 |
 | [三任务共同固定 H40 对照：前四案例](reset_multitask_fixed_h40_first_wave_20261113.md) | 新增报告 |

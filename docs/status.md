@@ -10,6 +10,33 @@
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-15 同一开发状态的旧 / 新参考对照及独立重放完成：旧参考执行 19 步后
+实测位置超限，新参考执行 1 步后触发质量刷新；均无目标 grasp / 任务成功。原
+中断尝试的开销仍未知，见[对照报告](../reports/tracking/references/bounded_reference_choice_recovery_20261115.md)。
+
+2026-11-15 核查发现旧 / 新参考对照在此前运行期间中断，两个 worker 的物理
+消耗和回收状态没有完整收据，不能作为对照结果；已保留记录并登记独立恢复，见
+[中断记录](../reports/tracking/references/bounded_reference_choice_interruption_20261115.md)。
+
+2026-11-13 对六条旧开发轨迹的 207 次同一未来端点参考交接独立复算通过；
+位置差中位数 5.595 mm。213 次 WAM 请求生成的 145 个开度 ≤0.2 端点均位于
+未消费后段；这不是抓取失败原因或延长执行安全性的证明，见[交接报告](../reports/tracking/references/multitask_reference_handoffs_20261113.md)。
+
+2026-11-13 三任务六条已执行开发轨迹从 reset 重放共 1,025 周期，采集每端点
+因果力反馈并独立核对动作与状态。按任务留出时，wrench + 历史线性拟合的假
+达门为 9 次、位置预测 RMSE 1.704 mm；上一周期偏差为 1 次、0.493 mm。
+该拟合不采用，留出预测不代表新闭环收益；见[多任务诊断](../reports/tracking/response_models/wrench_multitask_replay_20261113.md)。
+
+2026-11-13 从 reset 重放两条同初态已执行动作流并读取当前力反馈：夹爪触桌的
+端点力范数为 132.44 N，随后位置预测偏差为 5.119 / 5.777 mm；共同前缀
+42 个端点状态和力读数相同。该接触与偏差相关但不证明因果或控制收益，另有
+正常夹持接触；下一步需跨任务核验，见[端点力反馈诊断](../reports/tracking/response_models/wrench_endpoint_replay_20261113.md)。
+
+2026-11-13 提前一周期的因果预览从旧开发初态实际执行 step121，位置 / 旋转
+误差为 0.007302 m / 0.019472 rad；step122 的重新求解无候选，在派发前停止。
+从 reset 独立重放 122 周期的状态与内步数值差为 0；模型偏差从 step120 的
+0.000531 m 增至 step121 的 0.005119 m，未证明连续跟踪改善。见[物理对照](../reports/tracking/joint_control/anticipatory_causal_physical_20261113.md)。
+
 2026-11-13 针对同一 step122 的补偿位置，冻结局部模型在仅保留命令 box 与
 速率的外放域中给出约 0.009663 m 的浮点下界，超过登记的 0.007 m 余量；支持
 证据已独立复算。这不排除更早控制或真实系统可行，见[位置外界](../reports/tracking/joint_control/causal_position_reachability_20261113.md)。

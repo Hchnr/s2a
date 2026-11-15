@@ -1,5 +1,9 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[提前预览的两周期物理对照](anticipatory_causal_physical_20261113.md)
+
+近期：[提前一周期的因果补偿预览](anticipatory_causal_pose_20261113.md)
+
 近期：[因果补偿位置的冻结模型外界](causal_position_reachability_20261113.md)
 
 近期：[因果补偿首点可行性优先搜索](causal_first_pose_search_20261113.md)
