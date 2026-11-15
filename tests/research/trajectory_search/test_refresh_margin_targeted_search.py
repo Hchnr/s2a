@@ -3,10 +3,13 @@
 import numpy as np
 import pytest
 
+from s2a.research.trajectory_search.margin_two_step_search import solve_margin_two_step
 from s2a.research.trajectory_search.refresh_margin_targeted_search import (
     candidate_is_eligible,
+    solve_targeted_refresh,
     targeted_constraints,
 )
+from tests.research.joint_control.preview.test_full_horizon_feedback import solve_and_audit_inputs
 
 
 def test_targeted_constraints_only_tighten_second_pose_and_bound_the_suffix():
@@ -41,3 +44,28 @@ def test_constraints_reject_a_negative_or_nonfinite_baseline():
     for baseline in (-1.0, float("nan")):
         with pytest.raises(ValueError):
             targeted_constraints(np.zeros(16), np.zeros((16, 48)), baseline)
+
+
+def test_targeted_search_uses_only_evaluated_candidates_and_counts_extra_responses():
+    args, _audit_args, _targets = solve_and_audit_inputs()
+    baseline = solve_margin_two_step(*args)["best_joint_safe"]
+    targeted_args = list(args)
+    targeted_args[2] = baseline["planned_commands"]
+    events = []
+    result = solve_targeted_refresh(
+        *targeted_args,
+        past_inner_error_rad=np.zeros((25, 7)),
+        expected_seed_tcp_errors=baseline["tcp_errors"],
+        expected_baseline_future_slack=baseline["future_quality_slack"],
+        on_response=events.append,
+    )
+    assert result["response_attempts"] == result["response_completions"] == len(events) // 2 <= 320
+    assert events[::2] == ["attempted"] * (len(events) // 2)
+    assert events[1::2] == ["completed"] * (len(events) // 2)
+    assert result["eligible_candidates"] > 0
+    assert candidate_is_eligible(
+        result["candidate"]["tcp_errors"],
+        result["candidate"]["future_quality_slack"],
+        result["baseline_future_slack"],
+        result["candidate"]["linear_safety"],
+    )

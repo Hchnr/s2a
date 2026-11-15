@@ -84,6 +84,7 @@ def solve_targeted_refresh(
     past_inner_error_rad,
     expected_seed_tcp_errors,
     expected_baseline_future_slack,
+    on_response=None,
 ):
     """Search one frozen state; return only evaluated, rechecked model candidates."""
     seed = finite(seed, (8, 6)).copy()
@@ -92,6 +93,8 @@ def solve_targeted_refresh(
     past = finite(past_inner_error_rad, (25, 7))
     expected_errors = finite(expected_seed_tcp_errors, (8, 6))
     targets = finite(targets, (8, 4, 4))
+    if on_response is not None and not callable(on_response):
+        raise ValueError("The optional response counter must be callable")
     seed_x = seed.ravel()
     scale = np.tile((interface.output_max - interface.output_min) / (interface.input_max - interface.input_min), 8)
     cache = {}
@@ -109,10 +112,14 @@ def solve_targeted_refresh(
             if np.any(np.all(physical[:, 3:] == 0, axis=1)):
                 raise ValueError("The frozen preview cannot evaluate a zero rotation latch")
             attempts += 1
+            if on_response is not None:
+                on_response("attempted")
             rollout = rollout_joint_preview(model, velocity, physical, site, lower, upper, enforce_limits=False)
             score = preview_objective(rollout, tool, targets, twists)
             values, jacobian, errors = pose_quality_constraints(score, 8, scale)
             cache[key] = dict(commands=commands, rollout=rollout, values=values, jacobian=jacobian, errors=errors)
+            if on_response is not None:
+                on_response("completed")
         return cache[key]
 
     initial = evaluate(seed_x)
