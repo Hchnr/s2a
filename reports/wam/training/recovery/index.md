@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [训练恢复事件前的真实当前图像](recovery_event_images_20261116.md) | 当前目录 |
 | [训练恢复低开度覆盖与同步验证身份](recovery_event_coverage_20261116.md) | 当前目录 |
 | [九条训练恢复轨迹的 H40 数据合同审计](recovery_h40_contract_20261116.md) | 当前目录 |
 | [当前控制器训练恢复：九例独立对照](current_controller_recovery_repair_20261116.md) | 当前目录 |

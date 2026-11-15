@@ -1,0 +1,40 @@
+{
+  "schema": "s2a.recovery-event-images.v1",
+  "output": "outputs/recovery_event_images_20261116",
+  "recovery_audit": {
+    "path": "outputs/current_controller_recovery_repair_20261116/audit.json",
+    "sha256": "a10dc09801d90efd92933e536d04a1e71ea1da75b724105dc384205c4d61c7f6"
+  },
+  "h40_audit": {
+    "path": "outputs/recovery_h40_contract_20261116/result.json",
+    "sha256": "0753c4c30f432e6b09e103152238cb4f6f47dffa30ce76e60636e59f2329dcec"
+  },
+  "event_audit": {
+    "path": "outputs/recovery_event_coverage_20261116/result.json",
+    "sha256": "0618788ddbde31d9128f0b8de5b1daeb0dc838a88d7fdab81e61d0b3561aff29"
+  },
+  "case_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  "anchors_by_case": [[89, 120], [89, 120], [89, 120], [212], [212], [212], [147], [147], [147]],
+  "first_success_lead_periods": 8,
+  "horizon": 40,
+  "seed": 42,
+  "probe_cases": [0],
+  "max_probe_control_periods": 0,
+  "max_probe_inner_steps": 0,
+  "max_probe_models": 3,
+  "max_probe_contexts": 3,
+  "max_workers": 9,
+  "max_replay_control_periods": 1437,
+  "max_replay_inner_steps": 35925,
+  "max_replay_models": 27,
+  "max_replay_contexts": 27,
+  "max_saved_event_images": 12,
+  "max_unsaved_camera_renders": 183,
+  "worker_timeout_seconds": 3600,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "fits": 0,
+  "fresh_cases": 0,
+  "training_authorized": false,
+  "automatic_retry": false
+}
