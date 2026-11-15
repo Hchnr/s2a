@@ -10,6 +10,11 @@ CPU/OSMesa 使用空 CUDA/LD。此前用户曾允许当前容器可见的四张�
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 对 18 条正确参考统一测试有界缓存中最近 seed 排序：独立重放
+完成，15/18 通过，与旧有界排序相同、低于无界排序的 16/18；两条质量停止
+且各有一个实际 pose 超限端点。候选不提升为默认，见
+[完整对照](../reports/tracking/joint_control/nearest_bounded_seed_20261116.md)。
+
 2026-11-16 wine / seed42 的 step143 复用已计算名义双点候选，模型独立审核
 通过，但实际额外周期位置误差 `10.711 mm` 超过 `10 mm` 门限并停止；独立
 重放一致，候选未采纳。见[同状态结果](../reports/tracking/references/wine_cached_nominal_candidate_20261116.md)。
