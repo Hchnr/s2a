@@ -17,7 +17,13 @@ from tests.research.native_runtime.test_training_recovery_capture import image, 
 def test_fixed_config_and_training_roster_keep_excluded_initial_states_closed():
     config = json.loads(run.CONFIG.read_text())
     run.validate_config(config)
-    for key, value in (("offsets_m", [0.0, 0.03, -0.02]), ("max_periods_per_phase", 2308), ("automatic_retry", 1)):
+    for key, value in (
+        ("offsets_m", [0.0, 0.03, -0.02]),
+        ("max_periods_per_phase", 2308),
+        ("automatic_retry", 1),
+        ("new_attempts", 2),
+        ("max_probe_inner_steps", 1),
+    ):
         with pytest.raises(ValueError):
             run.validate_config(dict(config, **{key: value}))
     changed = copy.deepcopy(config)
@@ -28,6 +34,59 @@ def test_fixed_config_and_training_roster_keep_excluded_initial_states_closed():
     assert len(identity["cases"]) == 9
     assert [case["periods"] for case in identity["cases"]] == [220] * 3 + [310] * 3 + [239] * 3
     assert [case["offset_m"] for case in identity["cases"]] == [0.0, 0.02, -0.02] * 3
+
+
+def test_original_failed_run_rejects_changed_counts_or_worker_lifecycle():
+    owner = run.prefix.read(run.preparation.configured_ref(run.REGISTERED_REFS["failed_producer"]))
+    lifecycle = run.prefix.read(run.preparation.configured_ref(run.REGISTERED_REFS["failed_lifecycle"]))
+    branches = [run.prefix.read(owner["cases"][str(i)]["available_branch_ref"]) for i in range(9)]
+    run.validate_previous_failure(owner, lifecycle, branches)
+    bad = copy.deepcopy(branches)
+    bad[3]["runtime"]["counters"]["mj_step"]["completed"] = 1
+    with pytest.raises(ValueError, match="zero actions"):
+        run.validate_previous_failure(owner, lifecycle, bad)
+    bad_lifecycle = copy.deepcopy(lifecycle)
+    bad_lifecycle["workers"][0]["reaped"] = False
+    with pytest.raises(ValueError, match="cleanup"):
+        run.validate_previous_failure(owner, bad_lifecycle, branches)
+
+
+def test_probe_gate_rejects_any_action_or_incomplete_owner(monkeypatch):
+    counters = {
+        key: dict(attempted=value, completed=value)
+        for key, value in (("mj_step", 0), ("mj_step2", 0), ("model_construct", 3), ("context", 3))
+    }
+    runtime = dict(
+        complete=True,
+        passed=True,
+        reset_observation_verified=True,
+        cleanup_complete=True,
+        continuation=dict(segments=[], stop=None, probe_no_actions=True),
+        control_steps_attempted=0,
+        control_steps_completed=0,
+        newly_selected_commands=0,
+        world_model_calls=0,
+        counters=counters,
+    )
+    branch = dict(
+        complete=True,
+        passed=True,
+        runtime=runtime,
+        requested_phase="probe",
+        candidate_modules_unloaded=True,
+        fresh_cases=0,
+    )
+    checked = dict(endpoint_count=1, labels_reconstructed=False, images=[{}], anchor_windows=[dict(full_h40=False)])
+    monkeypatch.setattr(run, "verify_capture", lambda *_args: (checked, dict(sent_commands=np.empty((0, 7)))))
+    run.verify_probe_branch(branch, dict(case=dict(tool=np.eye(4))), type("Timeline", (), dict(periods=1))())
+    bad = copy.deepcopy(branch)
+    bad["runtime"]["control_steps_attempted"] = 1
+    with pytest.raises(ValueError, match="zero physical actions"):
+        run.verify_probe_branch(bad, dict(case=dict(tool=np.eye(4))), type("Timeline", (), dict(periods=1))())
+    with pytest.raises(ValueError, match="source-matched"):
+        run.verify_probe_admission(
+            dict(complete=True, passed=False, owner_closed=True, sources_unchanged=True), {}, [], {}, {}
+        )
 
 
 def test_reset_capture_writes_within_runtime_root_after_runtime_creation(tmp_path):

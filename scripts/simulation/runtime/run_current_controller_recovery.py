@@ -32,10 +32,10 @@ from scripts.verification.response_models.forward.verify_training_recovery_label
 from scripts.verification.wam.training.verify_settled_native_training import verify_canvas
 
 ROOT = prefix.REPO
-CONFIG = ROOT / "configs/wam/training/recovery/current_controller_recovery_20261116.json"
-PLAN = ROOT / "plans/v0.0.1/wam/training/recovery/current_controller_recovery_20261116.md"
-OUTPUT = ROOT / "outputs/current_controller_recovery_20261116"
-QA = ROOT / "outputs/qa/current_controller_recovery_final_20261116/result.json"
+CONFIG = ROOT / "configs/wam/training/recovery/current_controller_recovery_repair_20261116.json"
+PLAN = ROOT / "plans/v0.0.1/wam/training/recovery/current_controller_recovery_repair_20261116.md"
+OUTPUT = ROOT / "outputs/current_controller_recovery_repair_20261116"
+QA = ROOT / "outputs/qa/current_controller_recovery_repair_final_20261116/result.json"
 MODULE = "scripts.simulation.runtime.run_current_controller_recovery"
 OFFSETS = (0.0, 0.02, -0.02)
 PERIODS = (220, 310, 239)
@@ -43,6 +43,18 @@ TASKS = (8, 9, 6)
 ANCHORS = (0, 16, 56)
 TRAINING_NAMES = ("task0_native_demo_8", "task1_native_demo_1", "task2_native_demo_2")
 REGISTERED_REFS = {
+    "original_config": dict(
+        path="configs/wam/training/recovery/current_controller_recovery_20261116.json",
+        sha256="aef6fee970eaf8986beec994f651c4e374edcd1d5121845a49e022ca13a2342a",
+    ),
+    "failed_producer": dict(
+        path="outputs/current_controller_recovery_20261116/producer/result.json",
+        sha256="7bd7ab5d8ed8bf9e33358df9c03d4bada2588b216afa1aea09540ff3e934cde0",
+    ),
+    "failed_lifecycle": dict(
+        path="outputs/current_controller_recovery_20261116/producer/workers.json",
+        sha256="95d899744eafa8a7b1d86061c2d803d23c0e4347685db64ce6098165da952518",
+    ),
     "prior_recovery_config": dict(
         path="configs/wam/training/recovery/training_state_recovery_qualification_20261025.json",
         sha256="518e2705fad29a025105c93988c3712df357f4265628079d5c71a56666724ab5",
@@ -69,6 +81,9 @@ def source_refs():
         for path in (
             CONFIG,
             PLAN,
+            ROOT / "configs/wam/training/recovery/current_controller_recovery_20261116.json",
+            ROOT / "plans/v0.0.1/wam/training/recovery/current_controller_recovery_20261116.md",
+            ROOT / "reports/wam/training/recovery/current_controller_recovery_path_incident_20261116.md",
             Path(__file__).resolve(),
             ROOT / "src/s2a/references/training_recovery_timeline.py",
             ROOT / "src/s2a/research/native_runtime/training_recovery_capture.py",
@@ -85,8 +100,8 @@ def source_refs():
 
 def validate_config(config):
     fixed = dict(
-        schema="s2a.current-controller-training-recovery.v1",
-        output="outputs/current_controller_recovery_20261116",
+        schema="s2a.current-controller-training-recovery-repair.v1",
+        output="outputs/current_controller_recovery_repair_20261116",
         case_indices=[0, 1, 2],
         offsets_m=list(OFFSETS),
         perturb_steps=16,
@@ -113,6 +128,21 @@ def validate_config(config):
         fits=0,
         fresh_cases=0,
         automatic_retry=False,
+        seed=42,
+        new_attempts=1,
+        probe_cases=[0],
+        max_probe_control_periods=0,
+        max_probe_inner_steps=0,
+        max_probe_models=3,
+        max_probe_contexts=3,
+        previous_models=27,
+        previous_contexts=27,
+        previous_control_periods=0,
+        previous_inner_steps=0,
+        max_cumulative_models=84,
+        max_cumulative_contexts=84,
+        max_cumulative_control_periods=4614,
+        max_cumulative_inner_steps=115350,
     )
     refs = tuple(REGISTERED_REFS)
     prefix.require(
@@ -124,6 +154,43 @@ def validate_config(config):
     for key in refs:
         prefix.require(config[key] == REGISTERED_REFS[key], "Each registered source identity must remain fixed")
         preparation.configured_ref(config[key])
+
+
+def validate_previous_failure(owner, lifecycle, workers):
+    """Reject changed or unclosed evidence from the original nine failures."""
+    prefix.require(
+        owner["complete"] is owner["owner_closed"] is owner["sources_unchanged"] is True
+        and owner["passed"] is owner["automatic_retry"] is False
+        and owner["phase"] == "producer"
+        and set(owner["cases"]) == {str(index) for index in range(9)}
+        and lifecycle["launch_error"] is None
+        and len(lifecycle["workers"]) == len(workers) == 9,
+        "The original failed owner and nine worker receipts must close",
+    )
+    children = {item["key"]: item for item in lifecycle["workers"]}
+    prefix.require(set(children) == set(owner["cases"]), "The original worker roster must match")
+    for index in range(9):
+        key, branch = str(index), workers[index]
+        child, entry, runtime = children[key], owner["cases"][key], branch["runtime"]
+        counters = runtime["counters"]
+        bad_path = f"/producer/case{index:02d}/worker/capture/anchor0000"
+        prefix.require(
+            entry["status"] == "failed"
+            and child["actual_wait"] is child["reaped"] is True
+            and child["signal_sent"] is False
+            and child["returncode"] == 1
+            and branch["complete"] is branch["passed"] is False
+            and branch["error"]["type"] == "PrefixReplayFailure"
+            and "path outside approved roots:" in branch["error"]["message"]
+            and branch["error"]["message"].endswith(bad_path)
+            and runtime["failure_stage"] == "continuation"
+            and runtime["cleanup_complete"] is True
+            and runtime["control_steps_attempted"] == runtime["control_steps_completed"] == 0
+            and counters["mj_step"]["attempted"] == counters["mj_step"]["completed"] == 0
+            and counters["model_construct"]["attempted"] == counters["model_construct"]["completed"] == 3
+            and counters["context"]["attempted"] == counters["context"]["completed"] == 3,
+            "Each original worker must preserve its path failure, zero actions and cleanup",
+        )
 
 
 def timeline_digest(timeline):
@@ -156,15 +223,20 @@ def load_inputs():
     config_ref = prefix.reference(CONFIG)
     config = prefix.read(config_ref)
     validate_config(config)
-    refs = {
-        key: preparation.configured_ref(config[key])
-        for key in (
-            "prior_recovery_config",
-            "training_preparation",
-            "correct_reference_cohort",
-            "current_controller_audit",
-        )
-    }
+    refs = {key: preparation.configured_ref(config[key]) for key in REGISTERED_REFS}
+    previous_config = prefix.read(refs["original_config"])
+    prefix.require(
+        all(config[key] == value for key, value in previous_config.items() if key not in ("schema", "output")),
+        "The repair must retain the original roster, gates and phase budgets",
+    )
+    failed = prefix.read(refs["failed_producer"])
+    prefix.require(failed["lifecycle_ref"] == refs["failed_lifecycle"], "The original lifecycle identity must match")
+    lifecycle = prefix.read(refs["failed_lifecycle"])
+    workers = [prefix.read(failed["cases"][str(index)]["available_branch_ref"]) for index in range(9)]
+    for child in lifecycle["workers"]:
+        prefix.checked(child["log_ref"])
+    validate_previous_failure(failed, lifecycle, workers)
+    old_registration = prefix.read(failed["registration_ref"])
     prior, trained, audit = (
         prefix.read(refs[key]) for key in ("prior_recovery_config", "training_preparation", "current_controller_audit")
     )
@@ -228,6 +300,16 @@ def load_inputs():
                 )
             )
     prefix.require(len(cases) == 9 and sum(row["periods"] for row in cases) == 2307, "Full nine-case budget required")
+    old_identity = old_registration["inputs"]
+    prefix.require(
+        old_registration["phase"] == "producer"
+        and old_registration["eligible_cases"] == list(range(9))
+        and old_identity["config_ref"] == refs["original_config"]
+        and old_identity["source_refs"] == {key: refs[key] for key in old_identity["source_refs"]}
+        and old_identity["shared_receipt"] == shared["receipt"]
+        and old_identity["cases"] == cases,
+        "The exact nine original identities, references and reset sources are required",
+    )
     identity = dict(config_ref=config_ref, source_refs=refs, shared_receipt=shared["receipt"], cases=cases)
     return config, identity
 
@@ -265,7 +347,11 @@ def capture_reset(runtime_directory, tool, env, terminal, renderer):
 
 def worker(phase, index):
     prefix.require(
-        phase in ("producer", "checker") and type(index) is int and 0 <= index < 9, "One case and phase required"
+        phase in ("producer", "checker", "probe")
+        and type(index) is int
+        and 0 <= index < 9
+        and (phase != "probe" or index == 0),
+        "One registered case and phase are required",
     )
     directory = OUTPUT / phase / f"case{index:02d}" / "worker"
     directory.mkdir(parents=True, exist_ok=False)
@@ -290,8 +376,9 @@ def worker(phase, index):
             "The registered training timeline must match",
         )
         recorded = None
-        if phase == "checker":
+        if phase in ("checker", "probe"):
             checker_isolation()
+        if phase == "checker":
             produced = prefix.read(registration["producer_branch_refs"][str(index)])
             cohort.validate_branch(produced, "producer", identity["periods"])
             recorded = produced["runtime"]["continuation"]
@@ -326,6 +413,8 @@ def worker(phase, index):
         def continuation(env, terminal, observers, receipt, *, progress=None):
             capture = capture_reset(runtime_directory, case["tool"], env, terminal, render_anchor)
             captures.append(capture)
+            if phase == "probe":
+                return dict(segments=[], stop=None, probe_no_actions=True)
             wrapped = SimpleNamespace(
                 endpoint=capture.wrap_endpoint(observers.endpoint),
                 current=observers.current,
@@ -358,7 +447,7 @@ def worker(phase, index):
             shared["asset_refs"],
             registered_seed=42,
             continuation=continuation,
-            max_control_steps=identity["periods"],
+            max_control_steps=1 if phase == "probe" else identity["periods"],
             progress=progress,
         )
         prefix.require(len(captures) == 1, "One actual endpoint collector is required")
@@ -370,7 +459,7 @@ def worker(phase, index):
         periods = previous.periods(dict(runtime=runtime))
         arrays["sent_commands"] = np.asarray([row["command"] for row in periods], dtype=np.float64).reshape(-1, 7)
         arrays_ref = save_arrays(capture_dir / "actual_trajectory.npz", arrays)
-        if phase == "checker":
+        if phase in ("checker", "probe"):
             checker_isolation()
         return dict(
             complete=True,
@@ -378,7 +467,8 @@ def worker(phase, index):
             case=identity,
             runtime=runtime,
             cv2_admission=cv2_receipt,
-            candidate_modules_unloaded=phase == "checker",
+            candidate_modules_unloaded=phase in ("checker", "probe"),
+            requested_phase=phase,
             arrays_ref=arrays_ref,
             endpoint_receipts=capture.receipts,
             images=capture.images,
@@ -391,12 +481,13 @@ def worker(phase, index):
             fresh_cases=0,
         )
 
-    managed.run_managed_physical_worker(phase=phase, result_path=directory / "result.json", execute=execute)
+    managed.run_managed_physical_worker(
+        phase="checker" if phase == "probe" else phase, result_path=directory / "result.json", execute=execute
+    )
 
 
-def phase_run(phase):
+def preflight():
     prefix.environment()
-    prefix.require(phase in ("producer", "checker"), "One registered physical phase is required")
     qa_ref, dry_ref = prefix.reference(QA), prefix.reference(OUTPUT / "dry.json")
     qa, dry = prefix.read(qa_ref), prefix.read(dry_ref)
     before, sources = snapshot(ROOT)["sources"], source_refs()
@@ -415,6 +506,165 @@ def phase_run(phase):
     prefix.require(
         dry["inputs"] == identity and dry["source_refs"] == sources, "Dry identity and source hashes must match"
     )
+    return config, identity, before, sources, qa_ref, dry_ref
+
+
+def verify_probe_branch(branch, case, timeline):
+    """Check a real reset/image without admitting any selected or replayed action."""
+    runtime = branch["runtime"]
+    counters = runtime["counters"]
+    prefix.require(
+        branch["complete"] is branch["passed"] is runtime["complete"] is runtime["passed"] is True
+        and branch["requested_phase"] == "probe"
+        and branch["candidate_modules_unloaded"] is True
+        and runtime["reset_observation_verified"] is runtime["cleanup_complete"] is True
+        and runtime["continuation"] == dict(segments=[], stop=None, probe_no_actions=True)
+        and runtime["control_steps_attempted"] == runtime["control_steps_completed"] == 0
+        and runtime["newly_selected_commands"] == runtime["world_model_calls"] == branch["fresh_cases"] == 0
+        and counters["mj_step"]["attempted"] == counters["mj_step"]["completed"] == 0
+        and counters["mj_step2"]["attempted"] == counters["mj_step2"]["completed"] == 0
+        and counters["model_construct"]["attempted"] == counters["model_construct"]["completed"] == 3
+        and counters["context"]["attempted"] == counters["context"]["completed"] == 3,
+        "The real probe must close after one reset, one image and zero physical actions",
+    )
+    checked, data = verify_capture(branch, timeline.periods, case["case"]["tool"], timeline)
+    prefix.require(
+        checked["endpoint_count"] == 1
+        and checked["labels_reconstructed"] is False
+        and len(checked["images"]) == 1
+        and data["sent_commands"].shape == (0, 7)
+        and not any(item["full_h40"] for item in checked["anchor_windows"]),
+        "The probe must retain only the measured reset and its current image",
+    )
+    return checked
+
+
+def verify_probe_admission(probe, identity, sources, qa_ref, dry_ref):
+    """Recheck the probe receipt and real image before admitting physical work."""
+    prefix.require(
+        probe["complete"] is probe["passed"] is probe["owner_closed"] is probe["sources_unchanged"] is True
+        and probe["inputs"] == identity
+        and probe["source_refs"] == sources
+        and probe["qa_ref"] == qa_ref
+        and probe["dry_ref"] == dry_ref,
+        "A complete source-matched no-action probe is required",
+    )
+    lifecycle = prefix.read(probe["lifecycle_ref"])
+    prefix.require(
+        lifecycle["launch_error"] is None
+        and len(lifecycle["workers"]) == 1
+        and lifecycle["workers"][0]["key"] == "0"
+        and lifecycle["workers"][0]["returncode"] == 0
+        and lifecycle["workers"][0]["actual_wait"] is lifecycle["workers"][0]["reaped"] is True
+        and lifecycle["workers"][0]["signal_sent"] is False,
+        "The no-action probe worker must be actually reaped",
+    )
+    prefix.checked(lifecycle["workers"][0]["log_ref"])
+    registration = prefix.read(probe["registration_ref"])
+    prefix.require(
+        registration["phase"] == "probe"
+        and registration["eligible_cases"] == [0]
+        and registration["inputs"] == identity
+        and registration["source_refs"] == sources,
+        "The real probe must use the registered training reset and source identities",
+    )
+    branch = prefix.read(probe["branch_ref"])
+    prefix.require(branch["case"] == identity["cases"][0], "The probe must use the original case 0")
+    shared = preparation.shared_inputs()
+    case = preparation.case_inputs(identity["cases"][0]["original_identity"], shared)
+    timeline, metadata, digest = make_timeline(case, identity["cases"][0]["trajectory_ref"], 0.0)
+    prefix.require(
+        metadata == identity["cases"][0]["timeline_metadata"] and digest == identity["cases"][0]["timeline_sha256"],
+        "The probe timeline must match its registered identity",
+    )
+    checked = verify_probe_branch(branch, case, timeline)
+    prefix.require(checked == probe["capture_check"], "The independent probe image check must remain reproducible")
+
+
+def probe_run():
+    config, identity, before, sources, qa_ref, dry_ref = preflight()
+    directory = OUTPUT / "probe"
+    directory.mkdir(parents=True, exist_ok=False)
+    registration_ref = publish_result(
+        directory / "registration.json",
+        dict(
+            phase="probe",
+            inputs=identity,
+            source_refs=sources,
+            qa_ref=qa_ref,
+            dry_ref=dry_ref,
+            eligible_cases=[0],
+            producer_branch_refs={},
+            automatic_retry=False,
+        ),
+    )
+    result = dict(
+        complete=False,
+        passed=False,
+        owner_closed=False,
+        sources_unchanged=False,
+        inputs=identity,
+        source_refs=sources,
+        qa_ref=qa_ref,
+        dry_ref=dry_ref,
+        registration_ref=registration_ref,
+        world_model_calls=0,
+        fresh_cases=0,
+        automatic_retry=False,
+    )
+    try:
+        lifecycle = run_owned_workers(
+            [
+                dict(
+                    key="0",
+                    argv=[sys.executable, "-m", MODULE, "--worker", "probe", "0"],
+                    log=directory / "case00/worker.log",
+                )
+            ],
+            cwd=ROOT,
+            timeout_seconds=config["worker_timeout_seconds"],
+        )
+        for item in lifecycle["workers"]:
+            item["log_ref"] = prefix.reference(item.pop("log"))
+        result["lifecycle_ref"] = publish_result(directory / "workers.json", lifecycle)
+        child = lifecycle["workers"][0] if len(lifecycle["workers"]) == 1 else {}
+        result["owner_closed"] = child.get("actual_wait") is child.get("reaped") is True
+        prefix.require(
+            lifecycle["launch_error"] is None
+            and result["owner_closed"]
+            and child["returncode"] == 0
+            and child["signal_sent"] is False,
+            "The no-action probe worker must close successfully",
+        )
+        result["branch_ref"] = prefix.reference(directory / "case00/worker/result.json")
+        branch = prefix.read(result["branch_ref"])
+        prefix.require(branch["case"] == identity["cases"][0], "Probe case identity must match")
+        shared = preparation.shared_inputs()
+        case = preparation.case_inputs(identity["cases"][0]["original_identity"], shared)
+        timeline, metadata, digest = make_timeline(case, identity["cases"][0]["trajectory_ref"], 0.0)
+        prefix.require(
+            metadata == identity["cases"][0]["timeline_metadata"] and digest == identity["cases"][0]["timeline_sha256"],
+            "The probe timeline must match its registration",
+        )
+        result["capture_check"] = verify_probe_branch(branch, case, timeline)
+        _config, after = load_inputs()
+        result["sources_unchanged"] = (
+            snapshot(ROOT)["sources"] == before and source_refs() == sources and after == identity
+        )
+        result["complete"] = result["passed"] = result["owner_closed"] and result["sources_unchanged"]
+        verify_probe_admission(result, identity, sources, qa_ref, dry_ref)
+    except Exception as error:
+        result.update(complete=False, passed=False, error=dict(type=type(error).__name__, message=str(error)))
+    print(publish_result(directory / "result.json", result), flush=True)
+    if not result["passed"]:
+        raise SystemExit("The registered no-action probe did not pass")
+
+
+def phase_run(phase):
+    prefix.require(phase in ("producer", "checker"), "One registered physical phase is required")
+    config, identity, before, sources, qa_ref, dry_ref = preflight()
+    probe_ref = prefix.reference(OUTPUT / "probe/result.json")
+    verify_probe_admission(prefix.read(probe_ref), identity, sources, qa_ref, dry_ref)
     producer_refs = {}
     eligible = [item["index"] for item in identity["cases"]]
     if phase == "checker":
@@ -436,6 +686,7 @@ def phase_run(phase):
             source_refs=sources,
             qa_ref=qa_ref,
             dry_ref=dry_ref,
+            probe_ref=probe_ref,
             eligible_cases=eligible,
             producer_branch_refs=producer_refs,
             automatic_retry=False,
@@ -719,6 +970,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--dry", action="store_true")
+    group.add_argument("--probe", action="store_true")
     group.add_argument("--phase", choices=("producer", "checker"))
     group.add_argument("--worker", nargs=2, metavar=("PHASE", "CASE"))
     group.add_argument("--audit", action="store_true")
@@ -726,6 +978,8 @@ def main():
     prefix.environment()
     if args.dry:
         print(dry_run(), flush=True)
+    elif args.probe:
+        probe_run()
     elif args.phase:
         phase_run(args.phase)
     elif args.worker:
