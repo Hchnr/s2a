@@ -51,6 +51,9 @@ def solve_staged_first_feasibility(
         for name in ("evaluate", "satisfied", "correction", "describe")
     ):
         raise ValueError("An evaluable first-pose constraint with explicit acceptance is required")
+    constrained_index = getattr(first_pose_constraint, "pose_index", 0)
+    if type(constrained_index) is not int or not 0 <= constrained_index < 8:
+        raise ValueError("The additional pose index must be within the eight-period preview")
     seed, previous, velocity = finite(seed, (8, 6)), finite(previous, (6,)), finite(velocity, (7,))
     lower, upper = finite(lower, (7,)), finite(upper, (7,))
     error = np.zeros((25, 7)) if past_inner_error_rad is None else finite(past_inner_error_rad, (25, 7))
@@ -138,8 +141,15 @@ def solve_staged_first_feasibility(
         item = evaluate(x)
         values, jacobian, errors = pose_quality_constraints(item["score"], 8, scale)
         if first_pose_constraint is not None:
-            extra, extra_jac = first_pose_constraint.evaluate(item["score"], item["rollout"], errors[0], scale)
+            extra, extra_jac = first_pose_constraint.evaluate(
+                item["score"], item["rollout"], errors[constrained_index], scale
+            )
             extra, extra_jac = finite(extra, (2,)), finite(extra_jac, (2, 48))
+            raw_slice = slice(2 * constrained_index, 2 * constrained_index + 2)
+            raw_extra, raw_extra_jac = values[raw_slice].copy(), jacobian[raw_slice].copy()
+            raw_stricter = raw_extra < extra
+            extra = np.minimum(extra, raw_extra)
+            extra_jac = np.where(raw_stricter[:, None], raw_extra_jac, extra_jac)
             stricter = extra < values[:2]
             values[:2] = np.minimum(values[:2], extra)
             jacobian[:2] = np.where(stricter[:, None], extra_jac, jacobian[:2])
@@ -178,7 +188,14 @@ def solve_staged_first_feasibility(
             if (
                 first_position <= 0.01 + 1e-10
                 and first_rotation <= 0.05 + 1e-10
-                and (first_pose_constraint is None or first_pose_constraint.satisfied(errors[0]))
+                and (
+                    first_pose_constraint is None
+                    or (
+                        np.linalg.norm(errors[constrained_index, :3]) <= 0.01 + 1e-10
+                        and np.linalg.norm(errors[constrained_index, 3:]) <= 0.05 + 1e-10
+                        and first_pose_constraint.satisfied(errors[constrained_index])
+                    )
+                )
             ):
                 first_safe.append(row)
         return safe, first_safe, closest
@@ -305,5 +322,8 @@ def solve_staged_first_feasibility(
     )
     if first_pose_constraint is not None:
         base["best_joint_safe"]["additional_first_pose_constraint"] = first_pose_constraint.describe()
-        base["best_joint_safe"]["innovation_corrected_first_tcp_error"] = first_pose_constraint.correction(errors[0])
+        corrected = first_pose_constraint.correction(errors[constrained_index])
+        base["best_joint_safe"]["innovation_corrected_tcp_error"] = corrected
+        if constrained_index == 0:
+            base["best_joint_safe"]["innovation_corrected_first_tcp_error"] = corrected
     return dict(**base, status="staged_first_restoration_candidate")

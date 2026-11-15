@@ -10,14 +10,17 @@ from s2a.research.trajectory_search.innovation_capped_quality_solver import (
 )
 
 
-class CausalFirstPoseConstraint:
-    """Constrain the current first pose using a completed world-frame innovation.
+class CausalPoseConstraint:
+    """Constrain one predicted pose using a completed world-frame innovation.
 
     The caller owns the causality and independent audit of the supplied history.
     A previous discrepancy is an empirical correction, not a future bound.
     """
 
-    def __init__(self, translation, rotation, *, position_cap_m=0.01, rotation_cap_rad=0.05):
+    def __init__(self, translation, rotation, *, pose_index=0, position_cap_m=0.01, rotation_cap_rad=0.05):
+        if type(pose_index) is not int or not 0 <= pose_index < 8:
+            raise ValueError("The constrained pose index must be within the eight-period preview")
+        self.pose_index = pose_index
         self.translation = finite(translation, (3,)).copy()
         self.rotation = finite(rotation, (3, 3)).copy()
         corrected_error(np.zeros(6), self.translation, self.rotation)
@@ -37,9 +40,12 @@ class CausalFirstPoseConstraint:
         raw = finite(raw, (6,))
         scale = finite(scale, (48,))
         weights = np.array([100.0] * 3 + [20.0] * 3)
-        np.testing.assert_allclose(finite(score["residual"], (96,))[:6] / weights, raw, atol=1e-12, rtol=0)
-        raw_jac = finite(score["jacobian"], (96, 48))[:6] * scale[None, :] / weights[:, None]
-        rotation_jac = finite(rollout["rotation_jacobian"], (8, 3, 48))[0] * scale[None, :]
+        start = 12 * self.pose_index
+        np.testing.assert_allclose(
+            finite(score["residual"], (96,))[start : start + 6] / weights, raw, atol=1e-12, rtol=0
+        )
+        raw_jac = finite(score["jacobian"], (96, 48))[start : start + 6] * scale[None, :] / weights[:, None]
+        rotation_jac = finite(rollout["rotation_jacobian"], (8, 3, 48))[self.pose_index] * scale[None, :]
         error = self.correction(raw)
         jac = corrected_error_jacobian(raw, raw_jac, rotation_jac, self.translation, self.rotation)
         values, rows = [], []
@@ -53,9 +59,17 @@ class CausalFirstPoseConstraint:
     def describe(self):
         return {
             "kind": "completed_tcp_innovation",
+            "pose_index": self.pose_index,
             "translation_innovation_m": self.translation.copy(),
             "rotation_discrepancy": self.rotation.copy(),
             "corrected_position_cap_m": self.caps[0],
             "corrected_rotation_cap_rad": self.caps[1],
             "future_guarantee": False,
         }
+
+
+class CausalFirstPoseConstraint(CausalPoseConstraint):
+    """Backward-compatible first-pose correction with fixed index zero."""
+
+    def __init__(self, translation, rotation, *, position_cap_m=0.01, rotation_cap_rad=0.05):
+        super().__init__(translation, rotation, position_cap_m=position_cap_m, rotation_cap_rad=rotation_cap_rad)

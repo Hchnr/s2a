@@ -5,18 +5,19 @@ import pytest
 from scipy.spatial.transform import Rotation
 
 from s2a.research.joint_control.preview.restoration_horizon_feedback import RestorationHorizonSolverAudit
-from s2a.research.trajectory_search.causal_first_pose_constraint import CausalFirstPoseConstraint
+from s2a.research.trajectory_search.causal_first_pose_constraint import CausalFirstPoseConstraint, CausalPoseConstraint
 from s2a.research.trajectory_search.staged_first_feasibility import solve_staged_first_feasibility
 from tests.research.joint_control.preview.test_full_horizon_feedback import solve_and_audit_inputs
 
 
-def test_corrected_constraint_gradient_matches_noncommuting_rotation_differences():
+@pytest.mark.parametrize("pose_index", [0, 1])
+def test_corrected_constraint_gradient_matches_noncommuting_rotation_differences(pose_index):
     target = Rotation.from_euler("xyz", [0.2, -0.4, 0.3])
     predicted = Rotation.from_euler("xyz", [-0.3, 0.15, 0.25])
     rotation_jac = np.array([[0.3, -0.2, 0.1], [0.1, 0.4, -0.3], [-0.2, 0.1, 0.5]])
     position_jac = np.array([[0.1, 0.2, 0], [-0.2, 0.1, 0.1], [0, -0.1, 0.2]])
-    constraint = CausalFirstPoseConstraint(
-        [0.002, -0.004, 0.003], Rotation.from_euler("xyz", [0.1, 0.07, -0.08]).as_matrix()
+    constraint = CausalPoseConstraint(
+        [0.002, -0.004, 0.003], Rotation.from_euler("xyz", [0.1, 0.07, -0.08]).as_matrix(), pose_index=pose_index
     )
 
     def raw(x):
@@ -27,10 +28,11 @@ def test_corrected_constraint_gradient_matches_noncommuting_rotation_differences
     raw_jac = np.column_stack([(raw(np.eye(3)[i] * step) - raw(-np.eye(3)[i] * step)) / (2 * step) for i in range(3)])
     weights, scale = np.array([100.0] * 3 + [20.0] * 3), np.linspace(0.5, 1.5, 48)
     score = {"residual": np.zeros(96), "jacobian": np.zeros((96, 48))}
-    score["residual"][:6] = raw(np.zeros(3)) * weights
-    score["jacobian"][:6, :3] = raw_jac * weights[:, None] / scale[None, :3]
+    rows = slice(12 * pose_index, 12 * pose_index + 6)
+    score["residual"][rows] = raw(np.zeros(3)) * weights
+    score["jacobian"][rows, :3] = raw_jac * weights[:, None] / scale[None, :3]
     rollout = {"rotation_jacobian": np.zeros((8, 3, 48))}
-    rollout["rotation_jacobian"][0, :, :3] = rotation_jac / scale[None, :3]
+    rollout["rotation_jacobian"][pose_index, :, :3] = rotation_jac / scale[None, :3]
     values, derivative = constraint.evaluate(score, rollout, raw(np.zeros(3)), scale)
 
     def corrected_values(x):
@@ -75,8 +77,40 @@ def test_impossible_completed_innovation_never_becomes_a_candidate():
     assert result["response_evaluations"] <= 320
 
 
+def test_second_pose_constraint_is_hard_and_independently_checked():
+    args, audit_args, targets = solve_and_audit_inputs()
+    targets[1, 0, 3] += 0.02
+    constraint = CausalPoseConstraint([0.001, -0.001, 0], np.eye(3), pose_index=1, position_cap_m=0.009)
+
+    def constrained(*args, **kwargs):
+        return solve_staged_first_feasibility(*args, first_pose_constraint=constraint, **kwargs)
+
+    adapter = RestorationHorizonSolverAudit(solver=constrained)
+    witness = adapter.solve(*args)
+    assert witness["witness_found"] is True
+    checked = adapter.audit(witness, *audit_args, past_inner_error_rad=np.zeros((25, 7)))
+    assert checked["passed"] and checked["first_pose_caps_satisfied"]
+    assert np.linalg.norm(checked["tcp_errors"][1, :3]) <= 0.01 + 1e-10
+    assert np.linalg.norm(checked["tcp_errors"][1, 3:]) <= 0.05 + 1e-10
+    assert constraint.satisfied(checked["tcp_errors"][1])
+    np.testing.assert_allclose(
+        constraint.correction(checked["tcp_errors"][1]), witness["innovation_corrected_tcp_error"], atol=1e-10, rtol=0
+    )
+
+
+def test_second_pose_raw_limit_remains_hard_even_if_innovation_cancels_the_error():
+    args, _audit_args, targets = solve_and_audit_inputs()
+    targets[1, 0, 3] += 1.0
+    constraint = CausalPoseConstraint([-1, 0, 0], np.eye(3), pose_index=1)
+    result = solve_staged_first_feasibility(*args, first_pose_constraint=constraint)
+    assert "best_joint_safe" not in result
+    assert result["response_evaluations"] <= 320
+
+
 def test_invalid_correction_cannot_weaken_original_pose_caps():
     with pytest.raises(ValueError, match="no larger than the original caps"):
         CausalFirstPoseConstraint(np.zeros(3), np.eye(3), position_cap_m=0.02)
     with pytest.raises(ValueError, match="proper world-frame SO\(3\)"):
         CausalFirstPoseConstraint(np.zeros(3), np.zeros((3, 3)))
+    with pytest.raises(ValueError, match="pose index"):
+        CausalPoseConstraint(np.zeros(3), np.eye(3), pose_index=8)

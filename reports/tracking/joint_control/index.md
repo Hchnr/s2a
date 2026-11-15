@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[提前预览的因果反馈物理对照](anticipatory_causal_physical_20261113.md) · [相同状态静态预览](anticipatory_causal_pose_20261113.md)
+
 最新：[因果补偿位置在冻结模型中的外界](causal_position_reachability_20261113.md)
 
 最新：[因果补偿首点优先搜索](causal_first_pose_search_20261113.md)
