@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[正确参考矩阵的物体轨迹与控制差异诊断](correct_reference_failure_diagnosis_20261116.md)
+
 近期：[统一候选的完整 18 条正确参考正控](reset_correct_reference_cohort_20261116.md)
 
 近期：[提前预览的两周期物理对照](anticipatory_causal_physical_20261113.md)
