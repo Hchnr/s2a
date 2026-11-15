@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/response_models
 
+近期：[动作条件 TCP 残差的因果回顾](action_conditioned_tcp_residual_20261116.md)
+
 本页导航原始文件；正文、配置值和历史身份保持。目录迁移不改变实验或控制资格。
 
 [当前状态](../../../../docs/status.md) · [研究索引](../../../../docs/research_index.md) · [路径与身份](../../../../docs/migrations/repository_layout_20261029.json)
