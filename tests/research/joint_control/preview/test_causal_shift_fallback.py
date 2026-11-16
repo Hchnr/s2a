@@ -31,6 +31,42 @@ def attach_completed(adapter, seed, previous):
     return history
 
 
+def test_shifted_plan_can_be_evaluated_without_claiming_a_search_result():
+    args, audit_args, targets = solve_and_audit_inputs()
+    targets[1, 0, 3] += 0.1
+    adapter = fallback.CausalShiftFallbackAudit({}, solver=lambda *_a, **_kw: no_witness())
+    history = attach_completed(adapter, args[2], args[3])
+    shifted, events = history.shifted(8), []
+    evaluation_args = list(args)
+    evaluation_args[2] = shifted
+    del evaluation_args[8]  # The one-point evaluation does not consume target twists.
+    result = fallback.evaluate_shifted_plan(
+        *evaluation_args, past_inner_error_rad=np.zeros((25, 7)), on_rollout=lambda: events.append("attempted")
+    )
+    assert events == ["attempted"]
+    assert result["trace"]["fallback_status"] == "first_pose_candidate"
+    assert "response_evaluations" not in result["candidate"]
+    witness = adapter.solve(*args, past_inner_error_rad=np.zeros((25, 7)))
+    np.testing.assert_array_equal(result["candidate"]["planned_commands"], witness["planned_commands"])
+    np.testing.assert_allclose(result["candidate"]["tcp_errors"], witness["tcp_errors"], atol=0, rtol=0)
+    checked = adapter.audit(witness, *audit_args, past_inner_error_rad=np.zeros((25, 7)))
+    assert checked["passed"] and checked["braking_constraint_satisfied"]
+
+
+def test_shifted_plan_rejects_rate_violation_before_a_model_response():
+    args, _audit_args, _targets = solve_and_audit_inputs()
+    evaluation_args = list(args)
+    evaluation_args[2] = np.tile([0.5, 0, 0, 0.001, 0, 0], (8, 1))
+    del evaluation_args[8]
+    events = []
+    result = fallback.evaluate_shifted_plan(
+        *evaluation_args, past_inner_error_rad=np.zeros((25, 7)), on_rollout=lambda: events.append("attempted")
+    )
+    assert result["candidate"] is None
+    assert result["trace"]["fallback_status"] == "command_or_latch_rejected"
+    assert result["trace"]["fallback_rollouts"] == 0 and events == []
+
+
 def test_completed_shift_can_pass_first_pose_with_bad_second_pose():
     args, audit_args, targets = solve_and_audit_inputs()
     targets[1, 0, 3] += 0.1
