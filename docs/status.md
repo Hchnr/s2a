@@ -10,6 +10,11 @@ CPU/OSMesa 使用空 CUDA/LD。此前用户曾允许当前容器可见的四张�
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 seed-first 从 reset 执行原 18 条正确参考，独立重放后综合 16/18，
+18 条的动作、状态和停止与原缓存 seed 方案一致；全策略 select 中位 63 ms，
+不证明 20 Hz。case 07 早停、case 12 任务失败仍未解决，见
+[完整对照](../reports/tracking/joint_control/fast_seed_cohort_20261116.md)。
+
 2026-11-16 seed-first 搜索在三个保存开发状态上与完整缓存搜索的计划和模型
 展开一致，12 次独立审核通过；新路径搜索约 10 ms，不含 preview、审核及
 物理，尚无实时或完整控制资格，见[固定状态对照](../reports/tracking/joint_control/fast_seed_search_20261116.md)。

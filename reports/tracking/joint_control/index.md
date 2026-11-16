@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[seed-first 的完整正确参考对照：16/18](fast_seed_cohort_20261116.md)
+
 最新：[优先审核原 seed 的固定状态对照](fast_seed_search_20261116.md)
 
 最新：[seed-first 零求解预检失败](fast_seed_search_dry_incident_20261116.md)
