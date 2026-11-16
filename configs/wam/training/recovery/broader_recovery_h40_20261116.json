@@ -1,0 +1,59 @@
+{
+  "schema": "s2a.broader-recovery-h40.v1",
+  "output": "outputs/broader_recovery_h40_20261116",
+  "recovery_audit": {
+    "path": "outputs/broader_recovery_pilot_20261116/audit.json",
+    "sha256": "16d8c1250690b540b3d7230df329ec4b00aee23770033cfa3ded0c68fcb1847f"
+  },
+  "training_preparation": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/preparation/prepared.json",
+    "sha256": "e6fab51219fba6d108bd6b858f2467a9a0e54c5fc22890f8abd7c318742f8e54"
+  },
+  "normalization": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/capture/D0/normalization.json",
+    "sha256": "9eb7fb8b9885958d8b947fd20727ae301813df068ec3dcaf1c3d8865180fedd9"
+  },
+  "d0_capture": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/capture/D0/result.json",
+    "sha256": "d23b31eb9e40f9f3e8f22571399d164d8980ba3f4d75b10876d740edd52b7dae"
+  },
+  "validation_preflight": {
+    "path": "outputs/synchronous_validation_preparation_20261024/source_identity_preflight.json",
+    "sha256": "c435cd2c9da5521caea2a0916033312a17a0f9e53351814c16e6759e5a7b0d3d"
+  },
+  "validation_prepared": {
+    "path": "outputs/synchronous_validation_20261024/prepared.json",
+    "sha256": "ba343c86753e56d20364e20f776d7983d6d475494753dbdfbead7cf9e75f23ad"
+  },
+  "validation_verified": {
+    "path": "outputs/synchronous_validation_20261024/verified.json",
+    "sha256": "abe0a9982fa54c6a8425c90933d60c19fa667d129ee87a2707e6ddf1bf50a6d8"
+  },
+  "coverage_audit": {
+    "path": "outputs/broader_recovery_coverage_20261116/result.json",
+    "sha256": "b4f3c19f922c5f886ed6bd3dc19c6d7e16aacb8936a090b09df475fda317f920"
+  },
+  "coverage_independent": {
+    "path": "outputs/broader_recovery_coverage_20261116/independent.json",
+    "sha256": "ba4450000ef8732df9b67b38c253fc8e771111c353efda097ba1eecb6a629966"
+  },
+  "case_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+  "anchor_steps": [0, 16, 56],
+  "horizon": 40,
+  "seed": 42,
+  "control_dt_s": 0.05,
+  "source_groups": 6,
+  "registered_cases": 24,
+  "window_count": 72,
+  "window_label_rows": 2880,
+  "unique_case_transition_rows": 2304,
+  "pointwise_exception_cases": [13],
+  "opening_below": 0.35,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "physical_steps": 0,
+  "fits": 0,
+  "fresh_cases": 0,
+  "training_authorized": false,
+  "automatic_retry": false
+}
