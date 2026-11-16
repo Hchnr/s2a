@@ -1,5 +1,7 @@
 # 冻结配置：configs/tracking/joint_control
 
+近期：[seed 排序的共同状态首次分歧诊断](seed_policy_first_difference_20261116.json)
+
 近期：[seed-first 完整正确参考对照](fast_seed_cohort_20261116.json)
 
 近期：[优先审核原 seed 的有限计算对照](fast_seed_search_20261116.json)
