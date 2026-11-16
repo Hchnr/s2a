@@ -1,5 +1,7 @@
 # 研究报告：reports/tracking/joint_control
 
+最新：[两种 seed 排序的已执行端点接触与放置](seed_policy_contact_reconstruction_20261116.md)
+
 最新：[接触重建首次专项检查失败](seed_policy_contact_qa_incident_20261116.md)
 
 最新：[seed 排序共同状态的首次分歧](seed_policy_first_difference_20261116.md)

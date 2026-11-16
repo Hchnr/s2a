@@ -10,6 +10,11 @@ CPU/OSMesa 使用空 CUDA/LD。此前用户曾允许当前容器可见的四张�
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 两种 seed 排序的 9,458 个已执行端点完成静态接触重建与独立
+标签复核。case 12 末 40 个端点两组均接触 rack，但失败组在原生目标区域
+外约 2.339 mm、成功组在内约 4.183 mm；物体真值仅用于离线诊断，见
+[接触与放置报告](../reports/tracking/joint_control/seed_policy_contact_reconstruction_20261116.md)。
+
 2026-11-16 对 seed-first 与有界 seed 的 18 条重放记录比较首次分歧：共同
 实际前缀一致，两个最终结果发生变化的类别在 seed 预测 slack 上交叠，
 不能以一个 slack 阈值完全区分这五个非盲案例。见[分歧诊断](../reports/tracking/joint_control/seed_policy_first_difference_20261116.md)。
