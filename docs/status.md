@@ -10,6 +10,10 @@ CPU/OSMesa 使用空 CUDA/LD。此前用户曾允许当前容器可见的四张�
 `(#PR号)` 并核对远端关联；不直接向 `main` 推送提交。根 `AGENTS.md` 为迁移
 清单固定字节，此约定记录于当前状态文档。
 
+2026-11-16 对 seed-first 与有界 seed 的 18 条重放记录比较首次分歧：共同
+实际前缀一致，两个最终结果发生变化的类别在 seed 预测 slack 上交叠，
+不能以一个 slack 阈值完全区分这五个非盲案例。见[分歧诊断](../reports/tracking/joint_control/seed_policy_first_difference_20261116.md)。
+
 2026-11-16 seed-first 从 reset 执行原 18 条正确参考，独立重放后综合 16/18，
 18 条的动作、状态和停止与原缓存 seed 方案一致；全策略 select 中位 63 ms，
 不证明 20 Hz。case 07 早停、case 12 任务失败仍未解决，见
