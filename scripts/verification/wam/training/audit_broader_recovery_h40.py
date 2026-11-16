@@ -118,7 +118,7 @@ def training_source(case, prepared):
 
 def command_counts(values):
     values, counts = np.unique(np.asarray(values, dtype=np.float64), return_counts=True)
-    return {str(float(value)): int(count) for value, count in zip(values, counts, strict=True)}
+    return {str(0.0 if value == 0 else float(value)): int(count) for value, count in zip(values, counts, strict=True)}
 
 
 def state_pair_hashes(states, indices):
