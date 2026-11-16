@@ -1,5 +1,7 @@
 # 冻结配置：configs/tracking/joint_control
 
+近期：[seed-first 完整正确参考对照](fast_seed_cohort_20261116.json)
+
 近期：[优先审核原 seed 的有限计算对照](fast_seed_search_20261116.json)
 
 近期：[已评价候选中靠近 seed 的有界排序](nearest_bounded_seed_20261116.json)
