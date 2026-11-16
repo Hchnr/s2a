@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [六源恢复候选数据与标签表示限制](recovery_candidate_data_20261116.md) | 当前目录 |
 | [多训练 demo 的事件前真实当前图像](broader_event_images_20261116.md) | 当前目录 |
 | [多训练 demo 恢复事件与候选图像](broader_recovery_events_20261116.md) | 当前目录 |
 | [多训练 demo 恢复轨迹的 H40 数据合同](broader_recovery_h40_20261116.md) | 当前目录 |
