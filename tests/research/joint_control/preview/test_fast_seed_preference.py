@@ -106,3 +106,16 @@ def test_invalid_completed_inner_error_is_not_hidden_by_early_selection():
     with pytest.raises(ValueError, match="nonnegative completed inner error"):
         solve_fast_preferred_seed(*args, past_inner_error_rad=history, on_response=events.append)
     assert events == ["attempted", "completed"]
+
+
+def test_callback_failure_does_not_change_the_original_solver_globals():
+    args, _audit_args, _targets = solve_and_audit_inputs()
+    old_isolator, old_selector = shared.isolated_margin_solver, margin.select_evaluated_margin_candidate
+
+    def fail(event):
+        if event == "completed":
+            raise RuntimeError("response callback failed")
+
+    with pytest.raises(RuntimeError, match="response callback failed"):
+        solve_fast_preferred_seed(*args, on_response=fail)
+    assert shared.isolated_margin_solver is old_isolator and margin.select_evaluated_margin_candidate is old_selector
