@@ -17,6 +17,89 @@ from s2a.research.trajectory_search.guarded_two_step_search import (
 )
 
 
+def evaluate_shifted_plan(
+    model,
+    velocity,
+    shifted,
+    previous,
+    interface,
+    site,
+    tool,
+    targets,
+    lower,
+    upper,
+    *,
+    past_inner_error_rad,
+    terminal_normals=None,
+    on_rollout=None,
+    rollout=None,
+):
+    """Evaluate one completed-plan shift without selecting or dispatching it.
+
+    The caller is responsible for establishing that the plan was completed,
+    charging the rollout, and independently auditing any returned candidate.
+    No two-point search outcome is inferred from this evaluation.
+    """
+    shifted, previous = finite(shifted, (8, 6)), finite(previous, (6,))
+    targets = finite(targets, (8, 4, 4))
+    lower, upper = finite(lower, (7,)), finite(upper, (7,))
+    trace = dict(fallback_rollouts=0)
+    if (
+        np.any(shifted < interface.input_min - 1e-12)
+        or np.any(shifted > interface.input_max + 1e-12)
+        or np.max(abs(np.diff(np.vstack((previous, shifted)), axis=0))) > 0.25 + 1e-12
+        or np.any(np.all(np.asarray([interface.decode(row) for row in shifted])[:, 3:] == 0, axis=1))
+    ):
+        trace["fallback_status"] = "command_or_latch_rejected"
+        return dict(candidate=None, trace=trace)
+    if np.min(np.minimum(model["q"] - lower, upper - model["q"])) < 0.05 - 1e-12:
+        trace["fallback_status"] = "initial_joint_buffer_rejected"
+        return dict(candidate=None, trace=trace)
+    profile = finite(past_inner_error_rad, (25, 7))
+    if on_rollout is not None:
+        on_rollout()
+    trace.update(fallback_status="rollout_attempted", fallback_rollouts=1)
+    response = (rollout or rollout_joint_preview)(
+        model,
+        velocity,
+        np.asarray([interface.decode(row) for row in shifted]),
+        site,
+        lower,
+        upper,
+        enforce_limits=False,
+    )
+    domain = linear_domain(
+        model, shifted, previous, interface, lower, upper, profile, response, terminal_normals=terminal_normals
+    )
+    safety = domain_check(shifted, domain, interface)
+    errors = np.asarray(
+        [pose_error(target, pose @ tool) for target, pose in zip(targets, response["pose"], strict=True)]
+    )
+    pos, rot = np.linalg.norm(errors[:, :3], axis=1), np.linalg.norm(errors[:, 3:], axis=1)
+    first_ok = bool(pos[0] <= 0.01 + 1e-10 and rot[0] <= 0.05 + 1e-10)
+    trace.update(
+        fallback_safety=safety,
+        fallback_first_two_tcp_errors=errors[:2].copy(),
+        fallback_first_pose_caps_satisfied=first_ok,
+    )
+    if not safety["accepted"] or not first_ok:
+        trace["fallback_status"] = "model_safety_or_first_pose_rejected"
+        return dict(candidate=None, trace=trace)
+    gap = max(0.0, float(np.max(np.r_[pos / 0.01 - 1, rot / 0.05 - 1])))
+    candidate = dict(
+        witness_found=True,
+        status="shifted_first_pose_candidate",
+        planned_commands=shifted.copy(),
+        rollout=response,
+        first_tcp_error=errors[0].copy(),
+        tcp_errors=errors,
+        terminal_normals=domain["terminal_normals"],
+        quality_slack=gap,
+    )
+    trace["fallback_status"] = "first_pose_candidate"
+    return dict(candidate=candidate, trace=trace)
+
+
 class CausalShiftFallbackAudit:
     """Audit the primary pair, or a completed shifted plan's first pose.
 
@@ -144,67 +227,33 @@ class CausalShiftFallbackAudit:
         if shifted is None:
             trace["fallback_status"] = "no_completed_plan"
             return dict(witness_found=False, status="two_step_no_witness", response_evaluations=count)
-        lower, upper = finite(lower, (7,)), finite(upper, (7,))
-        if (
-            np.any(shifted < interface.input_min - 1e-12)
-            or np.any(shifted > interface.input_max + 1e-12)
-            or np.max(abs(np.diff(np.vstack((previous, shifted)), axis=0))) > 0.25 + 1e-12
-            or np.any(np.all(np.asarray([interface.decode(row) for row in shifted])[:, 3:] == 0, axis=1))
-        ):
-            trace["fallback_status"] = "command_or_latch_rejected"
-            return dict(witness_found=False, status="two_step_no_witness", response_evaluations=count)
-        if np.min(np.minimum(model["q"] - lower, upper - model["q"])) < 0.05 - 1e-12:
-            trace["fallback_status"] = "initial_joint_buffer_rejected"
-            return dict(witness_found=False, status="two_step_no_witness", response_evaluations=count)
-        profile = finite(kwargs.get("past_inner_error_rad"), (25, 7))
-        trace.update(fallback_status="rollout_attempted", fallback_rollouts=1, response_evaluations=count + 1)
-        rollout = rollout_joint_preview(
+
+        def charge_rollout():
+            trace.update(fallback_status="rollout_attempted", fallback_rollouts=1, response_evaluations=count + 1)
+
+        assessment = evaluate_shifted_plan(
             model,
             velocity,
-            np.asarray([interface.decode(row) for row in shifted]),
-            site,
-            lower,
-            upper,
-            enforce_limits=False,
-        )
-        domain = linear_domain(
-            model,
             shifted,
             previous,
             interface,
+            site,
+            tool,
+            targets,
             lower,
             upper,
-            profile,
-            rollout,
+            past_inner_error_rad=kwargs.get("past_inner_error_rad"),
             terminal_normals=kwargs.get("terminal_normals"),
+            on_rollout=charge_rollout,
+            rollout=rollout_joint_preview,
         )
-        safety = domain_check(shifted, domain, interface)
-        errors = np.asarray(
-            [pose_error(target, pose @ tool) for target, pose in zip(targets, rollout["pose"], strict=True)]
-        )
-        pos, rot = np.linalg.norm(errors[:, :3], axis=1), np.linalg.norm(errors[:, 3:], axis=1)
-        first_ok = bool(pos[0] <= 0.01 + 1e-10 and rot[0] <= 0.05 + 1e-10)
-        trace.update(
-            fallback_safety=safety,
-            fallback_first_two_tcp_errors=errors[:2].copy(),
-            fallback_first_pose_caps_satisfied=first_ok,
-        )
-        if not safety["accepted"] or not first_ok:
-            trace["fallback_status"] = "model_safety_or_first_pose_rejected"
-            return dict(witness_found=False, status="two_step_no_witness", response_evaluations=count + 1)
-        gap = max(0.0, float(np.max(np.r_[pos / 0.01 - 1, rot / 0.05 - 1])))
-        selected = dict(
-            witness_found=True,
-            status="shifted_first_pose_candidate",
-            response_evaluations=count + 1,
-            planned_commands=shifted,
-            rollout=rollout,
-            first_tcp_error=errors[0].copy(),
-            tcp_errors=errors,
-            terminal_normals=domain["terminal_normals"],
-            quality_slack=gap,
-        )
-        trace.update(fallback_status="first_pose_candidate", selected_scope="first_only", audit_status="pending")
+        trace.update(assessment["trace"])
+        if assessment["candidate"] is None:
+            return dict(
+                witness_found=False, status="two_step_no_witness", response_evaluations=trace["response_evaluations"]
+            )
+        selected = dict(assessment["candidate"], response_evaluations=trace["response_evaluations"])
+        trace.update(selected_scope="first_only", audit_status="pending")
         self._pending = (selected, targets, trace)
         return selected
 
