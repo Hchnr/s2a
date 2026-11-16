@@ -1,5 +1,7 @@
 # 冻结配置：configs/tracking/joint_control
 
+近期：[接触及目标条件的独立复核](seed_policy_contact_independent_audit_20261116.json)
+
 近期：[seed 排序已执行端点接触重建](seed_policy_contact_reconstruction_20261116.json)
 
 近期：[seed 排序的共同状态首次分歧诊断](seed_policy_first_difference_20261116.json)
