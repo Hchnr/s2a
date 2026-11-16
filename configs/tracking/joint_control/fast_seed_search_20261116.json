@@ -1,0 +1,23 @@
+{
+  "schema": "s2a.fast-seed-search.v1",
+  "output": "outputs/fast_seed_search_20261116",
+  "seed": 42,
+  "source_profile": {
+    "path": "outputs/quality_solver_runtime_profile_20261111/result.json",
+    "sha256": "12271b66e24e546702626bc884e0be294571d3411415312e4151c2e2b7952d0f"
+  },
+  "steps": [352, 355, 359],
+  "repetitions_per_solver": 2,
+  "solver_calls": 12,
+  "max_responses_per_call": 320,
+  "max_responses": 3840,
+  "max_independent_audits": 12,
+  "past_inner_error": "zero_diagnostic_only",
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "physical_steps": 0,
+  "fits": 0,
+  "fresh_cases": 0,
+  "physical_qualification": false,
+  "automatic_retry": false
+}
