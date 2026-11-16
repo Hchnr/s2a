@@ -1,0 +1,20 @@
+{
+  "schema": "s2a.seed-policy-contact-independent-audit.v1",
+  "output": "outputs/seed_policy_contact_independent_audit_20261116",
+  "reconstruction": {
+    "path": "outputs/seed_policy_contact_reconstruction_20261116/result.json",
+    "sha256": "498b3d32cb40e1aa65b61e27c1ca091472b4a5bbab07e8b12dbda44c937ee00d"
+  },
+  "cases": 18,
+  "endpoints": 9458,
+  "max_workers": 18,
+  "worker_timeout_seconds": 1200,
+  "tolerance": 1e-10,
+  "models": 0,
+  "forwards": 0,
+  "physics_steps": 0,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

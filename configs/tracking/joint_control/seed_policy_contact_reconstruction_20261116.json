@@ -1,0 +1,36 @@
+{
+  "schema": "s2a.seed-policy-contact-reconstruction.v1",
+  "output": "outputs/seed_policy_contact_reconstruction_20261116",
+  "fast_cohort_audit": {
+    "path": "outputs/fast_seed_cohort_20261116/audit.json",
+    "sha256": "bc0cc238fc48707c7629bc5248b40f1c5f2083a57c3e09be2a83e838f9a7f103"
+  },
+  "bounded_cohort_audit": {
+    "path": "outputs/bounded_seed_preference_20261116/audit.json",
+    "sha256": "efebb7ae26d844e3caaadaf33f5038ac6ff96b819fe6f018d5cf42b40954c42f"
+  },
+  "first_difference_audit": {
+    "path": "outputs/seed_policy_first_difference_20261116/result.json",
+    "sha256": "5b9505f95cf2b10d952a99c8ab6a0f8e14f5f7cc072ee5dc59a7faf796c080c4"
+  },
+  "object_mapping_audit": {
+    "path": "outputs/correct_reference_failure_diagnosis_20261116/result.json",
+    "sha256": "fb37341ecfae367a5e8b7c3ace7c6b64b1d82541311675b857f159767945d897"
+  },
+  "candidate_cases": 18,
+  "fast_saved_endpoints": 4778,
+  "bounded_saved_endpoints": 4680,
+  "max_workers": 18,
+  "max_models": 18,
+  "max_data": 18,
+  "max_forwards": 9458,
+  "state_tolerance": 1e-10,
+  "tcp_tolerance_m": 1e-9,
+  "worker_timeout_seconds": 1800,
+  "physics_steps": 0,
+  "render_contexts": 0,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}
