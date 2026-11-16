@@ -1,5 +1,9 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[seed-first 零求解预检修复](fast_seed_search_dry_repair_20261116.md)
+
+近期：[优先审核原 seed 的有限计算对照](fast_seed_search_20261116.md)
+
 近期：[已评价候选中靠近 seed 的有界排序](nearest_bounded_seed_20261116.md)
 
 近期：[缓存 seed 未来质量增量上限对照](bounded_seed_preference_20261116.md)
