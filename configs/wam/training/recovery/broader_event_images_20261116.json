@@ -1,0 +1,55 @@
+{
+  "schema": "s2a.broader-event-images.v1",
+  "output": "outputs/broader_event_images_20261116",
+  "recovery_audit": {
+    "path": "outputs/broader_recovery_pilot_20261116/audit.json",
+    "sha256": "16d8c1250690b540b3d7230df329ec4b00aee23770033cfa3ded0c68fcb1847f"
+  },
+  "h40_audit": {
+    "path": "outputs/broader_recovery_h40_20261116/result.json",
+    "sha256": "ca4c9d8910be0949ed877072bcfe8f03d598760108d4ff1ee57f035565625ba4"
+  },
+  "h40_independent": {
+    "path": "outputs/broader_recovery_h40_20261116/independent.json",
+    "sha256": "b709aecdc9afdaf36991d03af3b29ed312d6d6f6c99b2e5eccecd7c0e36edd5a"
+  },
+  "event_audit": {
+    "path": "outputs/broader_recovery_events_20261116/result.json",
+    "sha256": "8d3b4878a7e3ecf2a597e5e8f5296deed7e624422816df871de96327b5d9e48b"
+  },
+  "event_independent": {
+    "path": "outputs/broader_recovery_events_20261116/independent.json",
+    "sha256": "9a98f535fb3524e55e4d0fa3bae10cae284863d447d900f4a63b4a0266d20ee3"
+  },
+  "event_union": {
+    "path": "outputs/broader_recovery_events_20261116/union.json",
+    "sha256": "b46077c35855bd7785cbb0444d6768e50cec98b0f88541a226032fce773bee60"
+  },
+  "normalization": {
+    "path": "outputs/wam_stability_20261021/clean_residual_training_20261023/recovery_20261023/capture/D0/normalization.json",
+    "sha256": "9eb7fb8b9885958d8b947fd20727ae301813df068ec3dcaf1c3d8865180fedd9"
+  },
+  "case_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+  "anchors_by_case": [[89, 118], [89, 118], [89, 118], [89, 118], [90, 121], [90, 121], [90, 121], [90, 121], [136, 202], [136, 202], [136, 202], [136, 202], [167], [167], [167], [167], [145], [145], [145], [145], [135], [135], [135], [135]],
+  "horizon": 40,
+  "seed": 42,
+  "probe_cases": [0],
+  "max_probe_control_periods": 0,
+  "max_probe_inner_steps": 0,
+  "max_probe_models": 3,
+  "max_probe_contexts": 3,
+  "max_workers": 24,
+  "max_replay_control_periods": 3552,
+  "max_replay_inner_steps": 88800,
+  "max_replay_models": 72,
+  "max_replay_contexts": 72,
+  "max_saved_event_images": 36,
+  "max_unsaved_camera_reads": 456,
+  "worker_timeout_seconds": 3600,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "fits": 0,
+  "fresh_cases": 0,
+  "training_authorized": false,
+  "automatic_retry": false
+}
