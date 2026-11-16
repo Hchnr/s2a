@@ -6,6 +6,7 @@
 
 | 文件 | 原声明路径 |
 | --- | --- |
+| [多训练 demo 恢复事件与候选图像](broader_recovery_events_20261116.md) | 当前目录 |
 | [多训练 demo 恢复轨迹的 H40 数据合同](broader_recovery_h40_20261116.md) | 当前目录 |
 | [多 demo 恢复状态与旧 WAM 请求的覆盖](broader_recovery_coverage_20261116.md) | 当前目录 |
 | [六个训练初态上的较大平移与姿态恢复正控](broader_recovery_pilot_20261116.md) | 当前目录 |
