@@ -1,0 +1,22 @@
+{
+  "schema": "s2a.seed-policy-first-difference.v1",
+  "output": "outputs/seed_policy_first_difference_20261116",
+  "fast_cohort_audit": {
+    "path": "outputs/fast_seed_cohort_20261116/audit.json",
+    "sha256": "bc0cc238fc48707c7629bc5248b40f1c5f2083a57c3e09be2a83e838f9a7f103"
+  },
+  "bounded_cohort_audit": {
+    "path": "outputs/bounded_seed_preference_20261116/audit.json",
+    "sha256": "efebb7ae26d844e3caaadaf33f5038ac6ff96b819fe6f018d5cf42b40954c42f"
+  },
+  "cases": 18,
+  "max_workers": 18,
+  "tolerance": 1e-10,
+  "worker_timeout_seconds": 1200,
+  "physics_steps": 0,
+  "model_responses": 0,
+  "world_model_calls": 0,
+  "gpu_calls": 0,
+  "fresh_cases": 0,
+  "automatic_retry": false
+}

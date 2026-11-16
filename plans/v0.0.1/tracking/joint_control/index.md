@@ -1,5 +1,7 @@
 # 研究计划：plans/v0.0.1/tracking/joint_control
 
+近期：[seed 排序的共同状态首次分歧诊断](seed_policy_first_difference_20261116.md)
+
 近期：[seed-first 完整正确参考对照](fast_seed_cohort_20261116.md)
 
 近期：[seed-first 零求解预检修复](fast_seed_search_dry_repair_20261116.md)
