@@ -89,3 +89,10 @@ def test_frozen_config_rejects_changed_budget_or_source():
     changed["source_profile"]["sha256"] = "0" * 64
     with pytest.raises(ValueError, match="fixed three-state"):
         run.validate_config(changed)
+
+
+def test_actual_profile_and_comparison_config_identities_do_not_alias():
+    config, identity, inputs = run.load_inputs()
+    assert config["steps"] == [352, 355, 359]
+    assert identity["comparison_config_ref"] != identity["profile_inputs"]["config_ref"]
+    assert identity["profile_inputs"]["sample_fingerprints"] == run.binding.input_receipt(inputs)["sample_fingerprints"]

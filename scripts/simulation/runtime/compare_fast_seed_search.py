@@ -25,9 +25,12 @@ from scripts.simulation.runtime import replay_multicase_development_prefix as pr
 ROOT = prefix.REPO
 CONFIG = ROOT / "configs/tracking/joint_control/fast_seed_search_20261116.json"
 PLAN = ROOT / "plans/v0.0.1/tracking/joint_control/fast_seed_search_20261116.md"
+REPAIR_PLAN = ROOT / "plans/v0.0.1/tracking/joint_control/fast_seed_search_dry_repair_20261116.md"
+INCIDENT = ROOT / "reports/tracking/joint_control/fast_seed_search_dry_incident_20261116.md"
+FAILURE = ROOT / "outputs/fast_seed_search_dry_failure_20261116.json"
 OUTPUT = ROOT / "outputs/fast_seed_search_20261116"
-DRY = ROOT / "outputs/fast_seed_search_dry_20261116.json"
-QA = ROOT / "outputs/qa/fast_seed_search_final_20261116/result.json"
+DRY = ROOT / "outputs/fast_seed_search_dry_v2_20261116.json"
+QA = ROOT / "outputs/qa/fast_seed_search_final_v2_20261116/result.json"
 MODULE = "scripts.simulation.runtime.compare_fast_seed_search"
 
 
@@ -66,6 +69,8 @@ def source_refs():
         for path in (
             CONFIG,
             PLAN,
+            REPAIR_PLAN,
+            INCIDENT,
             Path(__file__).resolve(),
             ROOT / "src/s2a/research/joint_control/preview/fast_seed_preference.py",
             ROOT / "src/s2a/research/joint_control/preview/cached_seed_preference.py",
@@ -85,16 +90,34 @@ def load_inputs():
     validate_config(config)
     old_ref = preparation.configured_ref(config["source_profile"])
     old = prefix.read(old_ref)
+    failure_ref = prefix.reference(FAILURE)
+    failure = prefix.read(failure_ref)
     inputs = binding.load_inputs()
     prefix.require(
         old["complete"] is old["passed"] is old["sources_unchanged"] is True
         and old["physical_steps"] == old["world_model_calls"] == old["fresh_cases"] == 0
         and sorted(map(int, inputs["samples"])) == config["steps"]
         and inputs["config"]["seed"] == config["seed"]
-        and inputs["config"]["past_inner_error"] == config["past_inner_error"],
-        "The original causal saved-state profile and zero-error limitation must match",
+        and inputs["config"]["past_inner_error"] == config["past_inner_error"]
+        and failure_ref["sha256"] == "c94867190501c00eada103570ef0572a0950823600d0e3b9c4c863dbedb5d29b"
+        and failure["passed"] is failure["complete"] is failure["automatic_retry"] is False
+        and failure["solver_calls"]
+        == failure["model_responses"]
+        == failure["physical_steps"]
+        == failure["gpu_calls"]
+        == 0,
+        "The saved-state profile, zero-error limitation and failed dry evidence must match",
     )
-    return config, dict(config_ref=config_ref, profile_ref=old_ref, **binding.input_receipt(inputs)), inputs
+    return (
+        config,
+        dict(
+            comparison_config_ref=config_ref,
+            profile_ref=old_ref,
+            failed_dry_ref=failure_ref,
+            profile_inputs=binding.input_receipt(inputs),
+        ),
+        inputs,
+    )
 
 
 def run_sample(
